@@ -17,6 +17,7 @@
 #include "bullet.h"
 #include "enemy.h"
 #include "explosion.h"
+#include "effect.h"
 
 //マクロ
 #define FPS_SPEED	(500)	//FPS計測時間
@@ -84,6 +85,7 @@ HRESULT CManager::Init(HINSTANCE hInstance, HWND hWnd, BOOL bWindow)
 	{//1枚分読み込む
 		CMultipleBG::Load(c_apTexturePathMultiBG[cnt], cnt);
 	}
+	CEffect::Load("data\\TEXTURE\\effect000.jpg");
 
 	//オブジェクト生成+初期化
 	//CBG::Create();

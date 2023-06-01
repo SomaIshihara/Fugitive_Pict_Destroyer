@@ -12,8 +12,17 @@
 class CEffect : public CObject2D
 {
 public:
+	//エフェクト構造体定義
+	typedef struct
+	{
+		D3DXCOLOR col;		//色
+		int nLife;			//寿命
+	} Effect;
+
 	//コンストラクタ・デストラクタ
-	CEffect();
+	CEffect();								//デフォルト
+	CEffect(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, const float fWidth, const float fHeight, 
+		const D3DXCOLOR col, const int nLife);		//オーバーロード（エフェクトいろいろ設定可）
 	~CEffect();
 
 	//読み込み
@@ -21,7 +30,8 @@ public:
 	static void Unload(void);
 
 	//生成
-	static CEffect* Create(void);
+	static CEffect* Create(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, const float fWidth, const float fHeight,
+		const D3DXCOLOR col, const int nLife);
 
 	//基本処理
 	HRESULT Init(void);
@@ -31,6 +41,8 @@ public:
 
 private:
 	static LPDIRECT3DTEXTURE9 m_pTexture;	//テクスチャ
+	Effect m_effect;						//エフェクト構造体
+	const int m_nDefLife;					//設定寿命
 };
 
 #endif // !_BG_H_

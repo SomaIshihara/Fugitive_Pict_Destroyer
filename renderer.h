@@ -12,6 +12,14 @@
 class CRenderer
 {
 public:
+	//ブレンディング種類列挙
+	typedef enum
+	{
+		BLENDTYPE_NORMAL = 0,
+		BLENDTYPE_ADD,
+		BLENDTYPE_MAX
+	} BLENDTYPE;
+
 	//コンストラクタ・デストラクタ
 	CRenderer();
 	~CRenderer();
@@ -21,6 +29,9 @@ public:
 	void Uninit(void);
 	void Update(void);
 	void Draw(void);
+
+	//設定
+	void SetBlendType(BLENDTYPE type);
 
 	//取得
 	LPDIRECT3DDEVICE9 GetDevice(void) { return m_pD3DDevice; }

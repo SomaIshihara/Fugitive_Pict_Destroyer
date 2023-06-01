@@ -12,10 +12,24 @@
 LPDIRECT3DTEXTURE9 CEffect::m_pTexture = NULL;
 
 //=================================
-//コンストラクタ
+//コンストラクタ（デフォルト）
 //=================================
-CEffect::CEffect() : CObject2D(D3DXVECTOR3(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), SCREEN_WIDTH, SCREEN_HEIGHT)
+CEffect::CEffect() : m_nDefLife(0)
 {
+	//値クリア
+	m_effect.col = D3DXCOLOR(0.0f, 0.0f, 0.0f, 0.0f);
+	m_effect.nLife = 0;
+}
+
+//=================================
+//コンストラクタ（オーバーロード）
+//=================================
+CEffect::CEffect(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, const float fWidth, const float fHeight, 
+	const D3DXCOLOR col, const int nLife) : CObject2D(pos, rot, fWidth, fHeight), m_nDefLife(nLife)
+{
+	//値設定
+	m_effect.col = col;
+	m_effect.nLife = nLife;
 }
 
 //=================================
@@ -55,6 +69,18 @@ void CEffect::Update(void)
 {
 	//親クラス処理
 	CObject2D::Update();
+
+	//寿命管理
+	m_effect.nLife--;	//減らす
+
+	//不透明度設定
+	m_effect.col.a -= (1.0f / m_effect.nLife);
+	SetCol(m_effect.col);
+
+	if (m_effect.nLife <= 0)
+	{//死んだ
+		Uninit();	//終了
+	}
 }
 
 //=================================
@@ -62,29 +88,36 @@ void CEffect::Update(void)
 //=================================
 void CEffect::Draw(void)
 {
+	//ブレンディング種類を加算合成に変更
+	CManager::GetRenderer()->SetBlendType(CRenderer::BLENDTYPE_ADD);
+
 	//親クラス処理
 	CObject2D::Draw();
+
+	//ブレンディング種類を通常状態に戻す
+	CManager::GetRenderer()->SetBlendType(CRenderer::BLENDTYPE_NORMAL);
 }
 
 //=================================
 //生成処理
 //=================================
-CEffect* CEffect::Create(void)
+CEffect* CEffect::Create(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, const float fWidth, const float fHeight,
+	const D3DXCOLOR col, const int nLife)
 {
-	CEffect* pObjBG = NULL;
+	CEffect* pObjEffect = NULL;
 
-	if (pObjBG == NULL)
+	if (pObjEffect == NULL)
 	{
 		//背景の生成
-		pObjBG = new CEffect();
+		pObjEffect = new CEffect(pos, rot, fWidth, fHeight, col, nLife);
 
 		//初期化
-		pObjBG->Init();
+		pObjEffect->Init();
 
 		//テクスチャ設定
-		pObjBG->BindTexture(m_pTexture);
+		pObjEffect->BindTexture(m_pTexture);
 
-		return pObjBG;
+		return pObjEffect;
 	}
 	else
 	{

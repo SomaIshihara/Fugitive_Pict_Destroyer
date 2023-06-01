@@ -274,3 +274,30 @@ HRESULT CObject2D::SetVtxPos(void)
 
 	return S_OK;
 }
+
+//========================
+//色設定
+//========================
+HRESULT CObject2D::SetCol(const D3DXCOLOR col)
+{
+	//頂点バッファのロックと頂点情報へのポインタを取得
+	VERTEX_2D *pVtx;	//設定用ポインタ
+	if (FAILED(m_pVtxbuff->Lock(0, 0, (void **)&pVtx, 0)))
+	{
+		return E_FAIL;
+	}
+
+	//頂点座標の設定
+	pVtx[0].col = col;
+	pVtx[1].col = col;
+	pVtx[2].col = col;
+	pVtx[3].col = col;
+
+	//頂点バッファをアンロック
+	if (FAILED(m_pVtxbuff->Unlock()))
+	{
+		return E_FAIL;
+	}
+
+	return S_OK;
+}

@@ -5,6 +5,8 @@
 //
 //======================================================
 #include "main.h"
+#include "manager.h"
+#include "renderer.h"
 #include "object.h"
 
 //Ã“I•Ï”‰Šú‰»

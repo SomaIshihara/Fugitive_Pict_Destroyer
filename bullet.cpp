@@ -12,6 +12,7 @@
 #include "bullet.h"
 #include "input.h"
 #include "explosion.h"
+#include "effect.h"
 #include "Culc.h"
 
 //静的メンバ変数
@@ -94,6 +95,9 @@ void CBullet::Update(void)
 	{//弾がプレイヤーに当たった
 		return;
 	}
+
+	//エフェクト生成（いったん後で！）
+	//CEffect::Create(GetPos(), GetRot(), 30.0f, 30.0f, D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f), 30);
 
 	//親
 	CObject2D::Update();
