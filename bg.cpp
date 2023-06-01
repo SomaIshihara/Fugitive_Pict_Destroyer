@@ -75,7 +75,7 @@ CBG* CBG::Create(void)
 
 	if (pObjBG == NULL)
 	{
-		//オブジェクトアニメーション2Dの生成
+		//背景の生成
 		pObjBG = new CBG();
 
 		//初期化

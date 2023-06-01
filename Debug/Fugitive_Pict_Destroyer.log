@@ -3,6 +3,7 @@
   objectAnim2D.cpp
   object2D.cpp
   object.cpp
+  multiplebg.cpp
   manager.cpp
   main.cpp
   input.cpp

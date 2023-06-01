@@ -13,6 +13,7 @@
 #include "objectAnim2D.h"
 #include "player.h"
 #include "bg.h"
+#include "multiplebg.h"
 #include "bullet.h"
 #include "enemy.h"
 #include "explosion.h"
@@ -26,6 +27,14 @@ CInputKeyboard* CManager::m_pInputKeyboard = NULL;
 CDebugProc* CManager::m_pDebProc = NULL;
 int CManager::m_nFPS = 0;
 DWORD CManager::m_dwFrameCount = 0;
+
+//テクスチャパス
+const char* c_apTexturePathMultiBG[MAX_MULTIPLE_BG] =
+{
+	"data\\TEXTURE\\bg100.png",
+	"data\\TEXTURE\\bg101.png",
+	"data\\TEXTURE\\bg102.png"
+};
 
 //=================================
 //コンストラクタ
@@ -66,14 +75,19 @@ HRESULT CManager::Init(HINSTANCE hInstance, HWND hWnd, BOOL bWindow)
 	m_pDebProc->Init();
 
 	//テクスチャ読み込み
-	CPlayer::Load("data\\TEXTURE\\runningman000.png");
-	CBG::Load("data\\TEXTURE\\wasitu01_.jpg");
-	CBullet::Load("data\\TEXTURE\\EnergyBullet_01.png");
-	CEnemy::Load("data\\TEXTURE\\Enemy_01.png");
-	CExplosion::Load("data\\TEXTURE\\bomb0.png");
+	CPlayer::Load("data\\TEXTURE\\runningman000.png");	//プレイヤー
+	CBG::Load("data\\TEXTURE\\wasitu01_.jpg");			//1枚背景
+	CBullet::Load("data\\TEXTURE\\EnergyBullet_01.png");//弾
+	CEnemy::Load("data\\TEXTURE\\Enemy_01.png");		//敵
+	CExplosion::Load("data\\TEXTURE\\bomb0.png");		//爆発
+	for (int cnt = 0; cnt < MAX_MULTIPLE_BG; cnt++)		//多重背景
+	{//1枚分読み込む
+		CMultipleBG::Load(c_apTexturePathMultiBG[cnt], cnt);
+	}
 
 	//オブジェクト生成+初期化
-	CBG::Create();
+	//CBG::Create();
+	CMultipleBG::Create(0.0075f,0.01f,0.02f);
 	CPlayer::Create(D3DXVECTOR3(640.0f, 420.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f),200.0f, 400.0f, 8, 1, 2);
 	CEnemy::Create(D3DXVECTOR3(500.0f, 300.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), 84.0f, 60.0f, 2, 1, 60,1);
 	CEnemy::Create(D3DXVECTOR3(300.0f, 300.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), 84.0f, 60.0f, 2, 1, 60,1);
@@ -93,10 +107,12 @@ HRESULT CManager::Init(HINSTANCE hInstance, HWND hWnd, BOOL bWindow)
 void CManager::Uninit(void)
 {
 	//テクスチャ破棄
-	CBullet::Unload();
-	CBG::Unload();
-	CObjectAnim2D::Unload();
-	CPlayer::Unload();
+	CMultipleBG::Unload();		//多重背景（まとめて破棄される）
+	CExplosion::Unload();		//爆発
+	CEnemy::Unload();			//敵
+	CBullet::Unload();			//弾
+	CBG::Unload();				//1枚背景
+	CPlayer::Unload();			//プレイヤー
 
 	//オブジェクト終了+破棄
 	CObject2D::ReleaseAll();

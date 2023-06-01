@@ -125,12 +125,6 @@ HRESULT CObject2D::Init(void)
 //========================
 void CObject2D::Uninit(void)
 {
-	////テクスチャ破棄
-	//if (m_pTexture != NULL)
-	//{//Releaseはしない（Releaseするとstaticのテクスチャを使えなくするから）
-	//	m_pTexture = NULL;
-	//}
-
 	//頂点バッファの破棄
 	if (m_pVtxbuff != NULL)
 	{
