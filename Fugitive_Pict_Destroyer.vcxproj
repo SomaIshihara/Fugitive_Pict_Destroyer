@@ -157,6 +157,7 @@
     <ClCompile Include="bg.cpp" />
     <ClCompile Include="bullet.cpp" />
     <ClCompile Include="debugproc.cpp" />
+    <ClCompile Include="effect.cpp" />
     <ClCompile Include="enemy.cpp" />
     <ClCompile Include="explosion.cpp" />
     <ClCompile Include="input.cpp" />
@@ -174,6 +175,7 @@
     <ClInclude Include="bullet.h" />
     <ClInclude Include="Culc.h" />
     <ClInclude Include="debugproc.h" />
+    <ClInclude Include="effect.h" />
     <ClInclude Include="enemy.h" />
     <ClInclude Include="explosion.h" />
     <ClInclude Include="input.h" />
