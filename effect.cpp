@@ -74,7 +74,7 @@ void CEffect::Update(void)
 	m_effect.nLife--;	//å∏ÇÁÇ∑
 
 	//ïsìßñæìxê›íË
-	m_effect.col.a -= (1.0f / m_effect.nLife);
+	m_effect.col.a = (float)m_effect.nLife / m_nDefLife;
 	SetCol(m_effect.col);
 
 	if (m_effect.nLife <= 0)

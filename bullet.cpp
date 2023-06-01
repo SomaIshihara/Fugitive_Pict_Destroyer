@@ -70,6 +70,9 @@ void CBullet::Uninit(void)
 //=================================
 void CBullet::Update(void)
 {
+	//エフェクト生成
+	CEffect::Create(GetPos(), GetRot(), 30.0f, 30.0f, D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f), 30);
+
 	//ローカル
 	D3DXVECTOR3 pos = GetPos();
 
@@ -96,9 +99,6 @@ void CBullet::Update(void)
 		return;
 	}
 
-	//エフェクト生成（いったん後で！）
-	//CEffect::Create(GetPos(), GetRot(), 30.0f, 30.0f, D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f), 30);
-
 	//親
 	CObject2D::Update();
 }
@@ -116,20 +116,23 @@ void CBullet::Draw(void)
 //=================================
 CBullet* CBullet::Create(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, const float fWidth, const float fHeight, const float fSpeed)
 {
-	CBullet* pPlayer = NULL;
+	CBullet* pBullet = NULL;
 
-	if (pPlayer == NULL)
+	if (pBullet == NULL)
 	{
 		//オブジェクトアニメーション2Dの生成
-		pPlayer = new CBullet(pos, rot, fWidth, fHeight, fSpeed);
+		pBullet = new CBullet(pos, rot, fWidth, fHeight, fSpeed);
 
 		//初期化
-		pPlayer->Init();
+		pBullet->Init();
+
+		//仮置き
+		pBullet->SetCol(D3DXCOLOR(1.0f, 0.5f, 0.16f,1.0f));
 
 		//テクスチャ割り当て
-		pPlayer->BindTexture(m_pTexture);
+		pBullet->BindTexture(m_pTexture);
 
-		return pPlayer;
+		return pBullet;
 	}
 	else
 	{

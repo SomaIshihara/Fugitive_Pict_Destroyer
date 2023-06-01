@@ -129,7 +129,7 @@ void CPlayer::Update(void)
 	if (pKeyboard->GetRepeate(DIK_SPACE))
 	{
 		D3DXVECTOR3 bulletPos = pos + D3DXVECTOR3(10.0f, 0.0f, 0.0f);
-		CBullet::Create(bulletPos, GetRot(), 16.0f, 16.0f, 20.0f);
+		CBullet::Create(bulletPos, GetRot(), 16.0f, 16.0f, 13.0f);
 	}
 
 	//アニメーション

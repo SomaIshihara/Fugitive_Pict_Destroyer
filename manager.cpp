@@ -157,6 +157,8 @@ void CManager::Update(void)
 
 	//デバッグ表示
 	m_pDebProc->Print("FPS:%d\n", m_nFPS);
+	m_pDebProc->Print("[操作方法]\n");
+	m_pDebProc->Print("Space:弾発射\n");
 }
 
 //=================================
