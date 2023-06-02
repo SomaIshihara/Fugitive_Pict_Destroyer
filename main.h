@@ -28,7 +28,6 @@
 #define SCREEN_HEIGHT		(720)		//クライアント領域の高さ
 #define PROC_SPEED			(1000/60)	//処理FPS
 #define FVF_VERTEX_2D		(D3DFVF_XYZRHW | D3DFVF_DIFFUSE | D3DFVF_TEX1)
-#define INIT_ZERO			(0)			//ゼロにする
 
 //2D頂点情報
 typedef struct

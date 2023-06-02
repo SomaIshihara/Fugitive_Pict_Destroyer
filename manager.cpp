@@ -18,6 +18,7 @@
 #include "enemy.h"
 #include "explosion.h"
 #include "effect.h"
+#include "particle.h"
 
 //マクロ
 #define FPS_SPEED	(500)	//FPS計測時間
@@ -30,7 +31,7 @@ int CManager::m_nFPS = 0;
 DWORD CManager::m_dwFrameCount = 0;
 
 //テクスチャパス
-const char* c_apTexturePathMultiBG[MAX_MULTIPLE_BG] =
+const char* c_apTexturePathMultiBG[MAX_EFFECT] =
 {
 	"data\\TEXTURE\\bg100.png",
 	"data\\TEXTURE\\bg101.png",
@@ -81,19 +82,20 @@ HRESULT CManager::Init(HINSTANCE hInstance, HWND hWnd, BOOL bWindow)
 	CBullet::Load("data\\TEXTURE\\EnergyBullet_01.png");//弾
 	CEnemy::Load("data\\TEXTURE\\Enemy_01.png");		//敵
 	CExplosion::Load("data\\TEXTURE\\bomb0.png");		//爆発
-	for (int cnt = 0; cnt < MAX_MULTIPLE_BG; cnt++)		//多重背景
+	for (int cnt = 0; cnt < MAX_EFFECT; cnt++)		//多重背景
 	{//1枚分読み込む
 		CMultipleBG::Load(c_apTexturePathMultiBG[cnt], cnt);
 	}
 	CEffect::Load("data\\TEXTURE\\effect000.jpg");
+	CParticle::Load("data\\TEXTURE\\effect000.jpg");
 
 	//オブジェクト生成+初期化
 	//CBG::Create();
 	CMultipleBG::Create(0.0075f,0.01f,0.02f);
-	CPlayer::Create(D3DXVECTOR3(640.0f, 420.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f),200.0f, 400.0f, 8, 1, 2);
-	CEnemy::Create(D3DXVECTOR3(500.0f, 300.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), 84.0f, 60.0f, 2, 1, 60,1);
-	CEnemy::Create(D3DXVECTOR3(300.0f, 300.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), 84.0f, 60.0f, 2, 1, 60,1);
-	CEnemy::Create(D3DXVECTOR3(700.0f, 300.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), 84.0f, 60.0f, 2, 1, 60,1);
+	CPlayer::Create(D3DXVECTOR3(640.0f, 420.0f, 0.0f), VEC3_ZERO,200.0f, 400.0f, 8, 1, 2);
+	CEnemy::Create(D3DXVECTOR3(500.0f, 300.0f, 0.0f), VEC3_ZERO, 84.0f, 60.0f, 2, 1, 60,1);
+	CEnemy::Create(D3DXVECTOR3(300.0f, 300.0f, 0.0f), VEC3_ZERO, 84.0f, 60.0f, 2, 1, 60,1);
+	CEnemy::Create(D3DXVECTOR3(700.0f, 300.0f, 0.0f), VEC3_ZERO, 84.0f, 60.0f, 2, 1, 60,1);
 
 	//FPS計測器初期化
 	m_nFPS = 0;
@@ -109,6 +111,8 @@ HRESULT CManager::Init(HINSTANCE hInstance, HWND hWnd, BOOL bWindow)
 void CManager::Uninit(void)
 {
 	//テクスチャ破棄
+	CParticle::Unload();		//パーティクル
+	CEffect::Unload();			//エフェクト
 	CMultipleBG::Unload();		//多重背景（まとめて破棄される）
 	CExplosion::Unload();		//爆発
 	CEnemy::Unload();			//敵

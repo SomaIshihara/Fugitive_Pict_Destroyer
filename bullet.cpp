@@ -12,6 +12,7 @@
 #include "bullet.h"
 #include "input.h"
 #include "explosion.h"
+#include "particle.h"
 #include "effect.h"
 #include "Culc.h"
 
@@ -71,7 +72,7 @@ void CBullet::Uninit(void)
 void CBullet::Update(void)
 {
 	//エフェクト生成
-	CEffect::Create(GetPos(), GetRot(), 30.0f, 30.0f, D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f), 30);
+	CEffect::Create(GetPos(), VEC3_ZERO, 30.0f, 30.0f, D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f), 30);
 
 	//ローカル
 	D3DXVECTOR3 pos = GetPos();
@@ -193,7 +194,8 @@ bool CBullet::CollisionEnemy(void)
 					GetPos().y < pObj->GetPos().y + pObj->GetHeight() / 2)
 				{
 					//爆発生成
-					CExplosion::Create(GetPos(), GetRot(), 80.0f, 80.0f, 8, 2, 3);
+					CParticle::Create(GetPos(), 48, 10, 1, 3, D3DXCOLOR(1.0f, 0.5f, 0.14f, 1.0f), 8, 8);
+					//CExplosion::Create(GetPos(), GetRot(), 80.0f, 80.0f, 8, 2, 3);
 
 					//敵にダメージ
 					pObj->Uninit();

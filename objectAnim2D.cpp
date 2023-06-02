@@ -19,9 +19,9 @@ LPDIRECT3DTEXTURE9 CObjectAnim2D::m_pTexture = NULL;
 CObjectAnim2D::CObjectAnim2D() : m_nPatternWidth(1) , m_nPatternHeight(1)
 {
 	//値クリア
-	m_nCounterAnim = INIT_ZERO;
-	m_nPatternAnim = INIT_ZERO;
-	m_nAnimSpeed = INIT_ZERO;
+	m_nCounterAnim = INT_ZERO;
+	m_nPatternAnim = INT_ZERO;
+	m_nAnimSpeed = INT_ZERO;
 	m_bLoop = true;
 }
 
@@ -33,8 +33,8 @@ CObjectAnim2D::CObjectAnim2D(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot,
 	: CObject2D(pos,rot, fWidth, fHeight), m_nPatternWidth(nPatWidth), m_nPatternHeight(nPatHeight)
 {
 	//値クリア
-	m_nCounterAnim = INIT_ZERO;
-	m_nPatternAnim = INIT_ZERO;
+	m_nCounterAnim = INT_ZERO;
+	m_nPatternAnim = INT_ZERO;
 
 	//値設定
 	m_nAnimSpeed = nAnimSpeed;
@@ -59,8 +59,8 @@ HRESULT CObjectAnim2D::Init(void)
 		return E_FAIL;
 	}
 	//値初期化
-	m_nCounterAnim = INIT_ZERO;
-	m_nPatternAnim = INIT_ZERO;
+	m_nCounterAnim = INT_ZERO;
+	m_nPatternAnim = INT_ZERO;
 
 	//テクスチャ設定
 	D3DXVECTOR2 tex0, tex3;

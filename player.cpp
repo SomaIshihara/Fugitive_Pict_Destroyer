@@ -22,7 +22,7 @@ LPDIRECT3DTEXTURE9 CPlayer::m_pTexture = NULL;
 //=================================
 CPlayer::CPlayer()
 {
-	m_move = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+	m_move = VEC3_ZERO;
 }
 
 //=================================
@@ -68,7 +68,7 @@ void CPlayer::Update(void)
 {
 	//ローカル
 	D3DXVECTOR3 pos = GetPos();
-	m_move = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+	m_move = VEC3_ZERO;
 
 	//ポインタ取得
 	CInputKeyboard* pKeyboard = CManager::GetInputKeyboard();

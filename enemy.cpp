@@ -22,7 +22,7 @@ LPDIRECT3DTEXTURE9 CEnemy::m_pTexture = NULL;
 //=================================
 CEnemy::CEnemy()
 {
-	m_move = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+	m_move = VEC3_ZERO;
 }
 
 //=================================

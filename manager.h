@@ -4,12 +4,21 @@
 //Author:ÎŒ´éD”n
 //
 //======================================================
+#ifndef _MANAGER_H_
+#define _MANAGER_H_
 #include "main.h"
 
+//‘O•ûéŒ¾
 class CInputKeyboard;
 class CRenderer;
 class CPlayer;
 class CDebugProc;
+
+//ƒ}ƒNƒ
+#define INT_ZERO	(0)							//intŒ^‚Ì0
+#define FLOAT_ZERO	(0.0f)						//floatŒ^‚Ì0
+#define VEC2_ZERO	D3DXVECTOR2(0.0f,0.0f)		//vec2Œ^‚Ì0
+#define VEC3_ZERO	D3DXVECTOR3(0.0f,0.0f,0.0f)	//vec3Œ^‚Ì0
 
 class CManager
 {
@@ -41,3 +50,5 @@ private:
 	static int m_nFPS;							//FPS
 	static DWORD m_dwFrameCount;				//‰ñ‚µ‚½ƒtƒŒ[ƒ€”
 };
+
+#endif

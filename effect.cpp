@@ -17,6 +17,7 @@ LPDIRECT3DTEXTURE9 CEffect::m_pTexture = NULL;
 CEffect::CEffect() : m_nDefLife(0)
 {
 	//値クリア
+	m_effect.move = VEC3_ZERO;
 	m_effect.col = D3DXCOLOR(0.0f, 0.0f, 0.0f, 0.0f);
 	m_effect.nLife = 0;
 }
@@ -24,10 +25,11 @@ CEffect::CEffect() : m_nDefLife(0)
 //=================================
 //コンストラクタ（オーバーロード）
 //=================================
-CEffect::CEffect(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, const float fWidth, const float fHeight, 
-	const D3DXCOLOR col, const int nLife) : CObject2D(pos, rot, fWidth, fHeight), m_nDefLife(nLife)
+CEffect::CEffect(const D3DXVECTOR3 pos, const D3DXVECTOR3 move, const float fWidth, const float fHeight,
+	const D3DXCOLOR col, const int nLife) : CObject2D(pos, VEC3_ZERO, fWidth, fHeight), m_nDefLife(nLife)
 {
 	//値設定
+	m_effect.move = move;
 	m_effect.col = col;
 	m_effect.nLife = nLife;
 }
@@ -70,6 +72,11 @@ void CEffect::Update(void)
 	//親クラス処理
 	CObject2D::Update();
 
+	//移動
+	D3DXVECTOR3 pos = GetPos();
+	pos += m_effect.move;
+	SetPos(pos);
+
 	//寿命管理
 	m_effect.nLife--;	//減らす
 
@@ -101,7 +108,7 @@ void CEffect::Draw(void)
 //=================================
 //生成処理
 //=================================
-CEffect* CEffect::Create(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, const float fWidth, const float fHeight,
+CEffect* CEffect::Create(const D3DXVECTOR3 pos, const D3DXVECTOR3 move, const float fWidth, const float fHeight,
 	const D3DXCOLOR col, const int nLife)
 {
 	CEffect* pObjEffect = NULL;
@@ -109,7 +116,7 @@ CEffect* CEffect::Create(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, const flo
 	if (pObjEffect == NULL)
 	{
 		//背景の生成
-		pObjEffect = new CEffect(pos, rot, fWidth, fHeight, col, nLife);
+		pObjEffect = new CEffect(pos, move, fWidth, fHeight, col, nLife);
 
 		//初期化
 		pObjEffect->Init();

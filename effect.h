@@ -15,13 +15,14 @@ public:
 	//エフェクト構造体定義
 	typedef struct
 	{
+		D3DXVECTOR3 move;	//移動量
 		D3DXCOLOR col;		//色
 		int nLife;			//寿命
 	} Effect;
 
 	//コンストラクタ・デストラクタ
 	CEffect();								//デフォルト
-	CEffect(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, const float fWidth, const float fHeight, 
+	CEffect(const D3DXVECTOR3 pos, const D3DXVECTOR3 move, const float fWidth, const float fHeight,
 		const D3DXCOLOR col, const int nLife);		//オーバーロード（エフェクトいろいろ設定可）
 	~CEffect();
 
@@ -30,7 +31,7 @@ public:
 	static void Unload(void);
 
 	//生成
-	static CEffect* Create(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, const float fWidth, const float fHeight,
+	static CEffect* Create(const D3DXVECTOR3 pos, const D3DXVECTOR3 move, const float fWidth, const float fHeight,
 		const D3DXCOLOR col, const int nLife);
 
 	//基本処理

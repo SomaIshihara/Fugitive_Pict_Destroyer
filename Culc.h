@@ -9,7 +9,8 @@
 #include "main.h"
 
 //マクロ
-#define ACCELERATION_GRAVITY	(9.8f)		//重力加速度
+#define ACCELERATION_GRAVITY	(9.8f)	//重力加速度
+#define TWO_PI		(2 * D3DX_PI)		//360度（2π[rad]）
 
 //方向
 #define LEFT_UP		(-0.75f * D3DX_PI)	//左上

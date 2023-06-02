@@ -18,13 +18,13 @@ CObject2D::CObject2D()
 	//クリア
 	m_pVtxbuff = NULL;
 	m_pTexture = NULL;
-	m_fLength = INIT_ZERO;
-	m_fAngle = INIT_ZERO;
+	m_fLength = INT_ZERO;
+	m_fAngle = INT_ZERO;
 	m_fWidth = 100.0f;
 	m_fHeight = 100.0f;
 
 	m_pos = D3DXVECTOR3(428.0f, 428.0f, 0.0f);
-	m_rot = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+	m_rot = VEC3_ZERO;
 }
 
 //=================================
@@ -35,8 +35,8 @@ CObject2D::CObject2D(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, const float f
 	//クリア
 	m_pVtxbuff = NULL;
 	m_pTexture = NULL;
-	m_fLength = INIT_ZERO;
-	m_fAngle = INIT_ZERO;
+	m_fLength = INT_ZERO;
+	m_fAngle = INT_ZERO;
 	m_fWidth = fWidth;
 	m_fHeight = fHeight;
 
@@ -112,7 +112,7 @@ HRESULT CObject2D::Init(void)
 	}
 
 	//テクスチャ座標設定
-	if (FAILED(SetTex(D3DXVECTOR2(0.0f, 0.0f), D3DXVECTOR2(1.0f, 1.0f))))
+	if (FAILED(SetTex(D3DXVECTOR2(0.0f,0.0f), D3DXVECTOR2(1.0f, 1.0f))))
 	{
 		return E_FAIL;
 	}
@@ -255,16 +255,16 @@ HRESULT CObject2D::SetVtxPos(void)
 	//頂点座標の設定
 	pVtx[0].pos.x = m_pos.x + sinf((m_rot.z * D3DX_PI) + (-D3DX_PI + m_fAngle)) * m_fLength;
 	pVtx[0].pos.y = m_pos.y + cosf((m_rot.z * D3DX_PI) + (-D3DX_PI + m_fAngle)) * m_fLength;
-	pVtx[0].pos.z = 0.0f;
+	pVtx[0].pos.z = FLOAT_ZERO;
 	pVtx[1].pos.x = m_pos.x + sinf((m_rot.z * D3DX_PI) + (D3DX_PI - m_fAngle)) * m_fLength;
 	pVtx[1].pos.y = m_pos.y + cosf((m_rot.z * D3DX_PI) + (D3DX_PI - m_fAngle)) * m_fLength;
-	pVtx[1].pos.z = 0.0f;
+	pVtx[1].pos.z = FLOAT_ZERO;
 	pVtx[2].pos.x = m_pos.x + sinf((m_rot.z * D3DX_PI) + (0 - m_fAngle)) * m_fLength;
 	pVtx[2].pos.y = m_pos.y + cosf((m_rot.z * D3DX_PI) + (0 - m_fAngle)) * m_fLength;
-	pVtx[2].pos.z = 0.0f;
+	pVtx[2].pos.z = FLOAT_ZERO;
 	pVtx[3].pos.x = m_pos.x + sinf((m_rot.z * D3DX_PI) + (0 + m_fAngle)) * m_fLength;
 	pVtx[3].pos.y = m_pos.y + cosf((m_rot.z * D3DX_PI) + (0 + m_fAngle)) * m_fLength;
-	pVtx[3].pos.z = 0.0f;
+	pVtx[3].pos.z = FLOAT_ZERO;
 
 	//頂点バッファをアンロック
 	if (FAILED(m_pVtxbuff->Unlock()))

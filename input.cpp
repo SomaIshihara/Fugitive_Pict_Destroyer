@@ -8,6 +8,7 @@
 //使用可能な入力:キーボード・マウス（カーソル位置・移動量）・ゲームパッド（1~4台）
 //==========================================================================================
 #include "main.h"
+#include "manager.h"
 #include "input.h"
 
 //マクロ定義
@@ -334,7 +335,7 @@ void CInputMouse::Update(void)
 		m_mouse.state = MouseState;	//キーボードのプレス情報を保存
 
 									//移動量
-		m_mouse.move = D3DXVECTOR3((float)m_mouse.state.lX, (float)m_mouse.state.lY, 0.0f);
+		m_mouse.move = D3DXVECTOR3((float)m_mouse.state.lX, (float)m_mouse.state.lY, FLOAT_ZERO);
 	}
 	else
 	{

@@ -7,9 +7,10 @@
 #ifndef _MULTIPLE_BG_H_
 #define _MULTIPLE_BG_H_
 #include "main.h"
+#include "manager.h"
 #include "object.h"
 
-#define MAX_MULTIPLE_BG	(3)	//多重背景の個数
+#define MAX_EFFECT	(3)	//多重背景の個数
 class CObject2D;
 
 class CMultipleBG : public CObject	//このクラスは管理オブジェクトです。Unityでいう空のオブジェクトみたいなもの。
@@ -33,16 +34,16 @@ public:
 	static CMultipleBG* Create(float fSpeed0, float fSpeed1, float fSpeed2);	//オブジェクトを生成 fSpeed:スクロール速度
 
 	//取得（純粋仮想関数の関係上実装しているが、こいつに位置やらサイズやらはいらないのですべて0を返す）
-	D3DXVECTOR3 GetPos(void) { return D3DXVECTOR3(0.0f,0.0f,0.0f); }
-	D3DXVECTOR3 GetRot(void) { return D3DXVECTOR3(0.0f, 0.0f, 0.0f); }
-	float GetWidth(void) { return 0.0f; }
-	float GetHeight(void) { return 0.0f; }
+	D3DXVECTOR3 GetPos(void) { return VEC3_ZERO; }
+	D3DXVECTOR3 GetRot(void) { return VEC3_ZERO; }
+	float GetWidth(void) { return FLOAT_ZERO; }
+	float GetHeight(void) { return FLOAT_ZERO; }
 
 private:
-	CObject2D* m_pObj2D[MAX_MULTIPLE_BG];					//2Dオブジェクト
-	float m_aTexV[MAX_MULTIPLE_BG];							//背景のテクスチャ座標
-	float m_aSpeed[MAX_MULTIPLE_BG];						//背景のスクロール速度
-	static LPDIRECT3DTEXTURE9 m_pTexture[MAX_MULTIPLE_BG];	//テクスチャ
+	CObject2D* m_pObj2D[MAX_EFFECT];					//2Dオブジェクト
+	float m_aTexV[MAX_EFFECT];							//背景のテクスチャ座標
+	float m_aSpeed[MAX_EFFECT];							//背景のスクロール速度
+	static LPDIRECT3DTEXTURE9 m_pTexture[MAX_EFFECT];	//テクスチャ
 };
 
 #endif // !_MULTIPLE_BG_H_
