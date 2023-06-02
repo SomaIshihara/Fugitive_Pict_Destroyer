@@ -10,7 +10,7 @@
 #include "manager.h"
 #include "object.h"
 
-#define MAX_EFFECT	(3)	//多重背景の個数
+#define MAX_MULTIPLE_BG	(3)	//多重背景の個数
 class CObject2D;
 
 class CMultipleBG : public CObject	//このクラスは管理オブジェクトです。Unityでいう空のオブジェクトみたいなもの。
@@ -40,10 +40,10 @@ public:
 	float GetHeight(void) { return FLOAT_ZERO; }
 
 private:
-	CObject2D* m_pObj2D[MAX_EFFECT];					//2Dオブジェクト
-	float m_aTexV[MAX_EFFECT];							//背景のテクスチャ座標
-	float m_aSpeed[MAX_EFFECT];							//背景のスクロール速度
-	static LPDIRECT3DTEXTURE9 m_pTexture[MAX_EFFECT];	//テクスチャ
+	CObject2D* m_pObj2D[MAX_MULTIPLE_BG];					//2Dオブジェクト
+	float m_aTexV[MAX_MULTIPLE_BG];							//背景のテクスチャ座標
+	float m_aSpeed[MAX_MULTIPLE_BG];							//背景のスクロール速度
+	static LPDIRECT3DTEXTURE9 m_pTexture[MAX_MULTIPLE_BG];	//テクスチャ
 };
 
 #endif // !_MULTIPLE_BG_H_

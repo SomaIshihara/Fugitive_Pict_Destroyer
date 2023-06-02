@@ -10,7 +10,7 @@
 #include "object2D.h"
 
 //静的メンバ変数
-LPDIRECT3DTEXTURE9 CMultipleBG::m_pTexture[MAX_EFFECT] = { NULL,NULL,NULL };
+LPDIRECT3DTEXTURE9 CMultipleBG::m_pTexture[MAX_MULTIPLE_BG] = { NULL,NULL,NULL };
 
 //=================================
 //コンストラクタ（デフォルト）
@@ -31,7 +31,7 @@ CMultipleBG::~CMultipleBG()
 //=================================
 HRESULT CMultipleBG::Init(void)
 {
-	for (int cnt = 0; cnt < MAX_EFFECT; cnt++)
+	for (int cnt = 0; cnt < MAX_MULTIPLE_BG; cnt++)
 	{//背景用オブジェクト2D初期化
 		m_pObj2D[cnt] = NULL;
 	}
@@ -45,7 +45,7 @@ HRESULT CMultipleBG::Init(void)
 //=================================
 void CMultipleBG::Uninit(void)
 {
-	for (int cnt = 0; cnt < MAX_EFFECT; cnt++)
+	for (int cnt = 0; cnt < MAX_MULTIPLE_BG; cnt++)
 	{//背景用オブジェクト2D終了
 		if (m_pObj2D[cnt] != NULL)
 		{//大丈夫。中身はある
@@ -62,7 +62,7 @@ void CMultipleBG::Uninit(void)
 //=================================
 void CMultipleBG::Update(void)
 {
-	for (int cnt = 0; cnt < MAX_EFFECT; cnt++)
+	for (int cnt = 0; cnt < MAX_MULTIPLE_BG; cnt++)
 	{//背景用オブジェクト2D更新
 		if (m_pObj2D[cnt] != NULL)
 		{//大丈夫。中身はある
@@ -85,7 +85,7 @@ void CMultipleBG::Update(void)
 //=================================
 void CMultipleBG::Draw(void)
 {
-	for (int cnt = 0; cnt < MAX_EFFECT; cnt++)
+	for (int cnt = 0; cnt < MAX_MULTIPLE_BG; cnt++)
 	{//背景用オブジェクト2D描画
 		if (m_pObj2D[cnt] != NULL)
 		{//大丈夫。中身はある
@@ -110,7 +110,7 @@ CMultipleBG* CMultipleBG::Create(float fSpeed0, float fSpeed1, float fSpeed2)
 		pObjMultipleBG->Init();
 
 		//背景用オブジェクト2D生成
-		for (int cnt = 0; cnt < MAX_EFFECT; cnt++)
+		for (int cnt = 0; cnt < MAX_MULTIPLE_BG; cnt++)
 		{//1枚分生成～テクスチャ設定
 			//生成
 			pObjMultipleBG->m_pObj2D[cnt] = pObjMultipleBG->m_pObj2D[cnt]->Create(D3DXVECTOR3(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2, 0.0f), VEC3_ZERO, 
@@ -161,7 +161,7 @@ HRESULT CMultipleBG::Load(const char* pPath, int nIdx)
 void CMultipleBG::Unload(void)
 {
 	//テクスチャ破棄
-	for (int cnt = 0; cnt < MAX_EFFECT; cnt++)
+	for (int cnt = 0; cnt < MAX_MULTIPLE_BG; cnt++)
 	{//1枚ずつ破棄
 		if (m_pTexture[cnt] != NULL)
 		{

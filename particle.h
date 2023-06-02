@@ -10,7 +10,7 @@
 #include "manager.h"
 #include "object.h"
 
-#define MAX_EFFECT	(256)	//エフェクト最大個数
+#define MAX_EFFECT	(1024)	//エフェクト最大個数
 class CEffect;
 
 class CParticle : public CObject	//このクラスは管理オブジェクトです。Unityでいう空のオブジェクトみたいなもの。
