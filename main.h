@@ -22,6 +22,7 @@
 #pragma comment(lib,"dinput8.lib")
 #pragma comment(lib,"xinput.lib")
 
+
 //マクロ定義
 #define CLASS_NAME			"WindowClass"
 #define SCREEN_WIDTH		(1280)		//クライアント領域の幅

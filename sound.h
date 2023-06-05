@@ -9,42 +9,19 @@
 
 #include "main.h"
 
-//*****************************************************************************
-// サウンド一覧
-//*****************************************************************************
-typedef enum
-{
-	SOUND_LABEL_BGM_TITLE = 0,	// タイトルBGM
-	SOUND_LABEL_BGM_GAME,		// ゲームBGM
-	SOUND_LABEL_BGM_RESULT,		// 結果
-	SOUND_LABEL_SE_START,		// スタート
-	SOUND_LABEL_SE_SHOT,		// 弾発射
-	SOUND_LABEL_SE_CLEAR,		// クリア
-	SOUND_LABEL_SE_OVER,		// 失敗
-	SOUND_LABEL_MAX,
-} SOUND_LABEL;
-
-//*****************************************************************************
-// プロトタイプ宣言
-//*****************************************************************************
-HRESULT InitSound(HWND hWnd);
-void UninitSound(void);
-HRESULT PlaySound(SOUND_LABEL label);
-void StopSound(SOUND_LABEL label);
-void StopSound(void);
-void PauseSound(SOUND_LABEL label);
-void RestartSound(SOUND_LABEL label);
-
-//クラス化したものがこちらです
+//サウンドクラス
 class CSound
 {
 public:
-	//サウンド種類
+	//*****************************************************************************
+	// サウンド一覧
+	//*****************************************************************************
 	typedef enum
 	{
 		SOUND_LABEL_BGM_TITLE = 0,	// タイトルBGM
 		SOUND_LABEL_MAX,
 	} SOUND_LABEL;
+	//*****************************************************************************
 
 	//コンストラクタ・デストラクタ
 	CSound();
@@ -55,17 +32,17 @@ public:
 	void Uninit(void);
 
 	//流す処理
-	HRESULT Play(SOUND_LABEL label);
-	void Stop(SOUND_LABEL label);
-	static void Stop(SOUND_LABEL label);
-	void Pause(SOUND_LABEL label);
-	void Restart(SOUND_LABEL label);
+	HRESULT Play(SOUND_LABEL label);	//流す
+	void Stop(SOUND_LABEL label);		//1つ止める
+	void Stop(void);				//全部止める
+	void Pause(SOUND_LABEL label);		//ポーズ
+	void Restart(SOUND_LABEL label);	//再開
 private:
-	static IXAudio2 *m_pXAudio2;							// XAudio2オブジェクトへのインターフェイス
-	static IXAudio2MasteringVoice *m_pMasteringVoice;		// マスターボイス
+	IXAudio2 *m_pXAudio2;									// XAudio2オブジェクトへのインターフェイス
+	IXAudio2MasteringVoice *m_pMasteringVoice;				// マスターボイス
 	IXAudio2SourceVoice *m_apSourceVoice[SOUND_LABEL_MAX];	// ソースボイス
-	BYTE *g_apDataAudio[SOUND_LABEL_MAX];					// オーディオデータ
-	DWORD g_aSizeAudio[SOUND_LABEL_MAX];					// オーディオデータサイズ
+	BYTE *m_apDataAudio[SOUND_LABEL_MAX];					// オーディオデータ
+	DWORD m_aSizeAudio[SOUND_LABEL_MAX];					// オーディオデータサイズ
 };
 
 #endif

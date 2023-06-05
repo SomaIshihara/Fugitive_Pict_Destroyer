@@ -164,12 +164,14 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="manager.cpp" />
     <ClCompile Include="multiplebg.cpp" />
+    <ClCompile Include="number.cpp" />
     <ClCompile Include="object.cpp" />
     <ClCompile Include="object2D.cpp" />
     <ClCompile Include="objectAnim2D.cpp" />
     <ClCompile Include="particle.cpp" />
     <ClCompile Include="player.cpp" />
     <ClCompile Include="renderer.cpp" />
+    <ClCompile Include="sound.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="bg.h" />
@@ -183,12 +185,14 @@
     <ClInclude Include="main.h" />
     <ClInclude Include="manager.h" />
     <ClInclude Include="multiplebg.h" />
+    <ClInclude Include="number.h" />
     <ClInclude Include="object.h" />
     <ClInclude Include="object2D.h" />
     <ClInclude Include="objectAnim2D.h" />
     <ClInclude Include="particle.h" />
     <ClInclude Include="player.h" />
     <ClInclude Include="renderer.h" />
+    <ClInclude Include="sound.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

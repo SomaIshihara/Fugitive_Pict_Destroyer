@@ -13,6 +13,14 @@
 class CObject2D : public CObject
 {
 public:
+	//パターンテクスチャ構造体
+	typedef struct
+	{
+		LPDIRECT3DTEXTURE9 pTexture;	//テクスチャポインタ
+		int nPatternWidth;				//パターン幅
+		int nPatternHeight;				//パターン高さ
+	} PatternTexture;
+
 	//コンストラクタ・デストラクタ
 	CObject2D();																						//デフォルト
 	CObject2D(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, const float fWidth, const float fHeight);	//オーバーロード（位置向きサイズ）
