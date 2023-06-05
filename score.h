@@ -9,7 +9,7 @@
 #include "main.h"
 #include "object2D.h"
 
-#define SCORE_DIGIT	(8)	//多重背景の個数
+#define SCORE_DIGIT	(8)	//スコアの桁数
 class CNumber;
 
 class CScore : public CObject

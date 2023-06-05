@@ -27,7 +27,8 @@
 #define CLASS_NAME			"WindowClass"
 #define SCREEN_WIDTH		(1280)		//クライアント領域の幅
 #define SCREEN_HEIGHT		(720)		//クライアント領域の高さ
-#define PROC_SPEED			(1000/60)	//処理FPS
+#define MAX_FPS				(60)		//処理FPS
+#define PROC_SPEED			(1000/MAX_FPS)	//処理時間
 #define FVF_VERTEX_2D		(D3DFVF_XYZRHW | D3DFVF_DIFFUSE | D3DFVF_TEX1)
 
 //2D頂点情報
