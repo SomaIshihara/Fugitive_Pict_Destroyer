@@ -13,6 +13,7 @@ class CInputKeyboard;
 class CRenderer;
 class CPlayer;
 class CDebugProc;
+class CSound;
 
 //マクロ
 #define INT_ZERO	(0)							//int型の0
@@ -38,12 +39,14 @@ public:
 
 	//取得
 	static CInputKeyboard* GetInputKeyboard(void) { return m_pInputKeyboard; }
+	static CSound* GetSound(void) { return m_pSound; }
 	static CRenderer* GetRenderer(void) { return m_pRenderer; }
 	static CPlayer* GetPlayer(void) { return m_pPlayer; }
 	static CDebugProc* GetDebProc(void) { return m_pDebProc; }
 
 private:
 	static CInputKeyboard* m_pInputKeyboard;	//キーボード
+	static CSound* m_pSound;					//サウンド
 	static CRenderer* m_pRenderer;				//レンダラー
 	static CDebugProc* m_pDebProc;				//デバッグ
 	static CPlayer* m_pPlayer;					//プレイヤー

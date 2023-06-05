@@ -5,6 +5,7 @@
 //
 //======================================================
 #include "manager.h"
+#include "sound.h"
 #include "renderer.h"
 #include "player.h"
 #include "input.h"
@@ -130,6 +131,7 @@ void CPlayer::Update(void)
 	{
 		D3DXVECTOR3 bulletPos = pos + D3DXVECTOR3(10.0f, 0.0f, 0.0f);
 		CBullet::Create(bulletPos, GetRot(), 16.0f, 16.0f, 13.0f);
+		CManager::GetSound()->Play(CSound::SOUND_LABEL_SE_SHOT);
 	}
 
 	//アニメーション

@@ -84,13 +84,13 @@
     <ClCompile Include="number.cpp">
       <Filter>ソース ファイル\Object</Filter>
     </ClCompile>
-    <ClCompile Include="timer.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
     <ClCompile Include="score.cpp">
       <Filter>ソース ファイル\Derivation</Filter>
     </ClCompile>
     <ClCompile Include="particle.cpp">
+      <Filter>ソース ファイル\Derivation</Filter>
+    </ClCompile>
+    <ClCompile Include="timer.cpp">
       <Filter>ソース ファイル\Derivation</Filter>
     </ClCompile>
   </ItemGroup>
@@ -149,13 +149,13 @@
     <ClInclude Include="number.h">
       <Filter>ヘッダー ファイル\Object</Filter>
     </ClInclude>
-    <ClInclude Include="timer.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
     <ClInclude Include="score.h">
       <Filter>ヘッダー ファイル\Derivation</Filter>
     </ClInclude>
     <ClInclude Include="particle.h">
+      <Filter>ヘッダー ファイル\Derivation</Filter>
+    </ClInclude>
+    <ClInclude Include="timer.h">
       <Filter>ヘッダー ファイル\Derivation</Filter>
     </ClInclude>
   </ItemGroup>

@@ -7,6 +7,7 @@
 #include "manager.h"
 #include "renderer.h"
 #include "input.h"
+#include "sound.h"
 #include "debugproc.h"
 #include "object.h"
 #include "object2D.h"
@@ -29,6 +30,7 @@
 CRenderer* CManager::m_pRenderer = NULL;
 CInputKeyboard* CManager::m_pInputKeyboard = NULL;
 CDebugProc* CManager::m_pDebProc = NULL;
+CSound* CManager::m_pSound = NULL;
 int CManager::m_nFPS = 0;
 DWORD CManager::m_dwFrameCount = 0;
 
@@ -61,6 +63,7 @@ HRESULT CManager::Init(HINSTANCE hInstance, HWND hWnd, BOOL bWindow)
 {
 	//生成
 	m_pInputKeyboard = new CInputKeyboard;
+	m_pSound = new CSound;
 	m_pRenderer = new CRenderer;
 	m_pDebProc = new CDebugProc;
 
@@ -72,6 +75,12 @@ HRESULT CManager::Init(HINSTANCE hInstance, HWND hWnd, BOOL bWindow)
 
 	//キーボード初期化
 	if (FAILED(m_pInputKeyboard->Init(hInstance, hWnd)))
+	{
+		return E_FAIL;
+	}
+
+	//サウンド初期化
+	if (FAILED(m_pSound->Init(hWnd)))
 	{
 		return E_FAIL;
 	}
@@ -107,6 +116,9 @@ HRESULT CManager::Init(HINSTANCE hInstance, HWND hWnd, BOOL bWindow)
 	m_nFPS = 0;
 	m_dwFrameCount = 0;
 
+	//サウンド流す
+	m_pSound->Play(CSound::SOUND_LABEL_BGM_TITLE);
+
 	//できた
 	return S_OK;
 }
@@ -137,6 +149,14 @@ void CManager::Uninit(void)
 		m_pDebProc->Uninit();
 		delete m_pDebProc;
 		m_pDebProc = NULL;
+	}
+
+	//サウンド破棄
+	if (m_pSound != NULL)
+	{//サウンド終了
+		m_pSound->Uninit();
+		delete m_pSound;
+		m_pSound = NULL;
 	}
 
 	//キーボード破棄

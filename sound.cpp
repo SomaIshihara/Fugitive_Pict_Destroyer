@@ -25,7 +25,8 @@ HRESULT ReadChunkData(HANDLE hFile, void *pBuffer, DWORD dwBuffersize, DWORD dwB
 // サウンドの情報
 SOUNDINFO g_aSoundInfo[CSound::SOUND_LABEL_MAX] =
 {
-	{"data/BGM/Moonside_Howl.wav",		1.0f, -1},	// タイトルBGM
+	{"data/BGM/Trick_style.wav",	1.0f, -1},	// タイトルBGM
+	{"data/SE/shot001.wav",			1.0f, 0},	// 弾発射
 };
 
 //=============================================================================
