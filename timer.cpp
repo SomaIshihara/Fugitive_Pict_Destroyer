@@ -92,13 +92,13 @@ void CTimer::Uninit(void)
 //=================================
 void CTimer::Update(void)
 {
-#ifdef _DEBUG
+//#ifdef _DEBUG
 	//[debug]数字設定
-	if (CManager::GetInputKeyboard()->GetTrigger(DIK_3) == true)
+	if (CManager::GetInputKeyboard()->GetTrigger(DIK_F3) == true)
 	{
 		Set(120,COUNT_DOWN);	//デバッグ用だからこれでいいよね
 	}
-#endif // DEBUG
+//#endif // DEBUG
 	//タイマー更新
 	m_nCounter++;
 

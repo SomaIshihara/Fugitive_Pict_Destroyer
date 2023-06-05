@@ -171,6 +171,9 @@ void CManager::Update(void)
 	m_pDebProc->Print("FPS:%d\n", m_nFPS);
 	m_pDebProc->Print("[操作方法]\n");
 	m_pDebProc->Print("Space:弾発射\n");
+	m_pDebProc->Print("[Debug]F1:スコア設定(12345678)\n");
+	m_pDebProc->Print("[Debug]F2:スコア加算(+100)\n");
+	m_pDebProc->Print("[Debug]F3:タイマー設定(120秒カウントダウン)\n");
 }
 
 //=================================
