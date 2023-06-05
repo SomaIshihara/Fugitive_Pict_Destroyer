@@ -81,11 +81,14 @@
     <ClCompile Include="particle.cpp">
       <Filter>ソース ファイル\Object</Filter>
     </ClCompile>
-    <ClCompile Include="number.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
     <ClCompile Include="sound.cpp">
       <Filter>ソース ファイル\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="score.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="number.cpp">
+      <Filter>ソース ファイル\Object</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -140,11 +143,14 @@
     <ClInclude Include="particle.h">
       <Filter>ヘッダー ファイル\Object</Filter>
     </ClInclude>
-    <ClInclude Include="number.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
     <ClInclude Include="sound.h">
       <Filter>ヘッダー ファイル\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="score.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="number.h">
+      <Filter>ヘッダー ファイル\Object</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

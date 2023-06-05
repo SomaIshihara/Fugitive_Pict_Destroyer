@@ -11,18 +11,11 @@
 #include "input.h"
 #include <assert.h>
 
-//静的メンバ変数
-CObject2D::PatternTexture CNumber::m_patternTexture = { NULL,0,0 };
-
 //=================================
 //コンストラクタ（デフォルト）
 //=================================
 CNumber::CNumber()
 {
-	//値クリア
-	m_patternTexture.pTexture = NULL;
-	m_patternTexture.nPatternWidth = 0;
-	m_patternTexture.nPatternHeight = 0;
 }
 
 //=================================
@@ -30,10 +23,6 @@ CNumber::CNumber()
 //=================================
 CNumber::CNumber(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, const float fWidth, const float fHeight) : CObject2D(pos,rot, fWidth, fHeight)
 {
-	//値クリア
-	m_patternTexture.pTexture = NULL;
-	m_patternTexture.nPatternWidth = 0;
-	m_patternTexture.nPatternHeight = 0;
 }
 
 //=================================
@@ -57,10 +46,10 @@ HRESULT CNumber::Init(void)
 
 	//テクスチャ設定
 	D3DXVECTOR2 tex0, tex3;
-	tex0 = D3DXVECTOR2((float)(INT_ZERO % m_patternTexture.nPatternWidth) / m_patternTexture.nPatternWidth,
-		(float)(INT_ZERO / m_patternTexture.nPatternWidth) / m_patternTexture.nPatternHeight);
-	tex3 = D3DXVECTOR2((float)(INT_ZERO % m_patternTexture.nPatternWidth + 1) / m_patternTexture.nPatternWidth,
-		(float)(INT_ZERO / m_patternTexture.nPatternWidth + 1) / m_patternTexture.nPatternHeight);
+	tex0 = D3DXVECTOR2((float)(INT_ZERO % GetPatWidth()) / GetPatWidth(),
+		(float)(INT_ZERO / GetPatWidth()) / GetPatHeight());
+	tex3 = D3DXVECTOR2((float)(INT_ZERO % GetPatWidth() + 1) / GetPatWidth(),
+		(float)(INT_ZERO / GetPatWidth() + 1) / GetPatHeight());
 
 	if (FAILED(SetTex(tex0, tex3)))
 	{
@@ -111,9 +100,6 @@ CNumber* CNumber::Create(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, const flo
 		//初期化
 		pObjAnim2D->Init();
 
-		//テクスチャ割り当て
-		pObjAnim2D->BindTexture(m_patternTexture.pTexture);
-
 		return pObjAnim2D;
 	}
 	else
@@ -123,62 +109,26 @@ CNumber* CNumber::Create(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, const flo
 }
 
 //=================================
-//テクスチャ読み込み処理
-//=================================
-HRESULT CNumber::Load(const char* pPath, int nPatWidth, int nPatHeight)
-{
-	LPDIRECT3DDEVICE9 pDevice = CManager::GetRenderer()->GetDevice();	//デバイス取得
-
-	//テクスチャ読み込み
-	if (FAILED(D3DXCreateTextureFromFile(pDevice,
-		pPath,
-		&m_patternTexture.pTexture)))
-	{//失敗
-		return E_FAIL;
-	}
-
-	//パターン幅高さ代入
-	m_patternTexture.nPatternWidth = nPatWidth;
-	m_patternTexture.nPatternHeight = nPatHeight;
-
-	//成功
-	return S_OK;
-}
-
-//=================================
-//テクスチャ破棄処理
-//=================================
-void CNumber::Unload(void)
-{
-	//テクスチャ破棄
-	if (m_patternTexture.pTexture != NULL)
-	{
-		m_patternTexture.pTexture->Release();
-		m_patternTexture.pTexture = NULL;
-	}
-}
-
-//=================================
-//数字分割処理（nDigitは1以上で入力すること）
+//数字分割処理（nDigitは0以上で入力すること）
 //=================================
 void CNumber::SetNumber(const int nSource, const int nDigit)
 {
 	int nNumber = 0;	//1桁分の数字
 
-	if (nDigit <= 0)
+	if (nDigit < 0)
 	{//不正
 		assert(false);
 	}
 
 	//桁ごとの数字を入れる
-	nNumber = nSource % (int)pow(10, nSource + 1) / (int)pow(10, nSource);
+	nNumber = nSource % (int)pow(10, nDigit + 1) / (int)pow(10, nDigit);
 
 	//テクスチャ設定
 	D3DXVECTOR2 tex0, tex3;
-	tex0 = D3DXVECTOR2((float)(nNumber % m_patternTexture.nPatternWidth) / m_patternTexture.nPatternWidth,
-		(float)(nNumber / m_patternTexture.nPatternWidth) / m_patternTexture.nPatternHeight);
-	tex3 = D3DXVECTOR2((float)(nNumber % m_patternTexture.nPatternWidth + 1) / m_patternTexture.nPatternWidth,
-		(float)(nNumber / m_patternTexture.nPatternWidth + 1) / m_patternTexture.nPatternHeight);
+	tex0 = D3DXVECTOR2((float)(nNumber % GetPatWidth()) / GetPatWidth(),
+		(float)(nNumber / GetPatWidth()) / GetPatHeight());
+	tex3 = D3DXVECTOR2((float)(nNumber % GetPatWidth() + 1) / GetPatWidth(),
+		(float)(nNumber / GetPatWidth() + 1) / GetPatHeight());
 
 	if (FAILED(SetTex(tex0, tex3)))
 	{

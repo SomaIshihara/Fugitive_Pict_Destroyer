@@ -17,7 +17,9 @@ CObject2D::CObject2D()
 {
 	//クリア
 	m_pVtxbuff = NULL;
-	m_pTexture = NULL;
+	m_patTexture.pTexture = NULL;
+	m_patTexture.nPatternWidth = 1;
+	m_patTexture.nPatternHeight = 1;
 	m_fLength = INT_ZERO;
 	m_fAngle = INT_ZERO;
 	m_fWidth = 100.0f;
@@ -34,7 +36,9 @@ CObject2D::CObject2D(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, const float f
 {
 	//クリア
 	m_pVtxbuff = NULL;
-	m_pTexture = NULL;
+	m_patTexture.pTexture = NULL;
+	m_patTexture.nPatternWidth = 1;
+	m_patTexture.nPatternHeight = 1;
 	m_fLength = INT_ZERO;
 	m_fAngle = INT_ZERO;
 	m_fWidth = fWidth;
@@ -158,7 +162,7 @@ void CObject2D::Draw(void)
 	pDevice->SetFVF(FVF_VERTEX_2D);
 
 	//テクスチャ設定
-	pDevice->SetTexture(0, m_pTexture);
+	pDevice->SetTexture(0, m_patTexture.pTexture);
 
 	//描画
 	pDevice->DrawPrimitive(D3DPT_TRIANGLESTRIP, 0, 2);

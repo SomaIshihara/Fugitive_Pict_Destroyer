@@ -9,18 +9,18 @@
 #include "main.h"
 #include "object.h"
 
+//パターンテクスチャ構造体定義
+typedef struct
+{
+	LPDIRECT3DTEXTURE9 pTexture;	//テクスチャポインタ
+	int nPatternWidth;				//パターン幅
+	int nPatternHeight;				//パターン高さ
+} PatternTexture;
+
 //オブジェクトクラス
 class CObject2D : public CObject
 {
 public:
-	//パターンテクスチャ構造体
-	typedef struct
-	{
-		LPDIRECT3DTEXTURE9 pTexture;	//テクスチャポインタ
-		int nPatternWidth;				//パターン幅
-		int nPatternHeight;				//パターン高さ
-	} PatternTexture;
-
 	//コンストラクタ・デストラクタ
 	CObject2D();																						//デフォルト
 	CObject2D(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, const float fWidth, const float fHeight);	//オーバーロード（位置向きサイズ）
@@ -36,7 +36,8 @@ public:
 	static CObject2D* Create(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, const float fWidth, const float fHeight);
 
 	//設定
-	void BindTexture(LPDIRECT3DTEXTURE9 pTexture) { m_pTexture = pTexture; }
+	void BindTexture(LPDIRECT3DTEXTURE9 pTexture) { m_patTexture.pTexture = pTexture; }
+	void BindPatternTexture(PatternTexture pPatTexture) { m_patTexture = pPatTexture; }
 
 	//取得
 	D3DXVECTOR3 GetPos(void) { return m_pos; }
@@ -44,6 +45,8 @@ public:
 	float GetWidth(void) { return m_fWidth; }
 	float GetHeight(void) { return m_fHeight; }
 	float GetLength(void) { return m_fLength; }
+	int GetPatWidth(void) { return m_patTexture.nPatternWidth; }
+	int GetPatHeight(void) { return m_patTexture.nPatternHeight; }
 
 	//設定
 	HRESULT SetPos(const D3DXVECTOR3 pos);	//位置
@@ -56,7 +59,7 @@ private:
 	HRESULT SetVtxPos(void);
 
 	LPDIRECT3DVERTEXBUFFER9 m_pVtxbuff;		//頂点バッファ
-	LPDIRECT3DTEXTURE9 m_pTexture;			//テクスチャポインタ
+	PatternTexture m_patTexture;			//テクスチャポインタ
 	D3DXVECTOR3 m_pos;	//位置
 	D3DXVECTOR3 m_rot;	//向き
 	float m_fLength;	//長さ

@@ -1,24 +1,24 @@
 //======================================================
 //
-//マルチ背景（2D）処理のヘッダ[bg.h]
+//スコア処理のヘッダ[score.h]
 //Author:石原颯馬
 //
 //======================================================
-#ifndef _MULTIPLE_BG_H_
-#define _MULTIPLE_BG_H_
+#ifndef _SCORE_H_
+#define _SCORE_H_
 #include "main.h"
-#include "manager.h"
-#include "object.h"
+#include "object2D.h"
 
-#define MAX_MULTIPLE_BG	(3)	//多重背景の個数
-class CObject2D;
+#define SCORE_DIGIT	(8)	//多重背景の個数
+class CNumber;
 
-class CMultipleBG : public CObject	//このクラスは管理オブジェクトです。Unityでいう空のオブジェクトみたいなもの。
+class CScore : public CObject
 {
 public:
 	//コンストラクタ・デストラクタ
-	CMultipleBG();				//デフォルト
-	~CMultipleBG();
+	CScore();				//デフォルト
+	CScore(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, const float fOneWidth, const float fOneHeight);				//オーバーロード
+	~CScore();
 
 	//基本処理
 	HRESULT Init(void);
@@ -27,23 +27,31 @@ public:
 	void Draw(void);
 
 	//読み込み
-	static HRESULT Load(const char* pPath, int nIdx);
+	static HRESULT Load(const char* pPath, int nPatWidth, int nPatHeight);
 	static void Unload(void);
 
 	//生成
-	static CMultipleBG* Create(float fSpeed0, float fSpeed1, float fSpeed2);	//オブジェクトを生成 fSpeed:スクロール速度
+	static CScore* Create(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, const float fOneWidth, const float fOneHeight);	//オブジェクトを生成(fOneWidth,fOneHeight:1桁当たりのサイズ)
 
-	//取得（純粋仮想関数の関係上実装しているが、こいつに位置やらサイズやらはいらないのですべて0を返す）
-	D3DXVECTOR3 GetPos(void) { return VEC3_ZERO; }
-	D3DXVECTOR3 GetRot(void) { return VEC3_ZERO; }
+	//取得（純粋仮想関数の関係上実装しているが、こいつにサイズやらはいらないのですべて0を返す）
+	D3DXVECTOR3 GetPos(void) { return m_pos; }
+	D3DXVECTOR3 GetRot(void) { return m_rot; }
 	float GetWidth(void) { return FLOAT_ZERO; }
 	float GetHeight(void) { return FLOAT_ZERO; }
 
+	//設定
+	void Set(const int nScore);	//スコア設定
+	void Add(const int nAdd);	//スコア加算
+
 private:
-	CObject2D* m_pObj2D[MAX_MULTIPLE_BG];					//2Dオブジェクト
-	float m_aTexV[MAX_MULTIPLE_BG];							//背景のテクスチャ座標
-	float m_aSpeed[MAX_MULTIPLE_BG];							//背景のスクロール速度
-	static LPDIRECT3DTEXTURE9 m_pTexture[MAX_MULTIPLE_BG];	//テクスチャ
+	void CutNumber(void);					//数字分割
+	CNumber* m_pNumber[SCORE_DIGIT];		//数字
+	static PatternTexture m_patTexture;		//テクスチャ
+	D3DXVECTOR3 m_pos;						//位置（1桁目の数字の中心を想定）
+	D3DXVECTOR3 m_rot;						//向き（1桁目の数字の中心を想定）
+	float m_fOneWidth;						//1桁当たりのサイズ幅
+	float m_fOneHeight;						//1桁当たりのサイズ高さ
+	int m_nScore;							//スコア
 };
 
-#endif // !_MULTIPLE_BG_H_
+#endif // !_SCORE_H_

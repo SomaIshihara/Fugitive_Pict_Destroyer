@@ -19,6 +19,7 @@
 #include "explosion.h"
 #include "effect.h"
 #include "particle.h"
+#include "score.h"
 
 //マクロ
 #define FPS_SPEED	(500)	//FPS計測時間
@@ -86,8 +87,9 @@ HRESULT CManager::Init(HINSTANCE hInstance, HWND hWnd, BOOL bWindow)
 	{//1枚分読み込む
 		CMultipleBG::Load(c_apTexturePathMultiBG[cnt], cnt);
 	}
-	CEffect::Load("data\\TEXTURE\\effect000.jpg");
-	CParticle::Load("data\\TEXTURE\\effect000.jpg");
+	CEffect::Load("data\\TEXTURE\\effect000.jpg");				//エフェクト
+	CParticle::Load("data\\TEXTURE\\effect000.jpg");			//パーティクル
+	CScore::Load("data\\TEXTURE\\Number_Rank_01.png", 10, 1);	//スコア
 
 	//オブジェクト生成+初期化
 	//CBG::Create();
@@ -96,6 +98,7 @@ HRESULT CManager::Init(HINSTANCE hInstance, HWND hWnd, BOOL bWindow)
 	CEnemy::Create(D3DXVECTOR3(500.0f, 300.0f, 0.0f), VEC3_ZERO, 84.0f, 60.0f, 2, 1, 60,1);
 	CEnemy::Create(D3DXVECTOR3(300.0f, 300.0f, 0.0f), VEC3_ZERO, 84.0f, 60.0f, 2, 1, 60,1);
 	CEnemy::Create(D3DXVECTOR3(700.0f, 300.0f, 0.0f), VEC3_ZERO, 84.0f, 60.0f, 2, 1, 60,1);
+	CScore::Create(D3DXVECTOR3(SCREEN_WIDTH - 24.0f, 32.0f, 0.0f), VEC3_ZERO, 48.0f, 64.0f);
 
 	//FPS計測器初期化
 	m_nFPS = 0;
@@ -111,6 +114,7 @@ HRESULT CManager::Init(HINSTANCE hInstance, HWND hWnd, BOOL bWindow)
 void CManager::Uninit(void)
 {
 	//テクスチャ破棄
+	CScore::Unload();			//スコア
 	CParticle::Unload();		//パーティクル
 	CEffect::Unload();			//エフェクト
 	CMultipleBG::Unload();		//多重背景（まとめて破棄される）
