@@ -194,7 +194,7 @@ bool CBullet::CollisionEnemy(void)
 					GetPos().y < pObj->GetPos().y + pObj->GetHeight() / 2)
 				{
 					//îöî≠ê∂ê¨
-					CParticle::Create(GetPos(), 48, 10, 1, 3, D3DXCOLOR(1.0f, 0.5f, 0.14f, 1.0f), 8, 8);
+					CParticle::Create(GetPos(), 48, 16, 2, 3, D3DXCOLOR(1.0f, 0.5f, 0.14f, 1.0f), 20.0f, 20.0f);
 					//CExplosion::Create(GetPos(), GetRot(), 80.0f, 80.0f, 8, 2, 3);
 
 					//ìGÇ…É_ÉÅÅ[ÉW
