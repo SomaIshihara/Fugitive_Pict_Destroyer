@@ -11,6 +11,7 @@
 #include "input.h"
 #include "bullet.h"
 #include "block.h"
+#include "item.h"
 #include "score.h"
 #include "Culc.h"
 
@@ -336,7 +337,7 @@ void CPlayer::CollisionItem(D3DXVECTOR3* pPosNew)
 {
 	for (int cnt = 0; cnt < MAX_OBJ; cnt++)
 	{//全オブジェクト見る
-		CObject* pObj = GetObject(BLOCK_PRIORITY, cnt);	//オブジェクト取得
+		CObject* pObj = GetObject(ITEM_PRIORITY, cnt);	//オブジェクト取得
 
 		if (pObj != NULL)	//ヌルチェ
 		{//なんかある
