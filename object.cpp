@@ -10,20 +10,21 @@
 #include "object.h"
 
 //静的変数初期化
-CObject* CObject::m_apObject[] = {};
+CObject* CObject::m_apObject[MAX_OBJ_PRIORITY][MAX_OBJ];
 int CObject::m_nNumAll = 0;
 
 //=================================
 //コンストラクタ
 //=================================
-CObject::CObject()
+CObject::CObject(int nPriority)
 {
 	for (int cnt = 0; cnt < MAX_OBJ; cnt++)
 	{//すべて確認
-		if (m_apObject[cnt] == NULL)
+		if (m_apObject[nPriority][cnt] == NULL)
 		{//空っぽ
-			m_apObject[cnt] = this;	//自分自身のポインタを登録
+			m_apObject[nPriority][cnt] = this;	//自分自身のポインタを登録
 			m_nID = cnt;	//ID覚える
+			m_nPriority = nPriority;	//優先順位覚える
 			m_Type = TYPE_NONE;	//いったん何でもないものとする
 			m_nNumAll++;	//総数増やす
 			break;
@@ -42,11 +43,14 @@ CObject::~CObject()
 //=================================
 void CObject::ReleaseAll(void)
 {
-	for (int cnt = 0; cnt < MAX_OBJ; cnt++)
-	{//すべて確認
-		if (m_apObject[cnt] != NULL)
-		{//空っぽではない
-			m_apObject[cnt]->Uninit();
+	for (int cntPriority = 0; cntPriority < MAX_OBJ_PRIORITY; cntPriority++)
+	{
+		for (int cntObj = 0; cntObj < MAX_OBJ; cntObj++)
+		{//すべて確認
+			if (m_apObject[cntPriority][cntObj] != NULL)
+			{//空っぽではない
+				m_apObject[cntPriority][cntObj]->Uninit();
+			}
 		}
 	}
 }
@@ -56,11 +60,14 @@ void CObject::ReleaseAll(void)
 //=================================
 void CObject::UpdateAll(void)
 {
-	for (int cnt = 0; cnt < MAX_OBJ; cnt++)
-	{//すべて確認
-		if (m_apObject[cnt] != NULL)
-		{//空っぽではない
-			m_apObject[cnt]->Update();
+	for (int cntPriority = 0; cntPriority < MAX_OBJ_PRIORITY; cntPriority++)
+	{
+		for (int cntObj = 0; cntObj < MAX_OBJ; cntObj++)
+		{//すべて確認
+			if (m_apObject[cntPriority][cntObj] != NULL)
+			{//空っぽではない
+				m_apObject[cntPriority][cntObj]->Update();
+			}
 		}
 	}
 }
@@ -70,11 +77,14 @@ void CObject::UpdateAll(void)
 //=================================
 void CObject::DrawAll(void)
 {
-	for (int cnt = 0; cnt < MAX_OBJ; cnt++)
-	{//すべて確認
-		if (m_apObject[cnt] != NULL)
-		{//空っぽではない
-			m_apObject[cnt]->Draw();
+	for (int cntPriority = 0; cntPriority < MAX_OBJ_PRIORITY; cntPriority++)
+	{
+		for (int cntObj = 0; cntObj < MAX_OBJ; cntObj++)
+		{//すべて確認
+			if (m_apObject[cntPriority][cntObj] != NULL)
+			{//空っぽではない
+				m_apObject[cntPriority][cntObj]->Draw();
+			}
 		}
 	}
 }
@@ -84,12 +94,13 @@ void CObject::DrawAll(void)
 //=================================
 void CObject::Release(void)
 {
-	int nID = m_nID;
-	if (m_apObject[nID] != NULL)
+	int nID = m_nID;				//deleteしたら使えなくなるので保管
+	int nPriority = m_nPriority;
+	if (m_apObject[nPriority][nID] != NULL)
 	{//空っぽではない
 		//自分自身破棄
-		delete m_apObject[nID];
-		m_apObject[nID] = NULL;
+		delete m_apObject[nPriority][nID];
+		m_apObject[nPriority][nID] = NULL;
 		m_nNumAll--;	//総数減らす
 	}
 }

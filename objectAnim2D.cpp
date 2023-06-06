@@ -16,7 +16,7 @@ LPDIRECT3DTEXTURE9 CObjectAnim2D::m_pTexture = NULL;
 //=================================
 //コンストラクタ（デフォルト）
 //=================================
-CObjectAnim2D::CObjectAnim2D() : m_nPatternWidth(1) , m_nPatternHeight(1)
+CObjectAnim2D::CObjectAnim2D(int nPriority) : CObject2D(nPriority) , m_nPatternWidth(1) , m_nPatternHeight(1)
 {
 	//値クリア
 	m_nCounterAnim = INT_ZERO;
@@ -29,8 +29,8 @@ CObjectAnim2D::CObjectAnim2D() : m_nPatternWidth(1) , m_nPatternHeight(1)
 //コンストラクタ（オーバーロード 位置向きandパターン幅高さ）
 //=================================
 CObjectAnim2D::CObjectAnim2D(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot,
-	const float fWidth, const float fHeight, const int nPatWidth, const int nPatHeight, const int nAnimSpeed, const bool bLoop)
-	: CObject2D(pos,rot, fWidth, fHeight), m_nPatternWidth(nPatWidth), m_nPatternHeight(nPatHeight)
+	const float fWidth, const float fHeight, const int nPatWidth, const int nPatHeight, const int nAnimSpeed, const bool bLoop, int nPriority)
+	: CObject2D(pos,rot, fWidth, fHeight, nPriority), m_nPatternWidth(nPatWidth), m_nPatternHeight(nPatHeight)
 {
 	//値クリア
 	m_nCounterAnim = INT_ZERO;

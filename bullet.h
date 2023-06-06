@@ -10,12 +10,16 @@
 #include "main.h"
 #include "objectAnim2D.h"
 
+//優先順位
+#define BULLET_PRIORITY	(2)
+
 class CBullet : public CObject2D
 {
 public:
 	//コンストラクタ・デストラクタ
-	CBullet();	//デフォルト
-	CBullet(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, const float fWidth, const float fHeight, const float fSpeed);	//オーバーロード（位置向きandアニメーション）
+	CBullet(int nPriority = BULLET_PRIORITY);	//デフォルト
+	CBullet(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, const float fWidth, const float fHeight, const float fSpeed,
+		int nPriority = BULLET_PRIORITY);	//オーバーロード（位置向きandアニメーション）
 	~CBullet();
 
 	//読み込み

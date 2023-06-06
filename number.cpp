@@ -14,14 +14,15 @@
 //=================================
 //コンストラクタ（デフォルト）
 //=================================
-CNumber::CNumber()
+CNumber::CNumber(int nPriority) :CObject2D(nPriority)
 {
 }
 
 //=================================
 //コンストラクタ（オーバーロード 位置向きandパターン幅高さ）
 //=================================
-CNumber::CNumber(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, const float fWidth, const float fHeight) : CObject2D(pos,rot, fWidth, fHeight)
+CNumber::CNumber(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, const float fWidth, const float fHeight, int nPriority) 
+	: CObject2D(pos,rot, fWidth, fHeight, nPriority)
 {
 }
 

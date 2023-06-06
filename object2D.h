@@ -22,8 +22,8 @@ class CObject2D : public CObject
 {
 public:
 	//コンストラクタ・デストラクタ
-	CObject2D();																						//デフォルト
-	CObject2D(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, const float fWidth, const float fHeight);	//オーバーロード（位置向きサイズ）
+	CObject2D(int nPriority = 3);																							//デフォルト
+	CObject2D(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, const float fWidth, const float fHeight, int nPriority = 3);	//オーバーロード（位置向きサイズ）
 	virtual ~CObject2D();
 
 	//基本処理

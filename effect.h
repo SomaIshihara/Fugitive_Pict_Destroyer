@@ -9,6 +9,9 @@
 #include "main.h"
 #include "object2D.h"
 
+//優先順位
+#define EFFECT_PRIORITY	(2)
+
 class CEffect : public CObject2D
 {
 public:
@@ -21,9 +24,9 @@ public:
 	} Effect;
 
 	//コンストラクタ・デストラクタ
-	CEffect();								//デフォルト
+	CEffect(int nPriority = EFFECT_PRIORITY);			//デフォルト
 	CEffect(const D3DXVECTOR3 pos, const D3DXVECTOR3 move, const float fWidth, const float fHeight,
-		const D3DXCOLOR col, const int nLife);		//オーバーロード（エフェクトいろいろ設定可）
+		const D3DXCOLOR col, const int nLife, int nPriority = EFFECT_PRIORITY);		//オーバーロード（エフェクトいろいろ設定可）
 	~CEffect();
 
 	//読み込み

@@ -20,7 +20,7 @@ LPDIRECT3DTEXTURE9 CEnemy::m_pTexture = NULL;
 //=================================
 //コンストラクタ（デフォルト）
 //=================================
-CEnemy::CEnemy()
+CEnemy::CEnemy(int nPriority) : CObjectAnim2D(nPriority)
 {
 	m_move = VEC3_ZERO;
 }
@@ -29,7 +29,8 @@ CEnemy::CEnemy()
 //コンストラクタ（オーバーロード 位置向きandパターン幅高さ）
 //=================================
 CEnemy::CEnemy(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, const float fWidth, const float fHeight,
-	const int nPatWidth, const int nPatHeight, const int nAnimSpeed, const int nLife) : CObjectAnim2D(pos, rot, fWidth, fHeight, nPatWidth, nPatHeight, nAnimSpeed, true)
+	const int nPatWidth, const int nPatHeight, const int nAnimSpeed, const int nLife, int nPriority)
+	: CObjectAnim2D(pos, rot, fWidth, fHeight, nPatWidth, nPatHeight, nAnimSpeed, true, nPriority)
 {
 	m_nLife = nLife;
 }

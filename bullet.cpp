@@ -22,7 +22,7 @@ LPDIRECT3DTEXTURE9 CBullet::m_pTexture = NULL;
 //=================================
 //コンストラクタ（デフォルト）
 //=================================
-CBullet::CBullet()
+CBullet::CBullet(int nPriority) : CObject2D(nPriority)
 {
 	m_move = D3DXVECTOR3(3.0f, 0.0f, 0.0f);
 	SetType(TYPE_BULLET);
@@ -31,7 +31,8 @@ CBullet::CBullet()
 //=================================
 //コンストラクタ（オーバーロード 位置向きandパターン幅高さ）
 //=================================
-CBullet::CBullet(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, const float fWidth, const float fHeight, const float fSpeed) : CObject2D(pos, rot, fWidth, fHeight)
+CBullet::CBullet(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, const float fWidth, const float fHeight, const float fSpeed, int nPriority) 
+	: CObject2D(pos, rot, fWidth, fHeight, nPriority)
 {
 	m_move.x = sinf(FIX_ROT(rot.z * D3DX_PI + D3DX_PI)) * fSpeed;
 	m_move.y = cosf(FIX_ROT(rot.z * D3DX_PI + D3DX_PI)) * fSpeed;
@@ -180,7 +181,7 @@ bool CBullet::CollisionEnemy(void)
 {
 	for (int cnt = 0; cnt < MAX_OBJ; cnt++)
 	{//全オブジェクト見る
-		CObject* pObj = GetObject(cnt);	//オブジェクト取得
+		CObject* pObj = GetObject(BULLET_PRIORITY,cnt);	//オブジェクト取得
 
 		if (pObj != NULL)	//ヌルチェ
 		{//なんかある
@@ -220,7 +221,7 @@ bool CBullet::CollisionPlayer(void)
 {
 	for (int cnt = 0; cnt < MAX_OBJ; cnt++)
 	{//全オブジェクト見る
-		CObject* pObj = GetObject(cnt);	//オブジェクト取得
+		CObject* pObj = GetObject(BULLET_PRIORITY,cnt);	//オブジェクト取得
 
 		if (pObj != NULL)	//ヌルチェ
 		{//なんかある

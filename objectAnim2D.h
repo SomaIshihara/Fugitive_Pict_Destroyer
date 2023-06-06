@@ -14,10 +14,10 @@ class CObjectAnim2D : public CObject2D
 {
 public:
 	//コンストラクタ・デストラクタ
-	CObjectAnim2D();																												//デフォルト
+	CObjectAnim2D(int nPriority = 3);																												//デフォルト
 	CObjectAnim2D(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, 
 		const float fWidth, const float fHeight, const int nPatWidth, const int nPatHeight,
-		const int nAnimSpeed, const bool bLoop);	//オーバーロード（位置向きandアニメーション）
+		const int nAnimSpeed, const bool bLoop, int nPriority = 3);	//オーバーロード（位置向きandアニメーション）
 	virtual ~CObjectAnim2D();
 
 	//読み込み

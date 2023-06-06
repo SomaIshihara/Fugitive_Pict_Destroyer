@@ -10,13 +10,16 @@
 #include "main.h"
 #include "objectAnim2D.h"
 
+//優先順位
+#define ENEMY_PRIORITY	(3)
+
 class CEnemy : public CObjectAnim2D
 {
 public:
 	//コンストラクタ・デストラクタ
-	CEnemy();	//デフォルト
-	CEnemy(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, const float fWidth, const float fHeight,
-		const int nPatWidth, const int nPatHeight, const int nAnimSpeed, const int nDamage);	//オーバーロード（位置向きandアニメーション）
+	CEnemy(int nPriority = ENEMY_PRIORITY);	//デフォルト
+	CEnemy(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, const float fWidth, const float fHeight, const int nPatWidth, const int nPatHeight,
+		const int nAnimSpeed, const int nDamage, int nPriority = ENEMY_PRIORITY);	//オーバーロード（位置向きandアニメーション）
 	~CEnemy();
 
 	//読み込み

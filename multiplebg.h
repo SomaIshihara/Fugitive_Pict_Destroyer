@@ -17,7 +17,7 @@ class CMultipleBG : public CObject	//このクラスは管理オブジェクトです。Unityでい
 {
 public:
 	//コンストラクタ・デストラクタ
-	CMultipleBG();				//デフォルト
+	CMultipleBG(int nPriority = BG_PRIORITY);				//デフォルト
 	~CMultipleBG();
 
 	//基本処理
@@ -42,7 +42,7 @@ public:
 private:
 	CObject2D* m_pObj2D[MAX_MULTIPLE_BG];					//2Dオブジェクト
 	float m_aTexV[MAX_MULTIPLE_BG];							//背景のテクスチャ座標
-	float m_aSpeed[MAX_MULTIPLE_BG];							//背景のスクロール速度
+	float m_aSpeed[MAX_MULTIPLE_BG];						//背景のスクロール速度
 	static LPDIRECT3DTEXTURE9 m_pTexture[MAX_MULTIPLE_BG];	//テクスチャ
 };
 

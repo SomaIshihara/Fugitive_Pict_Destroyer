@@ -16,8 +16,8 @@ class CScore : public CObject
 {
 public:
 	//コンストラクタ・デストラクタ
-	CScore();				//デフォルト
-	CScore(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, const float fOneWidth, const float fOneHeight);				//オーバーロード
+	CScore(int nPriority = UI_PRIORITY);				//デフォルト
+	CScore(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, const float fOneWidth, const float fOneHeight, int nPriority = UI_PRIORITY);	//オーバーロード
 	~CScore();
 
 	//基本処理

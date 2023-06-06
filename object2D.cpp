@@ -13,7 +13,7 @@
 //=================================
 //コンストラクタ（デフォルト）
 //=================================
-CObject2D::CObject2D()
+CObject2D::CObject2D(int nPriority) : CObject(nPriority)
 {
 	//クリア
 	m_pVtxbuff = NULL;
@@ -32,7 +32,7 @@ CObject2D::CObject2D()
 //=================================
 //コンストラクタ（オーバーロード 位置向き）
 //=================================
-CObject2D::CObject2D(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, const float fWidth, const float fHeight)
+CObject2D::CObject2D(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, const float fWidth, const float fHeight, int nPriority) : CObject(nPriority)
 {
 	//クリア
 	m_pVtxbuff = NULL;

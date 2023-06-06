@@ -8,8 +8,15 @@
 #define _OBJECT_H_
 #include "main.h"
 
-#define MAX_OBJ	(256)	//オブジェクト最大数
-#define DEATH_LIFE		(0)		//死亡体力
+#define MAX_OBJ_PRIORITY	(8)		//最大優先順位（これで足りるらしい）
+#define MAX_OBJ				(256)	//オブジェクト最大数
+#define DEATH_LIFE			(0)		//死亡体力
+
+//優先順位参考表
+#define BG_PRIORITY		(0)	//背景
+#define UI_PRIORITY		(5)	//UI
+#define PAUSE_PRIORITY	(6)	//ポーズ
+#define FADE_PRIORITY	(7)	//フェード
 
 //オブジェクトクラス
 class CObject
@@ -26,7 +33,7 @@ public:
 	} TYPE;
 
 	//コンストラクタ・デストラクタ
-	CObject();
+	CObject(int nPriority = 3);
 	virtual ~CObject();
 
 	//基本処理
@@ -43,7 +50,7 @@ public:
 	//取得・設定
 	void SetType(TYPE type) { m_Type = type; }
 	TYPE GetType(void) { return m_Type; }
-	static CObject* GetObject(int nIdx) { return m_apObject[nIdx]; }
+	static CObject* GetObject(int nPriority, int nIdx) { return m_apObject[nPriority][nIdx]; }
 
 	//純粋仮想取得
 	virtual D3DXVECTOR3 GetPos(void) = 0;
@@ -55,9 +62,10 @@ protected:
 	void Release(void);
 
 private:
-	static CObject* m_apObject[MAX_OBJ];	//ポインタ
+	static CObject* m_apObject[MAX_OBJ_PRIORITY][MAX_OBJ];	//ポインタ
 	static int m_nNumAll;					//総数
 	int m_nID;								//自分自身のID
+	int m_nPriority;						//優先順位
 	TYPE m_Type;							//種類
 };
 

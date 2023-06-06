@@ -10,13 +10,16 @@
 #include "main.h"
 #include "objectAnim2D.h"
 
+//優先順位
+#define PLAYER_PRIORITY	(4)
+
 class CPlayer : public CObjectAnim2D
 {
 public:
 	//コンストラクタ・デストラクタ
-	CPlayer();	//デフォルト
+	CPlayer(int nPriority = PLAYER_PRIORITY);	//デフォルト
 	CPlayer(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, const float fWidth, const float fHeight,
-		const int nPatWidth, const int nPatHeight, const int nAnimSpeed);	//オーバーロード（位置向きandアニメーション）
+		const int nPatWidth, const int nPatHeight, const int nAnimSpeed, int nPriority = PLAYER_PRIORITY);	//オーバーロード（位置向きandアニメーション）
 	~CPlayer();
 
 	//読み込み
@@ -40,6 +43,8 @@ private:
 	static LPDIRECT3DTEXTURE9 m_pTexture;	//テクスチャ
 	D3DXVECTOR3 m_move;						//移動量
 	int m_nLife;							//体力
+	int m_nCounterJumpTime;					//ジャンプしてからの経過時間
+	bool m_bJump;							//ジャンプしているかどうか
 };
 
 #endif // !_PLAYER_H_

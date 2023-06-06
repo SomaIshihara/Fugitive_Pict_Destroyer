@@ -17,7 +17,7 @@ PatternTexture CTimer::m_patTexture = { NULL,0,0 };
 //=================================
 //コンストラクタ（デフォルト）
 //=================================
-CTimer::CTimer()
+CTimer::CTimer(int nPriority) : CObject(nPriority)
 {
 	//値クリア
 	m_pos = VEC3_ZERO;
@@ -31,7 +31,7 @@ CTimer::CTimer()
 //=================================
 //コンストラクタ（オーバーロード）
 //=================================
-CTimer::CTimer(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, const float fOneWidth, const float fOneHeight)
+CTimer::CTimer(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, const float fOneWidth, const float fOneHeight, int nPriority) : CObject(nPriority)
 {
 	//値設定
 	m_pos = pos;

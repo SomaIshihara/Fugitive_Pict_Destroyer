@@ -15,7 +15,7 @@ LPDIRECT3DTEXTURE9 CMultipleBG::m_pTexture[MAX_MULTIPLE_BG] = { NULL,NULL,NULL }
 //=================================
 //コンストラクタ（デフォルト）
 //=================================
-CMultipleBG::CMultipleBG()
+CMultipleBG::CMultipleBG(int nPriority)
 {
 }
 

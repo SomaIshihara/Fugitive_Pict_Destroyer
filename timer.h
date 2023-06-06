@@ -25,8 +25,8 @@ public:
 	} COUNT;
 
 	//コンストラクタ・デストラクタ
-	CTimer();				//デフォルト
-	CTimer(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, const float fOneWidth, const float fOneHeight);				//オーバーロード
+	CTimer(int nPriority = UI_PRIORITY);				//デフォルト
+	CTimer(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, const float fOneWidth, const float fOneHeight, int nPriority = UI_PRIORITY);	//オーバーロード
 	~CTimer();
 
 	//基本処理

@@ -14,7 +14,7 @@ LPDIRECT3DTEXTURE9 CEffect::m_pTexture = NULL;
 //=================================
 //コンストラクタ（デフォルト）
 //=================================
-CEffect::CEffect() : m_nDefLife(0)
+CEffect::CEffect(int nPriority) : CObject2D(nPriority), m_nDefLife(0)
 {
 	//値クリア
 	m_effect.move = VEC3_ZERO;
@@ -26,7 +26,7 @@ CEffect::CEffect() : m_nDefLife(0)
 //コンストラクタ（オーバーロード）
 //=================================
 CEffect::CEffect(const D3DXVECTOR3 pos, const D3DXVECTOR3 move, const float fWidth, const float fHeight,
-	const D3DXCOLOR col, const int nLife) : CObject2D(pos, VEC3_ZERO, fWidth, fHeight), m_nDefLife(nLife)
+	const D3DXCOLOR col, const int nLife, int nPriority) : CObject2D(pos, VEC3_ZERO, fWidth, fHeight, nPriority), m_nDefLife(nLife)
 {
 	//値設定
 	m_effect.move = move;
