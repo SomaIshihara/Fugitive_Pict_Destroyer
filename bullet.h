@@ -11,7 +11,7 @@
 #include "objectAnim2D.h"
 
 //優先順位
-#define BULLET_PRIORITY	(2)
+#define BULLET_PRIORITY	(PRIORITY_DEFAULT)
 
 class CBullet : public CObject2D
 {
@@ -27,7 +27,7 @@ public:
 	static void Unload(void);
 
 	//生成
-	static CBullet* Create(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, const float fWidth, const float fHeight, const float fSpeed);
+	static CBullet* Create(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, const float fWidth, const float fHeight, const float fSpeed, const TYPE type);
 
 	//基本処理
 	HRESULT Init(void);
@@ -38,6 +38,10 @@ public:
 	//衝突判定
 	bool CollisionEnemy(void);	//敵
 	bool CollisionPlayer(void);	//プレイヤー
+	bool CollisionBlock(void);	//ブロック
+
+	//設定処理
+	void SetType(TYPE type) { m_Type = type; }	//タイプ設定
 
 private:
 	static LPDIRECT3DTEXTURE9 m_pTexture;	//テクスチャ

@@ -10,11 +10,14 @@
 #include "player.h"
 #include "input.h"
 #include "bullet.h"
+#include "block.h"
+#include "score.h"
 #include "Culc.h"
 
 //マクロ
-#define PLAYER_SPEED	(5.0f)	//仮の移動速度
-#define PLAYER_JUMP_HEIGHT	(10.0f)	//仮のジャンプ力
+#define PLAYER_SPEED	(5.0f)			//仮の移動速度
+#define PLAYER_JUMP_HEIGHT	(10.0f)		//仮のジャンプ力
+#define BLOCKCOLLISION_ERRORNUM	(10)	//ブロック当たり判定の誤差
 
 //静的メンバ変数
 LPDIRECT3DTEXTURE9 CPlayer::m_pTexture = NULL;
@@ -82,6 +85,7 @@ void CPlayer::Update(void)
 
 	//ポインタ取得
 	CInputKeyboard* pKeyboard = CManager::GetInputKeyboard();
+	CInputMouse* pMouse = CManager::GetInputMouse();
 
 	//情報取得と移動
 	//if (pKeyboard->GetPress(DIK_W))
@@ -132,6 +136,16 @@ void CPlayer::Update(void)
 		//m_move.y = cosf(RIGHT) * PLAYER_SPEED;
 	}
 
+	//位置設定(この時点ではまだオブジェクトの位置は更新されてない)
+	pos.x += m_move.x;
+	pos.y -= m_move.y - (ACCELERATION_GRAVITY * m_nCounterJumpTime / MAX_FPS);
+
+	//ブロック当たり判定
+	CollisionBlock(&pos);
+
+	//アイテム当たり判定
+	CollisionItem(&pos);
+
 	//ジャンプ
 	if (m_bJump == false && pKeyboard->GetRepeate(DIK_SPACE))
 	{//ジャンプ処理
@@ -139,11 +153,6 @@ void CPlayer::Update(void)
 		m_nCounterJumpTime = 0;
 		m_move.y = PLAYER_JUMP_HEIGHT;
 	}
-
-	//位置設定
-	//pos += m_move;	//この時点ではまだオブジェクトの位置は更新されてない
-	pos.x += m_move.x;
-	pos.y -= m_move.y - (ACCELERATION_GRAVITY * m_nCounterJumpTime / MAX_FPS);
 
 	//ブロックとの当たり判定とジャンプ
 	if (pos.y + GetHeight() / 2 - m_move.y - (ACCELERATION_GRAVITY * m_nCounterJumpTime / MAX_FPS) > SCREEN_HEIGHT)
@@ -157,13 +166,13 @@ void CPlayer::Update(void)
 	//最終的な位置の設定
 	SetPos(pos);
 
-	////弾
-	//if (pKeyboard->GetRepeate(DIK_SPACE))
-	//{
-	//	D3DXVECTOR3 bulletPos = pos + D3DXVECTOR3(10.0f, 0.0f, 0.0f);
-	//	CBullet::Create(bulletPos, GetRot(), 16.0f, 16.0f, 13.0f);
-	//	CManager::GetSound()->Play(CSound::SOUND_LABEL_SE_SHOT);
-	//}
+	//弾
+	if (pMouse->GetRepeate(MOUSE_CLICK_LEFT) == true)
+	{
+		D3DXVECTOR3 bulletPos = pos + D3DXVECTOR3(10.0f, 0.0f, 0.0f);
+		CBullet::Create(bulletPos, GetRot(), 16.0f, 16.0f, 13.0f, TYPE_PLAYER);
+		CManager::GetSound()->Play(CSound::SOUND_LABEL_SE_SHOT);
+	}
 
 	//アニメーション
 	CObjectAnim2D::Update();
@@ -247,5 +256,106 @@ void CPlayer::AddDamage(int nDamage)
 	if (m_nLife <= DEATH_LIFE)
 	{
 		Uninit();	//終了処理
+	}
+}
+
+//=================================
+//ブロックとの衝突判定
+//=================================
+void CPlayer::CollisionBlock(D3DXVECTOR3* pPosNew)
+{
+	bool bHitHead = false;	//頭ぶつけた
+
+	for (int cnt = 0; cnt < MAX_OBJ; cnt++)
+	{//全オブジェクト見る
+		CObject* pObj = GetObject(BLOCK_PRIORITY, cnt);	//オブジェクト取得
+
+		if (pObj != NULL)	//ヌルチェ
+		{//なんかある
+			TYPE type = pObj->GetType();	//種類取得
+
+			if (type == TYPE_BLOCK)
+			{//ブロック
+				if (pPosNew->x + (GetWidth() / 2) > pObj->GetPos().x - pObj->GetWidth() / 2 &&
+					pPosNew->x - (GetWidth() / 2) < pObj->GetPos().x + pObj->GetWidth() / 2 &&
+					pPosNew->y + (GetHeight() / 2) > pObj->GetPos().y - pObj->GetHeight() / 2 &&
+					pPosNew->y - (GetHeight() / 2) < pObj->GetPos().y + pObj->GetHeight() / 2)
+				{//何かしらめり込んだ 
+					if (GetPos().y + (GetHeight() / 2) <= pObj->GetPos().y - (pObj->GetHeight() / 2) && 
+						pPosNew->y + (GetHeight() / 2) > pObj->GetPos().y - (pObj->GetHeight() / 2))
+					{
+						m_bJump = false;
+						m_move.y = 0.0f;
+						m_nCounterJumpTime = 0;
+						pPosNew->y = pObj->GetPos().y - (pObj->GetHeight() / 2) - (GetHeight() / 2);
+					}
+					else if (GetPos().y - (GetHeight() / 2) >= pObj->GetPos().y + (pObj->GetHeight() / 2) &&
+							 pPosNew->y - (GetHeight() / 2) < pObj->GetPos().y + (pObj->GetHeight() / 2))
+					{
+						bHitHead = true;
+					}
+
+					if (pPosNew->y - (GetHeight() / 2) < pObj->GetPos().y + (pObj->GetHeight() / 2) &&
+						pPosNew->y + (GetHeight() / 2) > pObj->GetPos().y - (pObj->GetHeight() / 2))
+					{
+						if (GetPos().x + (GetWidth() / 2) <= pObj->GetPos().x - (pObj->GetWidth() / 2) && 
+							pPosNew->x + (GetWidth() / 2) > pObj->GetPos().x - (pObj->GetWidth() / 2))
+						{
+							pPosNew->x = pObj->GetPos().x - (pObj->GetWidth() / 2) - (GetWidth() / 2);
+							m_move.x = 0.0f;
+							bHitHead = false;
+						}
+						else if (GetPos().x - (GetWidth() / 2) >= pObj->GetPos().x + (pObj->GetWidth() / 2) &&
+								 pPosNew->x - (GetWidth() / 2) < pObj->GetPos().x + (pObj->GetWidth() / 2))
+						{
+							pPosNew->x = pObj->GetPos().x + (pObj->GetWidth() / 2) + (GetWidth() / 2);
+							m_move.x = 0.0f;
+							bHitHead = false;
+						}
+					}
+					if (bHitHead)
+					{
+						pPosNew->y = pObj->GetPos().y + (pObj->GetHeight() / 2) + (GetHeight() / 2);
+						m_move.y = 0.0f;
+						m_nCounterJumpTime = 0;
+					}
+					if ((pPosNew->y + (GetHeight() / 2)) - (pObj->GetPos().y - (pObj->GetHeight() / 2)) < BLOCKCOLLISION_ERRORNUM)
+					{
+						pPosNew->y = pObj->GetPos().y - (pObj->GetHeight() / 2) - (GetHeight() / 2);
+					}
+				}
+			}
+		}
+	}
+}
+
+//=================================
+//ブロックとの衝突判定
+//=================================
+void CPlayer::CollisionItem(D3DXVECTOR3* pPosNew)
+{
+	for (int cnt = 0; cnt < MAX_OBJ; cnt++)
+	{//全オブジェクト見る
+		CObject* pObj = GetObject(BLOCK_PRIORITY, cnt);	//オブジェクト取得
+
+		if (pObj != NULL)	//ヌルチェ
+		{//なんかある
+			TYPE type = pObj->GetType();	//種類取得
+
+			if (type == TYPE_ITEM)
+			{//アイテム
+				if (pPosNew->x + (GetWidth() / 2) > pObj->GetPos().x - pObj->GetWidth() / 2 &&
+					pPosNew->x - (GetWidth() / 2) < pObj->GetPos().x + pObj->GetWidth() / 2 &&
+					pPosNew->y + (GetHeight() / 2) > pObj->GetPos().y - pObj->GetHeight() / 2 &&
+					pPosNew->y - (GetHeight() / 2) < pObj->GetPos().y + pObj->GetHeight() / 2)
+				{//何かしらめり込んだ 
+					//スコア加算
+					CScore::Add(10000);	//いったん決め打ち赤スパ
+
+					//アイテム消す
+					pObj->Uninit();
+				}
+			}
+		}
 	}
 }

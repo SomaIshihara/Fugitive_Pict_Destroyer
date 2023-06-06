@@ -93,6 +93,12 @@
     <ClCompile Include="timer.cpp">
       <Filter>ソース ファイル\Derivation</Filter>
     </ClCompile>
+    <ClCompile Include="block.cpp">
+      <Filter>ソース ファイル\Derivation</Filter>
+    </ClCompile>
+    <ClCompile Include="item.cpp">
+      <Filter>ソース ファイル\Derivation</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="main.h">
@@ -156,6 +162,12 @@
       <Filter>ヘッダー ファイル\Derivation</Filter>
     </ClInclude>
     <ClInclude Include="timer.h">
+      <Filter>ヘッダー ファイル\Derivation</Filter>
+    </ClInclude>
+    <ClInclude Include="block.h">
+      <Filter>ヘッダー ファイル\Derivation</Filter>
+    </ClInclude>
+    <ClInclude Include="item.h">
       <Filter>ヘッダー ファイル\Derivation</Filter>
     </ClInclude>
   </ItemGroup>

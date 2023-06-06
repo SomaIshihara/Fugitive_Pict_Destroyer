@@ -14,9 +14,9 @@ class CNumber : public CObject2D
 {
 public:
 	//コンストラクタ・デストラクタ
-	CNumber(int nPriority = UI_PRIORITY);										//デフォルト
+	CNumber(int nPriority = PRIORITY_UI);										//デフォルト
 	CNumber(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot,
-		const float fWidth, const float fHeight, int nPriority = UI_PRIORITY);	//オーバーロード（位置向きパターン）
+		const float fWidth, const float fHeight, int nPriority = PRIORITY_UI);	//オーバーロード（位置向きパターン）
 	~CNumber();
 
 	//基本処理

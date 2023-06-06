@@ -11,7 +11,7 @@
 #include "objectAnim2D.h"
 
 //—Dæ‡ˆÊ
-#define ENEMY_PRIORITY	(3)
+#define ENEMY_PRIORITY	(4)
 
 class CEnemy : public CObjectAnim2D
 {

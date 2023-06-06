@@ -16,8 +16,8 @@ class CScore : public CObject
 {
 public:
 	//コンストラクタ・デストラクタ
-	CScore(int nPriority = UI_PRIORITY);				//デフォルト
-	CScore(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, const float fOneWidth, const float fOneHeight, int nPriority = UI_PRIORITY);	//オーバーロード
+	CScore(int nPriority = PRIORITY_UI);				//デフォルト
+	CScore(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, const float fOneWidth, const float fOneHeight, int nPriority = PRIORITY_UI);	//オーバーロード
 	~CScore();
 
 	//基本処理
@@ -40,8 +40,8 @@ public:
 	float GetHeight(void) { return FLOAT_ZERO; }
 
 	//設定
-	void Set(const int nScore);	//スコア設定
-	void Add(const int nAdd);	//スコア加算
+	static void Set(const int nScore);	//スコア設定
+	static void Add(const int nAdd);	//スコア加算
 
 private:
 	void CutNumber(void);					//数字分割
@@ -51,7 +51,7 @@ private:
 	D3DXVECTOR3 m_rot;						//向き（1桁目の数字の中心を想定）
 	float m_fOneWidth;						//1桁当たりのサイズ幅
 	float m_fOneHeight;						//1桁当たりのサイズ高さ
-	int m_nScore;							//スコア
+	static int m_nScore;					//スコア
 };
 
 #endif // !_SCORE_H_

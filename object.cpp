@@ -10,7 +10,7 @@
 #include "object.h"
 
 //静的変数初期化
-CObject* CObject::m_apObject[MAX_OBJ_PRIORITY][MAX_OBJ];
+CObject* CObject::m_apObject[PRIORITY_MAX][MAX_OBJ];
 int CObject::m_nNumAll = 0;
 
 //=================================
@@ -43,7 +43,7 @@ CObject::~CObject()
 //=================================
 void CObject::ReleaseAll(void)
 {
-	for (int cntPriority = 0; cntPriority < MAX_OBJ_PRIORITY; cntPriority++)
+	for (int cntPriority = 0; cntPriority < PRIORITY_MAX; cntPriority++)
 	{
 		for (int cntObj = 0; cntObj < MAX_OBJ; cntObj++)
 		{//すべて確認
@@ -60,7 +60,7 @@ void CObject::ReleaseAll(void)
 //=================================
 void CObject::UpdateAll(void)
 {
-	for (int cntPriority = 0; cntPriority < MAX_OBJ_PRIORITY; cntPriority++)
+	for (int cntPriority = 0; cntPriority < PRIORITY_MAX; cntPriority++)
 	{
 		for (int cntObj = 0; cntObj < MAX_OBJ; cntObj++)
 		{//すべて確認
@@ -77,7 +77,7 @@ void CObject::UpdateAll(void)
 //=================================
 void CObject::DrawAll(void)
 {
-	for (int cntPriority = 0; cntPriority < MAX_OBJ_PRIORITY; cntPriority++)
+	for (int cntPriority = 0; cntPriority < PRIORITY_MAX; cntPriority++)
 	{
 		for (int cntObj = 0; cntObj < MAX_OBJ; cntObj++)
 		{//すべて確認

@@ -17,7 +17,7 @@ class CMultipleBG : public CObject	//このクラスは管理オブジェクトです。Unityでい
 {
 public:
 	//コンストラクタ・デストラクタ
-	CMultipleBG(int nPriority = BG_PRIORITY);				//デフォルト
+	CMultipleBG(int nPriority = PRIORITY_BG);				//デフォルト
 	~CMultipleBG();
 
 	//基本処理

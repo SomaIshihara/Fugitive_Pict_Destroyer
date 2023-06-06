@@ -18,6 +18,8 @@
 #include "bullet.h"
 #include "enemy.h"
 #include "explosion.h"
+#include "block.h"
+#include "item.h"
 #include "effect.h"
 #include "particle.h"
 #include "score.h"
@@ -29,6 +31,7 @@
 //静的メンバ変数
 CRenderer* CManager::m_pRenderer = NULL;
 CInputKeyboard* CManager::m_pInputKeyboard = NULL;
+CInputMouse* CManager::m_pInputMouse = NULL;
 CDebugProc* CManager::m_pDebProc = NULL;
 CSound* CManager::m_pSound = NULL;
 int CManager::m_nFPS = 0;
@@ -63,6 +66,7 @@ HRESULT CManager::Init(HINSTANCE hInstance, HWND hWnd, BOOL bWindow)
 {
 	//生成
 	m_pInputKeyboard = new CInputKeyboard;
+	m_pInputMouse = new CInputMouse;
 	m_pSound = new CSound;
 	m_pRenderer = new CRenderer;
 	m_pDebProc = new CDebugProc;
@@ -75,6 +79,12 @@ HRESULT CManager::Init(HINSTANCE hInstance, HWND hWnd, BOOL bWindow)
 
 	//キーボード初期化
 	if (FAILED(m_pInputKeyboard->Init(hInstance, hWnd)))
+	{
+		return E_FAIL;
+	}
+
+	//マウス初期化
+	if (FAILED(m_pInputMouse->Init(hInstance, hWnd)))
 	{
 		return E_FAIL;
 	}
@@ -101,16 +111,17 @@ HRESULT CManager::Init(HINSTANCE hInstance, HWND hWnd, BOOL bWindow)
 	CParticle::Load("data\\TEXTURE\\effect000.jpg");			//パーティクル
 	CScore::Load("data\\TEXTURE\\Number_Rank_01.png", 10, 1);	//スコア
 	CTimer::Load("data\\TEXTURE\\Number_Rank_01.png", 10, 1);	//タイマー
+	CBlock::Load("data\\TEXTURE\\Block_R_01.png");				//ブロック
+	CItem::Load("data\\TEXTURE\\Item_05.png");					//アイテム
 
 	//オブジェクト生成+初期化
 	//CBG::Create();
 	CMultipleBG::Create(0.0075f,0.01f,0.02f);
 	CPlayer::Create(D3DXVECTOR3(640.0f, 420.0f, 0.0f), VEC3_ZERO,100.0f, 200.0f, 8, 1, 2);
-	CEnemy::Create(D3DXVECTOR3(500.0f, 300.0f, 0.0f), VEC3_ZERO, 84.0f, 60.0f, 2, 1, 60,1);
-	CEnemy::Create(D3DXVECTOR3(300.0f, 300.0f, 0.0f), VEC3_ZERO, 84.0f, 60.0f, 2, 1, 60,1);
-	CEnemy::Create(D3DXVECTOR3(700.0f, 300.0f, 0.0f), VEC3_ZERO, 84.0f, 60.0f, 2, 1, 60,1);
 	CScore::Create(D3DXVECTOR3(SCREEN_WIDTH - 24.0f, 32.0f, 0.0f), VEC3_ZERO, 48.0f, 64.0f);
 	CTimer::Create(D3DXVECTOR3(SCREEN_WIDTH / 2 + 24.0f, 32.0f, 0.0f), VEC3_ZERO, 48.0f, 64.0f);
+	//破壊可能オブジェクト
+	ResetObj();
 
 	//FPS計測器初期化
 	m_nFPS = 0;
@@ -129,6 +140,8 @@ HRESULT CManager::Init(HINSTANCE hInstance, HWND hWnd, BOOL bWindow)
 void CManager::Uninit(void)
 {
 	//テクスチャ破棄
+	CItem::Unload();			//アイテム
+	CBlock::Unload();			//ブロック
 	CTimer::Unload();			//タイマー
 	CScore::Unload();			//スコア
 	CParticle::Unload();		//パーティクル
@@ -159,6 +172,14 @@ void CManager::Uninit(void)
 		m_pSound = NULL;
 	}
 
+	//マウス破棄
+	if (m_pInputMouse != NULL)
+	{//マウス終了
+		m_pInputMouse->Uninit();
+		delete m_pInputMouse;
+		m_pInputMouse = NULL;
+	}
+
 	//キーボード破棄
 	if (m_pInputKeyboard != NULL)
 	{//キーボード終了
@@ -182,7 +203,14 @@ void CManager::Uninit(void)
 void CManager::Update(void)
 {
 	m_pInputKeyboard->Update();
+	m_pInputMouse->Update();
 	m_pRenderer->Update();
+
+	//再配置ボタンが押された
+	if (m_pInputKeyboard->GetTrigger(DIK_F5) == true)
+	{//再配置実行
+		ResetObj();
+	}
 
 	//FPS計測器の処理
 	m_dwFrameCount++;
@@ -190,7 +218,9 @@ void CManager::Update(void)
 	//デバッグ表示
 	m_pDebProc->Print("FPS:%d\n", m_nFPS);
 	m_pDebProc->Print("[操作方法]\n");
-	m_pDebProc->Print("Space:弾発射\n");
+	m_pDebProc->Print("マウス左クリック:弾発射\n");
+	m_pDebProc->Print("Space:ジャンプ\n");
+	m_pDebProc->Print("F5:再配置\n");
 	m_pDebProc->Print("[Debug]F1:スコア設定(12345678)\n");
 	m_pDebProc->Print("[Debug]F2:スコア加算(+100)\n");
 	m_pDebProc->Print("[Debug]F3:タイマー設定(120秒カウントダウン)\n");
@@ -211,4 +241,36 @@ void CManager::CheckFPS(DWORD dwCurrentTime, DWORD dwExecLastTime)
 {
 	m_nFPS = (m_dwFrameCount * 1000) / (dwCurrentTime - dwExecLastTime);
 	m_dwFrameCount = 0;
+}
+
+//=================================
+//再配置
+//=================================
+void CManager::ResetObj(void)
+{
+	//ぶっ壊す
+	for (int cntPriority = 0; cntPriority < PRIORITY_MAX; cntPriority++)
+	{
+		for (int cntObj = 0; cntObj < MAX_OBJ; cntObj++)
+		{//全オブジェクト見る
+			CObject* pObj = CObject::GetObject(cntPriority, cntObj);	//オブジェクト取得
+
+			if (pObj != NULL)	//ヌルチェ
+			{//なんかある
+				CObject::TYPE type = pObj->GetType();	//種類取得
+
+				if (type == CObject::TYPE_ENEMY || type == CObject::TYPE_BLOCK || type == CObject::TYPE_ITEM)
+				{//破壊対象
+					pObj->Uninit();	//デストロイ
+				}
+			}
+		}
+	}
+
+	//再配置
+	CEnemy::Create(D3DXVECTOR3(500.0f, 300.0f, 0.0f), VEC3_ZERO, 84.0f, 60.0f, 2, 1, 60, 1);
+	CEnemy::Create(D3DXVECTOR3(300.0f, 300.0f, 0.0f), VEC3_ZERO, 84.0f, 60.0f, 2, 1, 60, 1);
+	CEnemy::Create(D3DXVECTOR3(700.0f, 300.0f, 0.0f), VEC3_ZERO, 84.0f, 60.0f, 2, 1, 60, 1);
+	CBlock::Create(D3DXVECTOR3(900.0f, 450.0f, 0.0f), 64.0f, 64.0f);
+	CItem::Create(D3DXVECTOR3(900.0f, 350.0f, 0.0f), 48.0f, 20.0f);
 }

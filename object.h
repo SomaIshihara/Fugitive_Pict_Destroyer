@@ -8,15 +8,19 @@
 #define _OBJECT_H_
 #include "main.h"
 
-#define MAX_OBJ_PRIORITY	(8)		//最大優先順位（これで足りるらしい）
 #define MAX_OBJ				(256)	//オブジェクト最大数
 #define DEATH_LIFE			(0)		//死亡体力
 
 //優先順位参考表
-#define BG_PRIORITY		(0)	//背景
-#define UI_PRIORITY		(5)	//UI
-#define PAUSE_PRIORITY	(6)	//ポーズ
-#define FADE_PRIORITY	(7)	//フェード
+typedef enum
+{
+	PRIORITY_BG = 0,		//BG
+	PRIORITY_DEFAULT = 3,	//デフォルト
+	PRIORITY_UI = 5,		//UI
+	PRIORITY_PAUSE,			//ポーズ
+	PRIORITY_FADE,			//フェード
+	PRIORITY_MAX			//最大優先順位（これで足りるらしい）
+} PRIORITY;
 
 //オブジェクトクラス
 class CObject
@@ -29,11 +33,13 @@ public:
 		TYPE_PLAYER,
 		TYPE_ENEMY,
 		TYPE_BULLET,
+		TYPE_BLOCK,
+		TYPE_ITEM,
 		TYPE_MAX
 	} TYPE;
 
 	//コンストラクタ・デストラクタ
-	CObject(int nPriority = 3);
+	CObject(int nPriority = PRIORITY_DEFAULT);
 	virtual ~CObject();
 
 	//基本処理
@@ -62,7 +68,7 @@ protected:
 	void Release(void);
 
 private:
-	static CObject* m_apObject[MAX_OBJ_PRIORITY][MAX_OBJ];	//ポインタ
+	static CObject* m_apObject[PRIORITY_MAX][MAX_OBJ];	//ポインタ
 	static int m_nNumAll;					//総数
 	int m_nID;								//自分自身のID
 	int m_nPriority;						//優先順位

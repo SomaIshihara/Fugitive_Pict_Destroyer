@@ -19,7 +19,7 @@ CNumber::CNumber(int nPriority) :CObject2D(nPriority)
 }
 
 //=================================
-//コンストラクタ（オーバーロード 位置向きandパターン幅高さ）
+//コンストラクタ（オーバーロード 位置向きand幅高さ）
 //=================================
 CNumber::CNumber(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, const float fWidth, const float fHeight, int nPriority) 
 	: CObject2D(pos,rot, fWidth, fHeight, nPriority)

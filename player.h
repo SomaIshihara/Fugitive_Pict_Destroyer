@@ -40,6 +40,11 @@ public:
 	void AddDamage(int nDamage);
 
 private:
+	//当たり判定
+	void CollisionBlock(D3DXVECTOR3* pPosNew);
+	void CollisionItem(D3DXVECTOR3 * pPosNew);
+
+	//変数
 	static LPDIRECT3DTEXTURE9 m_pTexture;	//テクスチャ
 	D3DXVECTOR3 m_move;						//移動量
 	int m_nLife;							//体力

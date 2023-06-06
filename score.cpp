@@ -13,6 +13,7 @@
 
 //静的メンバ変数
 PatternTexture CScore::m_patTexture = { NULL,0,0 };
+int CScore::m_nScore = 0;
 
 //=================================
 //コンストラクタ（デフォルト）
@@ -204,9 +205,6 @@ void CScore::Set(const int nScore)
 {
 	//数字設定
 	m_nScore = nScore;
-
-	//数字分割
-	CutNumber();
 }
 
 //=================================
@@ -216,9 +214,6 @@ void CScore::Add(const int nAdd)
 {
 	//数字加算
 	m_nScore += nAdd;
-
-	//数字分割
-	CutNumber();
 }
 
 //=================================

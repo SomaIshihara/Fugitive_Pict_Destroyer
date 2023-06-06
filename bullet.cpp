@@ -9,6 +9,7 @@
 #include "object.h"
 #include "player.h"
 #include "enemy.h"
+#include "block.h"
 #include "bullet.h"
 #include "input.h"
 #include "explosion.h"
@@ -25,7 +26,7 @@ LPDIRECT3DTEXTURE9 CBullet::m_pTexture = NULL;
 CBullet::CBullet(int nPriority) : CObject2D(nPriority)
 {
 	m_move = D3DXVECTOR3(3.0f, 0.0f, 0.0f);
-	SetType(TYPE_BULLET);
+	CObject::SetType(TYPE_BULLET);
 }
 
 //=================================
@@ -36,7 +37,7 @@ CBullet::CBullet(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, const float fWidt
 {
 	m_move.x = sinf(FIX_ROT(rot.z * D3DX_PI + D3DX_PI)) * fSpeed;
 	m_move.y = cosf(FIX_ROT(rot.z * D3DX_PI + D3DX_PI)) * fSpeed;
-	SetType(TYPE_BULLET);
+	CObject::SetType(TYPE_BULLET);
 }
 
 //=================================
@@ -54,7 +55,7 @@ HRESULT CBullet::Init(void)
 	CObject2D::Init();
 
 	//種類設定
-	m_Type = TYPE_ENEMY;
+	m_Type = TYPE_PLAYER;
 
 	return S_OK;
 }
@@ -92,12 +93,16 @@ void CBullet::Update(void)
 	SetPos(pos);
 
 	//敵との衝突判定
-	if (m_Type == TYPE_ENEMY && CollisionEnemy() == true)
-	{//弾が敵に当たったGetType() == TYPE_ENEMY && 
+	if (m_Type == TYPE_PLAYER && CollisionEnemy() == true)
+	{//弾が敵に当たった
 		return;
 	}
-	if(m_Type == TYPE_PLAYER &&  CollisionPlayer() == true)
+	if (m_Type == TYPE_ENEMY && CollisionPlayer() == true)
 	{//弾がプレイヤーに当たった
+		return;
+	}
+	if (m_Type == TYPE_PLAYER && CollisionBlock() == true)
+	{//弾がブロックに当たった
 		return;
 	}
 
@@ -116,7 +121,7 @@ void CBullet::Draw(void)
 //=================================
 //生成処理
 //=================================
-CBullet* CBullet::Create(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, const float fWidth, const float fHeight, const float fSpeed)
+CBullet* CBullet::Create(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, const float fWidth, const float fHeight, const float fSpeed, const TYPE type)
 {
 	CBullet* pBullet = NULL;
 
@@ -127,6 +132,9 @@ CBullet* CBullet::Create(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, const flo
 
 		//初期化
 		pBullet->Init();
+
+		//タイプ設定
+		pBullet->SetType(type);
 
 		//仮置き
 		pBullet->SetCol(D3DXCOLOR(1.0f, 0.5f, 0.16f,1.0f));
@@ -181,7 +189,7 @@ bool CBullet::CollisionEnemy(void)
 {
 	for (int cnt = 0; cnt < MAX_OBJ; cnt++)
 	{//全オブジェクト見る
-		CObject* pObj = GetObject(BULLET_PRIORITY,cnt);	//オブジェクト取得
+		CObject* pObj = GetObject(ENEMY_PRIORITY,cnt);	//オブジェクト取得
 
 		if (pObj != NULL)	//ヌルチェ
 		{//なんかある
@@ -221,7 +229,7 @@ bool CBullet::CollisionPlayer(void)
 {
 	for (int cnt = 0; cnt < MAX_OBJ; cnt++)
 	{//全オブジェクト見る
-		CObject* pObj = GetObject(BULLET_PRIORITY,cnt);	//オブジェクト取得
+		CObject* pObj = GetObject(PLAYER_PRIORITY,cnt);	//オブジェクト取得
 
 		if (pObj != NULL)	//ヌルチェ
 		{//なんかある
@@ -229,15 +237,52 @@ bool CBullet::CollisionPlayer(void)
 
 			if (type == TYPE_PLAYER)
 			{//敵
-				CPlayer* pPlayer = (CPlayer*)pObj;
-				if (GetPos().x > pPlayer->GetPos().x - pPlayer->GetWidth() / 2 &&
-					GetPos().x < pPlayer->GetPos().x + pPlayer->GetWidth() / 2 &&
-					GetPos().y > pPlayer->GetPos().y - pPlayer->GetHeight() / 2 &&
-					GetPos().y < pPlayer->GetPos().y + pPlayer->GetHeight() / 2)
+				if (GetPos().x > pObj->GetPos().x - pObj->GetWidth() / 2 &&
+					GetPos().x < pObj->GetPos().x + pObj->GetWidth() / 2 &&
+					GetPos().y > pObj->GetPos().y - pObj->GetHeight() / 2 &&
+					GetPos().y < pObj->GetPos().y + pObj->GetHeight() / 2)
 				{
-					//（爆発生成）
+					//爆発生成
+					CParticle::Create(GetPos(), 48, 16, 2, 3, D3DXCOLOR(1.0f, 0.5f, 0.14f, 1.0f), 20.0f, 20.0f);
+
 					//敵にダメージ
-					pPlayer->AddDamage(1);
+					pObj->Uninit();
+
+					//自分終了
+					Uninit();
+
+					//弾は敵に当たった
+					return true;
+				}
+			}
+		}
+	}
+	//弾は敵に当たっていなかった
+	return false;
+}
+
+//=================================
+//ブロックとの衝突判定
+//=================================
+bool CBullet::CollisionBlock(void)
+{
+	for (int cnt = 0; cnt < MAX_OBJ; cnt++)
+	{//全オブジェクト見る
+		CObject* pObj = GetObject(BLOCK_PRIORITY, cnt);	//オブジェクト取得
+
+		if (pObj != NULL)	//ヌルチェ
+		{//なんかある
+			TYPE type = pObj->GetType();	//種類取得
+
+			if (type == TYPE_BLOCK)
+			{//敵
+				if (GetPos().x > pObj->GetPos().x - pObj->GetWidth() / 2 &&
+					GetPos().x < pObj->GetPos().x + pObj->GetWidth() / 2 &&
+					GetPos().y > pObj->GetPos().y - pObj->GetHeight() / 2 &&
+					GetPos().y < pObj->GetPos().y + pObj->GetHeight() / 2)
+				{
+					//爆発生成
+					CParticle::Create(GetPos(), 48, 16, 2, 3, D3DXCOLOR(1.0f, 0.5f, 0.14f, 1.0f), 20.0f, 20.0f);
 
 					//自分終了
 					Uninit();

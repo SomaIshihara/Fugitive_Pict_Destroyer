@@ -10,6 +10,7 @@
 
 //前方宣言
 class CInputKeyboard;
+class CInputMouse;
 class CRenderer;
 class CPlayer;
 class CDebugProc;
@@ -39,13 +40,19 @@ public:
 
 	//取得
 	static CInputKeyboard* GetInputKeyboard(void) { return m_pInputKeyboard; }
+	static CInputMouse* GetInputMouse(void) { return m_pInputMouse; }
 	static CSound* GetSound(void) { return m_pSound; }
 	static CRenderer* GetRenderer(void) { return m_pRenderer; }
 	static CPlayer* GetPlayer(void) { return m_pPlayer; }
 	static CDebugProc* GetDebProc(void) { return m_pDebProc; }
 
 private:
+	//再配置
+	void ResetObj(void);
+
+	//変数
 	static CInputKeyboard* m_pInputKeyboard;	//キーボード
+	static CInputMouse* m_pInputMouse;			//マウス
 	static CSound* m_pSound;					//サウンド
 	static CRenderer* m_pRenderer;				//レンダラー
 	static CDebugProc* m_pDebProc;				//デバッグ

@@ -13,7 +13,7 @@ class CBG : public CObject2D
 {
 public:
 	//コンストラクタ・デストラクタ
-	CBG(int nPriority = BG_PRIORITY);
+	CBG(int nPriority = PRIORITY_BG);
 	~CBG();
 
 	//読み込み
