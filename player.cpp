@@ -142,27 +142,20 @@ void CPlayer::Update(void)
 	pos.y -= m_move.y - (ACCELERATION_GRAVITY * m_nCounterJumpTime / MAX_FPS);
 
 	//ブロック当たり判定
-	CollisionBlock(&pos);
-
+	if (CollisionBlock(&pos) == true)
+	{
+		m_bJump = false;
+		//ジャンプ
+		if (pKeyboard->GetRepeate(DIK_SPACE))
+		{//ジャンプ処理
+			m_bJump = true;
+			m_nCounterJumpTime = 0;
+			m_move.y = PLAYER_JUMP_HEIGHT;
+		}
+	}
+	
 	//アイテム当たり判定
 	CollisionItem(&pos);
-
-	//ジャンプ
-	if (m_bJump == false && pKeyboard->GetRepeate(DIK_SPACE))
-	{//ジャンプ処理
-		m_bJump = true;
-		m_nCounterJumpTime = 0;
-		m_move.y = PLAYER_JUMP_HEIGHT;
-	}
-
-	//ブロックとの当たり判定とジャンプ
-	if (pos.y + GetHeight() / 2 - m_move.y - (ACCELERATION_GRAVITY * m_nCounterJumpTime / MAX_FPS) > SCREEN_HEIGHT)
-	{//いったん着地
-		m_bJump = false;
-		m_move.y = 0.0f;
-		m_nCounterJumpTime = 0;
-		pos.y = SCREEN_HEIGHT - GetHeight() / 2;
-	}
 
 	//最終的な位置の設定
 	SetPos(pos);
@@ -263,8 +256,9 @@ void CPlayer::AddDamage(int nDamage)
 //=================================
 //ブロックとの衝突判定
 //=================================
-void CPlayer::CollisionBlock(D3DXVECTOR3* pPosNew)
+bool CPlayer::CollisionBlock(D3DXVECTOR3* pPosNew)
 {
+	bool bLand = false;		//着地した
 	bool bHitHead = false;	//頭ぶつけた
 
 	for (int cnt = 0; cnt < MAX_OBJ; cnt++)
@@ -285,7 +279,7 @@ void CPlayer::CollisionBlock(D3DXVECTOR3* pPosNew)
 					if (GetPos().y + (GetHeight() / 2) <= pObj->GetPos().y - (pObj->GetHeight() / 2) && 
 						pPosNew->y + (GetHeight() / 2) > pObj->GetPos().y - (pObj->GetHeight() / 2))
 					{
-						m_bJump = false;
+						bLand = true;
 						m_move.y = 0.0f;
 						m_nCounterJumpTime = 0;
 						pPosNew->y = pObj->GetPos().y - (pObj->GetHeight() / 2) - (GetHeight() / 2);
@@ -328,6 +322,17 @@ void CPlayer::CollisionBlock(D3DXVECTOR3* pPosNew)
 			}
 		}
 	}
+
+	//床当たり判定
+	if (pPosNew->y + GetHeight() / 2 > SCREEN_HEIGHT)
+	{//いったん着地
+		bLand = true;
+		m_move.y = 0.0f;
+		m_nCounterJumpTime = 0;
+		pPosNew->y = SCREEN_HEIGHT - GetHeight() / 2;
+	}
+
+	return bLand;
 }
 
 //=================================

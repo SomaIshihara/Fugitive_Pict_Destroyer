@@ -41,7 +41,7 @@ public:
 
 private:
 	//“–‚½‚è”»’è
-	void CollisionBlock(D3DXVECTOR3* pPosNew);
+	bool CollisionBlock(D3DXVECTOR3* pPosNew);
 	void CollisionItem(D3DXVECTOR3 * pPosNew);
 
 	//•Ï”
