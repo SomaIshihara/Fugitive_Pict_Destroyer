@@ -258,6 +258,7 @@ void CPlayer::AddDamage(int nDamage)
 //=================================
 bool CPlayer::CollisionBlock(D3DXVECTOR3* pPosNew)
 {
+	float fPlayerWidth = GetWidth() / 2, fPlayerHeight = GetHeight() / 2;
 	bool bLand = false;		//着地した
 	bool bHitHead = false;	//頭ぶつけた
 
@@ -271,52 +272,54 @@ bool CPlayer::CollisionBlock(D3DXVECTOR3* pPosNew)
 
 			if (type == TYPE_BLOCK)
 			{//ブロック
+				float fOtherWidth = pObj->GetWidth() / 2, fOtherHeight = pObj->GetHeight() / 2;
+				D3DXVECTOR3 otherPos = pObj->GetPos();
 				if (pPosNew->x + (GetWidth() / 2) > pObj->GetPos().x - pObj->GetWidth() / 2 &&
 					pPosNew->x - (GetWidth() / 2) < pObj->GetPos().x + pObj->GetWidth() / 2 &&
 					pPosNew->y + (GetHeight() / 2) > pObj->GetPos().y - pObj->GetHeight() / 2 &&
 					pPosNew->y - (GetHeight() / 2) < pObj->GetPos().y + pObj->GetHeight() / 2)
 				{//何かしらめり込んだ 
-					if (GetPos().y + (GetHeight() / 2) <= pObj->GetPos().y - (pObj->GetHeight() / 2) && 
-						pPosNew->y + (GetHeight() / 2) > pObj->GetPos().y - (pObj->GetHeight() / 2))
+					if (GetPos().y + fPlayerHeight <= otherPos.y - fOtherHeight &&
+						pPosNew->y + fPlayerHeight > otherPos.y - fOtherHeight)
 					{
 						bLand = true;
 						m_move.y = 0.0f;
 						m_nCounterJumpTime = 0;
-						pPosNew->y = pObj->GetPos().y - (pObj->GetHeight() / 2) - (GetHeight() / 2);
+						pPosNew->y = otherPos.y - fOtherHeight - fPlayerHeight;
 					}
-					else if (GetPos().y - (GetHeight() / 2) >= pObj->GetPos().y + (pObj->GetHeight() / 2) &&
-							 pPosNew->y - (GetHeight() / 2) < pObj->GetPos().y + (pObj->GetHeight() / 2))
+					else if (GetPos().y - fPlayerHeight >= otherPos.y + fOtherHeight &&
+						pPosNew->y - fPlayerHeight < otherPos.y + fOtherHeight)
 					{
 						bHitHead = true;
 					}
 
-					if (pPosNew->y - (GetHeight() / 2) < pObj->GetPos().y + (pObj->GetHeight() / 2) &&
-						pPosNew->y + (GetHeight() / 2) > pObj->GetPos().y - (pObj->GetHeight() / 2))
+					if (pPosNew->y - fPlayerHeight < otherPos.y + fOtherHeight &&
+						pPosNew->y + fPlayerHeight > otherPos.y - fOtherHeight)
 					{
-						if (GetPos().x + (GetWidth() / 2) <= pObj->GetPos().x - (pObj->GetWidth() / 2) && 
-							pPosNew->x + (GetWidth() / 2) > pObj->GetPos().x - (pObj->GetWidth() / 2))
+						if (GetPos().x + fPlayerWidth <= otherPos.x - fOtherWidth &&
+							pPosNew->x + fPlayerWidth > otherPos.x - fOtherWidth)
 						{
-							pPosNew->x = pObj->GetPos().x - (pObj->GetWidth() / 2) - (GetWidth() / 2);
+							pPosNew->x = otherPos.x - fOtherWidth - fPlayerWidth;
 							m_move.x = 0.0f;
 							bHitHead = false;
 						}
-						else if (GetPos().x - (GetWidth() / 2) >= pObj->GetPos().x + (pObj->GetWidth() / 2) &&
-								 pPosNew->x - (GetWidth() / 2) < pObj->GetPos().x + (pObj->GetWidth() / 2))
+						else if (GetPos().x - fPlayerWidth >= otherPos.x + fOtherWidth &&
+							pPosNew->x - fPlayerWidth < otherPos.x + fOtherWidth)
 						{
-							pPosNew->x = pObj->GetPos().x + (pObj->GetWidth() / 2) + (GetWidth() / 2);
+							pPosNew->x = otherPos.x + fOtherWidth + fPlayerWidth;
 							m_move.x = 0.0f;
 							bHitHead = false;
 						}
 					}
 					if (bHitHead)
 					{
-						pPosNew->y = pObj->GetPos().y + (pObj->GetHeight() / 2) + (GetHeight() / 2);
+						pPosNew->y = otherPos.y + fOtherHeight + fPlayerHeight;
 						m_move.y = 0.0f;
 						m_nCounterJumpTime = 0;
 					}
-					if ((pPosNew->y + (GetHeight() / 2)) - (pObj->GetPos().y - (pObj->GetHeight() / 2)) < BLOCKCOLLISION_ERRORNUM)
+					if ((pPosNew->y + fPlayerHeight) - (otherPos.y - fOtherHeight) < BLOCKCOLLISION_ERRORNUM)
 					{
-						pPosNew->y = pObj->GetPos().y - (pObj->GetHeight() / 2) - (GetHeight() / 2);
+						pPosNew->y = otherPos.y - fOtherHeight - fPlayerHeight;
 					}
 				}
 			}
