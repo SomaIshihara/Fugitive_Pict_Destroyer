@@ -41,7 +41,8 @@ public:
 
 private:
 	//ìñÇΩÇËîªíË
-	bool CollisionBlock(D3DXVECTOR3* pPosNew);
+	void CollisionBlockX(D3DXVECTOR3* pPosNew);
+	bool CollisionBlockY(D3DXVECTOR3* pPosNew);
 	void CollisionItem(D3DXVECTOR3 * pPosNew);
 
 	//ïœêî

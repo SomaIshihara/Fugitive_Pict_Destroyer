@@ -17,7 +17,7 @@
 
 //マクロ
 #define PLAYER_SPEED	(5.0f)			//仮の移動速度
-#define PLAYER_JUMP_HEIGHT	(10.0f)		//仮のジャンプ力
+#define PLAYER_JUMP_HEIGHT	(12.0f)		//仮のジャンプ力
 #define BLOCKCOLLISION_ERRORNUM	(10)	//ブロック当たり判定の誤差
 
 //静的メンバ変数
@@ -139,10 +139,12 @@ void CPlayer::Update(void)
 
 	//位置設定(この時点ではまだオブジェクトの位置は更新されてない)
 	pos.x += m_move.x;
+	CollisionBlockX(&pos);
+
 	pos.y -= m_move.y - (ACCELERATION_GRAVITY * m_nCounterJumpTime / MAX_FPS);
 
 	//ブロック当たり判定
-	if (CollisionBlock(&pos) == true)
+	if (CollisionBlockY(&pos) == true)
 	{
 		m_bJump = false;
 		//ジャンプ
@@ -254,13 +256,11 @@ void CPlayer::AddDamage(int nDamage)
 }
 
 //=================================
-//ブロックとの衝突判定
+//ブロックとの衝突判定(X)
 //=================================
-bool CPlayer::CollisionBlock(D3DXVECTOR3* pPosNew)
+void CPlayer::CollisionBlockX(D3DXVECTOR3* pPosNew)
 {
 	float fPlayerWidth = GetWidth() / 2, fPlayerHeight = GetHeight() / 2;
-	bool bLand = false;		//着地した
-	bool bHitHead = false;	//頭ぶつけた
 
 	for (int cnt = 0; cnt < MAX_OBJ; cnt++)
 	{//全オブジェクト見る
@@ -274,11 +274,50 @@ bool CPlayer::CollisionBlock(D3DXVECTOR3* pPosNew)
 			{//ブロック
 				float fOtherWidth = pObj->GetWidth() / 2, fOtherHeight = pObj->GetHeight() / 2;
 				D3DXVECTOR3 otherPos = pObj->GetPos();
-				if (pPosNew->x + (GetWidth() / 2) > pObj->GetPos().x - pObj->GetWidth() / 2 &&
-					pPosNew->x - (GetWidth() / 2) < pObj->GetPos().x + pObj->GetWidth() / 2 &&
-					pPosNew->y + (GetHeight() / 2) > pObj->GetPos().y - pObj->GetHeight() / 2 &&
-					pPosNew->y - (GetHeight() / 2) < pObj->GetPos().y + pObj->GetHeight() / 2)
-				{//何かしらめり込んだ 
+				if (pPosNew->y - fPlayerHeight < otherPos.y + fOtherHeight &&
+					pPosNew->y + fPlayerHeight > otherPos.y - fOtherHeight)
+				{
+					if (GetPos().x + fPlayerWidth <= otherPos.x - fOtherWidth &&
+						pPosNew->x + fPlayerWidth > otherPos.x - fOtherWidth)
+					{
+						pPosNew->x = otherPos.x - fOtherWidth - fPlayerWidth;
+						m_move.x = 0.0f;
+					}
+					else if (GetPos().x - fPlayerWidth >= otherPos.x + fOtherWidth &&
+						pPosNew->x - fPlayerWidth < otherPos.x + fOtherWidth)
+					{
+						pPosNew->x = otherPos.x + fOtherWidth + fPlayerWidth;
+						m_move.x = 0.0f;
+					}
+				}
+			}
+		}
+	}
+}
+
+//=================================
+//ブロックとの衝突判定(Y)
+//=================================
+bool CPlayer::CollisionBlockY(D3DXVECTOR3* pPosNew)
+{
+	float fPlayerWidth = GetWidth() / 2, fPlayerHeight = GetHeight() / 2;
+	bool bLand = false;		//着地した
+
+	for (int cnt = 0; cnt < MAX_OBJ; cnt++)
+	{//全オブジェクト見る
+		CObject* pObj = GetObject(BLOCK_PRIORITY, cnt);	//オブジェクト取得
+
+		if (pObj != NULL)	//ヌルチェ
+		{//なんかある
+			TYPE type = pObj->GetType();	//種類取得
+
+			if (type == TYPE_BLOCK)
+			{//ブロック
+				float fOtherWidth = pObj->GetWidth() / 2, fOtherHeight = pObj->GetHeight() / 2;
+				D3DXVECTOR3 otherPos = pObj->GetPos();
+				if (pPosNew->x - fPlayerWidth < otherPos.x + fOtherWidth &&
+					pPosNew->x + fPlayerWidth > otherPos.x - fOtherWidth)
+				{
 					if (GetPos().y + fPlayerHeight <= otherPos.y - fOtherHeight &&
 						pPosNew->y + fPlayerHeight > otherPos.y - fOtherHeight)
 					{
@@ -290,36 +329,9 @@ bool CPlayer::CollisionBlock(D3DXVECTOR3* pPosNew)
 					else if (GetPos().y - fPlayerHeight >= otherPos.y + fOtherHeight &&
 						pPosNew->y - fPlayerHeight < otherPos.y + fOtherHeight)
 					{
-						bHitHead = true;
-					}
-
-					if (pPosNew->y - fPlayerHeight < otherPos.y + fOtherHeight &&
-						pPosNew->y + fPlayerHeight > otherPos.y - fOtherHeight)
-					{
-						if (GetPos().x + fPlayerWidth <= otherPos.x - fOtherWidth &&
-							pPosNew->x + fPlayerWidth > otherPos.x - fOtherWidth)
-						{
-							pPosNew->x = otherPos.x - fOtherWidth - fPlayerWidth;
-							m_move.x = 0.0f;
-							bHitHead = false;
-						}
-						else if (GetPos().x - fPlayerWidth >= otherPos.x + fOtherWidth &&
-							pPosNew->x - fPlayerWidth < otherPos.x + fOtherWidth)
-						{
-							pPosNew->x = otherPos.x + fOtherWidth + fPlayerWidth;
-							m_move.x = 0.0f;
-							bHitHead = false;
-						}
-					}
-					if (bHitHead)
-					{
 						pPosNew->y = otherPos.y + fOtherHeight + fPlayerHeight;
 						m_move.y = 0.0f;
 						m_nCounterJumpTime = 0;
-					}
-					if ((pPosNew->y + fPlayerHeight) - (otherPos.y - fOtherHeight) < BLOCKCOLLISION_ERRORNUM)
-					{
-						pPosNew->y = otherPos.y - fOtherHeight - fPlayerHeight;
 					}
 				}
 			}
