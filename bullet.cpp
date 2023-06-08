@@ -197,10 +197,10 @@ bool CBullet::CollisionEnemy(void)
 
 			if (type == TYPE_ENEMY)
 			{//ìG
-				if (GetPos().x > pObj->GetPos().x - pObj->GetWidth() / 2 &&
-					GetPos().x < pObj->GetPos().x + pObj->GetWidth() / 2 &&
-					GetPos().y > pObj->GetPos().y - pObj->GetHeight() / 2 &&
-					GetPos().y < pObj->GetPos().y + pObj->GetHeight() / 2)
+				if (GetPos().x > pObj->GetPos().x - pObj->GetWidth() * 0.5f &&
+					GetPos().x < pObj->GetPos().x + pObj->GetWidth() * 0.5f &&
+					GetPos().y > pObj->GetPos().y - pObj->GetHeight() * 0.5f &&
+					GetPos().y < pObj->GetPos().y + pObj->GetHeight() * 0.5f)
 				{
 					//îöî≠ê∂ê¨
 					CParticle::Create(GetPos(), 48, 16, 2, 3, D3DXCOLOR(1.0f, 0.5f, 0.14f, 1.0f), 20.0f, 20.0f);
@@ -237,10 +237,10 @@ bool CBullet::CollisionPlayer(void)
 
 			if (type == TYPE_PLAYER)
 			{//ìG
-				if (GetPos().x > pObj->GetPos().x - pObj->GetWidth() / 2 &&
-					GetPos().x < pObj->GetPos().x + pObj->GetWidth() / 2 &&
-					GetPos().y > pObj->GetPos().y - pObj->GetHeight() / 2 &&
-					GetPos().y < pObj->GetPos().y + pObj->GetHeight() / 2)
+				if (GetPos().x > pObj->GetPos().x - pObj->GetWidth() * 0.5f &&
+					GetPos().x < pObj->GetPos().x + pObj->GetWidth() * 0.5f &&
+					GetPos().y > pObj->GetPos().y - pObj->GetHeight() * 0.5f &&
+					GetPos().y < pObj->GetPos().y + pObj->GetHeight() * 0.5f)
 				{
 					//îöî≠ê∂ê¨
 					CParticle::Create(GetPos(), 48, 16, 2, 3, D3DXCOLOR(1.0f, 0.5f, 0.14f, 1.0f), 20.0f, 20.0f);
@@ -276,10 +276,10 @@ bool CBullet::CollisionBlock(void)
 
 			if (type == TYPE_BLOCK)
 			{//ìG
-				if (GetPos().x > pObj->GetPos().x - pObj->GetWidth() / 2 &&
-					GetPos().x < pObj->GetPos().x + pObj->GetWidth() / 2 &&
-					GetPos().y > pObj->GetPos().y - pObj->GetHeight() / 2 &&
-					GetPos().y < pObj->GetPos().y + pObj->GetHeight() / 2)
+				if (GetPos().x > pObj->GetPos().x - pObj->GetWidth() * 0.5f &&
+					GetPos().x < pObj->GetPos().x + pObj->GetWidth() * 0.5f &&
+					GetPos().y > pObj->GetPos().y - pObj->GetHeight() * 0.5f &&
+					GetPos().y < pObj->GetPos().y + pObj->GetHeight() * 0.5f)
 				{
 					//îöî≠ê∂ê¨
 					CParticle::Create(GetPos(), 48, 16, 2, 3, D3DXCOLOR(1.0f, 0.5f, 0.14f, 1.0f), 20.0f, 20.0f);

@@ -19,6 +19,7 @@
 #define PLAYER_SPEED	(5.0f)			//仮の移動速度
 #define PLAYER_JUMP_HEIGHT	(12.0f)		//仮のジャンプ力
 #define BLOCKCOLLISION_ERRORNUM	(10)	//ブロック当たり判定の誤差
+#define BULLET_ROT_NUM		(32)		//弾を撃つ角度の数
 
 //静的メンバ変数
 LPDIRECT3DTEXTURE9 CPlayer::m_pTexture = NULL;
@@ -29,6 +30,7 @@ LPDIRECT3DTEXTURE9 CPlayer::m_pTexture = NULL;
 CPlayer::CPlayer(int nPriority) : CObjectAnim2D(nPriority)
 {
 	m_nCounterJumpTime = 0;
+	m_fBulletRot = 0.0f;
 	m_move = VEC3_ZERO;
 	m_bJump = false;
 }
@@ -41,6 +43,7 @@ CPlayer::CPlayer(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, const float fWidt
 	: CObjectAnim2D(pos, rot, fWidth, fHeight, nPatWidth, nPatHeight, nAnimSpeed, true, nPriority)
 {
 	m_nCounterJumpTime = 0;
+	m_fBulletRot = 0.0f;
 	m_move = VEC3_ZERO;
 	m_bJump = false;
 }
@@ -165,8 +168,8 @@ void CPlayer::Update(void)
 	//弾
 	if (pMouse->GetRepeate(MOUSE_CLICK_LEFT) == true)
 	{
-		D3DXVECTOR3 bulletPos = pos + D3DXVECTOR3(10.0f, 0.0f, 0.0f);
-		CBullet::Create(bulletPos, GetRot(), 16.0f, 16.0f, 13.0f, TYPE_PLAYER);
+		m_fBulletRot = FIX_ROT(m_fBulletRot + (D3DX_PI / BULLET_ROT_NUM));
+		CBullet::Create(GetPos(),D3DXVECTOR3(0.0f, 0.0f, m_fBulletRot), 16.0f, 16.0f, 13.0f, TYPE_PLAYER);
 		CManager::GetSound()->Play(CSound::SOUND_LABEL_SE_SHOT);
 	}
 
@@ -260,7 +263,7 @@ void CPlayer::AddDamage(int nDamage)
 //=================================
 void CPlayer::CollisionBlockX(D3DXVECTOR3* pPosNew)
 {
-	float fPlayerWidth = GetWidth() / 2, fPlayerHeight = GetHeight() / 2;
+	float fPlayerWidth = GetWidth() * 0.5f, fPlayerHeight = GetHeight() * 0.5f;
 
 	for (int cnt = 0; cnt < MAX_OBJ; cnt++)
 	{//全オブジェクト見る
@@ -272,7 +275,7 @@ void CPlayer::CollisionBlockX(D3DXVECTOR3* pPosNew)
 
 			if (type == TYPE_BLOCK)
 			{//ブロック
-				float fOtherWidth = pObj->GetWidth() / 2, fOtherHeight = pObj->GetHeight() / 2;
+				float fOtherWidth = pObj->GetWidth() * 0.5f, fOtherHeight = pObj->GetHeight() * 0.5f;
 				D3DXVECTOR3 otherPos = pObj->GetPos();
 				if (pPosNew->y - fPlayerHeight < otherPos.y + fOtherHeight &&
 					pPosNew->y + fPlayerHeight > otherPos.y - fOtherHeight)
@@ -300,7 +303,7 @@ void CPlayer::CollisionBlockX(D3DXVECTOR3* pPosNew)
 //=================================
 bool CPlayer::CollisionBlockY(D3DXVECTOR3* pPosNew)
 {
-	float fPlayerWidth = GetWidth() / 2, fPlayerHeight = GetHeight() / 2;
+	float fPlayerWidth = GetWidth() * 0.5f, fPlayerHeight = GetHeight() * 0.5f;
 	bool bLand = false;		//着地した
 
 	for (int cnt = 0; cnt < MAX_OBJ; cnt++)
@@ -313,7 +316,7 @@ bool CPlayer::CollisionBlockY(D3DXVECTOR3* pPosNew)
 
 			if (type == TYPE_BLOCK)
 			{//ブロック
-				float fOtherWidth = pObj->GetWidth() / 2, fOtherHeight = pObj->GetHeight() / 2;
+				float fOtherWidth = pObj->GetWidth() * 0.5f, fOtherHeight = pObj->GetHeight() * 0.5f;
 				D3DXVECTOR3 otherPos = pObj->GetPos();
 				if (pPosNew->x - fPlayerWidth < otherPos.x + fOtherWidth &&
 					pPosNew->x + fPlayerWidth > otherPos.x - fOtherWidth)
@@ -339,12 +342,12 @@ bool CPlayer::CollisionBlockY(D3DXVECTOR3* pPosNew)
 	}
 
 	//床当たり判定
-	if (pPosNew->y + GetHeight() / 2 > SCREEN_HEIGHT)
+	if (pPosNew->y + GetHeight() * 0.5f > SCREEN_HEIGHT)
 	{//いったん着地
 		bLand = true;
 		m_move.y = 0.0f;
 		m_nCounterJumpTime = 0;
-		pPosNew->y = SCREEN_HEIGHT - GetHeight() / 2;
+		pPosNew->y = SCREEN_HEIGHT - GetHeight() * 0.5f;
 	}
 
 	return bLand;
@@ -365,10 +368,10 @@ void CPlayer::CollisionItem(D3DXVECTOR3* pPosNew)
 
 			if (type == TYPE_ITEM)
 			{//アイテム
-				if (pPosNew->x + (GetWidth() / 2) > pObj->GetPos().x - pObj->GetWidth() / 2 &&
-					pPosNew->x - (GetWidth() / 2) < pObj->GetPos().x + pObj->GetWidth() / 2 &&
-					pPosNew->y + (GetHeight() / 2) > pObj->GetPos().y - pObj->GetHeight() / 2 &&
-					pPosNew->y - (GetHeight() / 2) < pObj->GetPos().y + pObj->GetHeight() / 2)
+				if (pPosNew->x + (GetWidth() * 0.5f) > pObj->GetPos().x - pObj->GetWidth() * 0.5f &&
+					pPosNew->x - (GetWidth() * 0.5f) < pObj->GetPos().x + pObj->GetWidth() * 0.5f &&
+					pPosNew->y + (GetHeight() * 0.5f) > pObj->GetPos().y - pObj->GetHeight() * 0.5f &&
+					pPosNew->y - (GetHeight() * 0.5f) < pObj->GetPos().y + pObj->GetHeight() * 0.5f)
 				{//何かしらめり込んだ 
 					//スコア加算
 					CScore::Add(10000);	//いったん決め打ち赤スパ

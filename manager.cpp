@@ -119,7 +119,37 @@ HRESULT CManager::Init(HINSTANCE hInstance, HWND hWnd, BOOL bWindow)
 	CMultipleBG::Create(0.0075f,0.01f,0.02f);
 	CPlayer::Create(D3DXVECTOR3(640.0f, 420.0f, 0.0f), VEC3_ZERO,100.0f, 200.0f, 8, 1, 2);
 	CScore::Create(D3DXVECTOR3(SCREEN_WIDTH - 24.0f, 32.0f, 0.0f), VEC3_ZERO, 48.0f, 64.0f);
-	CTimer::Create(D3DXVECTOR3(SCREEN_WIDTH / 2 + 24.0f, 32.0f, 0.0f), VEC3_ZERO, 48.0f, 64.0f);
+	CTimer::Create(D3DXVECTOR3(SCREEN_WIDTH * 0.5f + 24.0f, 32.0f, 0.0f), VEC3_ZERO, 48.0f, 64.0f);
+
+	//地面ブロック（うん。かつて添削会で見たことある光景。）
+	CBlock::Create(D3DXVECTOR3(0.0f, 700.0f, 0.0f), 64.0f, 64.0f);
+	CBlock::Create(D3DXVECTOR3(64.0f, 700.0f, 0.0f), 64.0f, 64.0f);
+	CBlock::Create(D3DXVECTOR3(128.0f, 700.0f, 0.0f), 64.0f, 64.0f);
+	CBlock::Create(D3DXVECTOR3(192.0f, 700.0f, 0.0f), 64.0f, 64.0f);
+	CBlock::Create(D3DXVECTOR3(256.0f, 700.0f, 0.0f), 64.0f, 64.0f);
+	CBlock::Create(D3DXVECTOR3(320.0f, 700.0f, 0.0f), 64.0f, 64.0f);
+	CBlock::Create(D3DXVECTOR3(384.0f, 700.0f, 0.0f), 64.0f, 64.0f);
+	CBlock::Create(D3DXVECTOR3(448.0f, 700.0f, 0.0f), 64.0f, 64.0f);
+	CBlock::Create(D3DXVECTOR3(512.0f, 700.0f, 0.0f), 64.0f, 64.0f);
+	CBlock::Create(D3DXVECTOR3(576.0f, 700.0f, 0.0f), 64.0f, 64.0f);
+	CBlock::Create(D3DXVECTOR3(640.0f, 700.0f, 0.0f), 64.0f, 64.0f);
+	CBlock::Create(D3DXVECTOR3(704.0f, 700.0f, 0.0f), 64.0f, 64.0f);
+	CBlock::Create(D3DXVECTOR3(768.0f, 700.0f, 0.0f), 64.0f, 64.0f);
+	CBlock::Create(D3DXVECTOR3(832.0f, 700.0f, 0.0f), 64.0f, 64.0f);
+	CBlock::Create(D3DXVECTOR3(896.0f, 700.0f, 0.0f), 64.0f, 64.0f);
+	CBlock::Create(D3DXVECTOR3(960.0f, 700.0f, 0.0f), 64.0f, 64.0f);
+	CBlock::Create(D3DXVECTOR3(1024.0f, 700.0f, 0.0f), 64.0f, 64.0f);
+	CBlock::Create(D3DXVECTOR3(1088.0f, 700.0f, 0.0f), 64.0f, 64.0f);
+	CBlock::Create(D3DXVECTOR3(1152.0f, 700.0f, 0.0f), 64.0f, 64.0f);
+	CBlock::Create(D3DXVECTOR3(1216.0f, 700.0f, 0.0f), 64.0f, 64.0f);
+	CBlock::Create(D3DXVECTOR3(1280.0f, 700.0f, 0.0f), 64.0f, 64.0f);
+
+	//空中ブロック
+	CBlock::Create(D3DXVECTOR3(964.0f, 450.0f, 0.0f), 64.0f, 64.0f);
+	CBlock::Create(D3DXVECTOR3(900.0f, 450.0f, 0.0f), 64.0f, 64.0f);
+	CBlock::Create(D3DXVECTOR3(836.0f, 450.0f, 0.0f), 64.0f, 64.0f);
+	CBlock::Create(D3DXVECTOR3(1100.0f, 300.0f, 0.0f), 64.0f, 64.0f);
+	CBlock::Create(D3DXVECTOR3(1100.0f, 236.0f, 0.0f), 64.0f, 64.0f);
 	//破壊可能オブジェクト
 	ResetObj();
 
@@ -259,7 +289,7 @@ void CManager::ResetObj(void)
 			{//なんかある
 				CObject::TYPE type = pObj->GetType();	//種類取得
 
-				if (type == CObject::TYPE_ENEMY || type == CObject::TYPE_BLOCK || type == CObject::TYPE_ITEM)
+				if (type == CObject::TYPE_ENEMY || type == CObject::TYPE_ITEM)
 				{//破壊対象
 					pObj->Uninit();	//デストロイ
 				}
@@ -271,11 +301,6 @@ void CManager::ResetObj(void)
 	CEnemy::Create(D3DXVECTOR3(500.0f, 300.0f, 0.0f), VEC3_ZERO, 84.0f, 60.0f, 2, 1, 60, 1);
 	CEnemy::Create(D3DXVECTOR3(300.0f, 300.0f, 0.0f), VEC3_ZERO, 84.0f, 60.0f, 2, 1, 60, 1);
 	CEnemy::Create(D3DXVECTOR3(700.0f, 300.0f, 0.0f), VEC3_ZERO, 84.0f, 60.0f, 2, 1, 60, 1);
-	CBlock::Create(D3DXVECTOR3(964.0f, 450.0f, 0.0f), 64.0f, 64.0f);
-	CBlock::Create(D3DXVECTOR3(900.0f, 450.0f, 0.0f), 64.0f, 64.0f);
-	CBlock::Create(D3DXVECTOR3(836.0f, 450.0f, 0.0f), 64.0f, 64.0f);
-	CBlock::Create(D3DXVECTOR3(1100.0f, 300.0f, 0.0f), 64.0f, 64.0f);
-	CBlock::Create(D3DXVECTOR3(1100.0f, 236.0f, 0.0f), 64.0f, 64.0f);
 	CItem::Create(D3DXVECTOR3(900.0f, 350.0f, 0.0f), 48.0f, 20.0f);
 	CItem::Create(D3DXVECTOR3(1100.0f, 150.0f, 0.0f), 48.0f, 20.0f);
 }

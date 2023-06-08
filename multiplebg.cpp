@@ -113,7 +113,7 @@ CMultipleBG* CMultipleBG::Create(float fSpeed0, float fSpeed1, float fSpeed2)
 		for (int cnt = 0; cnt < MAX_MULTIPLE_BG; cnt++)
 		{//1枚分生成～テクスチャ設定
 			//生成
-			pObjMultipleBG->m_pObj2D[cnt] = pObjMultipleBG->m_pObj2D[cnt]->Create(D3DXVECTOR3(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2, 0.0f), VEC3_ZERO, 
+			pObjMultipleBG->m_pObj2D[cnt] = pObjMultipleBG->m_pObj2D[cnt]->Create(D3DXVECTOR3(SCREEN_WIDTH * 0.5f, SCREEN_HEIGHT * 0.5f, 0.0f), VEC3_ZERO, 
 				SCREEN_WIDTH, SCREEN_HEIGHT);
 
 			//初期化

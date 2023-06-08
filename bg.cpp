@@ -14,7 +14,7 @@ LPDIRECT3DTEXTURE9 CBG::m_pTexture = NULL;
 //=================================
 //コンストラクタ
 //=================================
-CBG::CBG(int nPriority) : CObject2D(D3DXVECTOR3(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2, FLOAT_ZERO), VEC3_ZERO, SCREEN_WIDTH, SCREEN_HEIGHT, nPriority)
+CBG::CBG(int nPriority) : CObject2D(D3DXVECTOR3(SCREEN_WIDTH * 0.5f, SCREEN_HEIGHT * 0.5f, FLOAT_ZERO), VEC3_ZERO, SCREEN_WIDTH, SCREEN_HEIGHT, nPriority)
 {
 }
 

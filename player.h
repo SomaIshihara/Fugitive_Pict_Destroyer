@@ -48,6 +48,7 @@ private:
 	//変数
 	static LPDIRECT3DTEXTURE9 m_pTexture;	//テクスチャ
 	D3DXVECTOR3 m_move;						//移動量
+	float m_fBulletRot;						//弾を撃つ角度
 	int m_nLife;							//体力
 	int m_nCounterJumpTime;					//ジャンプしてからの経過時間
 	bool m_bJump;							//ジャンプしているかどうか
