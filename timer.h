@@ -47,6 +47,7 @@ public:
 	D3DXVECTOR3 GetRot(void) { return m_rot; }
 	float GetWidth(void) { return FLOAT_ZERO; }
 	float GetHeight(void) { return FLOAT_ZERO; }
+	float GetDepth(void) { return FLOAT_ZERO; }
 
 	//設定
 	void Set(const int nScore, COUNT type);	//タイマー設定

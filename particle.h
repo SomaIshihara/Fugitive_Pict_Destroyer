@@ -56,6 +56,7 @@ public:
 	D3DXVECTOR3 GetRot(void) { return VEC3_ZERO; }
 	float GetWidth(void) { return FLOAT_ZERO; }
 	float GetHeight(void) { return FLOAT_ZERO; }
+	float GetDepth(void) { return FLOAT_ZERO; }
 
 private:
 	//CEffect* m_pEffect[MAX_EFFECT];			//エフェクト

@@ -63,6 +63,7 @@ public:
 	virtual D3DXVECTOR3 GetRot(void) = 0;
 	virtual float GetWidth(void) = 0;
 	virtual float GetHeight(void) = 0;
+	virtual float GetDepth(void) = 0;
 
 protected:
 	void Release(void);

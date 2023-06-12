@@ -7,6 +7,7 @@
 #ifndef _OBJECT2D_H_
 #define _OBJECT2D_H_
 #include "main.h"
+#include "manager.h"
 #include "object.h"
 
 //パターンテクスチャ構造体定義
@@ -44,6 +45,7 @@ public:
 	D3DXVECTOR3 GetRot(void) { return m_rot; }
 	float GetWidth(void) { return m_fWidth; }
 	float GetHeight(void) { return m_fHeight; }
+	float GetDepth(void) { return FLOAT_ZERO; }
 	float GetLength(void) { return m_fLength; }
 	int GetPatWidth(void) { return m_patTexture.nPatternWidth; }
 	int GetPatHeight(void) { return m_patTexture.nPatternHeight; }

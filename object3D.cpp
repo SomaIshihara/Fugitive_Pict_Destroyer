@@ -22,17 +22,19 @@ CObject3D::CObject3D(int nPriority) : CObject(nPriority)
 	m_rot = VEC3_ZERO;
 }
 
-#if 0
 //=================================
 //コンストラクタ（オーバーロード 位置向き）
 //=================================
-CObject3D::CObject3D(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, const float fWidth, const float fHeight, int nPriority) : CObject(nPriority)
+CObject3D::CObject3D(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, const float fWidth, const float fDepth, int nPriority) : CObject(nPriority)
 {
 	//クリア
 	m_pVtxbuff = NULL;
 	m_pTexture = NULL;
+	m_pos = pos;
+	m_rot = rot;
+	m_fWidth = fWidth;
+	m_fDepth = fDepth;
 }
-#endif
 
 //=================================
 //デストラクタ
@@ -71,10 +73,10 @@ HRESULT CObject3D::Init(void)
 	m_pVtxbuff->Lock(0, 0, (void **)&pVtx, 0);
 
 	//頂点座標（相対座標）
-	pVtx[0].pos = D3DXVECTOR3(-50.0f, 0.0f, 50.0f);
-	pVtx[1].pos = D3DXVECTOR3(50.0f, 0.0f, 50.0f);
-	pVtx[2].pos = D3DXVECTOR3(-50.0f, 0.0f, -50.0f);
-	pVtx[3].pos = D3DXVECTOR3(50.0f, 0.0f, -50.0f);
+	pVtx[0].pos = D3DXVECTOR3(-m_fWidth * 0.5f, 0.0f, m_fDepth * 0.5f);
+	pVtx[1].pos = D3DXVECTOR3(m_fWidth * 0.5f, 0.0f, m_fDepth * 0.5f);
+	pVtx[2].pos = D3DXVECTOR3(-m_fWidth * 0.5f, 0.0f, -m_fDepth * 0.5f);
+	pVtx[3].pos = D3DXVECTOR3(m_fWidth * 0.5f, 0.0f, -m_fDepth * 0.5f);
 
 	//法線ベクトル
 	pVtx[0].nor = D3DXVECTOR3(0.0f, 1.0f, 0.0f);
@@ -110,6 +112,13 @@ void CObject3D::Uninit(void)
 	{
 		m_pVtxbuff->Release();
 		m_pVtxbuff = NULL;
+	}
+
+	//仮置き：テクスチャ破棄
+	if (m_pTexture != NULL)
+	{
+		m_pTexture->Release();
+		m_pTexture = NULL;
 	}
 
 	//自分自身破棄
@@ -162,14 +171,14 @@ void CObject3D::Draw(void)
 //========================
 //生成処理
 //========================
-CObject3D* CObject3D::Create(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, const float fWidth, const float fHeight)
+CObject3D* CObject3D::Create(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, const float fWidth, const float fDepth)
 {
 	CObject3D* pObj2D = NULL;
 
 	if (pObj2D == NULL)
 	{
 		//オブジェクト2Dの生成
-		pObj2D = new CObject3D();
+		pObj2D = new CObject3D(pos, rot, fWidth, fDepth);
 
 		//初期化
 		pObj2D->Init();

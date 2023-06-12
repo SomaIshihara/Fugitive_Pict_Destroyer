@@ -27,6 +27,7 @@
 #include "score.h"
 #include "timer.h"
 #include "object3D.h"
+#include "objectX.h"
 
 //マクロ
 #define FPS_SPEED	(500)	//FPS計測時間
@@ -136,6 +137,7 @@ HRESULT CManager::Init(HINSTANCE hInstance, HWND hWnd, BOOL bWindow)
 	CItem::Load("data\\TEXTURE\\Item_05.png");					//アイテム
 
 	//3D
+	CObjectX::Load("data\\MODEL\\jobi.x", 0);	//モデル読み込み
 
 	//オブジェクト生成+初期化
 	//CBG::Create();
@@ -143,7 +145,8 @@ HRESULT CManager::Init(HINSTANCE hInstance, HWND hWnd, BOOL bWindow)
 	CPlayer::Create(D3DXVECTOR3(640.0f, 420.0f, 0.0f), VEC3_ZERO,100.0f, 200.0f, 8, 1, 2);
 	CScore::Create(D3DXVECTOR3(SCREEN_WIDTH - 24.0f, 32.0f, 0.0f), VEC3_ZERO, 48.0f, 64.0f);
 	CTimer::Create(D3DXVECTOR3(SCREEN_WIDTH * 0.5f + 24.0f, 32.0f, 0.0f), VEC3_ZERO, 48.0f, 64.0f);
-	CObject3D::Create(VEC3_ZERO, VEC3_ZERO, FLOAT_ZERO, FLOAT_ZERO);
+	CObject3D::Create(VEC3_ZERO, VEC3_ZERO, 100.0f, 100.0f);
+	CObjectX::Create(VEC3_ZERO, VEC3_ZERO, 0);
 
 	//地面ブロック（うん。かつて添削会で見たことある光景。）
 	CBlock::Create(D3DXVECTOR3(0.0f, 700.0f, 0.0f), 64.0f, 64.0f);
@@ -193,6 +196,9 @@ HRESULT CManager::Init(HINSTANCE hInstance, HWND hWnd, BOOL bWindow)
 //=================================
 void CManager::Uninit(void)
 {
+	//モデル破棄
+	CObjectX::Unload();			//Xモデル
+	
 	//テクスチャ破棄
 	CItem::Unload();			//アイテム
 	CBlock::Unload();			//ブロック
