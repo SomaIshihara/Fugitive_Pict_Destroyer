@@ -28,6 +28,7 @@
 #include "timer.h"
 #include "object3D.h"
 #include "objectX.h"
+#include "objectBillboard.h"
 
 //マクロ
 #define FPS_SPEED	(500)	//FPS計測時間
@@ -146,7 +147,8 @@ HRESULT CManager::Init(HINSTANCE hInstance, HWND hWnd, BOOL bWindow)
 	CScore::Create(D3DXVECTOR3(SCREEN_WIDTH - 24.0f, 32.0f, 0.0f), VEC3_ZERO, 48.0f, 64.0f);
 	CTimer::Create(D3DXVECTOR3(SCREEN_WIDTH * 0.5f + 24.0f, 32.0f, 0.0f), VEC3_ZERO, 48.0f, 64.0f);
 	CObject3D::Create(VEC3_ZERO, VEC3_ZERO, 100.0f, 100.0f);
-	CObjectX::Create(VEC3_ZERO, VEC3_ZERO, 0);
+	//CObjectX::Create(VEC3_ZERO, VEC3_ZERO, 0);
+	CObjectBillboard::Create(VEC3_ZERO, VEC3_ZERO, 10.0f, 10.0f);
 
 	//地面ブロック（うん。かつて添削会で見たことある光景。）
 	CBlock::Create(D3DXVECTOR3(0.0f, 700.0f, 0.0f), 64.0f, 64.0f);

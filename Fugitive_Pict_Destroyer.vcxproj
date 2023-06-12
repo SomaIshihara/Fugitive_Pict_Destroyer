@@ -173,6 +173,7 @@
     <ClCompile Include="object2D.cpp" />
     <ClCompile Include="object3D.cpp" />
     <ClCompile Include="objectAnim2D.cpp" />
+    <ClCompile Include="objectBillboard.cpp" />
     <ClCompile Include="objectX.cpp" />
     <ClCompile Include="particle.cpp" />
     <ClCompile Include="player.cpp" />
@@ -202,6 +203,7 @@
     <ClInclude Include="object2D.h" />
     <ClInclude Include="object3D.h" />
     <ClInclude Include="objectAnim2D.h" />
+    <ClInclude Include="objectBillboard.h" />
     <ClInclude Include="objectX.h" />
     <ClInclude Include="particle.h" />
     <ClInclude Include="player.h" />
