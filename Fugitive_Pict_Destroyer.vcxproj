@@ -157,12 +157,14 @@
     <ClCompile Include="bg.cpp" />
     <ClCompile Include="block.cpp" />
     <ClCompile Include="bullet.cpp" />
+    <ClCompile Include="camera.cpp" />
     <ClCompile Include="debugproc.cpp" />
     <ClCompile Include="effect.cpp" />
     <ClCompile Include="enemy.cpp" />
     <ClCompile Include="explosion.cpp" />
     <ClCompile Include="input.cpp" />
     <ClCompile Include="item.cpp" />
+    <ClCompile Include="light.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="manager.cpp" />
     <ClCompile Include="multiplebg.cpp" />
@@ -181,6 +183,7 @@
     <ClInclude Include="bg.h" />
     <ClInclude Include="block.h" />
     <ClInclude Include="bullet.h" />
+    <ClInclude Include="camera.h" />
     <ClInclude Include="Culc.h" />
     <ClInclude Include="debugproc.h" />
     <ClInclude Include="effect.h" />
@@ -188,6 +191,7 @@
     <ClInclude Include="explosion.h" />
     <ClInclude Include="input.h" />
     <ClInclude Include="item.h" />
+    <ClInclude Include="light.h" />
     <ClInclude Include="main.h" />
     <ClInclude Include="manager.h" />
     <ClInclude Include="multiplebg.h" />

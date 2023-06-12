@@ -1,0 +1,40 @@
+//==========================================
+//
+//カメラプログラムのヘッダ[camera.h]
+//Author:石原颯馬
+//
+//==========================================
+#ifndef _CAMERA_H_
+#define _CAMERA_H_
+
+//クラス化したものがこちらです
+class CCamera
+{
+public:
+	//コンストラクタ・デストラクタ
+	CCamera();
+	~CCamera();
+	
+	//基本処理
+	HRESULT Init(void);
+	void Uninit(void);
+	void Update(void);
+
+	//設定処理
+	void SetCamera(void);
+private:
+	//角度修正
+	void FixPosV(void);
+	void FixPosR(void);
+	void FixRot(void);
+
+	//メンバ変数
+	D3DXMATRIX m_mtxView;		//ビューマトリ
+	D3DXMATRIX m_mtxProjection;	//プロジェクションマトリ
+	D3DXVECTOR3 m_posV;			//視点
+	D3DXVECTOR3 m_posR;			//注視点
+	D3DXVECTOR3 m_vecU;			//上ベクトル
+	D3DXVECTOR3 m_rot;			//角度
+};
+
+#endif // !_CAMERA_H_
