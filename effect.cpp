@@ -95,6 +95,12 @@ void CEffect::Update(void)
 //=================================
 void CEffect::Draw(void)
 {
+	//Zテスト無効化
+	CManager::GetRenderer()->SetEnableZTest(false);
+
+	//アルファテスト有効化
+	CManager::GetRenderer()->SetEnableAlplaTest(true);
+
 	//ブレンディング種類を加算合成に変更
 	CManager::GetRenderer()->SetBlendType(CRenderer::BLENDTYPE_ADD);
 
@@ -103,6 +109,12 @@ void CEffect::Draw(void)
 
 	//ブレンディング種類を通常状態に戻す
 	CManager::GetRenderer()->SetBlendType(CRenderer::BLENDTYPE_NORMAL);
+
+	//アルファテスト無効化
+	CManager::GetRenderer()->SetEnableAlplaTest(false);
+
+	//Zテスト無効化
+	CManager::GetRenderer()->SetEnableZTest(true);
 }
 
 //=================================

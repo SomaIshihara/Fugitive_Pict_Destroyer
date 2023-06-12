@@ -183,3 +183,43 @@ void CRenderer::SetBlendType(BLENDTYPE type)
 		break;
 	}
 }
+
+//=================================
+//Zテスト設定
+//=================================
+void CRenderer::SetEnableZTest(bool bEnable)
+{
+	LPDIRECT3DDEVICE9 pDevice = CManager::GetRenderer()->GetDevice();	//デバイス取得
+
+	if (bEnable == true)
+	{//Zテスト有効
+		pDevice->SetRenderState(D3DRS_ZFUNC, D3DCMP_LESSEQUAL);	//Zテストを行わない
+		pDevice->SetRenderState(D3DRS_ZWRITEENABLE, TRUE);		//Zバッファの有効・無効設定
+	}
+	else
+	{//Zテスト無効
+		pDevice->SetRenderState(D3DRS_ZFUNC, D3DCMP_ALWAYS);	//Zテストを行わない
+		pDevice->SetRenderState(D3DRS_ZWRITEENABLE, FALSE);		//Zバッファの有効・無効設定
+	}
+}
+
+//=================================
+//アルファテスト設定
+//=================================
+void CRenderer::SetEnableAlplaTest(bool bEnable)
+{
+	LPDIRECT3DDEVICE9 pDevice = CManager::GetRenderer()->GetDevice();	//デバイス取得
+
+	if (bEnable == true)
+	{//アルファテスト有効
+		pDevice->SetRenderState(D3DRS_ALPHATESTENABLE, TRUE);
+		pDevice->SetRenderState(D3DRS_ALPHAFUNC, D3DCMP_GREATER);
+		pDevice->SetRenderState(D3DRS_ALPHAREF, 0);
+	}
+	else
+	{//アルファテスト無効
+		pDevice->SetRenderState(D3DRS_ALPHATESTENABLE, FALSE);
+		pDevice->SetRenderState(D3DRS_ALPHAFUNC, D3DCMP_ALWAYS);
+		pDevice->SetRenderState(D3DRS_ALPHAREF, 0);
+	}
+}

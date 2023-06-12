@@ -32,6 +32,8 @@ public:
 
 	//İ’è
 	void SetBlendType(BLENDTYPE type);
+	void SetEnableZTest(bool bEnable);
+	void SetEnableAlplaTest(bool bEnable);
 
 	//æ“¾
 	LPDIRECT3DDEVICE9 GetDevice(void) { return m_pD3DDevice; }

@@ -10,7 +10,7 @@
 #include "object2D.h"
 
 //—Dæ‡ˆÊ
-#define EFFECT_PRIORITY	(2)
+#define EFFECT_PRIORITY	(4)
 
 class CEffect : public CObject2D
 {
