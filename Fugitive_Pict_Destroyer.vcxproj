@@ -171,6 +171,7 @@
     <ClCompile Include="number.cpp" />
     <ClCompile Include="object.cpp" />
     <ClCompile Include="object2D.cpp" />
+    <ClCompile Include="object3D.cpp" />
     <ClCompile Include="objectAnim2D.cpp" />
     <ClCompile Include="particle.cpp" />
     <ClCompile Include="player.cpp" />
@@ -198,6 +199,7 @@
     <ClInclude Include="number.h" />
     <ClInclude Include="object.h" />
     <ClInclude Include="object2D.h" />
+    <ClInclude Include="object3D.h" />
     <ClInclude Include="objectAnim2D.h" />
     <ClInclude Include="particle.h" />
     <ClInclude Include="player.h" />

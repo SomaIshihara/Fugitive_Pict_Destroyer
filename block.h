@@ -10,7 +10,7 @@
 #include "object2D.h"
 
 //優先順位
-#define BLOCK_PRIORITY	(1)
+#define BLOCK_PRIORITY	(2)
 
 //ブロッククラス
 class CBlock : public CObject2D

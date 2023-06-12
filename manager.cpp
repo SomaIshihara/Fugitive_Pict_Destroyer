@@ -9,6 +9,8 @@
 #include "input.h"
 #include "sound.h"
 #include "debugproc.h"
+#include "camera.h"
+#include "light.h"
 #include "object.h"
 #include "object2D.h"
 #include "objectAnim2D.h"
@@ -24,6 +26,7 @@
 #include "particle.h"
 #include "score.h"
 #include "timer.h"
+#include "object3D.h"
 
 //マクロ
 #define FPS_SPEED	(500)	//FPS計測時間
@@ -34,6 +37,8 @@ CInputKeyboard* CManager::m_pInputKeyboard = NULL;
 CInputMouse* CManager::m_pInputMouse = NULL;
 CDebugProc* CManager::m_pDebProc = NULL;
 CSound* CManager::m_pSound = NULL;
+CCamera* CManager::m_pCamera = NULL;
+CLight* CManager::m_pLight = NULL;
 int CManager::m_nFPS = 0;
 DWORD CManager::m_dwFrameCount = 0;
 
@@ -70,6 +75,8 @@ HRESULT CManager::Init(HINSTANCE hInstance, HWND hWnd, BOOL bWindow)
 	m_pSound = new CSound;
 	m_pRenderer = new CRenderer;
 	m_pDebProc = new CDebugProc;
+	m_pCamera = new CCamera;
+	m_pLight = new CLight;
 
 	//レンダラー初期化
 	if (FAILED(m_pRenderer->Init(hWnd, TRUE)))
@@ -94,10 +101,24 @@ HRESULT CManager::Init(HINSTANCE hInstance, HWND hWnd, BOOL bWindow)
 	{
 		return E_FAIL;
 	}
+
 	//デバッグ初期化
 	m_pDebProc->Init();
 
+	//カメラ初期化
+	if (FAILED(m_pCamera->Init()))
+	{
+		return E_FAIL;
+	}
+
+	//ライト初期化
+	if (FAILED(m_pLight->Init()))
+	{
+		return E_FAIL;
+	}
+
 	//テクスチャ読み込み
+	//2D
 	CPlayer::Load("data\\TEXTURE\\runningman000.png");	//プレイヤー
 	CBG::Load("data\\TEXTURE\\wasitu01_.jpg");			//1枚背景
 	CBullet::Load("data\\TEXTURE\\EnergyBullet_01.png");//弾
@@ -114,12 +135,15 @@ HRESULT CManager::Init(HINSTANCE hInstance, HWND hWnd, BOOL bWindow)
 	CBlock::Load("data\\TEXTURE\\Block_R_01.png");				//ブロック
 	CItem::Load("data\\TEXTURE\\Item_05.png");					//アイテム
 
+	//3D
+
 	//オブジェクト生成+初期化
 	//CBG::Create();
-	CMultipleBG::Create(0.0075f,0.01f,0.02f);
+	//CMultipleBG::Create(0.0075f,0.01f,0.02f);
 	CPlayer::Create(D3DXVECTOR3(640.0f, 420.0f, 0.0f), VEC3_ZERO,100.0f, 200.0f, 8, 1, 2);
 	CScore::Create(D3DXVECTOR3(SCREEN_WIDTH - 24.0f, 32.0f, 0.0f), VEC3_ZERO, 48.0f, 64.0f);
 	CTimer::Create(D3DXVECTOR3(SCREEN_WIDTH * 0.5f + 24.0f, 32.0f, 0.0f), VEC3_ZERO, 48.0f, 64.0f);
+	CObject3D::Create(VEC3_ZERO, VEC3_ZERO, FLOAT_ZERO, FLOAT_ZERO);
 
 	//地面ブロック（うん。かつて添削会で見たことある光景。）
 	CBlock::Create(D3DXVECTOR3(0.0f, 700.0f, 0.0f), 64.0f, 64.0f);
@@ -186,6 +210,22 @@ void CManager::Uninit(void)
 	//オブジェクト終了+破棄
 	CObject2D::ReleaseAll();
 
+	//ライト破棄
+	if (m_pLight != NULL)
+	{//ライト終了
+		m_pLight->Uninit();
+		delete m_pLight;
+		m_pLight = NULL;
+	}
+
+	//カメラ破棄
+	if (m_pCamera != NULL)
+	{//カメラ終了
+		m_pCamera->Uninit();
+		delete m_pCamera;
+		m_pCamera = NULL;
+	}
+
 	//デバッグ破棄
 	if (m_pDebProc != NULL)
 	{//デバッグ終了
@@ -235,6 +275,8 @@ void CManager::Update(void)
 	m_pInputKeyboard->Update();
 	m_pInputMouse->Update();
 	m_pRenderer->Update();
+	m_pCamera->Update();
+	m_pLight->Update();
 
 	//再配置ボタンが押された
 	if (m_pInputKeyboard->GetTrigger(DIK_F5) == true)

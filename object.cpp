@@ -7,6 +7,7 @@
 #include "main.h"
 #include "manager.h"
 #include "renderer.h"
+#include "camera.h"
 #include "object.h"
 
 //Ã“I•Ï”‰Šú‰»
@@ -77,6 +78,8 @@ void CObject::UpdateAll(void)
 //=================================
 void CObject::DrawAll(void)
 {
+	CCamera* pCamera = CManager::GetCamera();	//ƒJƒƒ‰
+	pCamera->SetCamera();
 	for (int cntPriority = 0; cntPriority < PRIORITY_MAX; cntPriority++)
 	{
 		for (int cntObj = 0; cntObj < MAX_OBJ; cntObj++)

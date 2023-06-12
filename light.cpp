@@ -79,6 +79,9 @@ HRESULT CLight::Init(void)
 	pDevice->LightEnable(0, TRUE);
 	pDevice->LightEnable(1, TRUE);
 	pDevice->LightEnable(2, TRUE);
+
+	//‚Å‚«‚½
+	return S_OK;
 }
 
 //========================

@@ -15,6 +15,8 @@ class CRenderer;
 class CPlayer;
 class CDebugProc;
 class CSound;
+class CCamera;
+class CLight;
 
 //マクロ
 #define INT_ZERO	(0)							//int型の0
@@ -45,6 +47,8 @@ public:
 	static CRenderer* GetRenderer(void) { return m_pRenderer; }
 	static CPlayer* GetPlayer(void) { return m_pPlayer; }
 	static CDebugProc* GetDebProc(void) { return m_pDebProc; }
+	static CCamera* GetCamera(void) { return m_pCamera; }
+	static CLight* GetLight(void) { return m_pLight; }
 
 private:
 	//再配置
@@ -57,6 +61,8 @@ private:
 	static CRenderer* m_pRenderer;				//レンダラー
 	static CDebugProc* m_pDebProc;				//デバッグ
 	static CPlayer* m_pPlayer;					//プレイヤー
+	static CCamera* m_pCamera;					//カメラ
+	static CLight* m_pLight;					//ライト
 	static int m_nFPS;							//FPS
 	static DWORD m_dwFrameCount;				//回したフレーム数
 };

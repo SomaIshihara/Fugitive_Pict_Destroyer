@@ -29,9 +29,10 @@
 #define SCREEN_HEIGHT		(720)		//クライアント領域の高さ
 #define MAX_FPS				(60)		//処理FPS
 #define PROC_SPEED			(1000/MAX_FPS)	//処理時間
-#define FVF_VERTEX_2D		(D3DFVF_XYZRHW | D3DFVF_DIFFUSE | D3DFVF_TEX1)
+#define FVF_VERTEX_2D		(D3DFVF_XYZRHW | D3DFVF_DIFFUSE | D3DFVF_TEX1)				//2D
+#define FVF_VERTEX_3D		(D3DFVF_XYZ | D3DFVF_NORMAL | D3DFVF_DIFFUSE | D3DFVF_TEX1)	//3D
 
-//2D頂点情報
+//頂点情報[2D]
 typedef struct
 {
 	D3DXVECTOR3 pos;	//頂点座標
@@ -39,4 +40,14 @@ typedef struct
 	D3DCOLOR col;		//頂点カラー
 	D3DXVECTOR2 tex;	//テクスチャ座標
 } VERTEX_2D;
+
+//頂点情報[3D]
+typedef struct
+{
+	D3DXVECTOR3 pos;	//位置
+	D3DXVECTOR3 nor;	//法線ベクトル
+	D3DCOLOR col;		//カラー
+	D3DXVECTOR2 tex;	//テクスチャ
+} VERTEX_3D;
+
 #endif // !_MAIN_H_
