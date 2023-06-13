@@ -35,6 +35,11 @@ public:
 	float GetHeight(void) { return FLOAT_ZERO; }
 	float GetDepth(void) { return m_fDepth; }
 
+	//設定
+	void SetPos(const D3DXVECTOR3 pos) { m_pos = pos; }	//位置
+	void SetRot(const D3DXVECTOR3 rot) { m_rot = rot; };//向き
+	HRESULT SetCol(const D3DXCOLOR col);	//色
+
 private:
 	LPDIRECT3DTEXTURE9 m_pTexture;		//テクスチャポインタ
 	LPDIRECT3DVERTEXBUFFER9 m_pVtxbuff;	//頂点バッファ

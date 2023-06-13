@@ -28,12 +28,20 @@ public:
 	//生成
 	static CObjectBillboard* Create(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, const float fWidth, const float fHeight);
 
+	//テクスチャ設定
+	void BindTexture(LPDIRECT3DTEXTURE9 pTexture) { m_pTexture = pTexture; }
+
 	//取得
 	D3DXVECTOR3 GetPos(void) { return m_pos; }
 	D3DXVECTOR3 GetRot(void) { return m_rot; }
 	float GetWidth(void) { return m_fWidth; }
 	float GetHeight(void) { return FLOAT_ZERO; }
 	float GetDepth(void) { return m_fHeight; }
+
+	//設定
+	void SetPos(const D3DXVECTOR3 pos) { m_pos = pos; }	//位置
+	void SetRot(const D3DXVECTOR3 rot) { m_rot = rot; };	//向き
+	HRESULT SetCol(const D3DXCOLOR col);	//色
 
 private:
 	LPDIRECT3DTEXTURE9 m_pTexture;		//テクスチャポインタ

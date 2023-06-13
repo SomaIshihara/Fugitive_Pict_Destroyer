@@ -61,11 +61,6 @@ HRESULT CObjectBillboard::Init(void)
 		return E_FAIL;
 	}
 
-	//テクスチャ読み込み
-	D3DXCreateTextureFromFile(pDevice,
-		"data\\TEXTURE\\icon32.png",
-		&m_pTexture);
-
 	VERTEX_3D *pVtx;
 
 	//バッファロック
@@ -112,13 +107,6 @@ void CObjectBillboard::Uninit(void)
 	{
 		m_pVtxbuff->Release();
 		m_pVtxbuff = NULL;
-	}
-
-	//仮置き：テクスチャ破棄
-	if (m_pTexture != NULL)
-	{
-		m_pTexture->Release();
-		m_pTexture = NULL;
 	}
 
 	//自分自身破棄
@@ -196,4 +184,31 @@ CObjectBillboard* CObjectBillboard::Create(const D3DXVECTOR3 pos, const D3DXVECT
 	{
 		return NULL;
 	}
+}
+
+//========================
+//色設定
+//========================
+HRESULT CObjectBillboard::SetCol(const D3DXCOLOR col)
+{
+	//頂点バッファのロックと頂点情報へのポインタを取得
+	VERTEX_3D *pVtx;	//設定用ポインタ
+	if (FAILED(m_pVtxbuff->Lock(0, 0, (void **)&pVtx, 0)))
+	{
+		return E_FAIL;
+	}
+
+	//頂点カラーの設定
+	pVtx[0].col = col;
+	pVtx[1].col = col;
+	pVtx[2].col = col;
+	pVtx[3].col = col;
+
+	//頂点バッファをアンロック
+	if (FAILED(m_pVtxbuff->Unlock()))
+	{
+		return E_FAIL;
+	}
+
+	return S_OK;
 }

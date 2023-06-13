@@ -130,15 +130,18 @@ HRESULT CManager::Init(HINSTANCE hInstance, HWND hWnd, BOOL bWindow)
 	{//1枚分読み込む
 		CMultipleBG::Load(c_apTexturePathMultiBG[cnt], cnt);
 	}
-	CEffect::Load("data\\TEXTURE\\effect000.jpg");				//エフェクト
-	CParticle::Load("data\\TEXTURE\\effect000.jpg");			//パーティクル
+	CEffect2D::Load("data\\TEXTURE\\effect000.jpg");			//エフェクト2D
+	CEffectBillboard::Load("data\\TEXTURE\\effect000.jpg");		//エフェクトビルボード
+	CParticle2D::Load("data\\TEXTURE\\effect000.jpg");			//パーティクル2D
+	CParticleBillboard::Load("data\\TEXTURE\\effect000.jpg");			//パーティクルビルボード
 	CScore::Load("data\\TEXTURE\\Number_Rank_01.png", 10, 1);	//スコア
 	CTimer::Load("data\\TEXTURE\\Number_Rank_01.png", 10, 1);	//タイマー
 	CBlock::Load("data\\TEXTURE\\Block_R_01.png");				//ブロック
 	CItem::Load("data\\TEXTURE\\Item_05.png");					//アイテム
 
 	//3D
-	CObjectX::Load("data\\MODEL\\jobi.x", 0);	//モデル読み込み
+	//CObjectX::Load("data\\MODEL\\jobi.x", 0);	//モデル読み込み
+	CObjectX::Load("data\\MODEL\\zahyoukanban002.x", 0);	//モデル読み込み
 
 	//オブジェクト生成+初期化
 	//CBG::Create();
@@ -148,7 +151,6 @@ HRESULT CManager::Init(HINSTANCE hInstance, HWND hWnd, BOOL bWindow)
 	CTimer::Create(D3DXVECTOR3(SCREEN_WIDTH * 0.5f + 24.0f, 32.0f, 0.0f), VEC3_ZERO, 48.0f, 64.0f);
 	CObject3D::Create(VEC3_ZERO, VEC3_ZERO, 100.0f, 100.0f);
 	CObjectX::Create(VEC3_ZERO, VEC3_ZERO, 0);
-	CObjectBillboard::Create(D3DXVECTOR3(0.0f,10.0f,-25.0f), VEC3_ZERO, 10.0f, 10.0f);
 
 	//地面ブロック（うん。かつて添削会で見たことある光景。）
 	CBlock::Create(D3DXVECTOR3(0.0f, 700.0f, 0.0f), 64.0f, 64.0f);
@@ -206,8 +208,8 @@ void CManager::Uninit(void)
 	CBlock::Unload();			//ブロック
 	CTimer::Unload();			//タイマー
 	CScore::Unload();			//スコア
-	CParticle::Unload();		//パーティクル
-	CEffect::Unload();			//エフェクト
+	CParticle2D::Unload();		//パーティクル
+	CEffect2D::Unload();			//エフェクト
 	CMultipleBG::Unload();		//多重背景（まとめて破棄される）
 	CExplosion::Unload();		//爆発
 	CEnemy::Unload();			//敵

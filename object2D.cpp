@@ -291,7 +291,7 @@ HRESULT CObject2D::SetCol(const D3DXCOLOR col)
 		return E_FAIL;
 	}
 
-	//頂点座標の設定
+	//頂点カラーの設定
 	pVtx[0].col = col;
 	pVtx[1].col = col;
 	pVtx[2].col = col;

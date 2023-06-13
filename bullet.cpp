@@ -74,7 +74,7 @@ void CBullet::Uninit(void)
 void CBullet::Update(void)
 {
 	//エフェクト生成
-	CEffect::Create(GetPos(), VEC3_ZERO, 30.0f, 30.0f, D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f), 30);
+	CEffect2D::Create(GetPos(), VEC3_ZERO, 30.0f, 30.0f, D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f), 30);
 
 	//ローカル
 	D3DXVECTOR3 pos = GetPos();
@@ -203,7 +203,8 @@ bool CBullet::CollisionEnemy(void)
 					GetPos().y < pObj->GetPos().y + pObj->GetHeight() * 0.5f)
 				{
 					//爆発生成
-					CParticle::Create(GetPos(), 48, 16, 2, 3, D3DXCOLOR(1.0f, 0.5f, 0.14f, 1.0f), 20.0f, 20.0f);
+					//CParticle2D::Create(GetPos(), 48, 16, 2, 3, D3DXCOLOR(1.0f, 0.5f, 0.14f, 1.0f), 20.0f, 20.0f);
+					CParticleBillboard::Create(D3DXVECTOR3(0.0f,20.0f,0.0f), 48, 48, 2, 3, D3DXCOLOR(1.0f, 0.5f, 0.14f, 1.0f), 8.0f, 8.0f);
 					//CExplosion::Create(GetPos(), GetRot(), 80.0f, 80.0f, 8, 2, 3);
 
 					//敵にダメージ
@@ -243,7 +244,7 @@ bool CBullet::CollisionPlayer(void)
 					GetPos().y < pObj->GetPos().y + pObj->GetHeight() * 0.5f)
 				{
 					//爆発生成
-					CParticle::Create(GetPos(), 48, 16, 2, 3, D3DXCOLOR(1.0f, 0.5f, 0.14f, 1.0f), 20.0f, 20.0f);
+					CParticle2D::Create(GetPos(), 48, 16, 2, 3, D3DXCOLOR(1.0f, 0.5f, 0.14f, 1.0f), 20.0f, 20.0f);
 
 					//敵にダメージ
 					pObj->Uninit();
@@ -282,7 +283,7 @@ bool CBullet::CollisionBlock(void)
 					GetPos().y < pObj->GetPos().y + pObj->GetHeight() * 0.5f)
 				{
 					//爆発生成
-					CParticle::Create(GetPos(), 48, 16, 2, 3, D3DXCOLOR(1.0f, 0.5f, 0.14f, 1.0f), 20.0f, 20.0f);
+					CParticle2D::Create(GetPos(), 48, 16, 2, 3, D3DXCOLOR(1.0f, 0.5f, 0.14f, 1.0f), 20.0f, 20.0f);
 
 					//自分終了
 					Uninit();

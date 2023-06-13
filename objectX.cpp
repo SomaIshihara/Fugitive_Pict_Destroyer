@@ -9,6 +9,7 @@
 #include "renderer.h"
 #include "input.h"
 #include "objectX.h"
+#include <assert.h>
 
 //静的メンバ変数
 CObjectX::Model CObjectX::m_aModel[];
@@ -153,6 +154,7 @@ CObjectX* CObjectX::Create(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, const i
 void CObjectX::Load(const char * pPath, const int nIdx)
 {
 	LPDIRECT3DDEVICE9 pDevice = CManager::GetRenderer()->GetDevice();	//デバイス取得
+	m_aModel[nIdx].m_apTexture = NULL;	//テクスチャポインタをNULLにする
 
 	if (SUCCEEDED(D3DXLoadMeshFromX(
 		pPath,
@@ -164,22 +166,33 @@ void CObjectX::Load(const char * pPath, const int nIdx)
 		&m_aModel[nIdx].m_dwNumMatModel,
 		&m_aModel[nIdx].m_pMesh)))
 	{
-		//テクスチャ読み込み
-		D3DXMATERIAL* pMat;	//マテリアルポインタ
+		//テクスチャポインタ確保
+		if (m_aModel[nIdx].m_apTexture == NULL)
+		{//NULL
+			m_aModel[nIdx].m_apTexture = new LPDIRECT3DTEXTURE9[(int)m_aModel[nIdx].m_dwNumMatModel];
 
-		//マテリアル情報に対するポインタ取得
-		pMat = (D3DXMATERIAL*)m_aModel[nIdx].m_pBuffMat->GetBufferPointer();
+			//テクスチャ読み込み
+			D3DXMATERIAL* pMat;	//マテリアルポインタ
 
-		//テクスチャ読み込み
-		for (int nCntTex = 0; nCntTex < (int)m_aModel[nIdx].m_dwNumMatModel; nCntTex++)
-		{
-			if (pMat[nCntTex].pTextureFilename != NULL)
+			//マテリアル情報に対するポインタ取得
+			pMat = (D3DXMATERIAL*)m_aModel[nIdx].m_pBuffMat->GetBufferPointer();
+
+			//テクスチャ読み込み
+			for (int nCntTex = 0; nCntTex < (int)m_aModel[nIdx].m_dwNumMatModel; nCntTex++)
 			{
-				//テクスチャ読み込み
-				D3DXCreateTextureFromFile(pDevice,
-					pMat[nCntTex].pTextureFilename,
-					&m_aModel[nIdx].m_apTexture[nCntTex]);
+				m_aModel[nIdx].m_apTexture[nCntTex] = NULL;
+				if (pMat[nCntTex].pTextureFilename != NULL)
+				{
+					//テクスチャ読み込み
+					D3DXCreateTextureFromFile(pDevice,
+						pMat[nCntTex].pTextureFilename,
+						&m_aModel[nIdx].m_apTexture[nCntTex]);
+				}
 			}
+		}
+		else
+		{//おかしい
+			assert(false);
 		}
 	}
 }
@@ -206,13 +219,19 @@ void CObjectX::Unload(void)
 		}
 
 		//仮置き：テクスチャ破棄
-		for (int cntTexture = 0; cntTexture < X_TEXTURE_NUM; cntTexture++)
+		for (int cntTexture = 0; cntTexture < m_aModel[cntModel].m_dwNumMatModel; cntTexture++)
 		{
 			if (m_aModel[cntModel].m_apTexture[cntTexture] != NULL)
 			{
 				m_aModel[cntModel].m_apTexture[cntTexture]->Release();
 				m_aModel[cntModel].m_apTexture[cntTexture] = NULL;
 			}
+		}
+		//テクスチャポインタ破棄
+		if (m_aModel[cntModel].m_apTexture != NULL)
+		{
+			delete[] m_aModel[cntModel].m_apTexture;
+			m_aModel[cntModel].m_apTexture = NULL;
 		}
 	}
 	

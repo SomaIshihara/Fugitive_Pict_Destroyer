@@ -9,12 +9,16 @@
 #include "renderer.h"
 
 //静的メンバ変数
-LPDIRECT3DTEXTURE9 CEffect::m_pTexture = NULL;
+LPDIRECT3DTEXTURE9 CEffect2D::m_pTexture = NULL;
+LPDIRECT3DTEXTURE9 CEffectBillboard::m_pTexture = NULL;
 
+//****************************************
+//2Dエフェクト
+//****************************************
 //=================================
 //コンストラクタ（デフォルト）
 //=================================
-CEffect::CEffect(int nPriority) : CObject2D(nPriority), m_nDefLife(0)
+CEffect2D::CEffect2D(int nPriority) : CObject2D(nPriority), m_nDefLife(0)
 {
 	//値クリア
 	m_effect.move = VEC3_ZERO;
@@ -25,7 +29,7 @@ CEffect::CEffect(int nPriority) : CObject2D(nPriority), m_nDefLife(0)
 //=================================
 //コンストラクタ（オーバーロード）
 //=================================
-CEffect::CEffect(const D3DXVECTOR3 pos, const D3DXVECTOR3 move, const float fWidth, const float fHeight,
+CEffect2D::CEffect2D(const D3DXVECTOR3 pos, const D3DXVECTOR3 move, const float fWidth, const float fHeight,
 	const D3DXCOLOR col, const int nLife, int nPriority) : CObject2D(pos, VEC3_ZERO, fWidth, fHeight, nPriority), m_nDefLife(nLife)
 {
 	//値設定
@@ -37,14 +41,14 @@ CEffect::CEffect(const D3DXVECTOR3 pos, const D3DXVECTOR3 move, const float fWid
 //=================================
 //デストラクタ
 //=================================
-CEffect::~CEffect()
+CEffect2D::~CEffect2D()
 {
 }
 
 //=================================
 //初期化
 //=================================
-HRESULT CEffect::Init(void)
+HRESULT CEffect2D::Init(void)
 {
 	//親クラス処理
 	if (FAILED(CObject2D::Init()))
@@ -58,7 +62,7 @@ HRESULT CEffect::Init(void)
 //=================================
 //終了
 //=================================
-void CEffect::Uninit(void)
+void CEffect2D::Uninit(void)
 {
 	//親クラス処理
 	CObject2D::Uninit();
@@ -67,7 +71,7 @@ void CEffect::Uninit(void)
 //=================================
 //更新
 //=================================
-void CEffect::Update(void)
+void CEffect2D::Update(void)
 {
 	//親クラス処理
 	CObject2D::Update();
@@ -93,7 +97,7 @@ void CEffect::Update(void)
 //=================================
 //描画
 //=================================
-void CEffect::Draw(void)
+void CEffect2D::Draw(void)
 {
 	//Zテスト無効化
 	CManager::GetRenderer()->SetEnableZTest(false);
@@ -120,15 +124,15 @@ void CEffect::Draw(void)
 //=================================
 //生成処理
 //=================================
-CEffect* CEffect::Create(const D3DXVECTOR3 pos, const D3DXVECTOR3 move, const float fWidth, const float fHeight,
+CEffect2D* CEffect2D::Create(const D3DXVECTOR3 pos, const D3DXVECTOR3 move, const float fWidth, const float fHeight,
 	const D3DXCOLOR col, const int nLife)
 {
-	CEffect* pObjEffect = NULL;
+	CEffect2D* pObjEffect = NULL;
 
 	if (pObjEffect == NULL)
 	{
 		//背景の生成
-		pObjEffect = new CEffect(pos, move, fWidth, fHeight, col, nLife);
+		pObjEffect = new CEffect2D(pos, move, fWidth, fHeight, col, nLife);
 
 		//初期化
 		pObjEffect->Init();
@@ -147,7 +151,7 @@ CEffect* CEffect::Create(const D3DXVECTOR3 pos, const D3DXVECTOR3 move, const fl
 //=================================
 //テクスチャ読み込み処理
 //=================================
-HRESULT CEffect::Load(const char* pPath)
+HRESULT CEffect2D::Load(const char* pPath)
 {
 	LPDIRECT3DDEVICE9 pDevice = CManager::GetRenderer()->GetDevice();	//デバイス取得
 
@@ -166,7 +170,175 @@ HRESULT CEffect::Load(const char* pPath)
 //=================================
 //テクスチャ破棄処理
 //=================================
-void CEffect::Unload(void)
+void CEffect2D::Unload(void)
+{
+	//テクスチャ破棄
+	if (m_pTexture != NULL)
+	{
+		m_pTexture->Release();
+		m_pTexture = NULL;
+	}
+}
+
+//****************************************
+//ビルボードエフェクト
+//****************************************
+//=================================
+//コンストラクタ（デフォルト）
+//=================================
+CEffectBillboard::CEffectBillboard(int nPriority) : CObjectBillboard(nPriority), m_nDefLife(0)
+{
+	//値クリア
+	m_effect.move = VEC3_ZERO;
+	m_effect.col = D3DXCOLOR(0.0f, 0.0f, 0.0f, 0.0f);
+	m_effect.nLife = 0;
+}
+
+//=================================
+//コンストラクタ（オーバーロード）
+//=================================
+CEffectBillboard::CEffectBillboard(const D3DXVECTOR3 pos, const D3DXVECTOR3 move, const float fWidth, const float fHeight,
+	const D3DXCOLOR col, const int nLife, int nPriority) : CObjectBillboard(pos, VEC3_ZERO, fWidth, fHeight, nPriority), m_nDefLife(nLife)
+{
+	//値設定
+	m_effect.move = move;
+	m_effect.col = col;
+	m_effect.nLife = nLife;
+}
+
+//=================================
+//デストラクタ
+//=================================
+CEffectBillboard::~CEffectBillboard()
+{
+}
+
+//=================================
+//初期化
+//=================================
+HRESULT CEffectBillboard::Init(void)
+{
+	//親クラス処理
+	if (FAILED(CObjectBillboard::Init()))
+	{
+		return E_FAIL;
+	}
+
+	return S_OK;
+}
+
+//=================================
+//終了
+//=================================
+void CEffectBillboard::Uninit(void)
+{
+	//親クラス処理
+	CObjectBillboard::Uninit();
+}
+
+//=================================
+//更新
+//=================================
+void CEffectBillboard::Update(void)
+{
+	//親クラス処理
+	CObjectBillboard::Update();
+
+	//移動
+	D3DXVECTOR3 pos = GetPos();
+	pos += m_effect.move;
+	SetPos(pos);
+
+	//寿命管理
+	m_effect.nLife--;	//減らす
+
+						//不透明度設定
+	m_effect.col.a = (float)m_effect.nLife / m_nDefLife;
+	SetCol(m_effect.col);
+
+	if (m_effect.nLife <= 0)
+	{//死んだ
+		Uninit();	//終了
+	}
+}
+
+//=================================
+//描画
+//=================================
+void CEffectBillboard::Draw(void)
+{
+	//Zテスト無効化
+	CManager::GetRenderer()->SetEnableZTest(false);
+
+	//アルファテスト有効化
+	CManager::GetRenderer()->SetEnableAlplaTest(true);
+
+	//ブレンディング種類を加算合成に変更
+	CManager::GetRenderer()->SetBlendType(CRenderer::BLENDTYPE_ADD);
+
+	//親クラス処理
+	CObjectBillboard::Draw();
+
+	//ブレンディング種類を通常状態に戻す
+	CManager::GetRenderer()->SetBlendType(CRenderer::BLENDTYPE_NORMAL);
+
+	//アルファテスト無効化
+	CManager::GetRenderer()->SetEnableAlplaTest(false);
+
+	//Zテスト無効化
+	CManager::GetRenderer()->SetEnableZTest(true);
+}
+
+//=================================
+//生成処理
+//=================================
+CEffectBillboard* CEffectBillboard::Create(const D3DXVECTOR3 pos, const D3DXVECTOR3 move, const float fWidth, const float fHeight,
+	const D3DXCOLOR col, const int nLife)
+{
+	CEffectBillboard* pObjEffect = NULL;
+
+	if (pObjEffect == NULL)
+	{
+		//背景の生成
+		pObjEffect = new CEffectBillboard(pos, move, fWidth, fHeight, col, nLife);
+
+		//初期化
+		pObjEffect->Init();
+
+		//テクスチャ設定
+		pObjEffect->BindTexture(m_pTexture);
+
+		return pObjEffect;
+	}
+	else
+	{
+		return NULL;
+	}
+}
+
+//=================================
+//テクスチャ読み込み処理
+//=================================
+HRESULT CEffectBillboard::Load(const char* pPath)
+{
+	LPDIRECT3DDEVICE9 pDevice = CManager::GetRenderer()->GetDevice();	//デバイス取得
+
+	//テクスチャ読み込み
+	if (FAILED(D3DXCreateTextureFromFile(pDevice,
+		pPath,
+		&m_pTexture)))
+	{//失敗
+		return E_FAIL;
+	}
+
+	//成功
+	return S_OK;
+}
+
+//=================================
+//テクスチャ破棄処理
+//=================================
+void CEffectBillboard::Unload(void)
 {
 	//テクスチャ破棄
 	if (m_pTexture != NULL)

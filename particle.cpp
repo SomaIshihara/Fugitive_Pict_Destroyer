@@ -16,12 +16,16 @@
 #define PART_EFFECT_LIFE	(20)	//エフェクト用パーティクルの寿命
 
 //静的メンバ変数
-LPDIRECT3DTEXTURE9 CParticle::m_pTexture = NULL;
+LPDIRECT3DTEXTURE9 CParticle2D::m_pTexture = NULL;
+LPDIRECT3DTEXTURE9 CParticleBillboard::m_pTexture = NULL;
 
+//****************************************
+//2Dパーティクル
+//****************************************
 //=================================
 //コンストラクタ（デフォルト）
 //=================================
-CParticle::CParticle()
+CParticle2D::CParticle2D()
 {
 	//パーティクルのクリア
 	m_particle.pos = VEC3_ZERO;
@@ -37,7 +41,7 @@ CParticle::CParticle()
 //=================================
 //コンストラクタ（オーバーロード）
 //=================================
-CParticle::CParticle(const D3DXVECTOR3 pos, const int nLife, const int nEffeceNum, const float fSpeedBace, const float fSpeedDegree,
+CParticle2D::CParticle2D(const D3DXVECTOR3 pos, const int nLife, const int nEffeceNum, const float fSpeedBace, const float fSpeedDegree,
 	const D3DXCOLOR col, const float fWidth, const float fHeight)
 {
 	//パーティクルの初期化
@@ -54,14 +58,14 @@ CParticle::CParticle(const D3DXVECTOR3 pos, const int nLife, const int nEffeceNu
 //=================================
 //デストラクタ
 //=================================
-CParticle::~CParticle()
+CParticle2D::~CParticle2D()
 {
 }
 
 //=================================
 //初期化
 //=================================
-HRESULT CParticle::Init(void)
+HRESULT CParticle2D::Init(void)
 {
 	//できた
 	return S_OK;
@@ -70,7 +74,7 @@ HRESULT CParticle::Init(void)
 //=================================
 //終了
 //=================================
-void CParticle::Uninit(void)
+void CParticle2D::Uninit(void)
 {
 	//パーティクル管理オブジェクト破棄
 	Release();
@@ -79,7 +83,7 @@ void CParticle::Uninit(void)
 //=================================
 //更新
 //=================================
-void CParticle::Update(void)
+void CParticle2D::Update(void)
 {
 	//エフェクト追加処理
 	for (int cntEffectNum = 0; cntEffectNum < m_particle.nEffeceNum; cntEffectNum++)
@@ -98,7 +102,7 @@ void CParticle::Update(void)
 		//寿命（マクロ）
 
 		//エフェクトを出す
-		CEffect* pEffect;
+		CEffect2D* pEffect;
 		pEffect = pEffect->Create(m_particle.pos, move, m_particle.fWidth, m_particle.fHeight, m_particle.col, PART_EFFECT_LIFE);
 		pEffect->Init();
 
@@ -119,25 +123,17 @@ void CParticle::Update(void)
 }
 
 //=================================
-//描画
-//=================================
-void CParticle::Draw(void)
-{
-	
-}
-
-//=================================
 //生成処理
 //=================================
-CParticle* CParticle::Create(const D3DXVECTOR3 pos, const int nLife, const int nEffeceNum, const float fSpeedBace, const float fSpeedDegree,
+CParticle2D* CParticle2D::Create(const D3DXVECTOR3 pos, const int nLife, const int nEffeceNum, const float fSpeedBace, const float fSpeedDegree,
 	const D3DXCOLOR col, const float fWidth, const float fHeight)
 {
-	CParticle* pParticle = NULL;
+	CParticle2D* pParticle = NULL;
 
 	if (pParticle == NULL)
 	{
 		//パーティクル管理オブジェクト生成
-		pParticle = new CParticle(pos, nLife, nEffeceNum, fSpeedBace, fSpeedDegree, col, fWidth, fHeight);
+		pParticle = new CParticle2D(pos, nLife, nEffeceNum, fSpeedBace, fSpeedDegree, col, fWidth, fHeight);
 
 		//パーティクル管理オブジェクト初期化
 		pParticle->Init();
@@ -153,7 +149,7 @@ CParticle* CParticle::Create(const D3DXVECTOR3 pos, const int nLife, const int n
 //=================================
 //テクスチャ読み込み処理
 //=================================
-HRESULT CParticle::Load(const char* pPath)
+HRESULT CParticle2D::Load(const char* pPath)
 {
 	LPDIRECT3DDEVICE9 pDevice = CManager::GetRenderer()->GetDevice();	//デバイス取得
 
@@ -172,7 +168,167 @@ HRESULT CParticle::Load(const char* pPath)
 //=================================
 //テクスチャ破棄処理
 //=================================
-void CParticle::Unload(void)
+void CParticle2D::Unload(void)
+{
+	//テクスチャ破棄
+	if (m_pTexture != NULL)
+	{
+		m_pTexture->Release();
+		m_pTexture = NULL;
+	}
+}
+
+//****************************************
+//ビルボードパーティクル
+//****************************************
+//=================================
+//コンストラクタ（デフォルト）
+//=================================
+CParticleBillboard::CParticleBillboard()
+{
+	//パーティクルのクリア
+	m_particle.pos = VEC3_ZERO;
+	m_particle.nLife = INT_ZERO;
+	m_particle.nEffeceNum = INT_ZERO;
+	m_particle.fSpeedBace = FLOAT_ZERO;
+	m_particle.fSpeedDegree = FLOAT_ZERO;
+	m_particle.col = D3DXCOLOR(0.0f, 0.0f, 0.0f, 0.0f);
+	m_particle.fWidth = FLOAT_ZERO;
+	m_particle.fHeight = FLOAT_ZERO;
+}
+
+//=================================
+//コンストラクタ（オーバーロード）
+//=================================
+CParticleBillboard::CParticleBillboard(const D3DXVECTOR3 pos, const int nLife, const int nEffeceNum, const float fSpeedBace, const float fSpeedDegree,
+	const D3DXCOLOR col, const float fWidth, const float fHeight)
+{
+	//パーティクルの初期化
+	m_particle.pos = pos;
+	m_particle.nLife = nLife;
+	m_particle.nEffeceNum = nEffeceNum;
+	m_particle.fSpeedBace = fSpeedBace;
+	m_particle.fSpeedDegree = fSpeedDegree;
+	m_particle.col = col;
+	m_particle.fWidth = fWidth;
+	m_particle.fHeight = fHeight;
+}
+
+//=================================
+//デストラクタ
+//=================================
+CParticleBillboard::~CParticleBillboard()
+{
+}
+
+//=================================
+//初期化
+//=================================
+HRESULT CParticleBillboard::Init(void)
+{
+	//できた
+	return S_OK;
+}
+
+//=================================
+//終了
+//=================================
+void CParticleBillboard::Uninit(void)
+{
+	//パーティクル管理オブジェクト破棄
+	Release();
+}
+
+//=================================
+//更新
+//=================================
+void CParticleBillboard::Update(void)
+{
+	//エフェクト追加処理
+	for (int cntEffectNum = 0; cntEffectNum < m_particle.nEffeceNum; cntEffectNum++)
+	{
+		//位置（パーティクルの位置と同じ）
+		//移動量
+		float fRotZ = (float)(rand() % (int)(ROT_ACCU * TWO_PI + 1) - (int)(D3DX_PI * ROT_ACCU)) / (float)ROT_ACCU;
+		float fRotY = (float)(rand() % (int)(ROT_ACCU * TWO_PI + 1) - (int)(D3DX_PI * ROT_ACCU)) / (float)ROT_ACCU;
+		float fSpeed = (rand() % (int)(m_particle.fSpeedDegree * SPEED_ACCU)) / SPEED_ACCU + m_particle.fSpeedBace;
+		D3DXVECTOR3 move;
+		move.x = sinf(fRotZ) * cosf(fRotY) * fSpeed;	//X
+		move.y = cosf(fRotZ) * fSpeed;					//Y
+		move.z = cosf(fRotZ) * cosf(fRotY) * fSpeed;	//Z
+
+		//幅高さ（パーティクルにある）
+		//色（パーティクルにある）
+		//寿命（マクロ）
+
+		//エフェクトを出す
+		CEffectBillboard* pEffect;
+		pEffect = pEffect->Create(m_particle.pos, move, m_particle.fWidth, m_particle.fHeight, m_particle.col, PART_EFFECT_LIFE);
+		pEffect->Init();
+
+		//エフェクトにテクスチャを張る
+		pEffect->BindTexture(m_pTexture);
+
+		//AllEffectのほうのfor文を抜ける
+		break;
+	}
+
+	//エフェクト寿命管理
+	m_particle.nLife--;
+
+	if (m_particle.nLife <= INT_ZERO)
+	{
+		Uninit();
+	}
+}
+
+//=================================
+//生成処理
+//=================================
+CParticleBillboard* CParticleBillboard::Create(const D3DXVECTOR3 pos, const int nLife, const int nEffeceNum, const float fSpeedBace, const float fSpeedDegree,
+	const D3DXCOLOR col, const float fWidth, const float fHeight)
+{
+	CParticleBillboard* pParticle = NULL;
+
+	if (pParticle == NULL)
+	{
+		//パーティクル管理オブジェクト生成
+		pParticle = new CParticleBillboard(pos, nLife, nEffeceNum, fSpeedBace, fSpeedDegree, col, fWidth, fHeight);
+
+		//パーティクル管理オブジェクト初期化
+		pParticle->Init();
+
+		return pParticle;
+	}
+	else
+	{
+		return NULL;
+	}
+}
+
+//=================================
+//テクスチャ読み込み処理
+//=================================
+HRESULT CParticleBillboard::Load(const char* pPath)
+{
+	LPDIRECT3DDEVICE9 pDevice = CManager::GetRenderer()->GetDevice();	//デバイス取得
+
+	//テクスチャ読み込み
+	if (FAILED(D3DXCreateTextureFromFile(pDevice,
+		pPath,
+		&m_pTexture)))
+	{//失敗
+		return E_FAIL;
+	}
+
+	//成功
+	return S_OK;
+}
+
+//=================================
+//テクスチャ破棄処理
+//=================================
+void CParticleBillboard::Unload(void)
 {
 	//テクスチャ破棄
 	if (m_pTexture != NULL)

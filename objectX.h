@@ -23,7 +23,7 @@ public:
 		LPD3DXMESH m_pMesh;								//メッシュ
 		LPD3DXBUFFER m_pBuffMat;						//マテリアルポインタ
 		DWORD m_dwNumMatModel;							//マテ数
-		LPDIRECT3DTEXTURE9 m_apTexture[X_TEXTURE_NUM];	//テクスチャポインタ
+		LPDIRECT3DTEXTURE9* m_apTexture;				//テクスチャポインタ
 	} Model;
 	//コンストラクタ・デストラクタ
 	CObjectX(int nPriority = PRIORITY_DEFAULT);																	//デフォルト

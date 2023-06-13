@@ -16,11 +16,8 @@
 #define CAMERA_KEY_ROT_SPEED	(0.005f)	//キーボード入力での回転速度
 #define CAMERA_MOU_ROT_SPEED	(0.0012f)	//マウス移動での回転速度
 #define CAMERA_LENGTH			(1000.0f)	//カメラが見える最大距離
-#define CAMERA_ROT_X_MIN		(-0.5f)		//カメラのX角度の最低値[rad]
-#define CAMERA_ROT_X_MAX		(0.035f)	//カメラのX角度の最低値[rad]
-
-//プロト
-
+#define CAMERA_ROT_X_MIN		(-0.45f)	//カメラのX角度の最低値[rad]
+#define CAMERA_ROT_X_MAX		(-0.2f)	//カメラのX角度の最低値[rad]
 
 //========================
 //コンストラクタ
@@ -52,6 +49,7 @@ HRESULT CCamera::Init(void)
 	m_posR = VEC3_ZERO;
 	m_vecU = D3DXVECTOR3(0.0f,1.0f,0.0f);
 	m_rot = D3DXVECTOR3(-0.5f,0.0f,0.0f);
+	FixRot();
 	FixPosV();
 
 	//できた
@@ -72,30 +70,23 @@ void CCamera::Uninit(void)
 void CCamera::Update(void)
 {
 	CInputKeyboard* pKeyboard = CManager::GetInputKeyboard();
-#if 0
-	//視点
-	//視点設定
-	m_rot.y -= GetMouseMove().x * CAMERA_MOU_ROT_SPEED;
-	m_rot.x -= GetMouseMove().y * CAMERA_MOU_ROT_SPEED;
-	FixRot();
-	m_vecU.x = sinf(m_rot.x) * sinf(m_rot.y);
-	m_vecU.y = cosf(m_rot.x);
-	m_vecU.z = sinf(m_rot.x) * cosf(m_rot.y) * -1;
-	D3DXVec3Normalize(&m_vecU, &m_vecU);
-	FixPosV();
-
-	//カーソルを消す
-	SetShowCursor(false);
-
-	//カーソルを元の位置に戻す
-	POINT setCursorpos;
-	setCursorpos.x = SCREEN_WIDTH / 2;
-	setCursorpos.y = SCREEN_HEIGHT / 2;
-	ClientToScreen(FindWindowA(CLASS_NAME, nullptr), &setCursorpos);
-	SetCursorPos(setCursorpos.x, setCursorpos.y);
+	CInputMouse* pMouse = CManager::GetInputMouse();
+#if 1
+	if (pMouse->GetPress(MOUSE_CLICK_LEFT) == true)
+	{
+		//視点
+		m_rot.y -= pMouse->GetMove().x * CAMERA_MOU_ROT_SPEED;
+		m_rot.x -= pMouse->GetMove().y * CAMERA_MOU_ROT_SPEED;
+		FixRot();
+		m_vecU.x = sinf(m_rot.x) * sinf(m_rot.y);
+		m_vecU.y = cosf(m_rot.x);
+		m_vecU.z = sinf(m_rot.x) * cosf(m_rot.y) * -1;
+		D3DXVec3Normalize(&m_vecU, &m_vecU);
+		FixPosV();
+	}
 #endif
 
-#if 1
+#if 0
 	//注視点
 	if (pKeyboard->GetPress(DIK_Q) == true)
 	{//-
@@ -109,8 +100,7 @@ void CCamera::Update(void)
 		FixRot();
 		FixPosR();
 	}
-#endif
-#if 1
+
 	//視点
 	if (pKeyboard->GetPress(DIK_Z) == true)
 	{//-
@@ -124,8 +114,7 @@ void CCamera::Update(void)
 		FixRot();
 		FixPosV();
 	}
-#endif
-#if 1
+
 	//移動
 	if (pKeyboard->GetPress(DIK_A) == true)
 	{
@@ -223,7 +212,7 @@ void CCamera::FixRot(void)
 	m_rot.y = FIX_ROT(m_rot.y);
 	m_rot.z = FIX_ROT(m_rot.z);
 
-#if 0
+#if 1
 	//[カメラ制限]x回転の制限
 	if (m_rot.x >= CAMERA_ROT_X_MAX * D3DX_PI)
 	{
