@@ -12,9 +12,6 @@
 #include "Culc.h"
 
 //マクロ
-#define CAMERA_MOVE_SPEED		(1.0f)		//カメラ移動速度
-#define CAMERA_KEY_ROT_SPEED	(0.005f)	//キーボード入力での回転速度
-#define CAMERA_MOU_ROT_SPEED	(0.0012f)	//マウス移動での回転速度
 #define CAMERA_LENGTH			(1000.0f)	//カメラが見える最大距離
 #define CAMERA_ROT_X_MIN		(-0.45f)	//カメラのX角度の最低値[rad]
 #define CAMERA_ROT_X_MAX		(-0.2f)	//カメラのX角度の最低値[rad]
@@ -29,6 +26,7 @@ CCamera::CCamera()
 	m_posR = VEC3_ZERO;
 	m_vecU = VEC3_ZERO;
 	m_rot = VEC3_ZERO;
+	m_fLength = 0.0f;
 }
 
 //========================
@@ -49,6 +47,7 @@ HRESULT CCamera::Init(void)
 	m_posR = VEC3_ZERO;
 	m_vecU = D3DXVECTOR3(0.0f,1.0f,0.0f);
 	m_rot = D3DXVECTOR3(-0.5f,0.0f,0.0f);
+	m_fLength = 100.0f;
 	FixRot();
 	FixPosV();
 
@@ -69,83 +68,7 @@ void CCamera::Uninit(void)
 //========================
 void CCamera::Update(void)
 {
-	CInputKeyboard* pKeyboard = CManager::GetInputKeyboard();
-	CInputMouse* pMouse = CManager::GetInputMouse();
-#if 1
-	if (pMouse->GetPress(MOUSE_CLICK_LEFT) == true)
-	{
-		//視点
-		m_rot.y -= pMouse->GetMove().x * CAMERA_MOU_ROT_SPEED;
-		m_rot.x -= pMouse->GetMove().y * CAMERA_MOU_ROT_SPEED;
-		FixRot();
-		m_vecU.x = sinf(m_rot.x) * sinf(m_rot.y);
-		m_vecU.y = cosf(m_rot.x);
-		m_vecU.z = sinf(m_rot.x) * cosf(m_rot.y) * -1;
-		D3DXVec3Normalize(&m_vecU, &m_vecU);
-		FixPosV();
-	}
-#endif
 
-#if 0
-	//注視点
-	if (pKeyboard->GetPress(DIK_Q) == true)
-	{//-
-		m_rot.y -= CAMERA_KEY_ROT_SPEED * D3DX_PI;
-		FixRot();
-		FixPosR();
-	}
-	else if (pKeyboard->GetPress(DIK_E) == true)
-	{//+
-		m_rot.y += CAMERA_KEY_ROT_SPEED * D3DX_PI;
-		FixRot();
-		FixPosR();
-	}
-
-	//視点
-	if (pKeyboard->GetPress(DIK_Z) == true)
-	{//-
-		m_rot.y += CAMERA_KEY_ROT_SPEED * D3DX_PI;
-		FixRot();
-		FixPosV();
-	}
-	else if (pKeyboard->GetPress(DIK_C) == true)
-	{//+
-		m_rot.y -= CAMERA_KEY_ROT_SPEED * D3DX_PI;
-		FixRot();
-		FixPosV();
-	}
-
-	//移動
-	if (pKeyboard->GetPress(DIK_A) == true)
-	{
-		m_posV.x += -cosf(m_rot.y) * CAMERA_MOVE_SPEED;
-		m_posR.x += -cosf(m_rot.y) * CAMERA_MOVE_SPEED;
-		m_posV.z += -sinf(m_rot.y) * CAMERA_MOVE_SPEED;
-		m_posR.z += -sinf(m_rot.y) * CAMERA_MOVE_SPEED;
-	}
-	else if (pKeyboard->GetPress(DIK_D) == true)
-	{
-		m_posV.x += cosf(m_rot.y) * CAMERA_MOVE_SPEED;
-		m_posR.x += cosf(m_rot.y) * CAMERA_MOVE_SPEED;
-		m_posV.z += sinf(m_rot.y) * CAMERA_MOVE_SPEED;
-		m_posR.z += sinf(m_rot.y) * CAMERA_MOVE_SPEED;
-	}
-
-	if (pKeyboard->GetPress(DIK_W) == true)
-	{
-		m_posV.x += -sinf(m_rot.y) * CAMERA_MOVE_SPEED;
-		m_posR.x += -sinf(m_rot.y) * CAMERA_MOVE_SPEED;
-		m_posV.z += cosf(m_rot.y) * CAMERA_MOVE_SPEED;
-		m_posR.z += cosf(m_rot.y) * CAMERA_MOVE_SPEED;
-	}
-	else if (pKeyboard->GetPress(DIK_S) == true)
-	{
-		m_posV.x += sinf(m_rot.y) * CAMERA_MOVE_SPEED;
-		m_posR.x += sinf(m_rot.y) * CAMERA_MOVE_SPEED;
-		m_posV.z += -cosf(m_rot.y) * CAMERA_MOVE_SPEED;
-		m_posR.z += -cosf(m_rot.y) * CAMERA_MOVE_SPEED;
-	}
-#endif
 }
 
 //========================
@@ -176,15 +99,38 @@ void CCamera::SetCamera(void)
 }
 
 //========================
+//位置設定
+//========================
+void CCamera::SetCameraPos(const D3DXVECTOR3 move)
+{
+	//位置適用
+	m_posV += move;
+	m_posR += move;
+}
+
+//========================
+//向き設定
+//========================
+void CCamera::SetCameraRot(const D3DXVECTOR3 rot)
+{
+	//回転適用と修正処理
+	m_rot += rot;
+	FixRot();
+	m_vecU.x = sinf(m_rot.x) * sinf(m_rot.y);
+	m_vecU.y = cosf(m_rot.x);
+	m_vecU.z = sinf(m_rot.x) * cosf(m_rot.y) * -1;
+	D3DXVec3Normalize(&m_vecU, &m_vecU);
+	FixPosV();
+}
+
+//========================
 //視点修正（注視点中心）
 //========================
 void CCamera::FixPosV(void)
 {
-#if 1
-	m_posV.x = m_posR.x + cosf(m_rot.x) * sinf(m_rot.y) * 100.0f;
-	m_posV.y = m_posR.y - sinf(m_rot.x) * 100.0f;
-	m_posV.z = m_posR.z - cosf(m_rot.x) * cosf(m_rot.y) * 100.0f;
-#endif
+	m_posV.x = m_posR.x + cosf(m_rot.x) * sinf(m_rot.y) * m_fLength;
+	m_posV.y = m_posR.y - sinf(m_rot.x) * m_fLength;
+	m_posV.z = m_posR.z - cosf(m_rot.x) * cosf(m_rot.y) * m_fLength;
 }
 
 //========================
@@ -192,14 +138,8 @@ void CCamera::FixPosV(void)
 //========================
 void CCamera::FixPosR(void)
 {
-#if 0
 	m_posR.x = m_posV.x - sinf(m_rot.y) * cosf(m_rot.x) * m_fLength;
-	m_posR.y = m_posV.y - sinf(m_rot.x) * cosf(m_rot.y) * m_fLength;
 	m_posR.z = m_posV.z + cosf(m_rot.y) * cosf(m_rot.x) * m_fLength;
-
-#endif
-	m_posR.x = m_posV.x - sinf(m_rot.y) * cosf(m_rot.x) * 100.0f;
-	m_posR.z = m_posV.z + cosf(m_rot.y) * cosf(m_rot.x) * 100.0f;
 }
 
 //========================

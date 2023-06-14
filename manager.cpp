@@ -15,7 +15,7 @@
 #include "object.h"
 #include "object2D.h"
 #include "objectAnim2D.h"
-//#include "player.h"
+#include "player.h"
 #include "bg.h"
 #include "multiplebg.h"
 #include "bullet.h"
@@ -43,6 +43,7 @@ CSound* CManager::m_pSound = NULL;
 CCamera* CManager::m_pCamera = NULL;
 CLight* CManager::m_pLight = NULL;
 CTexture* CManager::m_pTexture = NULL;
+CPlayer* CManager::m_pPlayer = NULL;
 int CManager::m_nFPS = 0;
 DWORD CManager::m_dwFrameCount = 0;
 
@@ -74,6 +75,7 @@ HRESULT CManager::Init(HINSTANCE hInstance, HWND hWnd, BOOL bWindow)
 	m_pCamera = new CCamera;
 	m_pLight = new CLight;
 	m_pTexture = new CTexture;
+	m_pPlayer = new CPlayer;
 
 	//レンダラー初期化
 	if (FAILED(m_pRenderer->Init(hWnd, TRUE)))
@@ -120,6 +122,12 @@ HRESULT CManager::Init(HINSTANCE hInstance, HWND hWnd, BOOL bWindow)
 		return E_FAIL;
 	}
 
+	//プレイヤー初期化
+	if (FAILED(m_pPlayer->Init()))
+	{
+		return E_FAIL;
+	}
+
 	//3Dモデル読み込み
 	//CObjectX::Load("data\\MODEL\\jobi.x", 0);	//モデル読み込み
 	CObjectX::Load("data\\MODEL\\zahyoukanban002.x", 0);	//モデル読み込み
@@ -157,6 +165,14 @@ void CManager::Uninit(void)
 
 	//オブジェクト終了+破棄
 	CObject2D::ReleaseAll();
+
+	//プレイヤー破棄
+	if (m_pPlayer != NULL)
+	{//プレイヤー終了
+		m_pPlayer->Uninit();
+		delete m_pPlayer;
+		m_pPlayer = NULL;
+	}
 
 	//テクスチャ破棄
 	if (m_pTexture != NULL)
@@ -233,6 +249,7 @@ void CManager::Update(void)
 	m_pRenderer->Update();
 	m_pCamera->Update();
 	m_pLight->Update();
+	m_pPlayer->Update();
 
 	//再配置ボタンが押された
 	if (m_pInputKeyboard->GetTrigger(DIK_F5) == true)

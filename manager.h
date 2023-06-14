@@ -18,6 +18,7 @@ class CSound;
 class CCamera;
 class CLight;
 class CTexture;
+class CPlayer;
 
 //É}ÉNÉç
 #define INT_ZERO	(0)							//intå^ÇÃ0
