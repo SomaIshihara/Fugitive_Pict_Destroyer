@@ -7,6 +7,7 @@
 #include "main.h"
 #include "manager.h"
 #include "renderer.h"
+#include "texture.h"
 #include "input.h"
 #include "object3D.h"
 
@@ -17,7 +18,7 @@ CObject3D::CObject3D(int nPriority) : CObject(nPriority)
 {
 	//クリア
 	m_pVtxbuff = NULL;
-	m_pTexture = NULL;
+	m_nIdxTexture = -1;
 	m_pos = VEC3_ZERO;
 	m_rot = VEC3_ZERO;
 }
@@ -29,7 +30,7 @@ CObject3D::CObject3D(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, const float f
 {
 	//クリア
 	m_pVtxbuff = NULL;
-	m_pTexture = NULL;
+	m_nIdxTexture = -1;
 	m_pos = pos;
 	m_rot = rot;
 	m_fWidth = fWidth;
@@ -61,10 +62,9 @@ HRESULT CObject3D::Init(void)
 		return E_FAIL;
 	}
 
-	//テクスチャ読み込み
-	D3DXCreateTextureFromFile(pDevice,
-		"data\\TEXTURE\\icon32.png",
-		&m_pTexture);
+	//仮：テクスチャ読み込み
+	CTexture* pTexture = CManager::GetTexture();
+	m_nIdxTexture = pTexture->Regist("data\\TEXTURE\\icon32.png");
 
 	VERTEX_3D *pVtx;
 
@@ -114,13 +114,6 @@ void CObject3D::Uninit(void)
 		m_pVtxbuff = NULL;
 	}
 
-	//仮置き：テクスチャ破棄
-	if (m_pTexture != NULL)
-	{
-		m_pTexture->Release();
-		m_pTexture = NULL;
-	}
-
 	//自分自身破棄
 	Release();
 }
@@ -139,6 +132,7 @@ void CObject3D::Update(void)
 void CObject3D::Draw(void)
 {
 	LPDIRECT3DDEVICE9 pDevice = CManager::GetRenderer()->GetDevice();	//デバイス取得
+	CTexture* pTexture = CManager::GetTexture();						//テクスチャオブジェクト取得
 	D3DXMATRIX mtxRot, mtxTrans;	//計算用
 
 	//ワールドマトリックス初期化
@@ -162,7 +156,7 @@ void CObject3D::Draw(void)
 	pDevice->SetFVF(FVF_VERTEX_3D);
 
 	//テクスチャ設定
-	pDevice->SetTexture(0, m_pTexture);
+	pDevice->SetTexture(0, pTexture->GetAddress(m_nIdxTexture));
 
 	//描画
 	pDevice->DrawPrimitive(D3DPT_TRIANGLESTRIP, 0, 2);

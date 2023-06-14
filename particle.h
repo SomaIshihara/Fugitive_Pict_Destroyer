@@ -45,10 +45,6 @@ public:
 	void Update(void);
 	void Draw(void) {}
 
-	//読み込み
-	static HRESULT Load(const char* pPath);
-	static void Unload(void);
-
 	//生成
 	static CParticle2D* Create(const D3DXVECTOR3 pos, const int nLife, const int nEffeceNum, const float fSpeedBace, const float fSpeedDegree,
 		const D3DXCOLOR col, const float fWidth, const float fHeight);	//オブジェクトを生成 fSpeed:スクロール速度
@@ -61,8 +57,7 @@ public:
 	float GetDepth(void) { return FLOAT_ZERO; }
 
 private:
-	Particle m_particle;					//パーティクル構造体
-	static LPDIRECT3DTEXTURE9 m_pTexture;	//テクスチャ
+	Particle m_particle;	//パーティクル構造体
 };
 
 //========================================
@@ -98,10 +93,6 @@ public:
 	void Update(void);
 	void Draw(void) {}
 
-	//読み込み
-	static HRESULT Load(const char* pPath);
-	static void Unload(void);
-
 	//生成
 	static CParticleBillboard* Create(const D3DXVECTOR3 pos, const int nLife, const int nEffeceNum, const float fSpeedBace, const float fSpeedDegree,
 		const D3DXCOLOR col, const float fWidth, const float fHeight);	//オブジェクトを生成 fSpeed:スクロール速度
@@ -114,8 +105,7 @@ public:
 	float GetDepth(void) { return FLOAT_ZERO; }
 
 private:
-	Particle m_particle;					//パーティクル構造体
-	static LPDIRECT3DTEXTURE9 m_pTexture;	//テクスチャ
+	Particle m_particle;	//パーティクル構造体
 };
 
 #endif // !_MULTIPLE_BG_H_

@@ -20,10 +20,10 @@ class CObjectX : public CObject
 public:
 	typedef struct
 	{
-		LPD3DXMESH m_pMesh;								//メッシュ
-		LPD3DXBUFFER m_pBuffMat;						//マテリアルポインタ
-		DWORD m_dwNumMatModel;							//マテ数
-		LPDIRECT3DTEXTURE9* m_apTexture;				//テクスチャポインタ
+		LPD3DXMESH m_pMesh;			//メッシュ
+		LPD3DXBUFFER m_pBuffMat;	//マテリアルポインタ
+		DWORD m_dwNumMatModel;		//マテ数
+		int * m_pIdxtexture;		//テクスチャ番号（動的確保）
 	} Model;
 	//コンストラクタ・デストラクタ
 	CObjectX(int nPriority = PRIORITY_DEFAULT);																	//デフォルト

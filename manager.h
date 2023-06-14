@@ -17,6 +17,7 @@ class CDebugProc;
 class CSound;
 class CCamera;
 class CLight;
+class CTexture;
 
 //マクロ
 #define INT_ZERO	(0)							//int型の0
@@ -49,6 +50,7 @@ public:
 	static CDebugProc* GetDebProc(void) { return m_pDebProc; }
 	static CCamera* GetCamera(void) { return m_pCamera; }
 	static CLight* GetLight(void) { return m_pLight; }
+	static CTexture* GetTexture(void) { return m_pTexture; }
 
 private:
 	//再配置
@@ -63,6 +65,7 @@ private:
 	static CPlayer* m_pPlayer;					//プレイヤー
 	static CCamera* m_pCamera;					//カメラ
 	static CLight* m_pLight;					//ライト
+	static CTexture* m_pTexture;				//テクスチャ
 	static int m_nFPS;							//FPS
 	static DWORD m_dwFrameCount;				//回したフレーム数
 };

@@ -11,10 +11,11 @@
 #include "debugproc.h"
 #include "camera.h"
 #include "light.h"
+#include "texture.h"
 #include "object.h"
 #include "object2D.h"
 #include "objectAnim2D.h"
-#include "player.h"
+//#include "player.h"
 #include "bg.h"
 #include "multiplebg.h"
 #include "bullet.h"
@@ -41,16 +42,9 @@ CDebugProc* CManager::m_pDebProc = NULL;
 CSound* CManager::m_pSound = NULL;
 CCamera* CManager::m_pCamera = NULL;
 CLight* CManager::m_pLight = NULL;
+CTexture* CManager::m_pTexture = NULL;
 int CManager::m_nFPS = 0;
 DWORD CManager::m_dwFrameCount = 0;
-
-//テクスチャパス
-const char* c_apTexturePathMultiBG[MAX_EFFECT] =
-{
-	"data\\TEXTURE\\bg100.png",
-	"data\\TEXTURE\\bg101.png",
-	"data\\TEXTURE\\bg102.png"
-};
 
 //=================================
 //コンストラクタ
@@ -79,6 +73,7 @@ HRESULT CManager::Init(HINSTANCE hInstance, HWND hWnd, BOOL bWindow)
 	m_pDebProc = new CDebugProc;
 	m_pCamera = new CCamera;
 	m_pLight = new CLight;
+	m_pTexture = new CTexture;
 
 	//レンダラー初期化
 	if (FAILED(m_pRenderer->Init(hWnd, TRUE)))
@@ -119,70 +114,27 @@ HRESULT CManager::Init(HINSTANCE hInstance, HWND hWnd, BOOL bWindow)
 		return E_FAIL;
 	}
 
-	//テクスチャ読み込み
-	//2D
-	CPlayer::Load("data\\TEXTURE\\runningman000.png");	//プレイヤー
-	CBG::Load("data\\TEXTURE\\wasitu01_.jpg");			//1枚背景
-	CBullet::Load("data\\TEXTURE\\EnergyBullet_01.png");//弾
-	CEnemy::Load("data\\TEXTURE\\Enemy_01.png");		//敵
-	CExplosion::Load("data\\TEXTURE\\bomb0.png");		//爆発
-	for (int cnt = 0; cnt < MAX_EFFECT; cnt++)		//多重背景
-	{//1枚分読み込む
-		CMultipleBG::Load(c_apTexturePathMultiBG[cnt], cnt);
+	//テクスチャ初期化
+	if (FAILED(m_pTexture->Load()))
+	{
+		return E_FAIL;
 	}
-	CEffect2D::Load("data\\TEXTURE\\effect000.jpg");			//エフェクト2D
-	CEffectBillboard::Load("data\\TEXTURE\\effect000.jpg");		//エフェクトビルボード
-	CParticle2D::Load("data\\TEXTURE\\effect000.jpg");			//パーティクル2D
-	CParticleBillboard::Load("data\\TEXTURE\\effect000.jpg");			//パーティクルビルボード
-	CScore::Load("data\\TEXTURE\\Number_Rank_01.png", 10, 1);	//スコア
-	CTimer::Load("data\\TEXTURE\\Number_Rank_01.png", 10, 1);	//タイマー
-	CBlock::Load("data\\TEXTURE\\Block_R_01.png");				//ブロック
-	CItem::Load("data\\TEXTURE\\Item_05.png");					//アイテム
 
-	//3D
+	//3Dモデル読み込み
 	//CObjectX::Load("data\\MODEL\\jobi.x", 0);	//モデル読み込み
 	CObjectX::Load("data\\MODEL\\zahyoukanban002.x", 0);	//モデル読み込み
 
 	//オブジェクト生成+初期化
 	//CBG::Create();
 	//CMultipleBG::Create(0.0075f,0.01f,0.02f);
-	CPlayer::Create(D3DXVECTOR3(640.0f, 420.0f, 0.0f), VEC3_ZERO,100.0f, 200.0f, 8, 1, 2);
+	//CPlayer::Create(D3DXVECTOR3(640.0f, 420.0f, 0.0f), VEC3_ZERO,100.0f, 200.0f, 2);
 	CScore::Create(D3DXVECTOR3(SCREEN_WIDTH - 24.0f, 32.0f, 0.0f), VEC3_ZERO, 48.0f, 64.0f);
 	CTimer::Create(D3DXVECTOR3(SCREEN_WIDTH * 0.5f + 24.0f, 32.0f, 0.0f), VEC3_ZERO, 48.0f, 64.0f);
 	CObject3D::Create(VEC3_ZERO, VEC3_ZERO, 100.0f, 100.0f);
 	CObjectX::Create(VEC3_ZERO, VEC3_ZERO, 0);
 
-	//地面ブロック（うん。かつて添削会で見たことある光景。）
-	CBlock::Create(D3DXVECTOR3(0.0f, 700.0f, 0.0f), 64.0f, 64.0f);
-	CBlock::Create(D3DXVECTOR3(64.0f, 700.0f, 0.0f), 64.0f, 64.0f);
-	CBlock::Create(D3DXVECTOR3(128.0f, 700.0f, 0.0f), 64.0f, 64.0f);
-	CBlock::Create(D3DXVECTOR3(192.0f, 700.0f, 0.0f), 64.0f, 64.0f);
-	CBlock::Create(D3DXVECTOR3(256.0f, 700.0f, 0.0f), 64.0f, 64.0f);
-	CBlock::Create(D3DXVECTOR3(320.0f, 700.0f, 0.0f), 64.0f, 64.0f);
-	CBlock::Create(D3DXVECTOR3(384.0f, 700.0f, 0.0f), 64.0f, 64.0f);
-	CBlock::Create(D3DXVECTOR3(448.0f, 700.0f, 0.0f), 64.0f, 64.0f);
-	CBlock::Create(D3DXVECTOR3(512.0f, 700.0f, 0.0f), 64.0f, 64.0f);
-	CBlock::Create(D3DXVECTOR3(576.0f, 700.0f, 0.0f), 64.0f, 64.0f);
-	CBlock::Create(D3DXVECTOR3(640.0f, 700.0f, 0.0f), 64.0f, 64.0f);
-	CBlock::Create(D3DXVECTOR3(704.0f, 700.0f, 0.0f), 64.0f, 64.0f);
-	CBlock::Create(D3DXVECTOR3(768.0f, 700.0f, 0.0f), 64.0f, 64.0f);
-	CBlock::Create(D3DXVECTOR3(832.0f, 700.0f, 0.0f), 64.0f, 64.0f);
-	CBlock::Create(D3DXVECTOR3(896.0f, 700.0f, 0.0f), 64.0f, 64.0f);
-	CBlock::Create(D3DXVECTOR3(960.0f, 700.0f, 0.0f), 64.0f, 64.0f);
-	CBlock::Create(D3DXVECTOR3(1024.0f, 700.0f, 0.0f), 64.0f, 64.0f);
-	CBlock::Create(D3DXVECTOR3(1088.0f, 700.0f, 0.0f), 64.0f, 64.0f);
-	CBlock::Create(D3DXVECTOR3(1152.0f, 700.0f, 0.0f), 64.0f, 64.0f);
-	CBlock::Create(D3DXVECTOR3(1216.0f, 700.0f, 0.0f), 64.0f, 64.0f);
-	CBlock::Create(D3DXVECTOR3(1280.0f, 700.0f, 0.0f), 64.0f, 64.0f);
-
-	//空中ブロック
-	CBlock::Create(D3DXVECTOR3(964.0f, 450.0f, 0.0f), 64.0f, 64.0f);
-	CBlock::Create(D3DXVECTOR3(900.0f, 450.0f, 0.0f), 64.0f, 64.0f);
-	CBlock::Create(D3DXVECTOR3(836.0f, 450.0f, 0.0f), 64.0f, 64.0f);
-	CBlock::Create(D3DXVECTOR3(1100.0f, 300.0f, 0.0f), 64.0f, 64.0f);
-	CBlock::Create(D3DXVECTOR3(1100.0f, 236.0f, 0.0f), 64.0f, 64.0f);
 	//破壊可能オブジェクト
-	ResetObj();
+	//ResetObj();
 
 	//FPS計測器初期化
 	m_nFPS = 0;
@@ -202,23 +154,17 @@ void CManager::Uninit(void)
 {
 	//モデル破棄
 	CObjectX::Unload();			//Xモデル
-	
-	//テクスチャ破棄
-	CItem::Unload();			//アイテム
-	CBlock::Unload();			//ブロック
-	CTimer::Unload();			//タイマー
-	CScore::Unload();			//スコア
-	CParticle2D::Unload();		//パーティクル
-	CEffect2D::Unload();			//エフェクト
-	CMultipleBG::Unload();		//多重背景（まとめて破棄される）
-	CExplosion::Unload();		//爆発
-	CEnemy::Unload();			//敵
-	CBullet::Unload();			//弾
-	CBG::Unload();				//1枚背景
-	CPlayer::Unload();			//プレイヤー
 
 	//オブジェクト終了+破棄
 	CObject2D::ReleaseAll();
+
+	//テクスチャ破棄
+	if (m_pTexture != NULL)
+	{//テクスチャ終了
+		m_pTexture->Unload();
+		delete m_pTexture;
+		m_pTexture = NULL;
+	}
 
 	//ライト破棄
 	if (m_pLight != NULL)
@@ -291,7 +237,7 @@ void CManager::Update(void)
 	//再配置ボタンが押された
 	if (m_pInputKeyboard->GetTrigger(DIK_F5) == true)
 	{//再配置実行
-		ResetObj();
+		//ResetObj();
 	}
 
 	//FPS計測器の処理
@@ -350,9 +296,9 @@ void CManager::ResetObj(void)
 	}
 
 	//再配置
-	CEnemy::Create(D3DXVECTOR3(500.0f, 300.0f, 0.0f), VEC3_ZERO, 84.0f, 60.0f, 2, 1, 60, 1);
-	CEnemy::Create(D3DXVECTOR3(300.0f, 300.0f, 0.0f), VEC3_ZERO, 84.0f, 60.0f, 2, 1, 60, 1);
-	CEnemy::Create(D3DXVECTOR3(700.0f, 300.0f, 0.0f), VEC3_ZERO, 84.0f, 60.0f, 2, 1, 60, 1);
+	CEnemy::Create(D3DXVECTOR3(500.0f, 300.0f, 0.0f), VEC3_ZERO, 84.0f, 60.0f, 60, 1);
+	CEnemy::Create(D3DXVECTOR3(300.0f, 300.0f, 0.0f), VEC3_ZERO, 84.0f, 60.0f, 60, 1);
+	CEnemy::Create(D3DXVECTOR3(700.0f, 300.0f, 0.0f), VEC3_ZERO, 84.0f, 60.0f, 60, 1);
 	CItem::Create(D3DXVECTOR3(900.0f, 350.0f, 0.0f), 48.0f, 20.0f);
 	CItem::Create(D3DXVECTOR3(1100.0f, 150.0f, 0.0f), 48.0f, 20.0f);
 }

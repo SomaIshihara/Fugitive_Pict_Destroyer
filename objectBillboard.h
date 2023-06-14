@@ -29,7 +29,7 @@ public:
 	static CObjectBillboard* Create(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, const float fWidth, const float fHeight);
 
 	//テクスチャ設定
-	void BindTexture(LPDIRECT3DTEXTURE9 pTexture) { m_pTexture = pTexture; }
+	void BindTexture(int nIdx) { m_nIdxTexture = nIdx; }
 
 	//取得
 	D3DXVECTOR3 GetPos(void) { return m_pos; }
@@ -44,7 +44,7 @@ public:
 	HRESULT SetCol(const D3DXCOLOR col);	//色
 
 private:
-	LPDIRECT3DTEXTURE9 m_pTexture;		//テクスチャポインタ
+	int m_nIdxTexture;					//テクスチャ番号
 	LPDIRECT3DVERTEXBUFFER9 m_pVtxbuff;	//頂点バッファ
 	D3DXMATRIX m_mtxWorld;				//ワールドマトリ
 

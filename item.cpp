@@ -4,20 +4,18 @@
 //Author:石原颯馬
 //
 //======================================================
-#include "main.h"
 #include "manager.h"
 #include "renderer.h"
+#include "texture.h"
 #include "item.h"
-
-//静的メンバ変数
-LPDIRECT3DTEXTURE9 CItem::m_pTexture = NULL;
 
 //=================================
 //コンストラクタ（デフォルト）
 //=================================
 CItem::CItem(int nPriority) : CObject2D(nPriority)
 {
-	SetType(TYPE_ITEM);	//タイプ設定
+	//値クリア
+	m_nIdxTexture = -1;
 }
 
 //=================================
@@ -25,7 +23,8 @@ CItem::CItem(int nPriority) : CObject2D(nPriority)
 //=================================
 CItem::CItem(const D3DXVECTOR3 pos, const float fWidth, const float fHeight, int nPriority) :CObject2D(pos, VEC3_ZERO, fWidth, fHeight, nPriority)
 {
-	SetType(TYPE_ITEM);	//タイプ設定
+	//値クリア
+	m_nIdxTexture = -1;
 }
 
 //=================================
@@ -40,6 +39,12 @@ CItem::~CItem()
 //=================================
 HRESULT CItem::Init(void)
 {
+	//テクスチャ読み込み
+	CTexture* pTexture = CManager::GetTexture();
+	m_nIdxTexture = pTexture->Regist("data\\TEXTURE\\Item_05.png");
+
+	SetType(TYPE_ITEM);	//タイプ設定
+
 	return CObject2D::Init();
 }
 
@@ -83,44 +88,12 @@ CItem* CItem::Create(const D3DXVECTOR3 pos, const float fWidth, const float fHei
 		pItem->Init();
 
 		//テクスチャ設定
-		pItem->BindTexture(m_pTexture);
+		pItem->BindTexture(pItem->m_nIdxTexture);
 
 		return pItem;
 	}
 	else
 	{
 		return NULL;
-	}
-}
-
-//=================================
-//テクスチャ読み込み処理
-//=================================
-HRESULT CItem::Load(const char* pPath)
-{
-	LPDIRECT3DDEVICE9 pDevice = CManager::GetRenderer()->GetDevice();	//デバイス取得
-
-	//テクスチャ読み込み
-	if (FAILED(D3DXCreateTextureFromFile(pDevice,
-		pPath,
-		&m_pTexture)))
-	{//失敗
-		return E_FAIL;
-	}
-
-	//成功
-	return S_OK;
-}
-
-//=================================
-//テクスチャ破棄処理
-//=================================
-void CItem::Unload(void)
-{
-	//テクスチャ破棄
-	if (m_pTexture != NULL)
-	{
-		m_pTexture->Release();
-		m_pTexture = NULL;
 	}
 }

@@ -33,10 +33,6 @@ public:
 		const D3DXCOLOR col, const int nLife, int nPriority = EFFECT_PRIORITY);		//オーバーロード（エフェクトいろいろ設定可）
 	~CEffect2D();
 
-	//読み込み
-	static HRESULT Load(const char* pPath);
-	static void Unload(void);
-
 	//生成
 	static CEffect2D* Create(const D3DXVECTOR3 pos, const D3DXVECTOR3 move, const float fWidth, const float fHeight,
 		const D3DXCOLOR col, const int nLife);
@@ -48,9 +44,9 @@ public:
 	void Draw(void);
 
 private:
-	static LPDIRECT3DTEXTURE9 m_pTexture;	//テクスチャ
-	Effect m_effect;						//エフェクト構造体
-	const int m_nDefLife;					//設定寿命
+	int m_nIdxTexture;		//テクスチャ番号
+	Effect m_effect;		//エフェクト構造体
+	const int m_nDefLife;	//設定寿命
 };
 
 //========================================
@@ -65,10 +61,6 @@ public:
 		const D3DXCOLOR col, const int nLife, int nPriority = EFFECT_PRIORITY);		//オーバーロード（エフェクトいろいろ設定可）
 	~CEffectBillboard();
 
-	//読み込み
-	static HRESULT Load(const char* pPath);
-	static void Unload(void);
-
 	//生成
 	static CEffectBillboard* Create(const D3DXVECTOR3 pos, const D3DXVECTOR3 move, const float fWidth, const float fHeight,
 		const D3DXCOLOR col, const int nLife);
@@ -80,7 +72,7 @@ public:
 	void Draw(void);
 
 private:
-	static LPDIRECT3DTEXTURE9 m_pTexture;	//テクスチャ
+	int m_nIdxTexture;		//テクスチャ番号
 	Effect m_effect;						//エフェクト構造体
 	const int m_nDefLife;					//設定寿命
 };

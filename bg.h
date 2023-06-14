@@ -16,10 +16,6 @@ public:
 	CBG(int nPriority = PRIORITY_BG);
 	~CBG();
 
-	//読み込み
-	static HRESULT Load(const char* pPath);
-	static void Unload(void);
-
 	//生成
 	static CBG* Create(void);
 
@@ -30,7 +26,7 @@ public:
 	void Draw(void);
 
 private:
-	static LPDIRECT3DTEXTURE9 m_pTexture;	//テクスチャ
+	int m_nIdxTexture;	//テクスチャ番号
 };
 
 #endif // !_BG_H_

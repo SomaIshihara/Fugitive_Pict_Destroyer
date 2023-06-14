@@ -35,10 +35,6 @@ public:
 	void Update(void);
 	void Draw(void);
 
-	//読み込み
-	static HRESULT Load(const char* pPath, int nPatWidth, int nPatHeight);
-	static void Unload(void);
-
 	//生成
 	static CTimer* Create(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, const float fOneWidth, const float fOneHeight);	//オブジェクトを生成(fOneWidth,fOneHeight:1桁当たりのサイズ)
 
@@ -53,16 +49,16 @@ public:
 	void Set(const int nScore, COUNT type);	//タイマー設定
 
 private:
-	void CutNumber(void);					//数字分割
+	void CutNumber(void);				//数字分割
 	CNumber* m_pNumber[TIME_DIGIT];		//数字
-	static PatternTexture m_patTexture;		//テクスチャ
-	D3DXVECTOR3 m_pos;						//位置（1桁目の数字の中心を想定）
-	D3DXVECTOR3 m_rot;						//向き（1桁目の数字の中心を想定）
-	float m_fOneWidth;						//1桁当たりのサイズ幅
-	float m_fOneHeight;						//1桁当たりのサイズ高さ
-	int m_nCounter;							//タイマーカウンタ
-	int m_nTime;							//タイム
-	COUNT m_count;							//カウント種類
+	int m_nIdxTexture;					//テクスチャ番号
+	D3DXVECTOR3 m_pos;					//位置（1桁目の数字の中心を想定）
+	D3DXVECTOR3 m_rot;					//向き（1桁目の数字の中心を想定）
+	float m_fOneWidth;					//1桁当たりのサイズ幅
+	float m_fOneHeight;					//1桁当たりのサイズ高さ
+	int m_nCounter;						//タイマーカウンタ
+	int m_nTime;						//タイム
+	COUNT m_count;						//カウント種類
 };
 
 #endif // !_TIME_H_

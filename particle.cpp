@@ -7,6 +7,7 @@
 #include "particle.h"
 #include "manager.h"
 #include "renderer.h"
+#include "texture.h"
 #include "effect.h"
 #include "Culc.h"
 
@@ -14,10 +15,6 @@
 #define ROT_ACCU	(100)	//角度の精度
 #define SPEED_ACCU	(100)	//速度の精度
 #define PART_EFFECT_LIFE	(20)	//エフェクト用パーティクルの寿命
-
-//静的メンバ変数
-LPDIRECT3DTEXTURE9 CParticle2D::m_pTexture = NULL;
-LPDIRECT3DTEXTURE9 CParticleBillboard::m_pTexture = NULL;
 
 //****************************************
 //2Dパーティクル
@@ -106,9 +103,6 @@ void CParticle2D::Update(void)
 		pEffect = pEffect->Create(m_particle.pos, move, m_particle.fWidth, m_particle.fHeight, m_particle.col, PART_EFFECT_LIFE);
 		pEffect->Init();
 
-		//エフェクトにテクスチャを張る
-		pEffect->BindTexture(m_pTexture);
-
 		//AllEffectのほうのfor文を抜ける
 		break;
 	}
@@ -143,38 +137,6 @@ CParticle2D* CParticle2D::Create(const D3DXVECTOR3 pos, const int nLife, const i
 	else
 	{
 		return NULL;
-	}
-}
-
-//=================================
-//テクスチャ読み込み処理
-//=================================
-HRESULT CParticle2D::Load(const char* pPath)
-{
-	LPDIRECT3DDEVICE9 pDevice = CManager::GetRenderer()->GetDevice();	//デバイス取得
-
-	//テクスチャ読み込み
-	if (FAILED(D3DXCreateTextureFromFile(pDevice,
-		pPath,
-		&m_pTexture)))
-	{//失敗
-		return E_FAIL;
-	}
-
-	//成功
-	return S_OK;
-}
-
-//=================================
-//テクスチャ破棄処理
-//=================================
-void CParticle2D::Unload(void)
-{
-	//テクスチャ破棄
-	if (m_pTexture != NULL)
-	{
-		m_pTexture->Release();
-		m_pTexture = NULL;
 	}
 }
 
@@ -266,9 +228,6 @@ void CParticleBillboard::Update(void)
 		pEffect = pEffect->Create(m_particle.pos, move, m_particle.fWidth, m_particle.fHeight, m_particle.col, PART_EFFECT_LIFE);
 		pEffect->Init();
 
-		//エフェクトにテクスチャを張る
-		pEffect->BindTexture(m_pTexture);
-
 		//AllEffectのほうのfor文を抜ける
 		break;
 	}
@@ -303,37 +262,5 @@ CParticleBillboard* CParticleBillboard::Create(const D3DXVECTOR3 pos, const int 
 	else
 	{
 		return NULL;
-	}
-}
-
-//=================================
-//テクスチャ読み込み処理
-//=================================
-HRESULT CParticleBillboard::Load(const char* pPath)
-{
-	LPDIRECT3DDEVICE9 pDevice = CManager::GetRenderer()->GetDevice();	//デバイス取得
-
-	//テクスチャ読み込み
-	if (FAILED(D3DXCreateTextureFromFile(pDevice,
-		pPath,
-		&m_pTexture)))
-	{//失敗
-		return E_FAIL;
-	}
-
-	//成功
-	return S_OK;
-}
-
-//=================================
-//テクスチャ破棄処理
-//=================================
-void CParticleBillboard::Unload(void)
-{
-	//テクスチャ破棄
-	if (m_pTexture != NULL)
-	{
-		m_pTexture->Release();
-		m_pTexture = NULL;
 	}
 }

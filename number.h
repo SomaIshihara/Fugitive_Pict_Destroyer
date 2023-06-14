@@ -25,6 +25,9 @@ public:
 	void Update(void);
 	void Draw(void);
 
+	//数字専用テクスチャ設定
+	void BindTexture(int nIdx);
+
 	//設定
 	void SetNumber(const int nSource, const int nDigit);	//もととなる数字と桁数を入れると分割してくれる
 
@@ -32,6 +35,7 @@ public:
 	static CNumber* Create(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, const float fWidth, const float fHeight);
 
 private:
+	int m_nIdxTexture;	//テクスチャ番号
 };
 
 #endif // !_OBJ_ANIM2D_H_

@@ -7,6 +7,7 @@
 #include "main.h"
 #include "manager.h"
 #include "renderer.h"
+#include "texture.h"
 #include "input.h"
 #include "objectX.h"
 #include <assert.h>
@@ -80,6 +81,7 @@ void CObjectX::Update(void)
 void CObjectX::Draw(void)
 {
 	LPDIRECT3DDEVICE9 pDevice = CManager::GetRenderer()->GetDevice();	//デバイス取得
+	CTexture* pTexture = CManager::GetTexture();						//テクスチャオブジェクト取得
 	D3DXMATRIX mtxRot, mtxTrans, mtxTexture;							//計算用
 	D3DMATERIAL9 matDef;												//現在のマテリアル保存用
 	D3DXMATERIAL *pMat;													//マテリアルデータへのポインタ
@@ -115,7 +117,7 @@ void CObjectX::Draw(void)
 		pDevice->SetMaterial(&pMat[nCntMat].MatD3D);
 
 		//テクスチャ設定
-		pDevice->SetTexture(0, m_aModel[m_nIdx].m_apTexture[nCntMat]);
+		pDevice->SetTexture(0, pTexture->GetAddress(m_aModel[m_nIdx].m_pIdxtexture[nCntMat]));
 
 		//モデル描画
 		m_aModel[m_nIdx].m_pMesh->DrawSubset(nCntMat);
@@ -154,7 +156,8 @@ CObjectX* CObjectX::Create(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, const i
 void CObjectX::Load(const char * pPath, const int nIdx)
 {
 	LPDIRECT3DDEVICE9 pDevice = CManager::GetRenderer()->GetDevice();	//デバイス取得
-	m_aModel[nIdx].m_apTexture = NULL;	//テクスチャポインタをNULLにする
+	CTexture* pTexture = CManager::GetTexture();						//テクスチャオブジェクト取得
+	m_aModel[nIdx].m_pIdxtexture = NULL;	//テクスチャ番号ポインタをNULLにする
 
 	if (SUCCEEDED(D3DXLoadMeshFromX(
 		pPath,
@@ -167,9 +170,9 @@ void CObjectX::Load(const char * pPath, const int nIdx)
 		&m_aModel[nIdx].m_pMesh)))
 	{
 		//テクスチャポインタ確保
-		if (m_aModel[nIdx].m_apTexture == NULL)
+		if (m_aModel[nIdx].m_pIdxtexture == NULL)
 		{//NULL
-			m_aModel[nIdx].m_apTexture = new LPDIRECT3DTEXTURE9[(int)m_aModel[nIdx].m_dwNumMatModel];
+			m_aModel[nIdx].m_pIdxtexture = new int[(int)m_aModel[nIdx].m_dwNumMatModel];
 
 			//テクスチャ読み込み
 			D3DXMATERIAL* pMat;	//マテリアルポインタ
@@ -180,13 +183,15 @@ void CObjectX::Load(const char * pPath, const int nIdx)
 			//テクスチャ読み込み
 			for (int nCntTex = 0; nCntTex < (int)m_aModel[nIdx].m_dwNumMatModel; nCntTex++)
 			{
-				m_aModel[nIdx].m_apTexture[nCntTex] = NULL;
+				m_aModel[nIdx].m_pIdxtexture[nCntTex] = NULL;
 				if (pMat[nCntTex].pTextureFilename != NULL)
-				{
+				{//テクスチャあるよ
 					//テクスチャ読み込み
-					D3DXCreateTextureFromFile(pDevice,
-						pMat[nCntTex].pTextureFilename,
-						&m_aModel[nIdx].m_apTexture[nCntTex]);
+					m_aModel[nIdx].m_pIdxtexture[nCntTex] = pTexture->Regist(pMat[nCntTex].pTextureFilename);
+				}
+				else
+				{//ないよ
+					m_aModel[nIdx].m_pIdxtexture[nCntTex] = -1;	//テクスチャ取得時にNULLになるようにする
 				}
 			}
 		}
@@ -218,20 +223,11 @@ void CObjectX::Unload(void)
 			m_aModel[cntModel].m_pBuffMat = NULL;
 		}
 
-		//仮置き：テクスチャ破棄
-		for (int cntTexture = 0; cntTexture < m_aModel[cntModel].m_dwNumMatModel; cntTexture++)
+		//テクスチャ番号破棄
+		if (m_aModel[cntModel].m_pIdxtexture != NULL)
 		{
-			if (m_aModel[cntModel].m_apTexture[cntTexture] != NULL)
-			{
-				m_aModel[cntModel].m_apTexture[cntTexture]->Release();
-				m_aModel[cntModel].m_apTexture[cntTexture] = NULL;
-			}
-		}
-		//テクスチャポインタ破棄
-		if (m_aModel[cntModel].m_apTexture != NULL)
-		{
-			delete[] m_aModel[cntModel].m_apTexture;
-			m_aModel[cntModel].m_apTexture = NULL;
+			delete[] m_aModel[cntModel].m_pIdxtexture;
+			m_aModel[cntModel].m_pIdxtexture = NULL;
 		}
 	}
 	

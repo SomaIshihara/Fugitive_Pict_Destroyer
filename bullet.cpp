@@ -6,8 +6,9 @@
 //======================================================
 #include "manager.h"
 #include "renderer.h"
+#include "texture.h"
 #include "object.h"
-#include "player.h"
+//#include "player.h"
 #include "enemy.h"
 #include "block.h"
 #include "bullet.h"
@@ -17,14 +18,12 @@
 #include "effect.h"
 #include "Culc.h"
 
-//静的メンバ変数
-LPDIRECT3DTEXTURE9 CBullet::m_pTexture = NULL;
-
 //=================================
 //コンストラクタ（デフォルト）
 //=================================
 CBullet::CBullet(int nPriority) : CObject2D(nPriority)
 {
+	m_nIdxTexture = -1;
 	m_move = D3DXVECTOR3(3.0f, 0.0f, 0.0f);
 	CObject::SetType(TYPE_BULLET);
 }
@@ -35,6 +34,7 @@ CBullet::CBullet(int nPriority) : CObject2D(nPriority)
 CBullet::CBullet(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, const float fWidth, const float fHeight, const float fSpeed, int nPriority) 
 	: CObject2D(pos, rot, fWidth, fHeight, nPriority)
 {
+	m_nIdxTexture = -1;
 	m_move.x = sinf(FIX_ROT(rot.z * D3DX_PI + D3DX_PI)) * fSpeed;
 	m_move.y = cosf(FIX_ROT(rot.z * D3DX_PI + D3DX_PI)) * fSpeed;
 	CObject::SetType(TYPE_BULLET);
@@ -53,6 +53,10 @@ CBullet::~CBullet()
 HRESULT CBullet::Init(void)
 {
 	CObject2D::Init();
+
+	//テクスチャ読み込み
+	CTexture* pTexture = CManager::GetTexture();
+	m_nIdxTexture = pTexture->Regist("data\\TEXTURE\\EnergyBullet_01.png");
 
 	//種類設定
 	m_Type = TYPE_PLAYER;
@@ -97,10 +101,12 @@ void CBullet::Update(void)
 	{//弾が敵に当たった
 		return;
 	}
+#if 0
 	if (m_Type == TYPE_ENEMY && CollisionPlayer() == true)
 	{//弾がプレイヤーに当たった
 		return;
 	}
+#endif
 	if (m_Type == TYPE_PLAYER && CollisionBlock() == true)
 	{//弾がブロックに当たった
 		return;
@@ -140,45 +146,13 @@ CBullet* CBullet::Create(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, const flo
 		pBullet->SetCol(D3DXCOLOR(1.0f, 0.5f, 0.16f,1.0f));
 
 		//テクスチャ割り当て
-		pBullet->BindTexture(m_pTexture);
+		pBullet->BindTexture(pBullet->m_nIdxTexture);
 
 		return pBullet;
 	}
 	else
 	{
 		return NULL;
-	}
-}
-
-//=================================
-//テクスチャ読み込み処理
-//=================================
-HRESULT CBullet::Load(const char* pPath)
-{
-	LPDIRECT3DDEVICE9 pDevice = CManager::GetRenderer()->GetDevice();	//デバイス取得
-	
-	//テクスチャ読み込み
-	if (FAILED(D3DXCreateTextureFromFile(pDevice,
-		pPath,
-		&m_pTexture)))
-	{//失敗
-		return E_FAIL;
-	}
-
-	//成功
-	return S_OK;
-}
-
-//=================================
-//テクスチャ破棄処理
-//=================================
-void CBullet::Unload(void)
-{
-	//テクスチャ破棄
-	if (m_pTexture != NULL)
-	{
-		m_pTexture->Release();
-		m_pTexture = NULL;
 	}
 }
 
@@ -223,6 +197,7 @@ bool CBullet::CollisionEnemy(void)
 	return false;
 }
 
+#if 0
 //=================================
 //敵との衝突判定
 //=================================
@@ -261,6 +236,7 @@ bool CBullet::CollisionPlayer(void)
 	//弾は敵に当たっていなかった
 	return false;
 }
+#endif
 
 //=================================
 //ブロックとの衝突判定

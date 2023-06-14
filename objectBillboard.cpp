@@ -7,6 +7,7 @@
 #include "main.h"
 #include "manager.h"
 #include "renderer.h"
+#include "texture.h"
 #include "input.h"
 #include "objectBillboard.h"
 
@@ -17,7 +18,7 @@ CObjectBillboard::CObjectBillboard(int nPriority) : CObject(nPriority)
 {
 	//クリア
 	m_pVtxbuff = NULL;
-	m_pTexture = NULL;
+	m_nIdxTexture = -1;
 	m_pos = VEC3_ZERO;
 	m_rot = VEC3_ZERO;
 }
@@ -29,7 +30,7 @@ CObjectBillboard::CObjectBillboard(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot,
 {
 	//クリア
 	m_pVtxbuff = NULL;
-	m_pTexture = NULL;
+	m_nIdxTexture = -1;
 	m_pos = pos;
 	m_rot = rot;
 	m_fWidth = fWidth;
@@ -127,6 +128,7 @@ void CObjectBillboard::Update(void)
 void CObjectBillboard::Draw(void)
 {
 	LPDIRECT3DDEVICE9 pDevice = CManager::GetRenderer()->GetDevice();	//デバイス取得
+	CTexture* pTexture = CManager::GetTexture();						//テクスチャオブジェクト取得
 	D3DXMATRIX mtxRot, mtxTrans;	//計算用
 	D3DXMATRIX mtxView;				//ビューマトリ取得用
 
@@ -157,7 +159,7 @@ void CObjectBillboard::Draw(void)
 	pDevice->SetFVF(FVF_VERTEX_3D);
 
 	//テクスチャ設定
-	pDevice->SetTexture(0, m_pTexture);
+	pDevice->SetTexture(0, pTexture->GetAddress(m_nIdxTexture));
 
 	//描画
 	pDevice->DrawPrimitive(D3DPT_TRIANGLESTRIP, 0, 2);

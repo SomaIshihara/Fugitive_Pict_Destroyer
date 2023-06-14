@@ -7,6 +7,7 @@
 #include "main.h"
 #include "manager.h"
 #include "renderer.h"
+#include "texture.h"
 #include "input.h"
 #include "object2D.h"
 
@@ -17,9 +18,6 @@ CObject2D::CObject2D(int nPriority) : CObject(nPriority)
 {
 	//クリア
 	m_pVtxbuff = NULL;
-	m_patTexture.pTexture = NULL;
-	m_patTexture.nPatternWidth = 1;
-	m_patTexture.nPatternHeight = 1;
 	m_fLength = INT_ZERO;
 	m_fAngle = INT_ZERO;
 	m_fWidth = 100.0f;
@@ -36,9 +34,6 @@ CObject2D::CObject2D(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, const float f
 {
 	//クリア
 	m_pVtxbuff = NULL;
-	m_patTexture.pTexture = NULL;
-	m_patTexture.nPatternWidth = 1;
-	m_patTexture.nPatternHeight = 1;
 	m_fLength = INT_ZERO;
 	m_fAngle = INT_ZERO;
 	m_fWidth = fWidth;
@@ -154,6 +149,7 @@ void CObject2D::Update(void)
 void CObject2D::Draw(void)
 {
 	LPDIRECT3DDEVICE9 pDevice = CManager::GetRenderer()->GetDevice();	//デバイス取得
+	CTexture* pTexture = CManager::GetTexture();						//テクスチャオブジェクト取得
 
 	//頂点バッファをデータストリームに設定
 	pDevice->SetStreamSource(0, m_pVtxbuff, 0, sizeof(VERTEX_2D));
@@ -162,7 +158,7 @@ void CObject2D::Draw(void)
 	pDevice->SetFVF(FVF_VERTEX_2D);
 
 	//テクスチャ設定
-	pDevice->SetTexture(0, m_patTexture.pTexture);
+	pDevice->SetTexture(0, pTexture->GetAddress(m_nIdxTexture));
 
 	//描画
 	pDevice->DrawPrimitive(D3DPT_TRIANGLESTRIP, 0, 2);

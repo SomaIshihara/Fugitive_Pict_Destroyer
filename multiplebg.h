@@ -26,10 +26,6 @@ public:
 	void Update(void);
 	void Draw(void);
 
-	//読み込み
-	static HRESULT Load(const char* pPath, int nIdx);
-	static void Unload(void);
-
 	//生成
 	static CMultipleBG* Create(float fSpeed0, float fSpeed1, float fSpeed2);	//オブジェクトを生成 fSpeed:スクロール速度
 
@@ -41,10 +37,10 @@ public:
 	float GetDepth(void) { return FLOAT_ZERO; }
 
 private:
-	CObject2D* m_pObj2D[MAX_MULTIPLE_BG];					//2Dオブジェクト
-	float m_aTexV[MAX_MULTIPLE_BG];							//背景のテクスチャ座標
-	float m_aSpeed[MAX_MULTIPLE_BG];						//背景のスクロール速度
-	static LPDIRECT3DTEXTURE9 m_pTexture[MAX_MULTIPLE_BG];	//テクスチャ
+	CObject2D* m_pObj2D[MAX_MULTIPLE_BG];	//2Dオブジェクト
+	float m_aTexV[MAX_MULTIPLE_BG];			//背景のテクスチャ座標
+	float m_aSpeed[MAX_MULTIPLE_BG];		//背景のスクロール速度
+	int m_aIdxTexture[MAX_MULTIPLE_BG];		//テクスチャ番号
 };
 
 #endif // !_MULTIPLE_BG_H_

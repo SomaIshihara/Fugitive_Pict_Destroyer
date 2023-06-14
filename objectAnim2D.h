@@ -14,15 +14,10 @@ class CObjectAnim2D : public CObject2D
 {
 public:
 	//コンストラクタ・デストラクタ
-	CObjectAnim2D(int nPriority = 3);																												//デフォルト
+	CObjectAnim2D(int nPriority = 3);																			//デフォルト
 	CObjectAnim2D(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, 
-		const float fWidth, const float fHeight, const int nPatWidth, const int nPatHeight,
-		const int nAnimSpeed, const bool bLoop, int nPriority = 3);	//オーバーロード（位置向きandアニメーション）
+		const float fWidth, const float fHeight, const int nAnimSpeed, const bool bLoop, int nPriority = 3);	//オーバーロード（位置向きandアニメーション）
 	virtual ~CObjectAnim2D();
-
-	//読み込み
-	static HRESULT Load(const char* pPath);
-	static void Unload(void);
 
 	//基本処理
 	virtual HRESULT Init(void);
@@ -30,18 +25,18 @@ public:
 	virtual void Update(void);
 	virtual void Draw(void);
 
+	//アニメーション2D用テクスチャ設定処理
+	void BindTexture(int nIdx);
+
 	//生成
-	static CObjectAnim2D* Create(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, const float fWidth, const float fHeight,
-		const int nPatWidth, const int nPatHeight, const int nAnimSpeed, const bool bLoop);
+	static CObjectAnim2D* Create(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, const float fWidth, const float fHeight, const int nAnimSpeed, const bool bLoop);
 
 private:
-	static LPDIRECT3DTEXTURE9 m_pTexture;	//テクスチャ
+	int m_nIdxTexture;	//テクスチャ番号
 	int m_nAnimSpeed;	//アニメーション速度
 	int m_nCounterAnim;	//アニメーションカウンタ
 	int m_nPatternAnim;	//アニメーションパターン
-	const int m_nPatternWidth;	//パターン幅
-	const int m_nPatternHeight;	//パターン高さ
-	bool m_bLoop;				//ループするか
+	bool m_bLoop;		//ループするか
 };
 
 #endif // !_OBJ_ANIM2D_H_

@@ -22,10 +22,6 @@ public:
 		int nPriority = BULLET_PRIORITY);	//オーバーロード（位置向きandアニメーション）
 	~CBullet();
 
-	//読み込み
-	static HRESULT Load(const char* pPath);
-	static void Unload(void);
-
 	//生成
 	static CBullet* Create(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, const float fWidth, const float fHeight, const float fSpeed, const TYPE type);
 
@@ -37,16 +33,18 @@ public:
 
 	//衝突判定
 	bool CollisionEnemy(void);	//敵
+#if 0
 	bool CollisionPlayer(void);	//プレイヤー
+#endif
 	bool CollisionBlock(void);	//ブロック
 
 	//設定処理
 	void SetType(TYPE type) { m_Type = type; }	//タイプ設定
 
 private:
-	static LPDIRECT3DTEXTURE9 m_pTexture;	//テクスチャ
-	D3DXVECTOR3 m_move;						//移動量
-	TYPE m_Type;							//誰の弾か
+	int m_nIdxTexture;		//テクスチャ番号
+	D3DXVECTOR3 m_move;		//移動量
+	TYPE m_Type;			//誰の弾か
 };
 
 #endif // !_PLAYER_H_

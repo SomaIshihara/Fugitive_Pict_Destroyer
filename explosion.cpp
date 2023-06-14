@@ -6,29 +6,26 @@
 //======================================================
 #include "manager.h"
 #include "renderer.h"
+#include "texture.h"
 #include "explosion.h"
 #include "input.h"
 #include <assert.h>
-
-//静的メンバ変数
-LPDIRECT3DTEXTURE9 CExplosion::m_pTexture = NULL;
 
 //=================================
 //コンストラクタ（デフォルト）
 //=================================
 CExplosion::CExplosion()
 {
-
+	m_nIdxTexture = -1;
 }
 
 //=================================
 //コンストラクタ（オーバーロード 位置向きandパターン幅高さ）
 //=================================
-CExplosion::CExplosion(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot,
-	const float fWidth, const float fHeight, const int nPatWidth, const int nPatHeight, const int nAnimSpeed)
-	: CObjectAnim2D(pos, rot, fWidth, fHeight, nPatWidth, nPatHeight, nAnimSpeed, false)
+CExplosion::CExplosion(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, const float fWidth, const float fHeight, const int nAnimSpeed) 
+	: CObjectAnim2D(pos, rot, fWidth, fHeight, nAnimSpeed, false)
 {
-	
+	m_nIdxTexture = -1;
 }
 
 //=================================
@@ -43,6 +40,10 @@ CExplosion::~CExplosion()
 //=================================
 HRESULT CExplosion::Init(void)
 {
+	//テクスチャ読み込み
+	CTexture* pTexture = CManager::GetTexture();
+	m_nIdxTexture = pTexture->Regist("data\\TEXTURE\\bomb0.png", 8, 2);
+
 	//親クラス処理
 	if (FAILED(CObjectAnim2D::Init()))
 	{
@@ -81,58 +82,25 @@ void CExplosion::Draw(void)
 //=================================
 //生成処理
 //=================================
-CExplosion* CExplosion::Create(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, const float fWidth, const float fHeight,
-	const int nPatWidth, const int nPatHeight, const int nAnimSpeed)
+CExplosion* CExplosion::Create(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, const float fWidth, const float fHeight, const int nAnimSpeed)
 {
-	CExplosion* pObjAnim2D = NULL;
+	CExplosion* pExplosion = NULL;
 
-	if (pObjAnim2D == NULL)
+	if (pExplosion == NULL)
 	{
 		//オブジェクトアニメーション2Dの生成
-		pObjAnim2D = new CExplosion(pos, rot, fWidth, fHeight, nPatWidth, nPatHeight, nAnimSpeed);
+		pExplosion = new CExplosion(pos, rot, fWidth, fHeight, nAnimSpeed);
 
 		//初期化
-		pObjAnim2D->Init();
+		pExplosion->Init();
 
 		//テクスチャ割り当て
-		pObjAnim2D->BindTexture(m_pTexture);
+		pExplosion->BindTexture(pExplosion->m_nIdxTexture);
 
-		return pObjAnim2D;
+		return pExplosion;
 	}
 	else
 	{
 		return NULL;
-	}
-}
-
-//=================================
-//テクスチャ読み込み処理
-//=================================
-HRESULT CExplosion::Load(const char* pPath)
-{
-	LPDIRECT3DDEVICE9 pDevice = CManager::GetRenderer()->GetDevice();	//デバイス取得
-
-	//テクスチャ読み込み
-	if (FAILED(D3DXCreateTextureFromFile(pDevice,
-		pPath,
-		&m_pTexture)))
-	{//失敗
-		return E_FAIL;
-	}
-
-	//成功
-	return S_OK;
-}
-
-//=================================
-//テクスチャ破棄処理
-//=================================
-void CExplosion::Unload(void)
-{
-	//テクスチャ破棄
-	if (m_pTexture != NULL)
-	{
-		m_pTexture->Release();
-		m_pTexture = NULL;
 	}
 }

@@ -6,17 +6,15 @@
 //======================================================
 #include "manager.h"
 #include "renderer.h"
+#include "texture.h"
 #include "objectAnim2D.h"
 #include "input.h"
 #include <assert.h>
 
-//静的メンバ変数
-LPDIRECT3DTEXTURE9 CObjectAnim2D::m_pTexture = NULL;
-
 //=================================
 //コンストラクタ（デフォルト）
 //=================================
-CObjectAnim2D::CObjectAnim2D(int nPriority) : CObject2D(nPriority) , m_nPatternWidth(1) , m_nPatternHeight(1)
+CObjectAnim2D::CObjectAnim2D(int nPriority) : CObject2D(nPriority)
 {
 	//値クリア
 	m_nCounterAnim = INT_ZERO;
@@ -29,8 +27,8 @@ CObjectAnim2D::CObjectAnim2D(int nPriority) : CObject2D(nPriority) , m_nPatternW
 //コンストラクタ（オーバーロード 位置向きandパターン幅高さ）
 //=================================
 CObjectAnim2D::CObjectAnim2D(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot,
-	const float fWidth, const float fHeight, const int nPatWidth, const int nPatHeight, const int nAnimSpeed, const bool bLoop, int nPriority)
-	: CObject2D(pos,rot, fWidth, fHeight, nPriority), m_nPatternWidth(nPatWidth), m_nPatternHeight(nPatHeight)
+	const float fWidth, const float fHeight, const int nAnimSpeed, const bool bLoop, int nPriority)
+	: CObject2D(pos,rot, fWidth, fHeight, nPriority)
 {
 	//値クリア
 	m_nCounterAnim = INT_ZERO;
@@ -62,12 +60,17 @@ HRESULT CObjectAnim2D::Init(void)
 	m_nCounterAnim = INT_ZERO;
 	m_nPatternAnim = INT_ZERO;
 
+	//パターン幅高さ取得
+	CTexture* pTexture = CManager::GetTexture();
+	int nPatWidth = pTexture->GetPatWidth(m_nIdxTexture);
+	int nPatHeight = pTexture->GetPatHeight(m_nIdxTexture);
+
 	//テクスチャ設定
 	D3DXVECTOR2 tex0, tex3;
-	tex0 = D3DXVECTOR2((float)(m_nPatternAnim % m_nPatternWidth) / m_nPatternWidth,
-		(float)(m_nPatternAnim / m_nPatternWidth) / m_nPatternHeight);
-	tex3 = D3DXVECTOR2((float)(m_nPatternAnim % m_nPatternWidth + 1) / m_nPatternWidth,
-		(float)(m_nPatternAnim / m_nPatternWidth + 1) / m_nPatternHeight);
+	tex0 = D3DXVECTOR2((float)(m_nPatternAnim % nPatWidth) / nPatWidth,
+		(float)(m_nPatternAnim / nPatWidth) / nPatHeight);
+	tex3 = D3DXVECTOR2((float)(m_nPatternAnim % nPatWidth + 1) / nPatWidth,
+		(float)(m_nPatternAnim / nPatWidth + 1) / nPatHeight);
 
 	if (FAILED(SetTex(tex0, tex3)))
 	{
@@ -99,15 +102,20 @@ void CObjectAnim2D::Update(void)
 	{
 		m_nCounterAnim = 0;	//カウンタ初期値に戻す
 
+		//パターン幅高さ取得
+		CTexture* pTexture = CManager::GetTexture();
+		int nPatWidth = pTexture->GetPatWidth(m_nIdxTexture);
+		int nPatHeight = pTexture->GetPatHeight(m_nIdxTexture);
+
 		//パターンNo更新
 		if (m_bLoop == true)
 		{//ループする設定の場合
-			m_nPatternAnim = (m_nPatternAnim + 1) % (m_nPatternHeight * m_nPatternWidth);
+			m_nPatternAnim = (m_nPatternAnim + 1) % (nPatHeight * nPatWidth);
 		}
 		else
 		{//ループしない設定の場合
 			m_nPatternAnim++;
-			if (m_nPatternAnim >= (m_nPatternHeight * m_nPatternWidth))
+			if (m_nPatternAnim >= (nPatHeight * nPatWidth))
 			{//アニメーション終了
 				Uninit();
 				return;
@@ -116,10 +124,10 @@ void CObjectAnim2D::Update(void)
 
 		//テクスチャ設定
 		D3DXVECTOR2 tex0, tex3;
-		tex0 = D3DXVECTOR2((float)(m_nPatternAnim % m_nPatternWidth) / m_nPatternWidth,
-			(float)(m_nPatternAnim / m_nPatternWidth) / m_nPatternHeight);
-		tex3 = D3DXVECTOR2((float)(m_nPatternAnim % m_nPatternWidth + 1) / m_nPatternWidth,
-			(float)(m_nPatternAnim / m_nPatternWidth + 1) / m_nPatternHeight);
+		tex0 = D3DXVECTOR2((float)(m_nPatternAnim % nPatWidth) / nPatWidth,
+			(float)(m_nPatternAnim / nPatWidth) / nPatHeight);
+		tex3 = D3DXVECTOR2((float)(m_nPatternAnim % nPatWidth + 1) / nPatWidth,
+			(float)(m_nPatternAnim / nPatWidth + 1) / nPatHeight);
 
 		if (FAILED(SetTex(tex0, tex3)))
 		{
@@ -140,21 +148,20 @@ void CObjectAnim2D::Draw(void)
 //=================================
 //生成処理
 //=================================
-CObjectAnim2D* CObjectAnim2D::Create(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, const float fWidth, const float fHeight,
-	const int nPatWidth, const int nPatHeight, const int nAnimSpeed, const bool bLoop)
+CObjectAnim2D* CObjectAnim2D::Create(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, const float fWidth, const float fHeight, const int nAnimSpeed, const bool bLoop)
 {
 	CObjectAnim2D* pObjAnim2D = NULL;
 
 	if (pObjAnim2D == NULL)
 	{
 		//オブジェクトアニメーション2Dの生成
-		pObjAnim2D = new CObjectAnim2D(pos, rot, fWidth, fHeight, nPatWidth, nPatHeight, nAnimSpeed, bLoop);
+		pObjAnim2D = new CObjectAnim2D(pos, rot, fWidth, fHeight, nAnimSpeed, bLoop);
 
 		//初期化
 		pObjAnim2D->Init();
 
 		//テクスチャ割り当て
-		pObjAnim2D->BindTexture(m_pTexture);
+		pObjAnim2D->BindTexture(pObjAnim2D->m_nIdxTexture);
 
 		return pObjAnim2D;
 	}
@@ -165,33 +172,30 @@ CObjectAnim2D* CObjectAnim2D::Create(const D3DXVECTOR3 pos, const D3DXVECTOR3 ro
 }
 
 //=================================
-//テクスチャ読み込み処理
+//テクスチャ設定処理
 //=================================
-HRESULT CObjectAnim2D::Load(const char* pPath)
+void CObjectAnim2D::BindTexture(int nIdx)
 {
-	LPDIRECT3DDEVICE9 pDevice = CManager::GetRenderer()->GetDevice();	//デバイス取得
+	//アニメーション側の番号設定
+	m_nIdxTexture = nIdx;
 
-	//テクスチャ読み込み
-	if (FAILED(D3DXCreateTextureFromFile(pDevice,
-		pPath,
-		&m_pTexture)))
-	{//失敗
-		return E_FAIL;
-	}
+	//テクスチャ座標再設定
+	CTexture* pTexture = CManager::GetTexture();
+	int nPatWidth = pTexture->GetPatWidth(m_nIdxTexture);
+	int nPatHeight = pTexture->GetPatHeight(m_nIdxTexture);
 
-	//成功
-	return S_OK;
-}
+	//テクスチャ設定
+	D3DXVECTOR2 tex0, tex3;
+	tex0 = D3DXVECTOR2((float)(m_nPatternAnim % nPatWidth) / nPatWidth,
+		(float)(m_nPatternAnim / nPatWidth) / nPatHeight);
+	tex3 = D3DXVECTOR2((float)(m_nPatternAnim % nPatWidth + 1) / nPatWidth,
+		(float)(m_nPatternAnim / nPatWidth + 1) / nPatHeight);
 
-//=================================
-//テクスチャ破棄処理
-//=================================
-void CObjectAnim2D::Unload(void)
-{
-	//テクスチャ破棄
-	if (m_pTexture != NULL)
+	if (FAILED(SetTex(tex0, tex3)))
 	{
-		m_pTexture->Release();
-		m_pTexture = NULL;
+		assert(false);
 	}
+
+	//親にも伝える
+	CObject2D::BindTexture(nIdx);
 }

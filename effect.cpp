@@ -7,10 +7,7 @@
 #include "effect.h"
 #include "manager.h"
 #include "renderer.h"
-
-//静的メンバ変数
-LPDIRECT3DTEXTURE9 CEffect2D::m_pTexture = NULL;
-LPDIRECT3DTEXTURE9 CEffectBillboard::m_pTexture = NULL;
+#include "texture.h"
 
 //****************************************
 //2Dエフェクト
@@ -21,6 +18,7 @@ LPDIRECT3DTEXTURE9 CEffectBillboard::m_pTexture = NULL;
 CEffect2D::CEffect2D(int nPriority) : CObject2D(nPriority), m_nDefLife(0)
 {
 	//値クリア
+	m_nIdxTexture = -1;
 	m_effect.move = VEC3_ZERO;
 	m_effect.col = D3DXCOLOR(0.0f, 0.0f, 0.0f, 0.0f);
 	m_effect.nLife = 0;
@@ -33,6 +31,7 @@ CEffect2D::CEffect2D(const D3DXVECTOR3 pos, const D3DXVECTOR3 move, const float 
 	const D3DXCOLOR col, const int nLife, int nPriority) : CObject2D(pos, VEC3_ZERO, fWidth, fHeight, nPriority), m_nDefLife(nLife)
 {
 	//値設定
+	m_nIdxTexture = -1;
 	m_effect.move = move;
 	m_effect.col = col;
 	m_effect.nLife = nLife;
@@ -55,6 +54,10 @@ HRESULT CEffect2D::Init(void)
 	{
 		return E_FAIL;
 	}
+
+	//テクスチャ読み込み
+	CTexture* pTexture = CManager::GetTexture();
+	m_nIdxTexture = pTexture->Regist("data\\TEXTURE\\effect000.jpg");
 
 	return S_OK;
 }
@@ -138,45 +141,13 @@ CEffect2D* CEffect2D::Create(const D3DXVECTOR3 pos, const D3DXVECTOR3 move, cons
 		pObjEffect->Init();
 
 		//テクスチャ設定
-		pObjEffect->BindTexture(m_pTexture);
+		pObjEffect->BindTexture(pObjEffect->m_nIdxTexture);
 
 		return pObjEffect;
 	}
 	else
 	{
 		return NULL;
-	}
-}
-
-//=================================
-//テクスチャ読み込み処理
-//=================================
-HRESULT CEffect2D::Load(const char* pPath)
-{
-	LPDIRECT3DDEVICE9 pDevice = CManager::GetRenderer()->GetDevice();	//デバイス取得
-
-	//テクスチャ読み込み
-	if (FAILED(D3DXCreateTextureFromFile(pDevice,
-		pPath,
-		&m_pTexture)))
-	{//失敗
-		return E_FAIL;
-	}
-
-	//成功
-	return S_OK;
-}
-
-//=================================
-//テクスチャ破棄処理
-//=================================
-void CEffect2D::Unload(void)
-{
-	//テクスチャ破棄
-	if (m_pTexture != NULL)
-	{
-		m_pTexture->Release();
-		m_pTexture = NULL;
 	}
 }
 
@@ -189,6 +160,7 @@ void CEffect2D::Unload(void)
 CEffectBillboard::CEffectBillboard(int nPriority) : CObjectBillboard(nPriority), m_nDefLife(0)
 {
 	//値クリア
+	m_nIdxTexture = -1;
 	m_effect.move = VEC3_ZERO;
 	m_effect.col = D3DXCOLOR(0.0f, 0.0f, 0.0f, 0.0f);
 	m_effect.nLife = 0;
@@ -201,6 +173,7 @@ CEffectBillboard::CEffectBillboard(const D3DXVECTOR3 pos, const D3DXVECTOR3 move
 	const D3DXCOLOR col, const int nLife, int nPriority) : CObjectBillboard(pos, VEC3_ZERO, fWidth, fHeight, nPriority), m_nDefLife(nLife)
 {
 	//値設定
+	m_nIdxTexture = -1;
 	m_effect.move = move;
 	m_effect.col = col;
 	m_effect.nLife = nLife;
@@ -223,6 +196,10 @@ HRESULT CEffectBillboard::Init(void)
 	{
 		return E_FAIL;
 	}
+
+	//テクスチャ読み込み
+	CTexture* pTexture = CManager::GetTexture();
+	m_nIdxTexture = pTexture->Regist("data\\TEXTURE\\effect000.jpg");
 
 	return S_OK;
 }
@@ -252,7 +229,7 @@ void CEffectBillboard::Update(void)
 	//寿命管理
 	m_effect.nLife--;	//減らす
 
-						//不透明度設定
+	//不透明度設定
 	m_effect.col.a = (float)m_effect.nLife / m_nDefLife;
 	SetCol(m_effect.col);
 
@@ -306,44 +283,12 @@ CEffectBillboard* CEffectBillboard::Create(const D3DXVECTOR3 pos, const D3DXVECT
 		pObjEffect->Init();
 
 		//テクスチャ設定
-		pObjEffect->BindTexture(m_pTexture);
+		pObjEffect->BindTexture(pObjEffect->m_nIdxTexture);
 
 		return pObjEffect;
 	}
 	else
 	{
 		return NULL;
-	}
-}
-
-//=================================
-//テクスチャ読み込み処理
-//=================================
-HRESULT CEffectBillboard::Load(const char* pPath)
-{
-	LPDIRECT3DDEVICE9 pDevice = CManager::GetRenderer()->GetDevice();	//デバイス取得
-
-	//テクスチャ読み込み
-	if (FAILED(D3DXCreateTextureFromFile(pDevice,
-		pPath,
-		&m_pTexture)))
-	{//失敗
-		return E_FAIL;
-	}
-
-	//成功
-	return S_OK;
-}
-
-//=================================
-//テクスチャ破棄処理
-//=================================
-void CEffectBillboard::Unload(void)
-{
-	//テクスチャ破棄
-	if (m_pTexture != NULL)
-	{
-		m_pTexture->Release();
-		m_pTexture = NULL;
 	}
 }

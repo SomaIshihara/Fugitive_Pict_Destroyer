@@ -19,16 +19,11 @@ public:
 	//コンストラクタ・デストラクタ
 	CPlayer(int nPriority = PLAYER_PRIORITY);	//デフォルト
 	CPlayer(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, const float fWidth, const float fHeight,
-		const int nPatWidth, const int nPatHeight, const int nAnimSpeed, int nPriority = PLAYER_PRIORITY);	//オーバーロード（位置向きandアニメーション）
+		const int nAnimSpeed, int nPriority = PLAYER_PRIORITY);	//オーバーロード（位置向きandアニメーション）
 	~CPlayer();
 
-	//読み込み
-	static HRESULT Load(const char* pPath);
-	static void Unload(void);
-
 	//生成
-	static CPlayer* Create(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, const float fWidth, const float fHeight,
-		const int nPatWidth, const int nPatHeight, const int nAnimSpeed);
+	static CPlayer* Create(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, const float fWidth, const float fHeight, const int nAnimSpeed);
 
 	//基本処理
 	HRESULT Init(void);
@@ -46,12 +41,12 @@ private:
 	void CollisionItem(D3DXVECTOR3 * pPosNew);
 
 	//変数
-	static LPDIRECT3DTEXTURE9 m_pTexture;	//テクスチャ
-	D3DXVECTOR3 m_move;						//移動量
-	float m_fBulletRot;						//弾を撃つ角度
-	int m_nLife;							//体力
-	int m_nCounterJumpTime;					//ジャンプしてからの経過時間
-	bool m_bJump;							//ジャンプしているかどうか
+	int m_nIdxTexture;			//テクスチャ番号
+	D3DXVECTOR3 m_move;			//移動量
+	float m_fBulletRot;			//弾を撃つ角度
+	int m_nLife;				//体力
+	int m_nCounterJumpTime;		//ジャンプしてからの経過時間
+	bool m_bJump;				//ジャンプしているかどうか
 };
 
 #endif // !_PLAYER_H_

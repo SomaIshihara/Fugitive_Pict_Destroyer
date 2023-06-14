@@ -5,6 +5,7 @@
 //
 //======================================================
 #include "manager.h"
+#include "texture.h"
 #include "sound.h"
 #include "renderer.h"
 #include "player.h"
@@ -21,14 +22,12 @@
 #define BLOCKCOLLISION_ERRORNUM	(10)	//ブロック当たり判定の誤差
 #define BULLET_ROT_NUM		(32)		//弾を撃つ角度の数
 
-//静的メンバ変数
-LPDIRECT3DTEXTURE9 CPlayer::m_pTexture = NULL;
-
 //=================================
 //コンストラクタ（デフォルト）
 //=================================
 CPlayer::CPlayer(int nPriority) : CObjectAnim2D(nPriority)
 {
+	m_nIdxTexture = -1;
 	m_nCounterJumpTime = 0;
 	m_fBulletRot = 0.0f;
 	m_move = VEC3_ZERO;
@@ -39,9 +38,10 @@ CPlayer::CPlayer(int nPriority) : CObjectAnim2D(nPriority)
 //コンストラクタ（オーバーロード 位置向きandパターン幅高さ）
 //=================================
 CPlayer::CPlayer(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, const float fWidth, const float fHeight,
-	const int nPatWidth, const int nPatHeight, const int nAnimSpeed, int nPriority) 
-	: CObjectAnim2D(pos, rot, fWidth, fHeight, nPatWidth, nPatHeight, nAnimSpeed, true, nPriority)
+	const int nAnimSpeed, int nPriority) 
+	: CObjectAnim2D(pos, rot, fWidth, fHeight, nAnimSpeed, true, nPriority)
 {
+	m_nIdxTexture = -1;
 	m_nCounterJumpTime = 0;
 	m_fBulletRot = 0.0f;
 	m_move = VEC3_ZERO;
@@ -61,6 +61,10 @@ CPlayer::~CPlayer()
 HRESULT CPlayer::Init(void)
 {
 	CObjectAnim2D::Init();
+
+	//テクスチャ読み込み
+	CTexture* pTexture = CManager::GetTexture();
+	m_nIdxTexture = pTexture->Regist("data\\TEXTURE\\runningman000.png", 8, 1);
 
 	SetType(TYPE_PLAYER);	//種類設定
 
@@ -188,59 +192,26 @@ void CPlayer::Draw(void)
 //=================================
 //生成処理
 //=================================
-CPlayer* CPlayer::Create(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, const float fWidth, const float fHeight,
-	const int nPatWidth, const int nPatHeight, const int nAnimSpeed)
+CPlayer* CPlayer::Create(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, const float fWidth, const float fHeight, const int nAnimSpeed)
 {
 	CPlayer* pPlayer = NULL;
 
 	if (pPlayer == NULL)
 	{
 		//オブジェクトアニメーション2Dの生成
-		pPlayer = new CPlayer(pos, rot, fWidth, fHeight, nPatWidth, nPatHeight, nAnimSpeed);
+		pPlayer = new CPlayer(pos, rot, fWidth, fHeight, nAnimSpeed);
 
 		//初期化
 		pPlayer->Init();
 
 		//テクスチャ割り当て
-		pPlayer->BindTexture(m_pTexture);
+		pPlayer->BindTexture(pPlayer->m_nIdxTexture);
 
 		return pPlayer;
 	}
 	else
 	{
 		return NULL;
-	}
-}
-
-//=================================
-//テクスチャ読み込み処理
-//=================================
-HRESULT CPlayer::Load(const char* pPath)
-{
-	LPDIRECT3DDEVICE9 pDevice = CManager::GetRenderer()->GetDevice();	//デバイス取得
-	
-	//テクスチャ読み込み
-	if (FAILED(D3DXCreateTextureFromFile(pDevice,
-		pPath,
-		&m_pTexture)))
-	{//失敗
-		return E_FAIL;
-	}
-
-	//成功
-	return S_OK;
-}
-
-//=================================
-//テクスチャ破棄処理
-//=================================
-void CPlayer::Unload(void)
-{
-	//テクスチャ破棄
-	if (m_pTexture != NULL)
-	{
-		m_pTexture->Release();
-		m_pTexture = NULL;
 	}
 }
 

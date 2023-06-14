@@ -27,14 +27,10 @@ public:
 	void Update(void);
 	void Draw(void);
 
-	//読み込み
-	static HRESULT Load(const char* pPath);
-	static void Unload(void);
-
 	//生成
 	static CBlock* Create(const D3DXVECTOR3 pos, const float fWidth, const float fHeight);
 private:
-	static LPDIRECT3DTEXTURE9 m_pTexture;	//テクスチャ
+	int m_nIdxTexture;	//テクスチャ番号
 };
 
 #endif // !_BLOCK_H_

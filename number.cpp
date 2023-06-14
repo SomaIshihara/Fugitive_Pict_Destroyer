@@ -6,6 +6,7 @@
 //======================================================
 #include "manager.h"
 #include "renderer.h"
+#include "texture.h"
 #include "object2D.h"
 #include "number.h"
 #include "input.h"
@@ -43,14 +44,17 @@ HRESULT CNumber::Init(void)
 	{
 		return E_FAIL;
 	}
-	//値初期化
+	//パターン幅高さ取得
+	CTexture* pTexture = CManager::GetTexture();
+	int nPatWidth = pTexture->GetPatWidth(m_nIdxTexture);
+	int nPatHeight = pTexture->GetPatHeight(m_nIdxTexture);
 
 	//テクスチャ設定
 	D3DXVECTOR2 tex0, tex3;
-	tex0 = D3DXVECTOR2((float)(INT_ZERO % GetPatWidth()) / GetPatWidth(),
-		(float)(INT_ZERO / GetPatWidth()) / GetPatHeight());
-	tex3 = D3DXVECTOR2((float)(INT_ZERO % GetPatWidth() + 1) / GetPatWidth(),
-		(float)(INT_ZERO / GetPatWidth() + 1) / GetPatHeight());
+	tex0 = D3DXVECTOR2((float)(INT_ZERO % nPatWidth) / nPatWidth,
+		(float)(INT_ZERO / nPatWidth) / nPatHeight);
+	tex3 = D3DXVECTOR2((float)(INT_ZERO % nPatWidth + 1) / nPatWidth,
+		(float)(INT_ZERO / nPatWidth + 1) / nPatHeight);
 
 	if (FAILED(SetTex(tex0, tex3)))
 	{
@@ -124,15 +128,32 @@ void CNumber::SetNumber(const int nSource, const int nDigit)
 	//桁ごとの数字を入れる
 	nNumber = nSource % (int)pow(10, nDigit + 1) / (int)pow(10, nDigit);
 
+	//パターン幅高さ取得
+	CTexture* pTexture = CManager::GetTexture();
+	int nPatWidth = pTexture->GetPatWidth(m_nIdxTexture);
+	int nPatHeight = pTexture->GetPatHeight(m_nIdxTexture);
+
 	//テクスチャ設定
 	D3DXVECTOR2 tex0, tex3;
-	tex0 = D3DXVECTOR2((float)(nNumber % GetPatWidth()) / GetPatWidth(),
-		(float)(nNumber / GetPatWidth()) / GetPatHeight());
-	tex3 = D3DXVECTOR2((float)(nNumber % GetPatWidth() + 1) / GetPatWidth(),
-		(float)(nNumber / GetPatWidth() + 1) / GetPatHeight());
+	tex0 = D3DXVECTOR2((float)(nNumber % nPatWidth) / nPatWidth,
+		(float)(nNumber / nPatWidth) / nPatHeight);
+	tex3 = D3DXVECTOR2((float)(nNumber % nPatWidth + 1) / nPatWidth,
+		(float)(nNumber / nPatWidth + 1) / nPatHeight);
 
 	if (FAILED(SetTex(tex0, tex3)))
 	{
 		assert(false);
 	}
+}
+
+//=================================
+//数字専用テクスチャ設定処理
+//=================================
+void CNumber::BindTexture(int nIdx)
+{
+	//テクスチャ設定
+	m_nIdxTexture = nIdx;
+
+	//親にも伝える
+	CObject2D::BindTexture(nIdx);
 }

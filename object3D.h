@@ -34,6 +34,7 @@ public:
 	float GetWidth(void) { return m_fWidth; }
 	float GetHeight(void) { return FLOAT_ZERO; }
 	float GetDepth(void) { return m_fDepth; }
+	int GetIdxTexture(void) { return m_nIdxTexture; }
 
 	//設定
 	void SetPos(const D3DXVECTOR3 pos) { m_pos = pos; }	//位置
@@ -41,7 +42,7 @@ public:
 	HRESULT SetCol(const D3DXCOLOR col);	//色
 
 private:
-	LPDIRECT3DTEXTURE9 m_pTexture;		//テクスチャポインタ
+	int m_nIdxTexture;					//テクスチャ番号
 	LPDIRECT3DVERTEXBUFFER9 m_pVtxbuff;	//頂点バッファ
 	D3DXMATRIX m_mtxWorld;				//ワールドマトリ
 

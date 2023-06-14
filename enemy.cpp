@@ -6,6 +6,7 @@
 //======================================================
 #include "manager.h"
 #include "renderer.h"
+#include "texture.h"
 #include "enemy.h"
 #include "input.h"
 #include "bullet.h"
@@ -14,24 +15,24 @@
 //マクロ
 #define PLAYER_SPEED	(5.0f)	//仮の移動速度
 
-//静的メンバ変数
-LPDIRECT3DTEXTURE9 CEnemy::m_pTexture = NULL;
-
 //=================================
 //コンストラクタ（デフォルト）
 //=================================
 CEnemy::CEnemy(int nPriority) : CObjectAnim2D(nPriority)
 {
+	m_nIdxTexture = -1;
 	m_move = VEC3_ZERO;
+	m_nLife = 1;
 }
 
 //=================================
 //コンストラクタ（オーバーロード 位置向きandパターン幅高さ）
 //=================================
-CEnemy::CEnemy(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, const float fWidth, const float fHeight,
-	const int nPatWidth, const int nPatHeight, const int nAnimSpeed, const int nLife, int nPriority)
-	: CObjectAnim2D(pos, rot, fWidth, fHeight, nPatWidth, nPatHeight, nAnimSpeed, true, nPriority)
+CEnemy::CEnemy(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, const float fWidth, const float fHeight, const int nAnimSpeed, const int nLife, int nPriority)
+	: CObjectAnim2D(pos, rot, fWidth, fHeight, nAnimSpeed, true, nPriority)
 {
+	m_nIdxTexture = -1;
+	m_move = VEC3_ZERO;
 	m_nLife = nLife;
 }
 
@@ -47,7 +48,15 @@ CEnemy::~CEnemy()
 //=================================
 HRESULT CEnemy::Init(void)
 {
-	CObjectAnim2D::Init();
+	//親クラス処理
+	if (FAILED(CObjectAnim2D::Init()))
+	{
+		return E_FAIL;
+	}
+
+	//テクスチャ読み込み
+	CTexture* pTexture = CManager::GetTexture();
+	m_nIdxTexture = pTexture->Regist("data\\TEXTURE\\Enemy_01.png", 2, 1);
 
 	//種類設定
 	SetType(TYPE_ENEMY);
@@ -83,59 +92,26 @@ void CEnemy::Draw(void)
 //=================================
 //生成処理
 //=================================
-CEnemy* CEnemy::Create(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, const float fWidth, const float fHeight,
-	const int nPatWidth, const int nPatHeight, const int nAnimSpeed, const int nLife)
+CEnemy* CEnemy::Create(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, const float fWidth, const float fHeight, const int nAnimSpeed, const int nLife)
 {
 	CEnemy* pEnemy = NULL;
 
 	if (pEnemy == NULL)
 	{
-		//オブジェクトアニメーション2Dの生成
-		pEnemy = new CEnemy(pos, rot, fWidth, fHeight, nPatWidth, nPatHeight, nAnimSpeed, nLife);
+		//敵の生成
+		pEnemy = new CEnemy(pos, rot, fWidth, fHeight, nAnimSpeed, nLife);
 
 		//初期化
 		pEnemy->Init();
 
-		//テクスチャ割り当て
-		pEnemy->BindTexture(m_pTexture);
+		//テクスチャ設定
+		pEnemy->BindTexture(pEnemy->m_nIdxTexture);
 
 		return pEnemy;
 	}
 	else
 	{
 		return NULL;
-	}
-}
-
-//=================================
-//テクスチャ読み込み処理
-//=================================
-HRESULT CEnemy::Load(const char* pPath)
-{
-	LPDIRECT3DDEVICE9 pDevice = CManager::GetRenderer()->GetDevice();	//デバイス取得
-	
-	//テクスチャ読み込み
-	if (FAILED(D3DXCreateTextureFromFile(pDevice,
-		pPath,
-		&m_pTexture)))
-	{//失敗
-		return E_FAIL;
-	}
-
-	//成功
-	return S_OK;
-}
-
-//=================================
-//テクスチャ破棄処理
-//=================================
-void CEnemy::Unload(void)
-{
-	//テクスチャ破棄
-	if (m_pTexture != NULL)
-	{
-		m_pTexture->Release();
-		m_pTexture = NULL;
 	}
 }
 

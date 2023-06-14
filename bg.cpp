@@ -7,15 +7,14 @@
 #include "bg.h"
 #include "manager.h"
 #include "renderer.h"
-
-//静的メンバ変数
-LPDIRECT3DTEXTURE9 CBG::m_pTexture = NULL;
+#include "texture.h"
 
 //=================================
 //コンストラクタ
 //=================================
 CBG::CBG(int nPriority) : CObject2D(D3DXVECTOR3(SCREEN_WIDTH * 0.5f, SCREEN_HEIGHT * 0.5f, FLOAT_ZERO), VEC3_ZERO, SCREEN_WIDTH, SCREEN_HEIGHT, nPriority)
 {
+	m_nIdxTexture = -1;
 }
 
 //=================================
@@ -35,6 +34,10 @@ HRESULT CBG::Init(void)
 	{
 		return E_FAIL;
 	}
+
+	//テクスチャ読み込み
+	CTexture* pTexture = CManager::GetTexture();
+	m_nIdxTexture = pTexture->Regist("data\\TEXTURE\\wasitu01_.jpg");
 
 	return S_OK;
 }
@@ -82,44 +85,12 @@ CBG* CBG::Create(void)
 		pObjBG->Init();
 
 		//テクスチャ設定
-		pObjBG->BindTexture(m_pTexture);
+		pObjBG->BindTexture(pObjBG->m_nIdxTexture);
 
 		return pObjBG;
 	}
 	else
 	{
 		return NULL;
-	}
-}
-
-//=================================
-//テクスチャ読み込み処理
-//=================================
-HRESULT CBG::Load(const char* pPath)
-{
-	LPDIRECT3DDEVICE9 pDevice = CManager::GetRenderer()->GetDevice();	//デバイス取得
-
-	//テクスチャ読み込み
-	if (FAILED(D3DXCreateTextureFromFile(pDevice,
-		pPath,
-		&m_pTexture)))
-	{//失敗
-		return E_FAIL;
-	}
-
-	//成功
-	return S_OK;
-}
-
-//=================================
-//テクスチャ破棄処理
-//=================================
-void CBG::Unload(void)
-{
-	//テクスチャ破棄
-	if (m_pTexture != NULL)
-	{
-		m_pTexture->Release();
-		m_pTexture = NULL;
 	}
 }

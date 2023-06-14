@@ -7,16 +7,28 @@
 #include "multiplebg.h"
 #include "manager.h"
 #include "renderer.h"
+#include "texture.h"
 #include "object2D.h"
 
-//静的メンバ変数
-LPDIRECT3DTEXTURE9 CMultipleBG::m_pTexture[MAX_MULTIPLE_BG] = { NULL,NULL,NULL };
+//テクスチャパス
+const char* c_apTexturePathMultiBG[MAX_MULTIPLE_BG] =
+{
+	"data\\TEXTURE\\bg100.png",
+	"data\\TEXTURE\\bg101.png",
+	"data\\TEXTURE\\bg102.png"
+};
+
 
 //=================================
 //コンストラクタ（デフォルト）
 //=================================
 CMultipleBG::CMultipleBG(int nPriority)
 {
+	//テクスチャ番号クリア
+	for (int cnt = 0; cnt < MAX_MULTIPLE_BG; cnt++)
+	{
+		m_aIdxTexture[cnt] = -1;
+	}
 }
 
 //=================================
@@ -31,9 +43,12 @@ CMultipleBG::~CMultipleBG()
 //=================================
 HRESULT CMultipleBG::Init(void)
 {
+	CTexture* pTexture = CManager::GetTexture();	//テクスチャオブジェクト
 	for (int cnt = 0; cnt < MAX_MULTIPLE_BG; cnt++)
-	{//背景用オブジェクト2D初期化
+	{//背景用オブジェクト2D初期化とテクスチャ読み込み
 		m_pObj2D[cnt] = NULL;
+		//テクスチャ読み込み
+		m_aIdxTexture[cnt] = pTexture->Regist(c_apTexturePathMultiBG[cnt]);
 	}
 
 	//できた
@@ -120,7 +135,7 @@ CMultipleBG* CMultipleBG::Create(float fSpeed0, float fSpeed1, float fSpeed2)
 			pObjMultipleBG->m_pObj2D[cnt]->Init();
 
 			//テクスチャ設定
-			pObjMultipleBG->m_pObj2D[cnt]->BindTexture(m_pTexture[cnt]);
+			pObjMultipleBG->m_pObj2D[cnt]->BindTexture(pObjMultipleBG->m_aIdxTexture[cnt]);
 		}
 
 		//スピード設定
@@ -133,40 +148,5 @@ CMultipleBG* CMultipleBG::Create(float fSpeed0, float fSpeed1, float fSpeed2)
 	else
 	{
 		return NULL;
-	}
-}
-
-//=================================
-//テクスチャ読み込み処理
-//=================================
-HRESULT CMultipleBG::Load(const char* pPath, int nIdx)
-{
-	LPDIRECT3DDEVICE9 pDevice = CManager::GetRenderer()->GetDevice();	//デバイス取得
-
-	//テクスチャ読み込み
-	if (FAILED(D3DXCreateTextureFromFile(pDevice,
-		pPath,
-		&m_pTexture[nIdx])))
-	{//失敗
-		return E_FAIL;
-	}
-
-	//成功
-	return S_OK;
-}
-
-//=================================
-//テクスチャ破棄処理
-//=================================
-void CMultipleBG::Unload(void)
-{
-	//テクスチャ破棄
-	for (int cnt = 0; cnt < MAX_MULTIPLE_BG; cnt++)
-	{//1枚ずつ破棄
-		if (m_pTexture[cnt] != NULL)
-		{
-			m_pTexture[cnt]->Release();
-			m_pTexture[cnt] = NULL;
-		}
 	}
 }
