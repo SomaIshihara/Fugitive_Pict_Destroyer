@@ -55,6 +55,7 @@ public:
 	float GetWidth(void) { return FLOAT_ZERO; }
 	float GetHeight(void) { return FLOAT_ZERO; }
 	float GetDepth(void) { return FLOAT_ZERO; }
+	int GetModelIdx(void) { return -1; }
 
 private:
 	Particle m_particle;	//パーティクル構造体
@@ -103,6 +104,7 @@ public:
 	float GetWidth(void) { return FLOAT_ZERO; }
 	float GetHeight(void) { return FLOAT_ZERO; }
 	float GetDepth(void) { return FLOAT_ZERO; }
+	int GetModelIdx(void) { return -1; }
 
 private:
 	Particle m_particle;	//パーティクル構造体

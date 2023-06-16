@@ -1,6 +1,6 @@
 //======================================================
 //
-//オブジェクト（3D）処理[object3D.cpp]
+//オブジェクト（X）処理[object3D.cpp]
 //Author:石原颯馬
 //
 //======================================================
@@ -55,6 +55,7 @@ CObjectX::~CObjectX()
 //========================
 HRESULT CObjectX::Init(void)
 {
+	SetType(TYPE_BUILDING);	//一時的に建物とする（当たり判定チェックのため）
 	return S_OK;
 }
 
@@ -172,7 +173,66 @@ void CObjectX::Load(const char * pPath, const int nIdx)
 		//テクスチャポインタ確保
 		if (m_aModel[nIdx].m_pIdxtexture == NULL)
 		{//NULL
+			//テクスチャ番号配列確保
 			m_aModel[nIdx].m_pIdxtexture = new int[(int)m_aModel[nIdx].m_dwNumMatModel];
+
+			//当たり判定生成
+			int nNumVtx;		//頂点数
+			DWORD dwSizeFVF;	//頂点フォーマットのサイズ
+			BYTE *pVtxBuff;		//頂点バッファポインタ
+
+			//頂点数を取得
+			nNumVtx = m_aModel[nIdx].m_pMesh->GetNumVertices();
+
+			//頂点フォーマット
+			dwSizeFVF = D3DXGetFVFVertexSize(m_aModel[nIdx].m_pMesh->GetFVF());
+
+			//頂点バッファロック
+			m_aModel[nIdx].m_pMesh->LockVertexBuffer(D3DLOCK_READONLY, (void **)&pVtxBuff);
+
+			//最初だけ全部入れる
+			D3DXVECTOR3 vtx = *(D3DXVECTOR3 *)pVtxBuff;
+
+			D3DXVECTOR3 vtxMax = vtx;
+			D3DXVECTOR3 vtxMin = vtx;
+
+			pVtxBuff += dwSizeFVF;
+
+			for (int nCntVtx = 1; nCntVtx < nNumVtx; nCntVtx++, pVtxBuff += dwSizeFVF)
+			{
+				D3DXVECTOR3 vtx = *(D3DXVECTOR3 *)pVtxBuff;
+
+				if (vtxMax.x < vtx.x)
+				{
+					vtxMax.x = vtx.x;
+				}
+				if (vtxMax.y < vtx.y)
+				{
+					vtxMax.y = vtx.y;
+				}
+				if (vtxMax.z < vtx.z)
+				{
+					vtxMax.z = vtx.z;
+				}
+				if (vtxMin.x > vtx.x)
+				{
+					vtxMin.x = vtx.x;
+				}
+				if (vtxMin.y > vtx.y)
+				{
+					vtxMin.y = vtx.y;
+				}
+				if (vtxMin.z > vtx.z)
+				{
+					vtxMin.z = vtx.z;
+				}
+			}
+
+			//設定
+			m_aModel[nIdx].m_collision.SetVtx(vtxMin, vtxMax);
+
+			//頂点バッファアンロック
+			m_aModel[nIdx].m_pMesh->UnlockVertexBuffer();
 
 			//テクスチャ読み込み
 			D3DXMATERIAL* pMat;	//マテリアルポインタ

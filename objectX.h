@@ -9,6 +9,7 @@
 #include "main.h"
 #include "manager.h"
 #include "object.h"
+#include "collision.h"
 
 //マクロ
 #define X_MODEL_NUM		(64)	//モデル保管個数
@@ -23,7 +24,9 @@ public:
 		LPD3DXMESH m_pMesh;			//メッシュ
 		LPD3DXBUFFER m_pBuffMat;	//マテリアルポインタ
 		DWORD m_dwNumMatModel;		//マテ数
-		int * m_pIdxtexture;		//テクスチャ番号（動的確保）
+		int* m_pIdxtexture;			//テクスチャ番号（動的確保）
+									
+		CCollision m_collision;		//コリジョン
 	} Model;
 	//コンストラクタ・デストラクタ
 	CObjectX(int nPriority = PRIORITY_DEFAULT);																	//デフォルト
@@ -49,6 +52,8 @@ public:
 	float GetWidth(void) { return m_fWidth; }
 	float GetHeight(void) { return m_fHeight; }
 	float GetDepth(void) { return m_fDepth; }
+	static Model GetModel(int nIdx) { return m_aModel[nIdx]; }
+	int GetModelIdx(void) { return m_nIdx; }
 
 private:
 	//モデル

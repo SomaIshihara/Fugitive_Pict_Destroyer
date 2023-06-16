@@ -36,6 +36,7 @@ public:
 	float GetWidth(void) { return FLOAT_ZERO; }
 	float GetHeight(void) { return FLOAT_ZERO; }
 	float GetDepth(void) { return FLOAT_ZERO; }
+	int GetModelIdx(void) { return -1; }
 
 	//ê›íË
 	static void Set(const int nScore);	//ÉXÉRÉAê›íË

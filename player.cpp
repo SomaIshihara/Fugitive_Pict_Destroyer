@@ -7,8 +7,10 @@
 #include "player.h"
 #include "manager.h"
 #include "renderer.h"
+#include "object.h"
 #include "input.h"
 #include "camera.h"
+#include "objectX.h"
 
 #define CAMERA_MOVE_SPEED		(1.0f)		//カメラ移動速度
 #define CAMERA_MOU_ROT_SPEED	(0.0012f)	//マウス移動での回転速度
@@ -46,7 +48,6 @@ void CPlayer::Uninit(void)
 //=================================
 void CPlayer::Update(void)
 {
-	D3DXVECTOR3 ray;
 	CInputMouse* pMouse = CManager::GetInputMouse();	//マウス取得
 	Move();
 
@@ -62,7 +63,7 @@ void CPlayer::Update(void)
 	}
 	if (pMouse->GetPress(MOUSE_CLICK_LEFT) == true)
 	{//位置特定
-		ray = GenerateClickRay();
+		Select();
 	}
 }
 
@@ -118,16 +119,6 @@ void CPlayer::Rotate(void)
 }
 
 //=================================
-//クリックした座標のレイ生成
-//=================================
-D3DXVECTOR3 CPlayer::GenerateClickRay(void)
-{
-	D3DXVECTOR3 posNear = ConvertClickPosToWorld(0.0f);
-	D3DXVECTOR3 posFar = ConvertClickPosToWorld(1.0f);
-	return posFar - posNear;
-}
-
-//=================================
 //クリックした座標からワールド座標に変換
 //=================================
 D3DXVECTOR3 CPlayer::ConvertClickPosToWorld(float fZ)
@@ -173,5 +164,23 @@ D3DXVECTOR3 CPlayer::ConvertClickPosToWorld(float fZ)
 //=================================
 void CPlayer::Select(void)
 {
+	D3DXVECTOR3 posNear = ConvertClickPosToWorld(0.0f);
+	D3DXVECTOR3 posFar = ConvertClickPosToWorld(1.0f);
+	for (int cnt = 0; cnt < MAX_OBJ; cnt++)
+	{//全オブジェクト見る
+		CObject* pObj = CObject::GetObject(PRIORITY_DEFAULT, cnt);	//オブジェクト取得
 
+		if (pObj != NULL)	//ヌルチェ
+		{//なんかある
+			CObject::TYPE type = pObj->GetType();	//種類取得
+
+			if (type == CObject::TYPE_BUILDING)
+			{//建物
+				if (CObjectX::GetModel(pObj->GetModelIdx()).m_collision.CollisionCheck(posNear, posFar, pObj->GetPos(), pObj->GetRot()) == true)
+				{//いったん消去
+					pObj->Uninit();
+				}
+			}
+		}
+	}
 }

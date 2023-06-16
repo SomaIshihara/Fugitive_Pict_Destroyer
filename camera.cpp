@@ -152,7 +152,7 @@ void CCamera::FixRot(void)
 	m_rot.y = FIX_ROT(m_rot.y);
 	m_rot.z = FIX_ROT(m_rot.z);
 
-#if 1
+#if 0
 	//[ƒJƒƒ‰§ŒÀ]x‰ñ“]‚Ì§ŒÀ
 	if (m_rot.x >= CAMERA_ROT_X_MAX * D3DX_PI)
 	{

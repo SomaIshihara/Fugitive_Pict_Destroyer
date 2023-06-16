@@ -129,8 +129,8 @@ HRESULT CManager::Init(HINSTANCE hInstance, HWND hWnd, BOOL bWindow)
 	}
 
 	//3Dモデル読み込み
-	//CObjectX::Load("data\\MODEL\\jobi.x", 0);	//モデル読み込み
-	CObjectX::Load("data\\MODEL\\zahyoukanban002.x", 0);	//モデル読み込み
+	CObjectX::Load("data\\MODEL\\jobi.x", 0);	//モデル読み込み
+	CObjectX::Load("data\\MODEL\\zahyoukanban002.x", 1);	//モデル読み込み
 
 	//オブジェクト生成+初期化
 	//CBG::Create();
@@ -140,6 +140,7 @@ HRESULT CManager::Init(HINSTANCE hInstance, HWND hWnd, BOOL bWindow)
 	CTimer::Create(D3DXVECTOR3(SCREEN_WIDTH * 0.5f + 24.0f, 32.0f, 0.0f), VEC3_ZERO, 48.0f, 64.0f);
 	CObject3D::Create(VEC3_ZERO, VEC3_ZERO, 100.0f, 100.0f);
 	CObjectX::Create(VEC3_ZERO, VEC3_ZERO, 0);
+	CObjectX::Create(VEC3_ZERO, VEC3_ZERO, 1);
 
 	//破壊可能オブジェクト
 	//ResetObj();

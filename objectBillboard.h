@@ -37,6 +37,7 @@ public:
 	float GetWidth(void) { return m_fWidth; }
 	float GetHeight(void) { return FLOAT_ZERO; }
 	float GetDepth(void) { return m_fHeight; }
+	int GetModelIdx(void) { return -1; }
 
 	//ê›íË
 	void SetPos(const D3DXVECTOR3 pos) { m_pos = pos; }	//à íu

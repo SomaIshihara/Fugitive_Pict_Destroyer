@@ -44,6 +44,7 @@ public:
 	float GetWidth(void) { return FLOAT_ZERO; }
 	float GetHeight(void) { return FLOAT_ZERO; }
 	float GetDepth(void) { return FLOAT_ZERO; }
+	int GetModelIdx(void) { return -1; }
 
 	//設定
 	void Set(const int nScore, COUNT type);	//タイマー設定
