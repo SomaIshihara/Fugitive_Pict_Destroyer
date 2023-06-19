@@ -36,6 +36,7 @@ public:
 		TYPE_BLOCK,
 		TYPE_ITEM,
 		TYPE_BUILDING,
+		TYPE_PICT,
 		TYPE_MAX
 	} TYPE;
 

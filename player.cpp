@@ -11,6 +11,7 @@
 #include "input.h"
 #include "camera.h"
 #include "objectX.h"
+#include "pict.h"
 
 #define CAMERA_MOVE_SPEED		(1.0f)		//カメラ移動速度
 #define CAMERA_MOU_ROT_SPEED	(0.0012f)	//マウス移動での回転速度
@@ -179,8 +180,25 @@ void CPlayer::Select(void)
 				if (CObjectX::GetModel(pObj->GetModelIdx()).m_collision.CollisionCheck(posNear, posFar, pObj->GetPos(), pObj->GetRot()) == true)
 				{//いったん消去
 					pObj->Uninit();
+					return;
 				}
 			}
 		}
+	}
+
+	//ピクトさん移動処理
+	D3DXVECTOR3 posPlane = VEC3_ZERO;
+	D3DXVECTOR3 vecNorPlane = D3DXVECTOR3(0.0f, 1.0f, 0.0f);
+	D3DXVECTOR3 posSelect;
+	D3DXPLANE plane;
+
+	D3DXPlaneFromPointNormal(&plane, &posPlane, &vecNorPlane);
+	D3DXPlaneIntersectLine(&posSelect, &plane, &posNear, &posFar);
+
+	CPict* pPict = CPict::GetPict(0);	//オブジェクト取得
+
+	if (pPict != NULL)	//ヌルチェ
+	{//ピクトさん
+		pPict->SetTargetPos(posSelect);
 	}
 }

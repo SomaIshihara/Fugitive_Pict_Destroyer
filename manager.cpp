@@ -30,6 +30,7 @@
 #include "object3D.h"
 #include "objectX.h"
 #include "objectBillboard.h"
+#include "pict.h"
 
 //マクロ
 #define FPS_SPEED	(500)	//FPS計測時間
@@ -141,6 +142,7 @@ HRESULT CManager::Init(HINSTANCE hInstance, HWND hWnd, BOOL bWindow)
 	CObject3D::Create(VEC3_ZERO, VEC3_ZERO, 100.0f, 100.0f);
 	CObjectX::Create(VEC3_ZERO, VEC3_ZERO, 0);
 	CObjectX::Create(VEC3_ZERO, VEC3_ZERO, 1);
+	CPict::Create(VEC3_ZERO);
 
 	//破壊可能オブジェクト
 	//ResetObj();

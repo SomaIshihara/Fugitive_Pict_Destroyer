@@ -133,17 +133,17 @@ void CObjectX::Draw(void)
 //========================
 CObjectX* CObjectX::Create(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, const int nIdx)
 {
-	CObjectX* pObj2D = NULL;
+	CObjectX* pObjX = NULL;
 
-	if (pObj2D == NULL)
+	if (pObjX == NULL)
 	{
 		//オブジェクト2Dの生成
-		pObj2D = new CObjectX(pos, rot, nIdx);
+		pObjX = new CObjectX(pos, rot, nIdx);
 
 		//初期化
-		pObj2D->Init();
+		pObjX->Init();
 
-		return pObj2D;
+		return pObjX;
 	}
 	else
 	{
@@ -290,5 +290,4 @@ void CObjectX::Unload(void)
 			m_aModel[cntModel].m_pIdxtexture = NULL;
 		}
 	}
-	
 }
