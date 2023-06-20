@@ -5,6 +5,8 @@
 //
 //======================================================
 #include "building.h"
+#include "pict.h"
+#include "score.h"
 
 //静的メンバ変数
 CBuilding* CBuilding::m_apBuilding[MAX_OBJ];
@@ -43,7 +45,7 @@ CBuilding::CBuilding(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, const int nId
 			break;
 		}
 	}
-	m_nEndurance = INT_ZERO;
+	m_nEndurance = 10000;
 }
 
 //=================================
@@ -125,6 +127,24 @@ void CBuilding::AddDamage(int nDamage)
 	m_nEndurance -= nDamage;
 	if (m_nEndurance <= 0)
 	{
+		for (int cnt = 0; cnt < MAX_OBJ; cnt++)
+		{//全オブジェクト見る
+			CPict* pPict = CPict::GetPict(cnt);	//オブジェクト取得
+
+			if (pPict != NULL)	//ヌルチェ
+			{//なんかある
+				if (pPict->GetTarget() == this)
+				{//自分がターゲット
+					pPict->UnsetTarget();	//ターゲット外す
+				}
+			}
+		}
+		//仮：スコア適当に加算
+		CScore::Add(10000);
+
+		//爆発四散
 		Uninit();
 	}
+
+
 }

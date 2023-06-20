@@ -16,6 +16,7 @@
 //マクロ
 #define PICT_WALK_SPEED		(3.0f)	//ピクトさんの歩行速度
 #define PICT_STOP_LENGTH	(60.0f)	//ピクトさんが建物から離れる距離
+#define PICT_DESTRUCTION_TIME	(60)//破壊工作を行う間隔
 
 //静的メンバ変数
 CPict* CPict::m_apPict[MAX_OBJ];
@@ -54,8 +55,9 @@ CPict::CPict()
 	//値クリア
 	m_pos = VEC3_ZERO;
 	m_rot = VEC3_ZERO;
-	m_target= NULL;
+	m_pTargetBuilding= NULL;
 	m_pMotion = NULL;
+	m_nCounterDestruction = INT_ZERO;
 }
 
 //=================================
@@ -76,7 +78,8 @@ CPict::CPict(const D3DXVECTOR3 pos)
 	//値クリア
 	m_pos = pos;
 	m_rot = VEC3_ZERO;
-	m_target = NULL;
+	m_pTargetBuilding = NULL;
+	m_nCounterDestruction = INT_ZERO;
 }
 
 //=================================
@@ -115,7 +118,8 @@ HRESULT CPict::Init(void)
 	//m_apModel[8]->SetParent(m_apModel[0]);
 	//m_apModel[9]->SetParent(m_apModel[8]);
 
-	m_target = NULL;
+	m_pTargetBuilding = NULL;
+	m_nCounterDestruction = INT_ZERO;
 
 	//モーション生成・初期化
 	m_pMotion = new CMotion;
@@ -162,11 +166,11 @@ void CPict::Update(void)
 	float targetWidthHalf = FLOAT_ZERO;
 	float targetDepthHalf = FLOAT_ZERO;
 
-	if (m_target != NULL)
+	if (m_pTargetBuilding != NULL)
 	{
-		targetPos = m_target->GetPos();
-		targetWidthHalf = m_target->GetWidth() * 0.5f;
-		targetDepthHalf = m_target->GetDepth() * 0.5f;
+		targetPos = m_pTargetBuilding->GetPos();
+		targetWidthHalf = m_pTargetBuilding->GetWidth() * 0.5f;
+		targetDepthHalf = m_pTargetBuilding->GetDepth() * 0.5f;
 
 		if (targetPos.x - targetWidthHalf - PICT_STOP_LENGTH > m_pos.x || targetPos.x + targetWidthHalf + PICT_STOP_LENGTH < m_pos.x ||
 			targetPos.z - targetDepthHalf - PICT_STOP_LENGTH > m_pos.z || targetPos.z + targetDepthHalf + PICT_STOP_LENGTH < m_pos.z)
@@ -188,10 +192,26 @@ void CPict::Update(void)
 			{
 				m_pMotion->Set(1);
 			}
+
+			//破壊カウンターリセット
+			m_nCounterDestruction = INT_ZERO;
 		}
-		else if (m_pMotion->GetType() != 0)
+		else
 		{
-			m_pMotion->Set(0);
+			m_nCounterDestruction++;
+			if (m_nCounterDestruction > PICT_DESTRUCTION_TIME)
+			{
+				//破壊工作
+				m_pTargetBuilding->AddDamage(1000);
+
+				//破壊カウンターリセット
+				m_nCounterDestruction = INT_ZERO;
+			}
+
+			if (m_pMotion->GetType() != 0)
+			{
+				m_pMotion->Set(0);
+			}
 		}
 	}
 

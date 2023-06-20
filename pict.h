@@ -44,9 +44,11 @@ public:
 	float GetDepth(void) { return FLOAT_ZERO; }
 	int GetModelIdx(void) { return -1; }
 	static CPict* GetPict(int nID) { return m_apPict[nID]; }
+	CBuilding* GetTarget(void) { return m_pTargetBuilding; }
 
 	//設定
-	void SetTarget(CBuilding* target) { m_target = target; }
+	void SetTarget(CBuilding* target) { m_pTargetBuilding = target; }
+	void UnsetTarget(void) { m_pTargetBuilding = NULL; }
 
 private:
 	static CPict* m_apPict[MAX_OBJ];	//ピクトさんポインタ
@@ -59,7 +61,8 @@ private:
 	CModel* m_apModel[PICT_MODEL_NUM];	//ピクトさんモデル
 	int m_nNumModel;					//モデル数
 
-	CBuilding* m_target;			//目的地
+	CBuilding* m_pTargetBuilding;		//目的地
+	int m_nCounterDestruction;			//破壊カウンター
 };
 
 #endif // !_PICT_H_
