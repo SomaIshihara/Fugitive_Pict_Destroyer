@@ -8,6 +8,14 @@
 #include "model.h"
 #include "manager.h"
 #include "renderer.h"
+#include "motion.h"
+#include "building.h"
+#include "file.h"
+#include "Culc.h"
+
+//マクロ
+#define PICT_WALK_SPEED		(3.0f)	//ピクトさんの歩行速度
+#define PICT_STOP_LENGTH	(60.0f)	//ピクトさんが建物から離れる距離
 
 //静的メンバ変数
 CPict* CPict::m_apPict[MAX_OBJ];
@@ -46,7 +54,8 @@ CPict::CPict()
 	//値クリア
 	m_pos = VEC3_ZERO;
 	m_rot = VEC3_ZERO;
-	m_targetPos = VEC3_ZERO;
+	m_target= NULL;
+	m_pMotion = NULL;
 }
 
 //=================================
@@ -67,7 +76,7 @@ CPict::CPict(const D3DXVECTOR3 pos)
 	//値クリア
 	m_pos = pos;
 	m_rot = VEC3_ZERO;
-	m_targetPos = VEC3_ZERO;
+	m_target = NULL;
 }
 
 //=================================
@@ -82,31 +91,41 @@ CPict::~CPict()
 //========================
 HRESULT CPict::Init(void)
 {
-	//モデル生成
-	m_apModel[0] = CModel::Create(c_apModelPath[0], D3DXVECTOR3(0.0f, 35.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f));
-	m_apModel[1] = CModel::Create(c_apModelPath[1], D3DXVECTOR3(0.0f, 10.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f));
-	m_apModel[2] = CModel::Create(c_apModelPath[2], D3DXVECTOR3(-5.0f, 7.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f));
-	m_apModel[3] = CModel::Create(c_apModelPath[3], D3DXVECTOR3(-10.0f, 0.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f));
-	m_apModel[4] = CModel::Create(c_apModelPath[4], D3DXVECTOR3(5.0f, 7.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f));
-	m_apModel[5] = CModel::Create(c_apModelPath[5], D3DXVECTOR3(10.0f, 0.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f));
-	m_apModel[6] = CModel::Create(c_apModelPath[6], D3DXVECTOR3(-3.0f, -8.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f));
-	m_apModel[7] = CModel::Create(c_apModelPath[7], D3DXVECTOR3(0.0f, -12.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f));
-	m_apModel[8] = CModel::Create(c_apModelPath[8], D3DXVECTOR3(3.0f, -8.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f));
-	m_apModel[9] = CModel::Create(c_apModelPath[9], D3DXVECTOR3(0.0f, -12.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f));
+	////モデル生成
+	//m_apModel[0] = CModel::Create(c_apModelPath[0], D3DXVECTOR3(0.0f, 35.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f));
+	//m_apModel[1] = CModel::Create(c_apModelPath[1], D3DXVECTOR3(0.0f, 10.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f));
+	//m_apModel[2] = CModel::Create(c_apModelPath[2], D3DXVECTOR3(-5.0f, 7.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f));
+	//m_apModel[3] = CModel::Create(c_apModelPath[3], D3DXVECTOR3(-10.0f, 0.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f));
+	//m_apModel[4] = CModel::Create(c_apModelPath[4], D3DXVECTOR3(5.0f, 7.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f));
+	//m_apModel[5] = CModel::Create(c_apModelPath[5], D3DXVECTOR3(10.0f, 0.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f));
+	//m_apModel[6] = CModel::Create(c_apModelPath[6], D3DXVECTOR3(-3.0f, -8.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f));
+	//m_apModel[7] = CModel::Create(c_apModelPath[7], D3DXVECTOR3(0.0f, -12.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f));
+	//m_apModel[8] = CModel::Create(c_apModelPath[8], D3DXVECTOR3(3.0f, -8.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f));
+	//m_apModel[9] = CModel::Create(c_apModelPath[9], D3DXVECTOR3(0.0f, -12.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f));
 
-	//モデル親子設定
-	m_apModel[0]->SetParent(NULL);
-	m_apModel[1]->SetParent(m_apModel[0]);
-	m_apModel[2]->SetParent(m_apModel[0]);
-	m_apModel[3]->SetParent(m_apModel[2]);
-	m_apModel[4]->SetParent(m_apModel[0]);
-	m_apModel[5]->SetParent(m_apModel[4]);
-	m_apModel[6]->SetParent(m_apModel[0]);
-	m_apModel[7]->SetParent(m_apModel[6]);
-	m_apModel[8]->SetParent(m_apModel[0]);
-	m_apModel[9]->SetParent(m_apModel[8]);
+	////モデル親子設定
+	//m_apModel[0]->SetParent(NULL);
+	//m_apModel[1]->SetParent(m_apModel[0]);
+	//m_apModel[2]->SetParent(m_apModel[0]);
+	//m_apModel[3]->SetParent(m_apModel[2]);
+	//m_apModel[4]->SetParent(m_apModel[0]);
+	//m_apModel[5]->SetParent(m_apModel[4]);
+	//m_apModel[6]->SetParent(m_apModel[0]);
+	//m_apModel[7]->SetParent(m_apModel[6]);
+	//m_apModel[8]->SetParent(m_apModel[0]);
+	//m_apModel[9]->SetParent(m_apModel[8]);
 
-	m_targetPos = D3DXVECTOR3(-100.0f, 0.0f, -100.0f);
+	m_target = NULL;
+
+	//モーション生成・初期化
+	m_pMotion = new CMotion;
+	m_pMotion->Init();
+
+	//モーションビューアのファイルを読み込み
+	LoadMotionViewerFile("data\\motion_exithuman.txt", &m_apModel[0], m_pMotion, &m_nNumModel);
+
+	//モーション設定
+	m_pMotion->Set(0);
 
 	//できた
 	return S_OK;
@@ -117,6 +136,14 @@ HRESULT CPict::Init(void)
 //========================
 void CPict::Uninit(void)
 {
+	//モーション破棄
+	if (m_pMotion != NULL)
+	{
+		m_pMotion->Uninit();
+		delete m_pMotion;
+		m_pMotion = NULL;
+	}
+
 	m_apPict[m_nID] = NULL;
 	for (int cnt = 0; cnt < PICT_MODEL_NUM; cnt++)
 	{//一つずつ消す
@@ -131,19 +158,53 @@ void CPict::Uninit(void)
 //========================
 void CPict::Update(void)
 {
-	D3DXVECTOR3 targetLength = m_targetPos - m_pos;
-	if (D3DXVec3Length(&targetLength) >= 10.0f)
+	D3DXVECTOR3 targetPos = VEC3_ZERO; 
+	float targetWidthHalf = FLOAT_ZERO;
+	float targetDepthHalf = FLOAT_ZERO;
+
+	if (m_target != NULL)
 	{
-		float fTargetWidth, fTargetDepth;
-		float fTargetRot;
+		targetPos = m_target->GetPos();
+		targetWidthHalf = m_target->GetWidth() * 0.5f;
+		targetDepthHalf = m_target->GetDepth() * 0.5f;
 
-		fTargetWidth = m_targetPos.x - m_pos.x;
-		fTargetDepth = m_targetPos.z - m_pos.z;
+		if (targetPos.x - targetWidthHalf - PICT_STOP_LENGTH > m_pos.x || targetPos.x + targetWidthHalf + PICT_STOP_LENGTH < m_pos.x ||
+			targetPos.z - targetDepthHalf - PICT_STOP_LENGTH > m_pos.z || targetPos.z + targetDepthHalf + PICT_STOP_LENGTH < m_pos.z)
+		{
+			float fTargetLenWidth, fTargetLenDepth;
+			float fTargetRot;
 
-		fTargetRot = atan2f(fTargetWidth, fTargetDepth);
+			fTargetLenWidth = targetPos.x - m_pos.x;
+			fTargetLenDepth = targetPos.z - m_pos.z;
 
-		m_pos.x += sinf(fTargetRot) * 1.2f;
-		m_pos.z += cosf(fTargetRot) * 1.2f;
+			fTargetRot = atan2f(fTargetLenWidth, fTargetLenDepth);
+
+			m_pos.x += sinf(fTargetRot) * PICT_WALK_SPEED;
+			m_pos.z += cosf(fTargetRot) * PICT_WALK_SPEED;
+
+			m_rot.y = FIX_ROT(fTargetRot + D3DX_PI);
+
+			if (m_pMotion->GetType() != 1)
+			{
+				m_pMotion->Set(1);
+			}
+		}
+		else if (m_pMotion->GetType() != 0)
+		{
+			m_pMotion->Set(0);
+		}
+	}
+
+	//モデル設定
+	for (int cnt = 0; cnt < PICT_MODEL_NUM; cnt++)
+	{
+		m_apModel[cnt]->Update();
+	}
+	//モーションがある
+	if (m_pMotion != NULL)
+	{
+		//モーション更新
+		m_pMotion->Update();
 	}
 }
 

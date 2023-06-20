@@ -16,6 +16,11 @@
 //=================================
 CModel::CModel()
 {
+	m_pos = VEC3_ZERO;
+	m_rot = VEC3_ZERO;
+	m_posMotioned = VEC3_ZERO;
+	m_rotMotioned = VEC3_ZERO;
+	m_pParent = NULL;
 }
 
 //=================================
@@ -175,6 +180,9 @@ void CModel::Uninit(void)
 //========================
 void CModel::Update(void)
 {
+	//いったん仮の値を入れる
+	m_posMotioned = m_pos;
+	m_rotMotioned = m_rot;
 }
 
 //========================
@@ -201,11 +209,11 @@ void CModel::Draw(void)
 	//D3DXMatrixMultiply(&g_aFence[nCount].mtxWorld, &g_aFence[nCount].mtxWorld, &mtxScall);
 
 	//向きを反映
-	D3DXMatrixRotationYawPitchRoll(&mtxRot, m_rot.y, m_rot.x, m_rot.z);
+	D3DXMatrixRotationYawPitchRoll(&mtxRot, m_rotMotioned.y, m_rotMotioned.x, m_rotMotioned.z);
 	D3DXMatrixMultiply(&m_mtxWorld, &m_mtxWorld, &mtxRot);
 
 	//位置反映
-	D3DXMatrixTranslation(&mtxTrans, m_pos.x, m_pos.y, m_pos.z);
+	D3DXMatrixTranslation(&mtxTrans, m_posMotioned.x, m_posMotioned.y, m_posMotioned.z);
 	D3DXMatrixMultiply(&m_mtxWorld, &m_mtxWorld, &mtxTrans);
 
 	//パーツの親マトリ設定

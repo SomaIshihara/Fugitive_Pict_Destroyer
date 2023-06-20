@@ -12,7 +12,7 @@
 #include "Culc.h"
 
 //マクロ
-#define CAMERA_LENGTH			(1000.0f)	//カメラが見える最大距離
+#define CAMERA_LENGTH			(5000.0f)	//カメラが見える最大距離
 #define CAMERA_ROT_X_MIN		(-0.45f)	//カメラのX角度の最低値[rad]
 #define CAMERA_ROT_X_MAX		(-0.2f)	//カメラのX角度の最低値[rad]
 
@@ -43,11 +43,11 @@ CCamera::~CCamera()
 HRESULT CCamera::Init(void)
 {
 	//値設定
-	m_posV = D3DXVECTOR3(0.0f,50.0f,-200.0f);
-	m_posR = D3DXVECTOR3(0.0f, 30.0f, 0.0f);
+	m_posV = D3DXVECTOR3(0.0f,100.0f,-400.0f);
+	m_posR = D3DXVECTOR3(0.0f, 60.0f, 0.0f);
 	m_vecU = D3DXVECTOR3(0.0f,1.0f,0.0f);
 	m_rot = D3DXVECTOR3(-0.5f,0.0f,0.0f);
-	m_fLength = 100.0f;
+	m_fLength = 1000.0f;
 	FixRot();
 	FixPosV();
 
@@ -152,7 +152,7 @@ void CCamera::FixRot(void)
 	m_rot.y = FIX_ROT(m_rot.y);
 	m_rot.z = FIX_ROT(m_rot.z);
 
-#if 0
+#if 1
 	//[カメラ制限]x回転の制限
 	if (m_rot.x >= CAMERA_ROT_X_MAX * D3DX_PI)
 	{

@@ -23,6 +23,9 @@ public:
 	//ê›íË
 	void SetVtx(const D3DXVECTOR3 vtxMin, const D3DXVECTOR3 vtxMax) { m_vtxMin = vtxMin, m_vtxMax = vtxMax; }
 
+	//éÊìæ
+	void GetVtx(D3DXVECTOR3* vtxMin, D3DXVECTOR3* vtxMax) { *vtxMin = m_vtxMin, *vtxMax = m_vtxMax; }
+
 private:
 	bool CollisionPolygon(const D3DXVECTOR3 posOld, const D3DXVECTOR3 posNew, const D3DXVECTOR3 posCenter, const D3DXVECTOR3 rot,
 		const D3DXVECTOR3 vecNor, D3DXVECTOR3 pos0, D3DXVECTOR3 pos1, D3DXVECTOR3 pos2, D3DXVECTOR3 pos3);

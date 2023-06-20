@@ -12,9 +12,11 @@
 #include "camera.h"
 #include "objectX.h"
 #include "pict.h"
+#include "building.h"
 
-#define CAMERA_MOVE_SPEED		(1.0f)		//カメラ移動速度
+#define CAMERA_MOVE_SPEED		(10.0f)		//カメラ移動速度
 #define CAMERA_MOU_ROT_SPEED	(0.0012f)	//マウス移動での回転速度
+#define PICT_MOVE_LENGTH		(1000.0f)	//ピクトさん移動処理選択半径
 
 //=================================
 //コンストラクタ
@@ -165,40 +167,42 @@ D3DXVECTOR3 CPlayer::ConvertClickPosToWorld(float fZ)
 //=================================
 void CPlayer::Select(void)
 {
+	//オブジェクト選択（0.0～1.0）
 	D3DXVECTOR3 posNear = ConvertClickPosToWorld(0.0f);
 	D3DXVECTOR3 posFar = ConvertClickPosToWorld(1.0f);
 	for (int cnt = 0; cnt < MAX_OBJ; cnt++)
 	{//全オブジェクト見る
-		CObject* pObj = CObject::GetObject(PRIORITY_DEFAULT, cnt);	//オブジェクト取得
+		CBuilding* pBuilding = CBuilding::GetBuilding(cnt);	//オブジェクト取得
 
-		if (pObj != NULL)	//ヌルチェ
+		if (pBuilding != NULL)	//ヌルチェ
 		{//なんかある
-			CObject::TYPE type = pObj->GetType();	//種類取得
-
-			if (type == CObject::TYPE_BUILDING)
-			{//建物
-				if (CObjectX::GetModel(pObj->GetModelIdx()).m_collision.CollisionCheck(posNear, posFar, pObj->GetPos(), pObj->GetRot()) == true)
-				{//いったん消去
-					pObj->Uninit();
-					return;
-				}
+			if (CObjectX::GetModel(pBuilding->GetModelIdx()).m_collision.CollisionCheck(posNear, posFar, pBuilding->GetPos(), pBuilding->GetRot()) == true)
+			{//いったん消去
+				CPict* pPict = CPict::GetPict(0);	//オブジェクト取得
+				pPict->SetTarget(pBuilding);
+				return;
 			}
 		}
 	}
 
-	//ピクトさん移動処理
-	D3DXVECTOR3 posPlane = VEC3_ZERO;
-	D3DXVECTOR3 vecNorPlane = D3DXVECTOR3(0.0f, 1.0f, 0.0f);
-	D3DXVECTOR3 posSelect;
-	D3DXPLANE plane;
+	////ピクトさん移動処理（0.0～0.5）
+	//posNear = ConvertClickPosToWorld(0.0f);
+	//posFar = ConvertClickPosToWorld(0.2f);
+	//D3DXVECTOR3 posPlane = VEC3_ZERO;
+	//D3DXVECTOR3 vecNorPlane = D3DXVECTOR3(0.0f, 1.0f, 0.0f);
+	//D3DXVECTOR3 posSelect;
+	//D3DXPLANE plane;
 
-	D3DXPlaneFromPointNormal(&plane, &posPlane, &vecNorPlane);
-	D3DXPlaneIntersectLine(&posSelect, &plane, &posNear, &posFar);
+	//D3DXPlaneFromPointNormal(&plane, &posPlane, &vecNorPlane);
+	//D3DXPlaneIntersectLine(&posSelect, &plane, &posNear, &posFar);
 
-	CPict* pPict = CPict::GetPict(0);	//オブジェクト取得
+	//if (D3DXVec3Length(&posSelect) <= PICT_MOVE_LENGTH)
+	//{
+	//	CPict* pPict = CPict::GetPict(0);	//オブジェクト取得
 
-	if (pPict != NULL)	//ヌルチェ
-	{//ピクトさん
-		pPict->SetTargetPos(posSelect);
-	}
+	//	if (pPict != NULL)	//ヌルチェ
+	//	{//ピクトさん
+	//		pPict->SetTargetPos(posSelect);
+	//	}
+	//}
 }

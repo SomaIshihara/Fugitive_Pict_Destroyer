@@ -41,6 +41,13 @@ CObjectX::CObjectX(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, const int nIdx,
 	m_fHeight = FLOAT_ZERO;
 	m_fDepth = FLOAT_ZERO;
 	m_nIdx = nIdx;
+
+	//ÉTÉCÉYê›íË
+	D3DXVECTOR3 vtxMin, vtxMax;
+	m_aModel[m_nIdx].m_collision.GetVtx(&vtxMin, &vtxMax);
+	m_fWidth = vtxMax.x - vtxMin.x;
+	m_fHeight = vtxMax.y - vtxMin.y;
+	m_fDepth = vtxMax.z - vtxMin.z;
 }
 
 //=================================

@@ -9,6 +9,9 @@
 
 #include "main.h"
 
+//前方宣言
+class CMotion;
+
 //モデル（階層構造あり）クラス
 class CModel
 {
@@ -29,8 +32,14 @@ public:
 	//親子設定
 	void SetParent(CModel* pModel) { m_pParent = pModel; }
 
-	//マトリ取得
+	//取得
+	D3DXVECTOR3 GetPosOffset(void) { return m_pos; }
+	D3DXVECTOR3 GetRotOffset(void) { return m_rot; }
 	D3DXMATRIX GetMtxWorld(void) { return m_mtxWorld; }
+
+	//設定
+	void SetPosMotioned(D3DXVECTOR3 pos) { m_posMotioned = pos; }
+	void SetRotMotioned(D3DXVECTOR3 rot) { m_rotMotioned = rot; }
 
 private:
 	//モデル
@@ -42,6 +51,8 @@ private:
 	//位置類
 	D3DXVECTOR3 m_pos;			//位置
 	D3DXVECTOR3 m_rot;			//向き
+	D3DXVECTOR3 m_posMotioned;	//モーション後の位置
+	D3DXVECTOR3 m_rotMotioned;	//モーション後の向き
 	D3DXMATRIX m_mtxWorld;		//ワールドマトリ
 	CModel* m_pParent;			//親モデルポインタ
 };

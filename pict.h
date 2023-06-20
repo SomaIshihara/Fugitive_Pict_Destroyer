@@ -15,6 +15,8 @@
 
 //前方宣言
 class CModel;
+class CMotion;
+class CBuilding;
 
 //ピクトさんクラス
 class CPict : public CObject
@@ -44,19 +46,20 @@ public:
 	static CPict* GetPict(int nID) { return m_apPict[nID]; }
 
 	//設定
-	void SetTargetPos(const D3DXVECTOR3 targetPos) { m_targetPos = targetPos; }
+	void SetTarget(CBuilding* target) { m_target = target; }
 
 private:
 	static CPict* m_apPict[MAX_OBJ];	//ピクトさんポインタ
 	static int m_nNumAll;				//ピクトさん総数
 	int m_nID;							//ピクトさんID
+	CMotion* m_pMotion;					//モーションポインタ
 	D3DXVECTOR3 m_pos;					//位置
 	D3DXVECTOR3 m_rot;					//向き
 	D3DXMATRIX m_mtxWorld;				//ワールドマトリ
 	CModel* m_apModel[PICT_MODEL_NUM];	//ピクトさんモデル
 	int m_nNumModel;					//モデル数
 
-	D3DXVECTOR3 m_targetPos;			//目的地
+	CBuilding* m_target;			//目的地
 };
 
 #endif // !_PICT_H_

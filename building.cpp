@@ -31,7 +31,7 @@ CBuilding::CBuilding()
 //=================================
 //コンストラクタ（オーバーロード）
 //=================================
-CBuilding::CBuilding(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, const int nIdx)
+CBuilding::CBuilding(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, const int nIdx) : CObjectX(pos, rot, nIdx)
 {
 	for (int cnt = 0; cnt < MAX_OBJ; cnt++)
 	{//すべて確認

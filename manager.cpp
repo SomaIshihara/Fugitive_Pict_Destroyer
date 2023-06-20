@@ -29,6 +29,7 @@
 #include "timer.h"
 #include "object3D.h"
 #include "objectX.h"
+#include "building.h"
 #include "objectBillboard.h"
 #include "pict.h"
 
@@ -132,6 +133,7 @@ HRESULT CManager::Init(HINSTANCE hInstance, HWND hWnd, BOOL bWindow)
 	//3Dモデル読み込み
 	CObjectX::Load("data\\MODEL\\jobi.x", 0);	//モデル読み込み
 	CObjectX::Load("data\\MODEL\\zahyoukanban002.x", 1);	//モデル読み込み
+	CObjectX::Load("data\\MODEL\\DoshinBill_01.x", 2);	//モデル読み込み
 
 	//オブジェクト生成+初期化
 	//CBG::Create();
@@ -140,9 +142,9 @@ HRESULT CManager::Init(HINSTANCE hInstance, HWND hWnd, BOOL bWindow)
 	CScore::Create(D3DXVECTOR3(SCREEN_WIDTH - 24.0f, 32.0f, 0.0f), VEC3_ZERO, 48.0f, 64.0f);
 	CTimer::Create(D3DXVECTOR3(SCREEN_WIDTH * 0.5f + 24.0f, 32.0f, 0.0f), VEC3_ZERO, 48.0f, 64.0f);
 	CObject3D::Create(VEC3_ZERO, VEC3_ZERO, 100.0f, 100.0f);
-	CObjectX::Create(VEC3_ZERO, VEC3_ZERO, 0);
-	CObjectX::Create(VEC3_ZERO, VEC3_ZERO, 1);
-	CPict::Create(VEC3_ZERO);
+	CBuilding::Create(VEC3_ZERO, VEC3_ZERO, 0);
+	CBuilding::Create(D3DXVECTOR3(1000.0f,0.0f,1000.0f), VEC3_ZERO, 2);
+	CPict::Create(D3DXVECTOR3(-400.0f,0.0f,00.0f));
 
 	//破壊可能オブジェクト
 	//ResetObj();
@@ -254,21 +256,15 @@ void CManager::Update(void)
 	m_pLight->Update();
 	m_pPlayer->Update();
 
-	//再配置ボタンが押された
-	if (m_pInputKeyboard->GetTrigger(DIK_F5) == true)
-	{//再配置実行
-		//ResetObj();
-	}
-
 	//FPS計測器の処理
 	m_dwFrameCount++;
 
 	//デバッグ表示
 	m_pDebProc->Print("FPS:%d\n", m_nFPS);
 	m_pDebProc->Print("[操作方法]\n");
-	m_pDebProc->Print("マウス左クリック:弾発射\n");
-	m_pDebProc->Print("Space:ジャンプ\n");
-	m_pDebProc->Print("F5:再配置\n");
+	m_pDebProc->Print("右クリック:視点移動\n");
+	m_pDebProc->Print("WASD:プレイヤー（カメラ）移動\n");
+	m_pDebProc->Print("[モデルに向かって]マウス左クリック:ピクトさん移動\n");
 	m_pDebProc->Print("[Debug]F1:スコア設定(12345678)\n");
 	m_pDebProc->Print("[Debug]F2:スコア加算(+100)\n");
 	m_pDebProc->Print("[Debug]F3:タイマー設定(120秒カウントダウン)\n");
