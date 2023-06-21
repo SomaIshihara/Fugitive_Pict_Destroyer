@@ -62,7 +62,6 @@ CObjectX::~CObjectX()
 //========================
 HRESULT CObjectX::Init(void)
 {
-	SetType(TYPE_BUILDING);	//一時的に建物とする（当たり判定チェックのため）
 	return S_OK;
 }
 

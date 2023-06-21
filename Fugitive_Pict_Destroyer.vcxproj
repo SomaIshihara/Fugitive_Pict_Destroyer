@@ -191,6 +191,7 @@
     </ClCompile>
     <ClCompile Include="renderer.cpp" />
     <ClCompile Include="score.cpp" />
+    <ClCompile Include="shadow.cpp" />
     <ClCompile Include="sound.cpp" />
     <ClCompile Include="texture.cpp" />
     <ClCompile Include="timer.cpp" />
@@ -230,6 +231,7 @@
     <ClInclude Include="precompile.h" />
     <ClInclude Include="renderer.h" />
     <ClInclude Include="score.h" />
+    <ClInclude Include="shadow.h" />
     <ClInclude Include="sound.h" />
     <ClInclude Include="texture.h" />
     <ClInclude Include="timer.h" />

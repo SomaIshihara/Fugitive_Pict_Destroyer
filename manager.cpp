@@ -141,7 +141,7 @@ HRESULT CManager::Init(HINSTANCE hInstance, HWND hWnd, BOOL bWindow)
 	//CPlayer::Create(D3DXVECTOR3(640.0f, 420.0f, 0.0f), VEC3_ZERO,100.0f, 200.0f, 2);
 	CScore::Create(D3DXVECTOR3(SCREEN_WIDTH - 24.0f, 32.0f, 0.0f), VEC3_ZERO, 48.0f, 64.0f);
 	CTimer::Create(D3DXVECTOR3(SCREEN_WIDTH * 0.5f + 24.0f, 32.0f, 0.0f), VEC3_ZERO, 48.0f, 64.0f);
-	CObject3D::Create(VEC3_ZERO, VEC3_ZERO, 100.0f, 100.0f);
+	CObject3D::Create(VEC3_ZERO, VEC3_ZERO, 512.0f, 512.0f);
 	CBuilding::Create(VEC3_ZERO, VEC3_ZERO, 0);
 	CBuilding::Create(D3DXVECTOR3(1000.0f,0.0f,1000.0f), VEC3_ZERO, 2);
 	CPict::Create(D3DXVECTOR3(-400.0f,0.0f,00.0f));

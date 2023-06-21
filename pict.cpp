@@ -10,6 +10,7 @@
 #include "renderer.h"
 #include "motion.h"
 #include "building.h"
+#include "shadow.h"
 #include "file.h"
 #include "Culc.h"
 
@@ -131,6 +132,12 @@ HRESULT CPict::Init(void)
 	//モーション設定
 	m_pMotion->Set(0);
 
+	//影設定
+	m_pShadow = CShadow::Create();
+
+	//一時的に空中浮遊
+	m_pos.y += 5.0f;
+
 	//できた
 	return S_OK;
 }
@@ -226,6 +233,9 @@ void CPict::Update(void)
 		//モーション更新
 		m_pMotion->Update();
 	}
+
+	//影設定
+	m_pShadow->Set(m_pos, m_rot);
 }
 
 //========================

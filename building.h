@@ -11,7 +11,7 @@
 #include "objectX.h"
 
 //建物クラス
-class CBuilding : public CObjectX
+class CBuilding : public CObject
 {
 public:
 	//コンストラクタ・デストラクタ
@@ -30,6 +30,12 @@ public:
 
 	//取得
 	static CBuilding* GetBuilding(int nIdx) { return m_apBuilding[nIdx]; }
+	D3DXVECTOR3 GetPos(void) { return m_pos; }
+	D3DXVECTOR3 GetRot(void) { return m_rot; }
+	float GetWidth(void) { return m_fWidth; }
+	float GetHeight(void) { return m_fHeight; }
+	float GetDepth(void) { return m_fDepth; }
+	int GetModelIdx(void) { return m_nIdx; }
 
 	//ダメージ付与
 	void AddDamage(int nDamage);
@@ -41,6 +47,15 @@ private:
 	int m_nEndurance;				//耐久値
 	//const int m_nEnduranceMax;	//初期値
 	//const int m_nValue;			//建物の価値
+	D3DXMATRIX mtxWorld;			//ワールドマトリ
+	int m_nIdx;						//モデル番号
+
+	//位置類
+	D3DXVECTOR3 m_pos;	//位置
+	D3DXVECTOR3 m_rot;	//向き
+	float m_fWidth;		//幅(X)
+	float m_fHeight;	//高さ(Y)
+	float m_fDepth;		//奥行(Z)
 };
 
 #endif // !_BUILDING_H_

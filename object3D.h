@@ -37,6 +37,9 @@ public:
 	int GetIdxTexture(void) { return m_nIdxTexture; }
 	int GetModelIdx(void) { return -1; }
 
+	//テクスチャ設定
+	void BindTexture(int nIdx) { m_nIdxTexture = nIdx; }
+
 	//設定
 	void SetPos(const D3DXVECTOR3 pos) { m_pos = pos; }	//位置
 	void SetRot(const D3DXVECTOR3 rot) { m_rot = rot; };//向き

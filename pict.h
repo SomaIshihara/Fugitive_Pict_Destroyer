@@ -17,6 +17,7 @@
 class CModel;
 class CMotion;
 class CBuilding;
+class CShadow;
 
 //ピクトさんクラス
 class CPict : public CObject
@@ -63,6 +64,8 @@ private:
 
 	CBuilding* m_pTargetBuilding;		//目的地
 	int m_nCounterDestruction;			//破壊カウンター
+
+	CShadow* m_pShadow;					//影オブジェクトポインタ
 };
 
 #endif // !_PICT_H_

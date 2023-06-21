@@ -47,7 +47,7 @@ HRESULT CCamera::Init(void)
 	m_posR = D3DXVECTOR3(0.0f, 60.0f, 0.0f);
 	m_vecU = D3DXVECTOR3(0.0f,1.0f,0.0f);
 	m_rot = D3DXVECTOR3(-0.5f,0.0f,0.0f);
-	m_fLength = 1000.0f;
+	m_fLength = 500.0f;
 	FixRot();
 	FixPosV();
 

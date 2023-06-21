@@ -15,8 +15,9 @@ public:
 	//ブレンディング種類列挙
 	typedef enum
 	{
-		BLENDTYPE_NORMAL = 0,
-		BLENDTYPE_ADD,
+		BLENDTYPE_NORMAL = 0,	//通常
+		BLENDTYPE_ADD,			//加算	
+		BLENDTYPE_SUB,			//減算
 		BLENDTYPE_MAX
 	} BLENDTYPE;
 
