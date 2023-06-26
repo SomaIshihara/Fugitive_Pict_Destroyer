@@ -22,7 +22,7 @@
 #include "Culc.h"
 
 //マクロ
-#define PICT_WALK_SPEED		(3.0f)	//ピクトさんの歩行速度
+#define PICT_WALK_SPEED		(6.0f)	//ピクトさんの歩行速度
 #define PICT_STOP_LENGTH	(60.0f)	//ピクトさんが建物から離れる距離
 #define PICT_DESTRUCTION_TIME	(60)//破壊工作を行う間隔
 
@@ -186,6 +186,8 @@ void CPict::Update(void)
 	{
 		if (m_bControll == false)
 		{
+			m_move.x = FLOAT_ZERO;
+			m_move.z = FLOAT_ZERO;
 			targetPos = m_pTargetBuilding->GetPos();
 			targetWidthHalf = m_pTargetBuilding->GetWidth() * 0.5f;
 			targetDepthHalf = m_pTargetBuilding->GetDepth() * 0.5f;
