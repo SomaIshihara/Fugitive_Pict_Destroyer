@@ -22,7 +22,10 @@
 //コンストラクタ
 //=================================
 CPlayer::CPlayer()
-{}
+{
+	m_nChacePictNum = -1;
+	m_bControllPict = false;
+}
 
 //=================================
 //デストラクタ
@@ -35,6 +38,8 @@ CPlayer::~CPlayer()
 //=================================
 HRESULT CPlayer::Init(void)
 {
+	m_nChacePictNum = -1;
+	m_bControllPict = false;
 	return S_OK;
 }
 
@@ -102,8 +107,29 @@ void CPlayer::Move(void)
 		move.z += -cosf(rot.y) * CAMERA_MOVE_SPEED;
 	}
 
+	if (m_bControllPict == true)
+	{//操縦設定
+		CPict::GetPict(0)->Controll(move);
+	}
+	else if (m_nChacePictNum != -1)
+	{//追従設定
+		move = CPict::GetPict(m_nChacePictNum)->GetMove();
+	}
+
 	//移動
 	pCamera->SetCameraPos(move);
+
+	//ピクトさん操縦設定
+	if (pKeyboard->GetTrigger(DIK_H) == true)
+	{
+		CPict::GetPict(0)->SetControll();
+		m_bControllPict = true;
+	}
+	else if (pKeyboard->GetTrigger(DIK_J) == true)
+	{
+		CPict::GetPict(0)->Uncontroll();
+		m_bControllPict = false;
+	}
 }
 
 //=================================

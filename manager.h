@@ -19,6 +19,7 @@ class CCamera;
 class CLight;
 class CTexture;
 class CPlayer;
+class CMeshField;
 
 //マクロ
 #define INT_ZERO	(0)							//int型の0
@@ -52,6 +53,8 @@ public:
 	static CCamera* GetCamera(void) { return m_pCamera; }
 	static CLight* GetLight(void) { return m_pLight; }
 	static CTexture* GetTexture(void) { return m_pTexture; }
+	//仮
+	static CMeshField* GetMeshField(void) { return m_pMeshField; }
 
 private:
 	//再配置
@@ -67,6 +70,9 @@ private:
 	static CCamera* m_pCamera;					//カメラ
 	static CLight* m_pLight;					//ライト
 	static CTexture* m_pTexture;				//テクスチャ
+	//仮
+	static CMeshField* m_pMeshField;	//仮：メッシュフィールド
+	//仮
 	static int m_nFPS;							//FPS
 	static DWORD m_dwFrameCount;				//回したフレーム数
 };

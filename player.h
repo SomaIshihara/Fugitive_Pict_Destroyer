@@ -22,6 +22,10 @@ public:
 	void Uninit(void);
 	void Update(void);
 
+	//追従設定
+	void Chace(int nPictNum) { m_nChacePictNum = nPictNum; }
+	void Unchace(void) { m_nChacePictNum = -1; }
+
 private:
 	//関数
 	void Move(void);								//カメラ移動処理
@@ -30,6 +34,8 @@ private:
 	void Select(void);								//オブジェクト選択
 
 	//変数
+	int m_nChacePictNum;	//追従するピクトさんの番号
+	bool m_bControllPict;	//ピクトさんを操縦するかどうか
 };
 
 #endif

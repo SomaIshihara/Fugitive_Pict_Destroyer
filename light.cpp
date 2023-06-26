@@ -54,6 +54,7 @@ HRESULT CLight::Init(void)
 	//ƒ‰ƒCƒg‚Ì•ûŒü
 	//0
 	vecDir = D3DXVECTOR3(0.22f, -0.87f, 0.44f);
+	//vecDir = D3DXVECTOR3(0.0f, -0.5f, 0.5f);
 	D3DXVec3Normalize(&vecDir, &vecDir);
 
 	m_aLight[0].Direction = vecDir;

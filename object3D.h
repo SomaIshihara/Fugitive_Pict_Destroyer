@@ -42,8 +42,11 @@ public:
 
 	//設定
 	void SetPos(const D3DXVECTOR3 pos) { m_pos = pos; }	//位置
-	void SetRot(const D3DXVECTOR3 rot) { m_rot = rot; };//向き
+	void SetRot(const D3DXVECTOR3 rot) { m_rot = rot; }	//向き
 	HRESULT SetCol(const D3DXCOLOR col);	//色
+
+	//高さ求める
+	float GetHeight(D3DXVECTOR3 pos);
 
 private:
 	int m_nIdxTexture;					//テクスチャ番号

@@ -10,6 +10,7 @@
 #include "texture.h"
 #include "input.h"
 #include "object3D.h"
+#include <assert.h>
 
 //=================================
 //コンストラクタ（デフォルト）
@@ -62,9 +63,9 @@ HRESULT CObject3D::Init(void)
 		return E_FAIL;
 	}
 
-	//仮：テクスチャ読み込み
-	CTexture* pTexture = CManager::GetTexture();
-	m_nIdxTexture = pTexture->Regist("data\\TEXTURE\\icon32.png");
+	////仮：テクスチャ読み込み
+	//CTexture* pTexture = CManager::GetTexture();
+	//m_nIdxTexture = pTexture->Regist("data\\TEXTURE\\icon32.png");
 
 	VERTEX_3D *pVtx;
 
@@ -73,16 +74,46 @@ HRESULT CObject3D::Init(void)
 	m_pVtxbuff->Lock(0, 0, (void **)&pVtx, 0);
 
 	//頂点座標（相対座標）
-	pVtx[0].pos = D3DXVECTOR3(-m_fWidth * 0.5f, 0.0f, m_fDepth * 0.5f);
-	pVtx[1].pos = D3DXVECTOR3(m_fWidth * 0.5f, 0.0f, m_fDepth * 0.5f);
-	pVtx[2].pos = D3DXVECTOR3(-m_fWidth * 0.5f, 0.0f, -m_fDepth * 0.5f);
-	pVtx[3].pos = D3DXVECTOR3(m_fWidth * 0.5f, 0.0f, -m_fDepth * 0.5f);
+	pVtx[0].pos = D3DXVECTOR3(m_fWidth * 0.5f, 0.0f, m_fDepth * 0.5f);
+	pVtx[1].pos = D3DXVECTOR3(m_fWidth * 0.5f, 0.0f, -m_fDepth * 0.5f);
+	pVtx[2].pos = D3DXVECTOR3(-m_fWidth * 0.5f, 0.0f, m_fDepth * 0.5f);
+	pVtx[3].pos = D3DXVECTOR3(-m_fWidth * 0.5f, 0.0f, -m_fDepth * 0.5f);
 
 	//法線ベクトル
-	pVtx[0].nor = D3DXVECTOR3(0.0f, 1.0f, 0.0f);
-	pVtx[1].nor = D3DXVECTOR3(0.0f, 1.0f, 0.0f);
-	pVtx[2].nor = D3DXVECTOR3(0.0f, 1.0f, 0.0f);
-	pVtx[3].nor = D3DXVECTOR3(0.0f, 1.0f, 0.0f);
+	D3DXVECTOR3 vec1 = pVtx[1].pos - pVtx[0].pos;
+	D3DXVECTOR3 vec2 = pVtx[2].pos - pVtx[0].pos;
+	D3DXVec3Cross(&pVtx[0].nor, &vec1, &vec2);
+	D3DXVec3Normalize(&pVtx[0].nor, &pVtx[0].nor);
+
+	vec1 = pVtx[2].pos - pVtx[3].pos;
+	vec2 = pVtx[1].pos - pVtx[3].pos;
+	D3DXVec3Cross(&pVtx[3].nor, &vec1, &vec2);
+	D3DXVec3Normalize(&pVtx[3].nor, &pVtx[3].nor);
+	//↓内部
+	/*D3DXVECTOR3 vec1 = pVtx[2].pos - pVtx[0].pos;
+	D3DXVECTOR3 vec2 = pVtx[1].pos - pVtx[0].pos;
+	pVtx[0].nor = D3DXVECTOR3(
+		(vec1.z * vec2.y) - (vec1.y * vec2.z),
+		(vec1.z * vec2.x) - (vec1.x * vec2.z),
+		(vec1.y * vec2.x) - (vec1.x * vec2.y)
+	);
+	D3DXVec3Normalize(&pVtx[0].nor, &pVtx[0].nor);
+
+
+	vec1 = pVtx[1].pos - pVtx[3].pos;
+	vec2 = pVtx[2].pos - pVtx[3].pos;
+	pVtx[3].nor = D3DXVECTOR3(
+		(vec1.z * vec2.y) - (vec1.y * vec2.z),
+		(vec1.z * vec2.x) - (vec1.x * vec2.z),
+		(vec1.y * vec2.x) - (vec1.x * vec2.y)
+	);
+	D3DXVec3Normalize(&pVtx[3].nor, &pVtx[3].nor);*/
+
+	pVtx[1].nor = (pVtx[0].nor + pVtx[1].nor);
+	D3DXVec3Normalize(&pVtx[1].nor, &pVtx[1].nor);
+
+	pVtx[2].nor = (pVtx[0].nor + pVtx[1].nor);
+	D3DXVec3Normalize(&pVtx[2].nor, &pVtx[2].nor);
 
 	//カラー
 	pVtx[0].col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
@@ -167,17 +198,17 @@ void CObject3D::Draw(void)
 //========================
 CObject3D* CObject3D::Create(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, const float fWidth, const float fDepth)
 {
-	CObject3D* pObj2D = NULL;
+	CObject3D* pObj3D = NULL;
 
-	if (pObj2D == NULL)
+	if (pObj3D == NULL)
 	{
 		//オブジェクト2Dの生成
-		pObj2D = new CObject3D(pos, rot, fWidth, fDepth);
+		pObj3D = new CObject3D(pos, rot, fWidth, fDepth);
 
 		//初期化
-		pObj2D->Init();
+		pObj3D->Init();
 
-		return pObj2D;
+		return pObj3D;
 	}
 	else
 	{
@@ -210,4 +241,46 @@ HRESULT CObject3D::SetCol(const D3DXCOLOR col)
 	}
 
 	return S_OK;
+}
+
+float CObject3D::GetHeight(D3DXVECTOR3 pos)
+{
+	//頂点バッファのロックと頂点情報へのポインタを取得
+	VERTEX_3D *pVtx;	//設定用ポインタ
+	m_pVtxbuff->Lock(0, 0, (void **)&pVtx, 0);
+
+	D3DXVECTOR3 dust;
+	
+	if (D3DXVec3Cross(&dust, &(pVtx[1].pos - pVtx[3].pos), &(pos - pVtx[3].pos))->y <= 0.0f &&
+		D3DXVec3Cross(&dust, &(pVtx[2].pos - pVtx[1].pos), &(pos - pVtx[1].pos))->y <= 0.0f &&
+		D3DXVec3Cross(&dust, &(pVtx[3].pos - pVtx[2].pos), &(pos - pVtx[2].pos))->y <= 0.0f)
+	{
+		D3DXVECTOR3 vec1, vec2, nor;
+		vec1 = pVtx[2].pos - pVtx[3].pos;
+		vec2 = pVtx[1].pos - pVtx[3].pos;
+		D3DXVec3Cross(&nor, &vec1, &vec2);
+		if (nor.y != 0.0f)
+		{
+			return (-((pos.x - pVtx[3].pos.x)*nor.x + (pos.z - pVtx[3].pos.z)*nor.z) / nor.y) + pVtx[3].pos.y;
+		}
+	}
+
+	if (D3DXVec3Cross(&dust, &(pVtx[2].pos - pVtx[0].pos), &(pos - pVtx[0].pos))->y <= 0.0f &&
+		D3DXVec3Cross(&dust, &(pVtx[1].pos - pVtx[2].pos), &(pos - pVtx[2].pos))->y <= 0.0f &&
+		D3DXVec3Cross(&dust, &(pVtx[0].pos - pVtx[1].pos), &(pos - pVtx[1].pos))->y <= 0.0f)
+	{
+		D3DXVECTOR3 vec1, vec2, nor;
+		vec1 = pVtx[1].pos - pVtx[0].pos;
+		vec2 = pVtx[2].pos - pVtx[0].pos;
+		D3DXVec3Cross(&nor, &vec1, &vec2);
+		if (nor.y != 0.0f)
+		{
+			return (-((pos.x - pVtx[0].pos.x)*nor.x + (pos.z - pVtx[0].pos.z)*nor.z) / nor.y) + pVtx[0].pos.y;
+		}
+	}
+
+	//頂点バッファをアンロック
+	m_pVtxbuff->Unlock();
+
+	return 0.0f;
 }

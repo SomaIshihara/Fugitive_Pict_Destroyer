@@ -32,6 +32,7 @@
 #include "building.h"
 #include "objectBillboard.h"
 #include "pict.h"
+#include "meshField.h"
 
 //マクロ
 #define FPS_SPEED	(500)	//FPS計測時間
@@ -48,6 +49,9 @@ CTexture* CManager::m_pTexture = NULL;
 CPlayer* CManager::m_pPlayer = NULL;
 int CManager::m_nFPS = 0;
 DWORD CManager::m_dwFrameCount = 0;
+
+//仮
+CMeshField* CManager::m_pMeshField = NULL;
 
 //=================================
 //コンストラクタ
@@ -134,6 +138,7 @@ HRESULT CManager::Init(HINSTANCE hInstance, HWND hWnd, BOOL bWindow)
 	CObjectX::Load("data\\MODEL\\jobi.x", 0);	//モデル読み込み
 	CObjectX::Load("data\\MODEL\\zahyoukanban002.x", 1);	//モデル読み込み
 	CObjectX::Load("data\\MODEL\\DoshinBill_01.x", 2);	//モデル読み込み
+	CObjectX::Load("data\\MODEL\\hako.x", 3);
 
 	//オブジェクト生成+初期化
 	//CBG::Create();
@@ -141,10 +146,10 @@ HRESULT CManager::Init(HINSTANCE hInstance, HWND hWnd, BOOL bWindow)
 	//CPlayer::Create(D3DXVECTOR3(640.0f, 420.0f, 0.0f), VEC3_ZERO,100.0f, 200.0f, 2);
 	CScore::Create(D3DXVECTOR3(SCREEN_WIDTH - 24.0f, 32.0f, 0.0f), VEC3_ZERO, 48.0f, 64.0f);
 	CTimer::Create(D3DXVECTOR3(SCREEN_WIDTH * 0.5f + 24.0f, 32.0f, 0.0f), VEC3_ZERO, 48.0f, 64.0f);
-	CObject3D::Create(VEC3_ZERO, VEC3_ZERO, 512.0f, 512.0f);
-	CBuilding::Create(VEC3_ZERO, VEC3_ZERO, 0);
-	CBuilding::Create(D3DXVECTOR3(1000.0f,0.0f,1000.0f), VEC3_ZERO, 2);
-	CPict::Create(D3DXVECTOR3(-400.0f,0.0f,00.0f));
+	m_pMeshField = CMeshField::Create(D3DXVECTOR3(-1024.0f, 0.0f, 1024.0f), VEC3_ZERO, 64.0f, 64.0f, 32, 32);
+	CBuilding::Create(D3DXVECTOR3(64.0f,0.0f,580.0f), VEC3_ZERO, 0);
+	CBuilding::Create(D3DXVECTOR3(-440.0f,0.0f,-453.0f), VEC3_ZERO, 2);
+	CPict::Create(D3DXVECTOR3(100.0f,0.0f,0.0f));
 
 	//破壊可能オブジェクト
 	//ResetObj();
@@ -264,6 +269,7 @@ void CManager::Update(void)
 	m_pDebProc->Print("[操作方法]\n");
 	m_pDebProc->Print("右クリック:視点移動\n");
 	m_pDebProc->Print("WASD:プレイヤー（カメラ）移動\n");
+	m_pDebProc->Print("Space:弾発射\n");
 	m_pDebProc->Print("[モデルに向かって]マウス左クリック:ピクトさん移動\n");
 	m_pDebProc->Print("[Debug]F1:スコア設定(12345678)\n");
 	m_pDebProc->Print("[Debug]F2:スコア加算(+100)\n");

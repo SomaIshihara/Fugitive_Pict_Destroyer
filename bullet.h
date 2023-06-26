@@ -9,21 +9,22 @@
 
 #include "main.h"
 #include "objectAnim2D.h"
+#include "objectBillboard.h"
 
 //優先順位
 #define BULLET_PRIORITY	(PRIORITY_DEFAULT)
 
-class CBullet : public CObject2D
+class CBullet2D : public CObject2D
 {
 public:
 	//コンストラクタ・デストラクタ
-	CBullet(int nPriority = BULLET_PRIORITY);	//デフォルト
-	CBullet(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, const float fWidth, const float fHeight, const float fSpeed,
+	CBullet2D(int nPriority = BULLET_PRIORITY);	//デフォルト
+	CBullet2D(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, const float fWidth, const float fHeight, const float fSpeed,
 		int nPriority = BULLET_PRIORITY);	//オーバーロード（位置向きandアニメーション）
-	~CBullet();
+	~CBullet2D();
 
 	//生成
-	static CBullet* Create(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, const float fWidth, const float fHeight, const float fSpeed, const TYPE type);
+	static CBullet2D* Create(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, const float fWidth, const float fHeight, const float fSpeed, const TYPE type);
 
 	//基本処理
 	HRESULT Init(void);
@@ -33,9 +34,6 @@ public:
 
 	//衝突判定
 	bool CollisionEnemy(void);	//敵
-#if 0
-	bool CollisionPlayer(void);	//プレイヤー
-#endif
 	bool CollisionBlock(void);	//ブロック
 
 	//設定処理
@@ -46,5 +44,37 @@ private:
 	D3DXVECTOR3 m_move;		//移動量
 	TYPE m_Type;			//誰の弾か
 };
+
+class CBulletBillboard : public CObjectBillboard
+{
+public:
+	//コンストラクタ・デストラクタ
+	CBulletBillboard(int nPriority = BULLET_PRIORITY);	//デフォルト
+	CBulletBillboard(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, const float fWidth, const float fHeight, const float fSpeed,
+		int nPriority = BULLET_PRIORITY);	//オーバーロード（位置向きandアニメーション）
+	~CBulletBillboard();
+
+	//生成
+	static CBulletBillboard* Create(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, const float fWidth, const float fHeight, const float fSpeed, const TYPE type);
+
+	//基本処理
+	HRESULT Init(void);
+	void Uninit(void);
+	void Update(void);
+	void Draw(void);
+
+	//衝突判定
+	bool CollisionEnemy(void);	//敵
+	bool CollisionBlock(void);	//ブロック
+
+								//設定処理
+	void SetType(TYPE type) { m_Type = type; }	//タイプ設定
+
+private:
+	int m_nIdxTexture;		//テクスチャ番号
+	D3DXVECTOR3 m_move;		//移動量
+	TYPE m_Type;			//誰の弾か
+};
+
 
 #endif // !_PLAYER_H_
