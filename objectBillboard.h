@@ -26,7 +26,7 @@ public:
 	virtual void Draw(void);
 
 	//生成
-	static CObjectBillboard* Create(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, const float fWidth, const float fHeight);
+	static CObjectBillboard* Create(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, const float fWidth, const float fHeight, const int nIdxTexture);
 
 	//テクスチャ設定
 	void BindTexture(int nIdx) { m_nIdxTexture = nIdx; }

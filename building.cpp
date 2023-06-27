@@ -11,6 +11,10 @@
 #include "pict.h"
 #include "score.h"
 
+//マクロ
+#define BUILDING_DAMAGE_ALPHA	(0.65f)	//建物がダメージを食らった時の赤色の具合最大値
+#define BUILDING_DAMAGE_TIME	(60)	//赤くする時間
+
 //静的メンバ変数
 CBuilding* CBuilding::m_apBuilding[MAX_OBJ];
 int CBuilding::m_nNumAll = 0;
@@ -64,8 +68,8 @@ CBuilding::CBuilding(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, const int nId
 
 	//サイズ設定
 	D3DXVECTOR3 vtxMin, vtxMax;
-	CObjectX::Model model = CObjectX::GetModel(m_nIdx);
-	model.m_collision.GetVtx(&vtxMin, &vtxMax);
+	CObjectX::Model* model = CObjectX::GetModel(m_nIdx);
+	model->m_collision.GetVtx(&vtxMin, &vtxMax);
 	m_fWidth = vtxMax.x - vtxMin.x;
 	m_fHeight = vtxMax.y - vtxMin.y;
 	m_fDepth = vtxMax.z - vtxMin.z;
@@ -105,7 +109,16 @@ void CBuilding::Uninit(void)
 //========================
 void CBuilding::Update(void)
 {
-	
+	if (m_fRedAlpha >= FLOAT_ZERO)
+	{//まだ赤い
+		//赤色具合を減らす
+		m_fRedAlpha -= BUILDING_DAMAGE_ALPHA / BUILDING_DAMAGE_TIME;
+
+		if (m_fRedAlpha < FLOAT_ZERO)
+		{//赤くなくなった
+			m_fRedAlpha = FLOAT_ZERO;
+		}
+	}
 }
 
 //========================
@@ -119,16 +132,12 @@ void CBuilding::Draw(void)
 	D3DMATERIAL9 matDef;												//現在のマテリアル保存用
 	D3DXMATERIAL *pMat;													//マテリアルデータへのポインタ
 
-																		//現在のマテリアル取得
+	//現在のマテリアル取得
 	pDevice->GetMaterial(&matDef);
 
 	//モデル取得
 	//ワールドマトリックス初期化
 	D3DXMatrixIdentity(&mtxWorld);
-
-	//拡縮を反映
-	//D3DXMatrixScaling(&mtxScall, FENCE_SCALE, FENCE_SCALE, FENCE_SCALE);
-	//D3DXMatrixMultiply(&g_aFence[nCount].mtxWorld, &g_aFence[nCount].mtxWorld, &mtxScall);
 
 	//向きを反映
 	D3DXMatrixRotationYawPitchRoll(&mtxRot, m_rot.y, m_rot.x, m_rot.z);
@@ -142,19 +151,29 @@ void CBuilding::Draw(void)
 	pDevice->SetTransform(D3DTS_WORLD, &mtxWorld);
 
 	//マテリアルデータへのポインタ取得
-	CObjectX::Model model = CObjectX::GetModel(m_nIdx);
-	pMat = (D3DXMATERIAL*)model.m_pBuffMat->GetBufferPointer();
+	CObjectX::Model* model = CObjectX::GetModel(m_nIdx);
+	pMat = (D3DXMATERIAL*)model->m_pBuffMat->GetBufferPointer();
 
-	for (int nCntMat = 0; nCntMat < (int)model.m_dwNumMatModel; nCntMat++)
+	for (int nCntMat = 0; nCntMat < (int)model->m_dwNumMatModel; nCntMat++)
 	{
 		//マテリアル設定
-		pDevice->SetMaterial(&pMat[nCntMat].MatD3D);
+		D3DMATERIAL9 changeMat = pMat[nCntMat].MatD3D;
+
+		//ダメージ状態なら赤追加
+		if (m_fRedAlpha > FLOAT_ZERO)
+		{
+			changeMat.Diffuse.r = 1.0f * m_fRedAlpha + changeMat.Diffuse.r * (1.0f - m_fRedAlpha);
+			changeMat.Diffuse.g = 0.0f * m_fRedAlpha + changeMat.Diffuse.g * (1.0f - m_fRedAlpha);
+			changeMat.Diffuse.b = 0.0f * m_fRedAlpha + changeMat.Diffuse.b * (1.0f - m_fRedAlpha);
+		}
+
+		pDevice->SetMaterial(&changeMat);
 
 		//テクスチャ設定
-		pDevice->SetTexture(0, pTexture->GetAddress(model.m_pIdxtexture[nCntMat]));
+		pDevice->SetTexture(0, pTexture->GetAddress(model->m_pIdxtexture[nCntMat]));
 
 		//モデル描画
-		model.m_pMesh->DrawSubset(nCntMat);
+		model->m_pMesh->DrawSubset(nCntMat);
 	}
 
 	//マテリアルを戻す
@@ -211,5 +230,6 @@ void CBuilding::AddDamage(int nDamage)
 		Uninit();
 	}
 
-
+	//赤くする
+	m_fRedAlpha = BUILDING_DAMAGE_ALPHA;
 }

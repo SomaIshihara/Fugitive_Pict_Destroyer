@@ -168,19 +168,22 @@ void CObjectBillboard::Draw(void)
 //========================
 //生成処理
 //========================
-CObjectBillboard* CObjectBillboard::Create(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, const float fWidth, const float fHeight)
+CObjectBillboard* CObjectBillboard::Create(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, const float fWidth, const float fHeight, const int nIdxTexture)
 {
-	CObjectBillboard* pObj2D = NULL;
+	CObjectBillboard* pObjBillboard = NULL;
 
-	if (pObj2D == NULL)
+	if (pObjBillboard == NULL)
 	{
 		//オブジェクト2Dの生成
-		pObj2D = new CObjectBillboard(pos, rot, fWidth, fHeight);
+		pObjBillboard = new CObjectBillboard(pos, rot, fWidth, fHeight);
 
 		//初期化
-		pObj2D->Init();
+		pObjBillboard->Init();
 
-		return pObj2D;
+		//テクスチャ設定
+		pObjBillboard->BindTexture(nIdxTexture);
+
+		return pObjBillboard;
 	}
 	else
 	{

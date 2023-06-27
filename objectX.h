@@ -40,7 +40,7 @@ public:
 	virtual void Draw(void);
 
 	//読み込み
-	static void Load(const char* pPath, const int nIdx);
+	static int Load(const char* pPath);
 	static void Unload(void);
 
 	//生成
@@ -52,14 +52,14 @@ public:
 	float GetWidth(void) { return m_fWidth; }
 	float GetHeight(void) { return m_fHeight; }
 	float GetDepth(void) { return m_fDepth; }
-	static Model GetModel(int nIdx) { return m_aModel[nIdx]; }
+	static Model* GetModel(int nIdx) { return m_aModel[nIdx]; }
 	int GetModelIdx(void) { return m_nIdx; }
 
 private:
 	//モデル
-	static Model m_aModel[X_MODEL_NUM];	//モデル
-	D3DXMATRIX mtxWorld;				//ワールドマトリ
-	int m_nIdx;							//モデル番号
+	static Model* m_aModel[X_MODEL_NUM];	//モデル
+	D3DXMATRIX mtxWorld;					//ワールドマトリ
+	int m_nIdx;								//モデル番号
 
 	//位置類
 	D3DXVECTOR3 m_pos;	//位置

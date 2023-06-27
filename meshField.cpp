@@ -92,7 +92,6 @@ HRESULT CMeshField::Init(void)
 		pVtx[nCount].col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
 
 		//テクスチャ座標
-		//pVtx[nCount].tex = D3DXVECTOR2(((float)(nCount % (m_nBlockWidth + 1)) / (m_nBlockWidth)), ((float)(nCount / (m_nBlockWidth + 1)) / (m_nBlockDepth)));
 		pVtx[nCount].tex = D3DXVECTOR2(((float)(nCount % (m_nBlockWidth + 1))), ((float)(nCount / (m_nBlockWidth + 1))));
 	}
 

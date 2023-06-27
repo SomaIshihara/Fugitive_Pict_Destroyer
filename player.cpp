@@ -202,7 +202,7 @@ void CPlayer::Select(void)
 
 		if (pBuilding != NULL)	//ヌルチェ
 		{//なんかある
-			if (CObjectX::GetModel(pBuilding->GetModelIdx()).m_collision.CollisionCheck(posNear, posFar, pBuilding->GetPos(), pBuilding->GetRot()) == true)
+			if (CObjectX::GetModel(pBuilding->GetModelIdx())->m_collision.CollisionCheck(posNear, posFar, pBuilding->GetPos(), pBuilding->GetRot()) == true)
 			{//いったん消去
 				CPict* pPict = CPict::GetPict(0);	//オブジェクト取得
 				pPict->SetTarget(pBuilding);

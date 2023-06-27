@@ -5,6 +5,11 @@
 //
 //==========================================
 #include "file.h"
+#include "manager.h"
+#include "texture.h"
+#include "objectX.h"
+#include "building.h"
+#include "objectBillboard.h"
 #include "motion.h"
 #include "Culc.h"
 #include <stdio.h>
@@ -23,7 +28,6 @@ typedef enum
 
 	//-モデルビューワー-----------------------
 	READSTAT_CAMERASET,
-	READSTAT_HDR_CAMERASET,
 	READSTAT_LIGHTSET,
 	READSTAT_SKYSET,
 	READSTAT_MOUNTAINSET,
@@ -34,10 +38,6 @@ typedef enum
 	READSTAT_PLAYERSET,
 	//----------------------------------------
 
-	//-配置情報-------------------------------
-	READSTAT_SETENEMY,
-	//----------------------------------------
-
 	//--モーションビューワー------------------
 	READSTAT_CHARACTERSET,
 	READSTAT_PARTSSET,
@@ -46,11 +46,15 @@ typedef enum
 	READSTAT_KEY,
 	//----------------------------------------
 
-	//-オリジナル-----------------------------
-	READSTAT_FAULTSET,
-	//----------------------------------------
 	READSTAT_MAX
 } READSTAT;
+
+typedef enum
+{
+	TYPE_X = 0,		//CObjectX使用
+	TYPE_BUILDING,	//CBuinding使用
+	TYPE_MAX
+} TYPE;
 
 //グローバル
 READSTAT g_readStat = READSTAT_NONE;
@@ -63,9 +67,8 @@ void InitFile(void)
 	g_readStat = READSTAT_NONE;
 }
 
-#if 0
 //========================
-//マップ・敵読み込み処理
+//マップ読み込み処理
 //========================
 void LoadModelViewerFile(const char *path)
 {
@@ -74,6 +77,14 @@ void LoadModelViewerFile(const char *path)
 	char *pSprit;
 	bool bRead = false;
 	int nCntInit = 0;	//初期化カウンタ
+
+	//読み込みデータ
+	int nType = -1;
+	D3DXVECTOR3 pos = VEC3_ZERO, rot = VEC3_ZERO;
+	int nState = 0;
+	bool bCollision = false, bShadow = false;
+
+	float fWidth = FLOAT_ZERO, fHeight = FLOAT_ZERO;
 
 	//読み込みファイル設定
 	pFile = fopen(path, "r");
@@ -124,13 +135,10 @@ void LoadModelViewerFile(const char *path)
 				{
 				case READSTAT_NONE:	//処理取得
 					//処理部分
+#if 0
 					if (strncmp(&aCode[0], CODE_CAMERASET, sizeof CODE_CAMERASET / sizeof(char) - 1) == 0)
 					{
 						g_readStat = READSTAT_CAMERASET;
-					}
-					else if (strncmp(&aCode[0], CODE_HDR_CAMERASET, sizeof CODE_HDR_CAMERASET / sizeof(char) - 1) == 0)
-					{
-						g_readStat = READSTAT_HDR_CAMERASET;
 					}
 					else if (strncmp(&aCode[0], CODE_LIGHTSET, sizeof CODE_LIGHTSET / sizeof(char) - 1) == 0)
 					{
@@ -152,7 +160,9 @@ void LoadModelViewerFile(const char *path)
 					{
 						g_readStat = READSTAT_WALLSET;
 					}
-					else if (strncmp(&aCode[0], CODE_MODELSET, sizeof CODE_MODELSET / sizeof(char) - 1) == 0)
+					else 
+#endif
+					if (strncmp(&aCode[0], CODE_MODELSET, sizeof CODE_MODELSET / sizeof(char) - 1) == 0)
 					{
 						g_readStat = READSTAT_MODELSET;
 					}
@@ -160,54 +170,49 @@ void LoadModelViewerFile(const char *path)
 					{
 						g_readStat = READSTAT_BILLBOARDSET;
 					}
+#if 0
 					else if (strncmp(&aCode[0], CODE_PLAYERSET, sizeof CODE_PLAYERSET / sizeof(char) - 1) == 0)
 					{
 						g_readStat = READSTAT_PLAYERSET;
 					}
+#endif
 					//取得部分
 					else if (strncmp(&aCode[0], CODE_TEXTURE_FILENAME, sizeof CODE_TEXTURE_FILENAME / sizeof(char) - 1) == 0)
 					{
-						if (g_counterReadTexture < MAX_TEXTURE)
-						{
-							pSprit = strtok(&aCode[0], " =\n");	//処理内容の部分消す
+						pSprit = strtok(&aCode[0], " =\n");	//処理内容の部分消す
 
-							//パス取得
-							pSprit = strtok(NULL, " =\n");
-							strcpy(&g_aTexFilePath[g_counterReadTexture][0], pSprit);
+						//パス取得
+						pSprit = strtok(NULL, " =\n");
 
-							//タブ文字が入っているところを消す
-							char *pCharPos = strchr(&g_aTexFilePath[g_counterReadTexture][0], '\t');
-							if (pCharPos != nullptr)
-							{//strchrの返り値がぬるぽではない
-								*pCharPos = '\0';
-							}
-
-							//加算
-							g_counterReadTexture++;
+						//タブ文字が入っているところを消す
+						char *pCharPos = strchr(pSprit, '\t');
+						if (pCharPos != nullptr)
+						{//strchrの返り値がぬるぽではない
+							*pCharPos = '\0';
 						}
+
+						//テクスチャ読み込み
+						CManager::GetTexture()->Regist(pSprit);
 					}
 					else if (strncmp(&aCode[0], CODE_MODEL_FILENAME, sizeof CODE_MODEL_FILENAME / sizeof(char) - 1) == 0)
 					{
-						if (g_counterReadModel< MAX_NUM_MODEL)
-						{
-							pSprit = strtok(&aCode[0], " =\n");	//処理内容の部分消す
+						pSprit = strtok(&aCode[0], " =\n");	//処理内容の部分消す
 
-							//パス取得
-							pSprit = strtok(NULL, " =\n");
-							strcpy(&g_aModelFilePath[g_counterReadModel][0], pSprit);
+						//パス取得
+						pSprit = strtok(NULL, " =\n");
 
-							//タブ文字が入っているところを消す
-							char *pCharPos = strchr(&g_aModelFilePath[g_counterReadModel][0], '\t');
-							if (pCharPos != nullptr)
-							{//strchrの返り値がぬるぽではない
-								*pCharPos = '\0';
-							}
-
-							//加算
-							g_counterReadModel++;
+						//タブ文字が入っているところを消す
+						char *pCharPos = strchr(pSprit, '\t');
+						if (pCharPos != nullptr)
+						{//strchrの返り値がぬるぽではない
+							*pCharPos = '\0';
 						}
+
+						//モデル読み込み
+						CObjectX::Load(pSprit);
 					}
 					break;
+#if 0
 				case READSTAT_CAMERASET:	//pvpカメラ情報取得
 					if (strncmp(&aCode[0], CODE_END_CAMERASET, sizeof CODE_END_CAMERASET / sizeof(char) - 1) == 0)
 					{
@@ -247,47 +252,6 @@ void LoadModelViewerFile(const char *path)
 						//Z座標読み取り
 						pSprit = strtok(NULL, " =\n");
 						g_readCamera.posR.z = fatof(pSprit);
-					}
-					break;
-				case READSTAT_HDR_CAMERASET:	//hdrカメラ情報取得
-					if (strncmp(&aCode[0], CODE_END_HDR_CAMERASET, sizeof CODE_END_HDR_CAMERASET / sizeof(char) - 1) == 0)
-					{
-						//カメラ設定
-						InitSetHDRCameraPos(g_readHDRCamera.posV, g_readHDRCamera.posR, g_counterReadHDRCamera);
-						g_readStat = READSTAT_NONE;
-						g_counterReadHDRCamera++;		//加算
-					}
-					else if (strncmp(&aCode[0], CODE_POS, sizeof CODE_POS / sizeof(char) - 1) == 0)
-					{
-						pSprit = strtok(&aCode[0], " =\n");	//処理内容の部分消す
-
-															//X座標読み取り
-						pSprit = strtok(NULL, " =\n");
-						g_readHDRCamera.posV.x = fatof(pSprit);
-
-						//Y座標読み取り
-						pSprit = strtok(NULL, " =\n");
-						g_readHDRCamera.posV.y = fatof(pSprit);
-
-						//Z座標読み取り
-						pSprit = strtok(NULL, " =\n");
-						g_readHDRCamera.posV.z = fatof(pSprit);
-					}
-					else if (strncmp(&aCode[0], CODE_REF, sizeof CODE_REF / sizeof(char) - 1) == 0)
-					{
-						pSprit = strtok(&aCode[0], " =\n");	//処理内容の部分消す
-
-															//X座標読み取り
-						pSprit = strtok(NULL, " =\n");
-						g_readHDRCamera.posR.x = fatof(pSprit);
-
-						//Y座標読み取り
-						pSprit = strtok(NULL, " =\n");
-						g_readHDRCamera.posR.y = fatof(pSprit);
-
-						//Z座標読み取り
-						pSprit = strtok(NULL, " =\n");
-						g_readHDRCamera.posR.z = fatof(pSprit);
 					}
 					break;
 				case READSTAT_LIGHTSET:		//ライト情報取得
@@ -500,10 +464,18 @@ void LoadModelViewerFile(const char *path)
 						g_readMeshWall.sizeZ = atoi(pSprit);
 					}
 					break;
+#endif
 				case READSTAT_MODELSET:		//モデル情報取得
 					if (strncmp(&aCode[0], CODE_END_MODELSET, sizeof CODE_END_MODELSET / sizeof(char) - 1) == 0)
 					{
-						SetObject(g_readmodel.pos, g_readmodel.rot, (OBJECTTYPE)g_readmodel.modelType);
+						if (nState == TYPE_BUILDING)
+						{//CBuilding
+							CBuilding::Create(pos, rot, nType);
+						}
+						else
+						{//CObjectX
+							CObjectX::Create(pos, rot, nType);
+						}
 						g_readStat = READSTAT_NONE;
 					}
 					else if (strncmp(&aCode[0], CODE_TYPE, sizeof CODE_TYPE / sizeof(char) - 1) == 0)
@@ -512,7 +484,7 @@ void LoadModelViewerFile(const char *path)
 
 						//種類読み取り
 						pSprit = strtok(NULL, " =\n");
-						g_readmodel.modelType = atoi(pSprit);
+						nType = atoi(pSprit);
 					}
 					else if (strncmp(&aCode[0], CODE_POS, sizeof CODE_POS / sizeof(char) - 1) == 0)
 					{
@@ -520,15 +492,15 @@ void LoadModelViewerFile(const char *path)
 
 						//X座標読み取り
 						pSprit = strtok(NULL, " =\n");
-						g_readmodel.pos.x = fatof(pSprit);
+						pos.x = fatof(pSprit);
 
 						//Y座標読み取り
 						pSprit = strtok(NULL, " =\n");
-						g_readmodel.pos.y = fatof(pSprit);
+						pos.y = fatof(pSprit);
 
 						//Z座標読み取り
 						pSprit = strtok(NULL, " =\n");
-						g_readmodel.pos.z = fatof(pSprit);
+						pos.z = fatof(pSprit);
 					}
 					else if (strncmp(&aCode[0], CODE_ROT, sizeof CODE_ROT / sizeof(char) - 1) == 0)
 					{
@@ -536,15 +508,15 @@ void LoadModelViewerFile(const char *path)
 
 						//X座標読み取り
 						pSprit = strtok(NULL, " =\n");
-						g_readmodel.rot.x = (fatof(pSprit) / 180) * D3DX_PI;
+						rot.x = (fatof(pSprit) / 180) * D3DX_PI;
 
 						//Y座標読み取り
 						pSprit = strtok(NULL, " =\n");
-						g_readmodel.rot.y = (fatof(pSprit) / 180) * D3DX_PI;
+						rot.y = (fatof(pSprit) / 180) * D3DX_PI;
 
 						//Z座標読み取り
 						pSprit = strtok(NULL, " =\n");
-						g_readmodel.rot.z = (fatof(pSprit) / 180) * D3DX_PI;
+						rot.z = (fatof(pSprit) / 180) * D3DX_PI;
 					}
 					else if (strncmp(&aCode[0], CODE_STATE, sizeof CODE_STATE / sizeof(char) - 1) == 0)
 					{//状態指定
@@ -552,7 +524,7 @@ void LoadModelViewerFile(const char *path)
 
 						//状態設定
 						pSprit = strtok(NULL, " =\n");
-						g_readmodel.state = atoi(pSprit);
+						nState = atoi(pSprit);
 					}
 					else if (strncmp(&aCode[0], CODE_COLLISION, sizeof CODE_COLLISION / sizeof(char) - 1) == 0)
 					{//0なら当たり判定無効
@@ -560,20 +532,22 @@ void LoadModelViewerFile(const char *path)
 
 						//当たり判定設定
 						pSprit = strtok(NULL, " =\n");
-						g_readmodel.collision = atoi(pSprit);
+						bCollision = (atoi(pSprit) >= 1) ? true : false;
 					}
 					else if (strncmp(&aCode[0], CODE_SHADOW, sizeof CODE_SHADOW / sizeof(char) - 1) == 0)
 					{//0なら影を使用しない
 						pSprit = strtok(&aCode[0], " =\n");	//処理内容の部分消す
 
 						pSprit = strtok(NULL, " =\n");
-						g_readmodel.shadow = atoi(pSprit);
+						bShadow = (atoi(pSprit) >= 1) ? true : false;
 					}
 					break;
 				case READSTAT_BILLBOARDSET:	//ビルボード情報取得
 					if (strncmp(&aCode[0], CODE_END_BILLBOARDSET, sizeof CODE_END_BILLBOARDSET / sizeof(char) - 1) == 0)
 					{
-						//ビルボード設定して
+						//ビルボード設定
+						CObjectBillboard::Create(pos, VEC3_ZERO, fWidth, fHeight, nType);
+
 						g_readStat = READSTAT_NONE;
 					}
 					else if (strncmp(&aCode[0], CODE_TEXTYPE, sizeof CODE_TEXTYPE / sizeof(char) - 1) == 0)
@@ -582,7 +556,7 @@ void LoadModelViewerFile(const char *path)
 
 						//種類読み取り
 						pSprit = strtok(NULL, " =\n");
-						g_readbillboard.texType = atoi(pSprit);
+						nType = atoi(pSprit);
 					}
 					else if (strncmp(&aCode[0], CODE_POS, sizeof CODE_POS / sizeof(char) - 1) == 0)
 					{
@@ -590,13 +564,13 @@ void LoadModelViewerFile(const char *path)
 
 						//位置読み取り
 						pSprit = strtok(NULL, " =\n");
-						g_readbillboard.pos.x = fatof(pSprit);
+						pos.x = fatof(pSprit);
 
 						pSprit = strtok(NULL, " =\n");
-						g_readbillboard.pos.y = fatof(pSprit);
+						pos.y = fatof(pSprit);
 
 						pSprit = strtok(NULL, " =\n");
-						g_readbillboard.pos.z = fatof(pSprit);
+						pos.z = fatof(pSprit);
 					}
 					else if (strncmp(&aCode[0], CODE_SIZE, sizeof CODE_SIZE / sizeof(char) - 1) == 0)
 					{
@@ -604,11 +578,12 @@ void LoadModelViewerFile(const char *path)
 
 						//サイズ読み取り
 						pSprit = strtok(NULL, " =\n");
-						g_readbillboard.sizeX = atoi(pSprit);
+						fWidth = fatof(pSprit);
 
 						pSprit = strtok(NULL, " =\n");
-						g_readbillboard.sizeZ = atoi(pSprit);
+						fWidth = fatof(pSprit);
 					}
+#if 0
 					else if (strncmp(&aCode[0], CODE_ORIGIN, sizeof CODE_ORIGIN / sizeof(char) - 1) == 0)
 					{
 						pSprit = strtok(&aCode[0], " =\n");	//処理内容の部分消す
@@ -628,15 +603,17 @@ void LoadModelViewerFile(const char *path)
 						pSprit = strtok(NULL, " =\n");
 						g_readbillboard.blend = atoi(pSprit);
 					}
+#endif
 					else if (strncmp(&aCode[0], CODE_SHADOW, sizeof CODE_SHADOW / sizeof(char) - 1) == 0)
 					{
 						pSprit = strtok(&aCode[0], " =\n");	//処理内容の部分消す
 
 						//影使用有無読み取り
 						pSprit = strtok(NULL, " =\n");
-						g_readbillboard.shadow = atoi(pSprit);
+						bShadow = (atoi(pSprit) >= 1) ? true : false;
 					}
 					break;
+#if 0
 				case READSTAT_PLAYERSET:	//プレイヤーモデル情報取得
 					if (strncmp(&aCode[0], CODE_END_PLAYERSET, sizeof CODE_END_PLAYERSET / sizeof(char) - 1) == 0)
 					{
@@ -690,6 +667,7 @@ void LoadModelViewerFile(const char *path)
 						g_readPlayermodel[g_counterReadAnimal].rot.z = fatof(pSprit);
 					}
 					break;
+#endif
 				}
 			}
 		}
@@ -702,7 +680,6 @@ void LoadModelViewerFile(const char *path)
 	//ファイル閉じる
 	fclose(pFile);
 }
-#endif
 //========================
 //モーション読み込み処理
 //引数1:モーションビューワーの設定ファイルのパス

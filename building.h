@@ -56,6 +56,9 @@ private:
 	float m_fWidth;		//幅(X)
 	float m_fHeight;	//高さ(Y)
 	float m_fDepth;		//奥行(Z)
+
+	//見た目
+	float m_fRedAlpha;	//ダメージを食らった時の赤色具合
 };
 
 #endif // !_BUILDING_H_

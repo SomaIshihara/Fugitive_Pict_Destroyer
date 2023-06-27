@@ -23,27 +23,12 @@
 
 //マクロ
 #define PICT_WALK_SPEED		(6.0f)	//ピクトさんの歩行速度
-#define PICT_STOP_LENGTH	(60.0f)	//ピクトさんが建物から離れる距離
+#define PICT_STOP_LENGTH	(120.0f)	//ピクトさんが建物から離れる距離
 #define PICT_DESTRUCTION_TIME	(60)//破壊工作を行う間隔
 
 //静的メンバ変数
 CPict* CPict::m_apPict[MAX_OBJ];
 int CPict::m_nNumAll = 0;
-
-//仮：モデルパス
-const char* c_apModelPath[PICT_MODEL_NUM] =
-{
-	"data/MODEL/exithuman_x/01_Body.x",
-	"data/MODEL/exithuman_x/02_Head.x",
-	"data/MODEL/exithuman_x/03_Left_Arm.x",
-	"data/MODEL/exithuman_x/04_Left_Hand.x",
-	"data/MODEL/exithuman_x/05_Right_Arm.x",
-	"data/MODEL/exithuman_x/06_Right_Hand.x",
-	"data/MODEL/exithuman_x/07_Left_Leg.x",
-	"data/MODEL/exithuman_x/08_Left_Foot.x",
-	"data/MODEL/exithuman_x/09_Right_Leg.x",
-	"data/MODEL/exithuman_x/10_Right_Foot.x"
-};
 
 //=================================
 //コンストラクタ（デフォルト）
@@ -228,11 +213,18 @@ void CPict::Update(void)
 					m_nCounterDestruction = INT_ZERO;
 				}
 
-				if (m_pMotion->GetType() != 0)
+				if (m_pMotion->GetType() != 2)
 				{
-					m_pMotion->Set(0);
+					m_pMotion->Set(2);
 				}
 			}
+		}
+	}
+	else
+	{
+		if (m_pMotion->GetType() != 0)
+		{
+			m_pMotion->Set(0);
 		}
 	}
 
@@ -300,7 +292,6 @@ void CPict::Draw(void)
 	CTexture* pTexture = CManager::GetTexture();						//テクスチャオブジェクト取得
 	D3DXMATRIX mtxRot, mtxTrans, mtxTexture;							//計算用
 	D3DMATERIAL9 matDef;												//現在のマテリアル保存用
-	D3DXMATERIAL *pMat;													//マテリアルデータへのポインタ
 
 	//現在のマテリアル取得
 	pDevice->GetMaterial(&matDef);

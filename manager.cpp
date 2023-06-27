@@ -135,24 +135,18 @@ HRESULT CManager::Init(HINSTANCE hInstance, HWND hWnd, BOOL bWindow)
 	}
 
 	//3Dモデル読み込み
-	CObjectX::Load("data\\MODEL\\jobi.x", 0);	//モデル読み込み
-	CObjectX::Load("data\\MODEL\\zahyoukanban002.x", 1);	//モデル読み込み
-	CObjectX::Load("data\\MODEL\\DoshinBill_01.x", 2);	//モデル読み込み
-	CObjectX::Load("data\\MODEL\\hako.x", 3);
+	CObjectX::Load("data\\MODEL\\jobi.x");	//モデル読み込み
+	CObjectX::Load("data\\MODEL\\zahyoukanban002.x");	//モデル読み込み
+	CObjectX::Load("data\\MODEL\\DoshinBill_01.x");	//モデル読み込み
+	CObjectX::Load("data\\MODEL\\hako.x");
 
 	//オブジェクト生成+初期化
-	//CBG::Create();
-	//CMultipleBG::Create(0.0075f,0.01f,0.02f);
-	//CPlayer::Create(D3DXVECTOR3(640.0f, 420.0f, 0.0f), VEC3_ZERO,100.0f, 200.0f, 2);
 	CScore::Create(D3DXVECTOR3(SCREEN_WIDTH - 24.0f, 32.0f, 0.0f), VEC3_ZERO, 48.0f, 64.0f);
 	CTimer::Create(D3DXVECTOR3(SCREEN_WIDTH * 0.5f + 24.0f, 32.0f, 0.0f), VEC3_ZERO, 48.0f, 64.0f);
 	m_pMeshField = CMeshField::Create(D3DXVECTOR3(-1024.0f, 0.0f, 1024.0f), VEC3_ZERO, 64.0f, 64.0f, 32, 32);
 	CBuilding::Create(D3DXVECTOR3(64.0f,0.0f,580.0f), VEC3_ZERO, 0);
 	CBuilding::Create(D3DXVECTOR3(-440.0f,0.0f,-453.0f), VEC3_ZERO, 2);
 	CPict::Create(D3DXVECTOR3(100.0f,0.0f,0.0f));
-
-	//破壊可能オブジェクト
-	//ResetObj();
 
 	//FPS計測器初期化
 	m_nFPS = 0;
@@ -316,11 +310,4 @@ void CManager::ResetObj(void)
 			}
 		}
 	}
-
-	//再配置
-	CEnemy::Create(D3DXVECTOR3(500.0f, 300.0f, 0.0f), VEC3_ZERO, 84.0f, 60.0f, 60, 1);
-	CEnemy::Create(D3DXVECTOR3(300.0f, 300.0f, 0.0f), VEC3_ZERO, 84.0f, 60.0f, 60, 1);
-	CEnemy::Create(D3DXVECTOR3(700.0f, 300.0f, 0.0f), VEC3_ZERO, 84.0f, 60.0f, 60, 1);
-	CItem::Create(D3DXVECTOR3(900.0f, 350.0f, 0.0f), 48.0f, 20.0f);
-	CItem::Create(D3DXVECTOR3(1100.0f, 150.0f, 0.0f), 48.0f, 20.0f);
 }
