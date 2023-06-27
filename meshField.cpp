@@ -94,6 +94,7 @@ HRESULT CMeshField::Init(void)
 		//テクスチャ座標
 		pVtx[nCount].tex = D3DXVECTOR2(((float)(nCount % (m_nBlockWidth + 1))), ((float)(nCount / (m_nBlockWidth + 1))));
 	}
+	pVtx[350].pos.y += 50.0f;
 
 	vector<D3DXVECTOR3>* pNor = new vector<D3DXVECTOR3>[(m_nBlockWidth + 1) * (m_nBlockDepth + 1)];
 

@@ -10,7 +10,7 @@
 #include "manager.h"
 
 //マクロ定義
-#define WINDOW_NAME			"帰ってきたランニングマン"
+#define WINDOW_NAME			"逃走者ピクト 市街の破壊者"
 #define FPS_SPEED			(500)	//FPS計測時間
 
 //プロトタイプ宣言

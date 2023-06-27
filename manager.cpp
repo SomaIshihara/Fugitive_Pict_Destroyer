@@ -272,7 +272,7 @@ void CManager::Update(void)
 	m_pDebProc->Print("[Debug]F2:スコア加算(+100)\n");
 	m_pDebProc->Print("[Debug]F3:タイマー設定(120秒カウントダウン)\n");
 
-	if (m_pButton3D->IsHold() == true)
+	if (m_pButton3D->IsClickPress() == true)
 	{
 		m_pDebProc->Print("[[CLICKED!!]]\n");
 	}
