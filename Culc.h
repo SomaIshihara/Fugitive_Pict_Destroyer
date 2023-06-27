@@ -28,4 +28,7 @@
 #define TASUKIGAKE(ax,az,bx,bz)	((az * bx) - (ax * bz))								//名前の通り。それ以上の説明はない。
 #define PYTHAGORAS(a,b)			sqrtf(powf(a,2) + powf(b,2))						//三平方の定理
 
+//計算関数
+D3DXVECTOR3 RotateVtx(const D3DXVECTOR3 vtx, const D3DXVECTOR3 rot, const D3DXVECTOR3 posCenter);
+
 #endif // !_BILLBOARD_H_

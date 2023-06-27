@@ -30,7 +30,6 @@ private:
 	//関数
 	void Move(void);								//カメラ移動処理
 	void Rotate(void);								//カメラ回転処理
-	D3DXVECTOR3 ConvertClickPosToWorld(float fZ);	//クリック座標をワールド座標に変換
 	void Select(void);								//オブジェクト選択
 
 	//変数

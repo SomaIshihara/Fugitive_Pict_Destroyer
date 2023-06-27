@@ -9,6 +9,7 @@
 //==========================================================================================
 #include "main.h"
 #include "manager.h"
+#include "renderer.h"
 #include "input.h"
 
 //マクロ定義
@@ -347,6 +348,46 @@ void CInputMouse::Update(void)
 	ScreenToClient(FindWindowA(CLASS_NAME, nullptr), &point);
 	m_mouse.pos.x = (float)point.x;
 	m_mouse.pos.y = (float)point.y;
+}
+
+//=================================
+//クリックした座標からワールド座標に変換
+//=================================
+D3DXVECTOR3 CInputMouse::ConvertClickPosToWorld(float fZ)
+{
+	LPDIRECT3DDEVICE9 pDevice = CManager::GetRenderer()->GetDevice();	//デバイスの取得
+	CCamera* pCamera = CManager::GetCamera();
+
+	D3DXMATRIX mtxView, mtxProj;
+	D3DXMATRIX mtxViewPort;
+	D3DXMATRIX mtx;
+	D3DXVECTOR3 posClick = m_mouse.pos;
+	posClick.z = fZ;	//Z座標指定
+	D3DXVECTOR3 posWorld;
+
+	//ビューマトリ取得・逆行列化
+	pDevice->GetTransform(D3DTS_VIEW, &mtxView);
+	D3DXMatrixInverse(&mtxView, NULL, &mtxView);
+
+	//プロジェクションマトリ取得・逆行列化
+	pDevice->GetTransform(D3DTS_PROJECTION, &mtxProj);
+	D3DXMatrixInverse(&mtxProj, NULL, &mtxProj);
+
+	//ビューポートマトリ設定・逆行列化
+	D3DXMatrixIdentity(&mtxViewPort);
+	mtxViewPort._11 = SCREEN_WIDTH * 0.5;
+	mtxViewPort._22 = -SCREEN_HEIGHT * 0.5;
+	mtxViewPort._41 = SCREEN_WIDTH * 0.5;
+	mtxViewPort._42 = SCREEN_HEIGHT * 0.5;
+	D3DXMatrixInverse(&mtxViewPort, NULL, &mtxViewPort);
+
+	//全部掛ける
+	mtx = mtxViewPort * mtxProj * mtxView;	//内部でD3DXMatrixMultiplyやってるみたい
+
+	//これでワールド座標に変換できた
+	D3DXVec3TransformCoord(&posWorld, &posClick, &mtx);
+
+	return posWorld;
 }
 
 //========================

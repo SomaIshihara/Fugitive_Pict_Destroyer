@@ -148,54 +148,15 @@ void CPlayer::Rotate(void)
 }
 
 //=================================
-//クリックした座標からワールド座標に変換
-//=================================
-D3DXVECTOR3 CPlayer::ConvertClickPosToWorld(float fZ)
-{
-	LPDIRECT3DDEVICE9 pDevice = CManager::GetRenderer()->GetDevice();	//デバイスの取得
-	CCamera* pCamera = CManager::GetCamera();
-	CInputMouse* pMouse = CManager::GetInputMouse();					//マウス取得
-
-	D3DXMATRIX mtxView, mtxProj;
-	D3DXMATRIX mtxViewPort;
-	D3DXMATRIX mtx;
-	D3DXVECTOR3 posClick = pMouse->GetPos();
-	posClick.z = fZ;	//Z座標指定
-	D3DXVECTOR3 posWorld;
-
-	//ビューマトリ取得・逆行列化
-	pDevice->GetTransform(D3DTS_VIEW, &mtxView);
-	D3DXMatrixInverse(&mtxView, NULL, &mtxView);
-
-	//プロジェクションマトリ取得・逆行列化
-	pDevice->GetTransform(D3DTS_PROJECTION, &mtxProj);
-	D3DXMatrixInverse(&mtxProj, NULL, &mtxProj);
-
-	//ビューポートマトリ設定・逆行列化
-	D3DXMatrixIdentity(&mtxViewPort);
-	mtxViewPort._11 = SCREEN_WIDTH * 0.5;
-	mtxViewPort._22 = -SCREEN_HEIGHT * 0.5;
-	mtxViewPort._41 = SCREEN_WIDTH * 0.5;
-	mtxViewPort._42 = SCREEN_HEIGHT * 0.5;
-	D3DXMatrixInverse(&mtxViewPort, NULL, &mtxViewPort);
-
-	//全部掛ける
-	mtx = mtxViewPort * mtxProj * mtxView;	//内部でD3DXMatrixMultiplyやってるみたい
-
-	//これでワールド座標に変換できた
-	D3DXVec3TransformCoord(&posWorld, &posClick, &mtx);
-
-	return posWorld;
-}
-
-//=================================
 //選択
 //=================================
 void CPlayer::Select(void)
 {
+	CInputMouse* mouse = CManager::GetInputMouse();	//マウス取得
+
 	//オブジェクト選択（0.0～1.0）
-	D3DXVECTOR3 posNear = ConvertClickPosToWorld(0.0f);
-	D3DXVECTOR3 posFar = ConvertClickPosToWorld(1.0f);
+	D3DXVECTOR3 posNear = mouse->ConvertClickPosToWorld(0.0f);
+	D3DXVECTOR3 posFar = mouse->ConvertClickPosToWorld(1.0f);
 	for (int cnt = 0; cnt < MAX_OBJ; cnt++)
 	{//全オブジェクト見る
 		CBuilding* pBuilding = CBuilding::GetBuilding(cnt);	//オブジェクト取得
@@ -210,25 +171,4 @@ void CPlayer::Select(void)
 			}
 		}
 	}
-
-	////ピクトさん移動処理（0.0～0.5）
-	//posNear = ConvertClickPosToWorld(0.0f);
-	//posFar = ConvertClickPosToWorld(0.2f);
-	//D3DXVECTOR3 posPlane = VEC3_ZERO;
-	//D3DXVECTOR3 vecNorPlane = D3DXVECTOR3(0.0f, 1.0f, 0.0f);
-	//D3DXVECTOR3 posSelect;
-	//D3DXPLANE plane;
-
-	//D3DXPlaneFromPointNormal(&plane, &posPlane, &vecNorPlane);
-	//D3DXPlaneIntersectLine(&posSelect, &plane, &posNear, &posFar);
-
-	//if (D3DXVec3Length(&posSelect) <= PICT_MOVE_LENGTH)
-	//{
-	//	CPict* pPict = CPict::GetPict(0);	//オブジェクト取得
-
-	//	if (pPict != NULL)	//ヌルチェ
-	//	{//ピクトさん
-	//		pPict->SetTargetPos(posSelect);
-	//	}
-	//}
 }

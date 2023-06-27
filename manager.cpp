@@ -33,6 +33,7 @@
 #include "objectBillboard.h"
 #include "pict.h"
 #include "meshField.h"
+#include "button.h"
 
 //マクロ
 #define FPS_SPEED	(500)	//FPS計測時間
@@ -47,6 +48,7 @@ CCamera* CManager::m_pCamera = NULL;
 CLight* CManager::m_pLight = NULL;
 CTexture* CManager::m_pTexture = NULL;
 CPlayer* CManager::m_pPlayer = NULL;
+CButton3D* CManager::m_pButton3D = NULL;
 int CManager::m_nFPS = 0;
 DWORD CManager::m_dwFrameCount = 0;
 
@@ -147,6 +149,7 @@ HRESULT CManager::Init(HINSTANCE hInstance, HWND hWnd, BOOL bWindow)
 	CBuilding::Create(D3DXVECTOR3(64.0f,0.0f,580.0f), VEC3_ZERO, 0);
 	CBuilding::Create(D3DXVECTOR3(-440.0f,0.0f,-453.0f), VEC3_ZERO, 2);
 	CPict::Create(D3DXVECTOR3(100.0f,0.0f,0.0f));
+	m_pButton3D = CButton3D::Create(D3DXVECTOR3(200.0f,50.0f,200.0f), D3DXVECTOR3(-0.5f * D3DX_PI,0.0f,0.0f), 100.0f, 50.0f);
 
 	//FPS計測器初期化
 	m_nFPS = 0;
@@ -268,6 +271,11 @@ void CManager::Update(void)
 	m_pDebProc->Print("[Debug]F1:スコア設定(12345678)\n");
 	m_pDebProc->Print("[Debug]F2:スコア加算(+100)\n");
 	m_pDebProc->Print("[Debug]F3:タイマー設定(120秒カウントダウン)\n");
+
+	if (m_pButton3D->IsHold() == true)
+	{
+		m_pDebProc->Print("[[CLICKED!!]]\n");
+	}
 }
 
 //=================================

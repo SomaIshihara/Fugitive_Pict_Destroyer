@@ -95,88 +95,10 @@ bool CCollision::CollisionPolygon(const D3DXVECTOR3 posOld, const D3DXVECTOR3 po
 	D3DXVECTOR3 vtxTrans;	//変換後の点
 
 	//頂点の回転
-	//-mtx----------------------------------------------------------------------------------------------------------------------------
-	//回転行列を作る
-	D3DXMatrixIdentity(&mtxWorld);
-
-	//向き反映
-	D3DXMatrixRotationYawPitchRoll(&mtxRot, rot.y, rot.x, rot.z);
-	D3DXMatrixRotationY(&mtxRot, rot.y);
-	D3DXMatrixMultiply(&mtxWorld, &mtxRot, &mtxWorld);
-
-	//位置反映
-	mtxWorld._41 = posCenter.x;
-	mtxWorld._42 = posCenter.y;
-	mtxWorld._43 = posCenter.z;
-
-	//-mtx----------------------------------------------------------------------------------------------------------------------------
-
-	//-pos0---------------------------------------------------------------------------------------------------------------------------
-	//回転行列をもとに頂点を回転する
-	//ベースをコピー
-	mtxTrans = mtxWorld;
-
-	//0度のときの点を置く
-	D3DXVECTOR3 vtxPos = pos0;
-
-	//回転行列とかけ合わせる
-	D3DXVec3TransformCoord(&vtxTrans, &vtxPos, &mtxTrans);
-
-	pos0.x = vtxTrans.x;
-	pos0.y = vtxTrans.y;
-	pos0.z = vtxTrans.z;
-	//-pos0---------------------------------------------------------------------------------------------------------------------------
-
-	//-pos1---------------------------------------------------------------------------------------------------------------------------
-	//回転行列をもとに頂点を回転する
-	//ベースをコピー
-	mtxTrans = mtxWorld;
-
-	//0度のときの点を置く
-	vtxPos = pos1;
-
-	//回転行列とかけ合わせる
-	D3DXVec3TransformCoord(&vtxTrans, &vtxPos, &mtxTrans);
-
-	//変換後の点の場所を代入
-	pos1.x = vtxTrans.x;
-	pos1.y = vtxTrans.y;
-	pos1.z = vtxTrans.z;
-	//-pos1---------------------------------------------------------------------------------------------------------------------------
-
-	//-pos2---------------------------------------------------------------------------------------------------------------------------
-	//回転行列をもとに頂点を回転する
-	//ベースをコピー
-	mtxTrans = mtxWorld;
-
-	//0度のときの点を置く
-	vtxPos = pos2;
-
-	//回転行列とかけ合わせる
-	D3DXVec3TransformCoord(&vtxTrans, &vtxPos, &mtxTrans);
-
-	//変換後の点の場所を代入
-	pos2.x = vtxTrans.x;
-	pos2.y = vtxTrans.y;
-	pos2.z = vtxTrans.z;
-	//-pos2---------------------------------------------------------------------------------------------------------------------------
-
-	//-pos3---------------------------------------------------------------------------------------------------------------------------
-	//回転行列をもとに頂点を回転する
-	//ベースをコピー
-	mtxTrans = mtxWorld;
-
-	//0度のときの点を置く
-	vtxPos = pos3;
-
-	//回転行列とかけ合わせる
-	D3DXVec3TransformCoord(&vtxTrans, &vtxPos, &mtxTrans);
-
-	//変換後の点の場所を代入
-	pos3.x = vtxTrans.x;
-	pos3.y = vtxTrans.y;
-	pos3.z = vtxTrans.z;
-	//-pos3---------------------------------------------------------------------------------------------------------------------------
+	pos0 = RotateVtx(pos0, rot, posCenter);	//pos0
+	pos1 = RotateVtx(pos1, rot, posCenter);	//pos1
+	pos2 = RotateVtx(pos2, rot, posCenter);	//pos2
+	pos3 = RotateVtx(pos3, rot, posCenter);	//pos3
 
 	//当たり判定
 	if (D3DXVec3Dot(&posOld, &vecNor) * D3DXVec3Dot(&posNew, &vecNor) <= 0)

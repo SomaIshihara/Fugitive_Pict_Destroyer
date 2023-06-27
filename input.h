@@ -130,6 +130,9 @@ public:
 	void Uninit(void);
 	void Update(void);
 
+	//クリック座標をワールド座標に変換
+	D3DXVECTOR3 ConvertClickPosToWorld(float fZ);
+
 	//取得
 	bool GetPress(int nKey);
 	bool GetTrigger(int nKey);
