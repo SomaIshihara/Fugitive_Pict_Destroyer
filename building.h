@@ -14,6 +14,14 @@
 class CBuilding : public CObject
 {
 public:
+	//建物パラメータ構造体
+	typedef struct
+	{
+		char aName[64];
+		int nEndurance;
+		long long nValue;
+	} BuildingParam;
+
 	//コンストラクタ・デストラクタ
 	CBuilding();
 	CBuilding(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, const int nIdx);
@@ -24,6 +32,9 @@ public:
 	void Uninit(void);
 	void Update(void);
 	void Draw(void);
+
+	//パラメータ読み込み
+	static void LoadParam(const char* pPath);
 
 	//生成
 	static CBuilding* Create(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, const int nIdx);
@@ -36,17 +47,18 @@ public:
 	float GetHeight(void) { return m_fHeight; }
 	float GetDepth(void) { return m_fDepth; }
 	int GetModelIdx(void) { return m_nIdx; }
+	int GetEndurance(void) { return m_nEndurance; }
+	static BuildingParam GetBuildingParam(int nIdx) { return m_aBuildingParam[nIdx]; }
 
 	//ダメージ付与
 	void AddDamage(int nDamage);
 
 private:
 	static CBuilding* m_apBuilding[MAX_OBJ];
+	static BuildingParam m_aBuildingParam[MAX_OBJ];
 	static int m_nNumAll;			//建物クラス内での個数
 	int m_nID;						//建物クラス内でのID
 	int m_nEndurance;				//耐久値
-	//const int m_nEnduranceMax;	//初期値
-	//const int m_nValue;			//建物の価値
 	D3DXMATRIX mtxWorld;			//ワールドマトリ
 	int m_nIdx;						//モデル番号
 

@@ -142,9 +142,12 @@ HRESULT CManager::Init(HINSTANCE hInstance, HWND hWnd, BOOL bWindow)
 	CObjectX::Load("data\\MODEL\\DoshinBill_01.x");	//モデル読み込み
 	CObjectX::Load("data\\MODEL\\hako.x");
 
+	//建物パラメータ読み込み
+	CBuilding::LoadParam("data\\CSV\\BuildingParam.csv");
+
 	//オブジェクト生成+初期化
-	CScore::Create(D3DXVECTOR3(SCREEN_WIDTH - 24.0f, 32.0f, 0.0f), VEC3_ZERO, 48.0f, 64.0f);
-	CTimer::Create(D3DXVECTOR3(SCREEN_WIDTH * 0.5f + 24.0f, 32.0f, 0.0f), VEC3_ZERO, 48.0f, 64.0f);
+	CScore::Create(D3DXVECTOR3(SCREEN_WIDTH - 24.0f, 32.0f, 0.0f), VEC3_ZERO, 40.0f, 64.0f);
+	CTimer::Create(D3DXVECTOR3(SCREEN_WIDTH * 0.5f + 24.0f, 32.0f, 0.0f), VEC3_ZERO, 48.0f, 72.0f);
 	m_pMeshField = CMeshField::Create(D3DXVECTOR3(-1024.0f, 0.0f, 1024.0f), VEC3_ZERO, 64.0f, 64.0f, 32, 32);
 	CBuilding::Create(D3DXVECTOR3(64.0f,0.0f,580.0f), VEC3_ZERO, 0);
 	CBuilding::Create(D3DXVECTOR3(-440.0f,0.0f,-453.0f), VEC3_ZERO, 2);

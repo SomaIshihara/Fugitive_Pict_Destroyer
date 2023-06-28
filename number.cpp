@@ -95,17 +95,17 @@ void CNumber::Draw(void)
 //=================================
 CNumber* CNumber::Create(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, const float fWidth, const float fHeight)
 {
-	CNumber* pObjAnim2D = NULL;
+	CNumber* pNumber = NULL;
 
-	if (pObjAnim2D == NULL)
+	if (pNumber == NULL)
 	{
 		//オブジェクトアニメーション2Dの生成
-		pObjAnim2D = new CNumber(pos, rot, fWidth, fHeight);
+		pNumber = new CNumber(pos, rot, fWidth, fHeight);
 
 		//初期化
-		pObjAnim2D->Init();
+		pNumber->Init();
 
-		return pObjAnim2D;
+		return pNumber;
 	}
 	else
 	{
