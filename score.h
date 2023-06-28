@@ -9,9 +9,10 @@
 #include "main.h"
 #include "object2D.h"
 
-#define SCORE_DIGIT	(8)	//スコアの桁数
+#define SCORE_DIGIT	(4)	//スコアの桁数
 
 class CNumber;
+class CSymbol;
 
 class CScore : public CObject
 {
@@ -56,9 +57,13 @@ private:
 	void CutNumber(void);				//数字分割
 
 	//変数
-	CNumber* m_pNumberHMillion[SCORE_DIGIT];	//億
-	CNumber* m_pNumberTenHundred[SCORE_DIGIT];	//万
-	int m_nIdxTexture;					//テクスチャ番号
+	CSymbol* m_pSymbolPic;						//通貨記号
+	CNumber* m_pNumberHMillion[SCORE_DIGIT];	//億の数字
+	CSymbol* m_pSymbolHMillion;					//億
+	CNumber* m_pNumberTenHundred[SCORE_DIGIT];	//万の数字
+	CSymbol* m_pSymbolTemHundred;				//万
+	int m_nIdxTextureNumber;			//テクスチャ番号（数字）
+	int m_nIdxtextureSymbol;			//テクスチャ番号（記号）
 	D3DXVECTOR3 m_pos;					//位置（1桁目の数字の中心を想定）
 	D3DXVECTOR3 m_rot;					//向き（1桁目の数字の中心を想定）
 	float m_fOneWidth;					//1桁当たりのサイズ幅

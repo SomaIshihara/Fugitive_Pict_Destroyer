@@ -11,6 +11,7 @@
 #include "object.h"
 #include "score.h"
 #include "number.h"
+#include "symbol.h"
 #include "building.h"
 
 //マクロ
@@ -25,7 +26,7 @@ long long CScore::m_nScore = 0;
 CScore::CScore(int nPriority) : CObject(nPriority)
 {
 	//値クリア
-	m_nIdxTexture = -1;
+	m_nIdxTextureNumber = -1;
 	m_pos = VEC3_ZERO;
 	m_rot = VEC3_ZERO;
 	m_fOneWidth = FLOAT_ZERO;
@@ -38,7 +39,7 @@ CScore::CScore(int nPriority) : CObject(nPriority)
 CScore::CScore(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, const float fOneWidth, const float fOneHeight, int nPriority) : CObject(nPriority)
 {
 	//値設定
-	m_nIdxTexture = -1;
+	m_nIdxTextureNumber = -1;
 	m_pos = pos;
 	m_rot = rot;
 	m_fOneWidth = fOneWidth;
@@ -64,7 +65,8 @@ HRESULT CScore::Init(void)
 
 	//テクスチャ読み込み
 	CTexture* pTexture = CManager::GetTexture();
-	m_nIdxTexture = pTexture->Regist("data\\TEXTURE\\tex_Score_01.png", 10, 1);
+	m_nIdxTextureNumber = pTexture->Regist("data\\TEXTURE\\tex_Score_01.png", 10, 1);
+	m_nIdxtextureSymbol = pTexture->Regist("data\\TEXTURE\\tex_Score_01.png", 10, 1);
 
 	//スコア設定
 	Set(0);
@@ -162,17 +164,21 @@ CScore* CScore::Create(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, const float
 
 	if (pScore == NULL)
 	{
-		//多重背景管理オブジェクト生成
+		//スコア管理オブジェクト生成
 		pScore = new CScore;
 
-		//多重背景管理オブジェクト初期化
+		//スコア管理オブジェクト初期化
 		pScore->Init();
 
-		//背景用オブジェクト2D生成
+		//生成
+		//通貨記号
+		pScore->m_pSymbolPic = pScore->m_pSymbolPic->Create(pos, rot, fOneWidth, fOneHeight);
+		pScore->m_pSymbolPic->Init();
+		pScore->m_pSymbolPic->BindTexture()
 		for (int cnt = 0; cnt < SCORE_DIGIT; cnt++)
-		{//1枚分生成～テクスチャ設定
+		{
 			//生成
-			pScore->m_pNumberTenHundred[cnt] = pScore->m_pNumberTenHundred[cnt]->Create(pos + D3DXVECTOR3(-fOneWidth * cnt,0.0f,0.0f), rot, fOneWidth, fOneHeight);
+			pScore->m_pNumberTenHundred[cnt] = pScore->m_pNumberTenHundred[cnt]->Create(pos + D3DXVECTOR3(-fOneWidth * (cnt + 1),0.0f,0.0f), rot, fOneWidth, fOneHeight);
 
 			//初期化
 			pScore->m_pNumberTenHundred[cnt]->Init();
@@ -180,6 +186,7 @@ CScore* CScore::Create(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, const float
 			//テクスチャ設定
 			pScore->m_pNumberTenHundred[cnt]->BindTexture(pScore->m_nIdxTexture);
 		}
+		pScore->m_pSymbolPic = pScore->m_pSymbolPic->Create(pos, rot, fOneWidth, fOneHeight);
 
 		return pScore;
 	}
