@@ -61,7 +61,7 @@ private:
 	CNumber* m_pNumberHMillion[SCORE_DIGIT];	//億の数字
 	CSymbol* m_pSymbolHMillion;					//億
 	CNumber* m_pNumberTenHundred[SCORE_DIGIT];	//万の数字
-	CSymbol* m_pSymbolTemHundred;				//万
+	CSymbol* m_pSymbolTenHundred;				//万
 	int m_nIdxTextureNumber;			//テクスチャ番号（数字）
 	int m_nIdxtextureSymbol;			//テクスチャ番号（記号）
 	D3DXVECTOR3 m_pos;					//位置（1桁目の数字の中心を想定）
