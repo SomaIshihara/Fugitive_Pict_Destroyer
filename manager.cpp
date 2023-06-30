@@ -271,8 +271,6 @@ void CManager::Update(void)
 	m_pDebProc->Print("WASD:プレイヤー（カメラ）移動\n");
 	m_pDebProc->Print("Space:弾発射\n");
 	m_pDebProc->Print("[モデルに向かって]マウス左クリック:ピクトさん移動\n");
-	m_pDebProc->Print("[Debug]F1:スコア設定(12345678)\n");
-	m_pDebProc->Print("[Debug]F2:スコア加算(+100)\n");
 	m_pDebProc->Print("[Debug]F3:タイマー設定(120秒カウントダウン)\n");
 
 	if (m_pButton3D->IsClickPress() == true)
