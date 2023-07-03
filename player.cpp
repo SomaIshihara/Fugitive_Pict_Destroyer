@@ -7,6 +7,7 @@
 #include "player.h"
 #include "manager.h"
 #include "renderer.h"
+#include "debugproc.h"
 #include "object.h"
 #include "input.h"
 #include "camera.h"
@@ -72,6 +73,40 @@ void CPlayer::Update(void)
 	if (pMouse->GetPress(MOUSE_CLICK_LEFT) == true)
 	{//位置特定
 		Select();
+	}
+
+	//デバッグ
+	if (m_pSelectBuilding != NULL)
+	{
+		CManager::GetDebProc()->Print("[BUILDING]\n");
+	}
+	if (m_pSelectPict != NULL)
+	{
+		CManager::GetDebProc()->Print("[PICT]\n");
+	}
+}
+
+//=================================
+//攻撃
+//=================================
+void CPlayer::Attack(void)
+{
+	if (m_pSelectBuilding != NULL)
+	{//建物が選択されている
+		CPictDestroyer::GetPict(0)->SetTarget(m_pSelectBuilding);
+	}
+	else if (m_pSelectPict != NULL)
+	{//ピクト（なんでも）が選択されている
+		//警察調べる
+		for (int cnt = 0; cnt < MAX_OBJ; cnt++)
+		{//全オブジェクト見る
+			CPictPolice* pPict = CPictPolice::GetPict(cnt);	//オブジェクト取得
+
+			if (m_pSelectPict == pPict)
+			{//選択しているピクトさんと警察リストのポインタが一致
+				CPictBlocker::GetPict(0)->SetTarget(pPict);
+			}
+		}
 	}
 }
 
@@ -157,6 +192,8 @@ void CPlayer::Select(void)
 	//オブジェクト選択（0.0～1.0）
 	D3DXVECTOR3 posNear = mouse->ConvertClickPosToWorld(0.0f);
 	D3DXVECTOR3 posFar = mouse->ConvertClickPosToWorld(1.0f);
+
+	//建物
 	for (int cnt = 0; cnt < MAX_OBJ; cnt++)
 	{//全オブジェクト見る
 		CBuilding* pBuilding = CBuilding::GetBuilding(cnt);	//オブジェクト取得
@@ -164,11 +201,31 @@ void CPlayer::Select(void)
 		if (pBuilding != NULL)	//ヌルチェ
 		{//なんかある
 			if (CObjectX::GetModel(pBuilding->GetModelIdx())->m_collision.CollisionCheck(posNear, posFar, pBuilding->GetPos(), pBuilding->GetRot()) == true)
-			{//いったん消去
-				CPict* pPict = CPict::GetPict(0);	//オブジェクト取得
-				pPict->SetTarget(pBuilding);
+			{//建物選択
+				m_pSelectPict = NULL;
+				m_pSelectBuilding = pBuilding;
 				return;
 			}
 		}
 	}
+
+	//ピクトさん
+	for (int cnt = 0; cnt < MAX_OBJ; cnt++)
+	{//全オブジェクト見る
+		CPict* pPict = CPict::GetPict(cnt);	//オブジェクト取得
+
+		if (pPict != NULL)	//ヌルチェ
+		{//なんかある
+			if (pPict->GetCollision().CollisionCheck(posNear, posFar, pPict->GetPos(), pPict->GetRot()) == true)
+			{//ピクト選択
+				m_pSelectBuilding = NULL;
+				m_pSelectPict = pPict;
+				return;
+			}
+		}
+	}
+
+	//何も選択していないので選択解除
+	m_pSelectBuilding = NULL;
+	m_pSelectPict = NULL;
 }

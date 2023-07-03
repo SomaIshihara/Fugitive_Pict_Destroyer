@@ -193,7 +193,7 @@ int CObjectX::Load(const char * pPath)
 					DWORD dwSizeFVF;	//頂点フォーマットのサイズ
 					BYTE *pVtxBuff;		//頂点バッファポインタ
 
-										//頂点数を取得
+					//頂点数を取得
 					nNumVtx = m_aModel[cnt]->m_pMesh->GetNumVertices();
 
 					//頂点フォーマット
@@ -249,7 +249,7 @@ int CObjectX::Load(const char * pPath)
 					//テクスチャ読み込み
 					D3DXMATERIAL* pMat;	//マテリアルポインタ
 
-										//マテリアル情報に対するポインタ取得
+					//マテリアル情報に対するポインタ取得
 					pMat = (D3DXMATERIAL*)m_aModel[cnt]->m_pBuffMat->GetBufferPointer();
 
 					//テクスチャ読み込み

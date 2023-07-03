@@ -98,6 +98,14 @@ CShadow* CShadow::Create(void)
 }
 
 //========================
+//”jŠüˆ—
+//========================
+void CShadow::Release(void)
+{
+	CObject3D::Release();
+}
+
+//========================
 //ˆÊ’uŒü‚«İ’èˆ—
 //========================
 void CShadow::Set(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot)

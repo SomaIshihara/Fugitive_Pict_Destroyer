@@ -9,6 +9,10 @@
 
 #include "main.h"
 
+//前方宣言
+class CBuilding;
+class CPict;
+
 //プレイヤークラス
 class CPlayer
 {
@@ -26,6 +30,9 @@ public:
 	void Chace(int nPictNum) { m_nChacePictNum = nPictNum; }
 	void Unchace(void) { m_nChacePictNum = -1; }
 
+	//攻撃処理
+	void Attack(void);
+
 private:
 	//関数
 	void Move(void);								//カメラ移動処理
@@ -33,8 +40,10 @@ private:
 	void Select(void);								//オブジェクト選択
 
 	//変数
-	int m_nChacePictNum;	//追従するピクトさんの番号
-	bool m_bControllPict;	//ピクトさんを操縦するかどうか
+	int m_nChacePictNum;			//追従するピクトさんの番号
+	bool m_bControllPict;			//ピクトさんを操縦するかどうか
+	CBuilding* m_pSelectBuilding;	//選択中の建物
+	CPict* m_pSelectPict;			//選択中のピクトさん
 };
 
 #endif

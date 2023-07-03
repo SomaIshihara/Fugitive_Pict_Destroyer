@@ -20,6 +20,7 @@ class CLight;
 class CTexture;
 class CPlayer;
 class CMeshField;
+class CButton2D;
 class CButton3D;
 
 //マクロ
@@ -71,6 +72,7 @@ private:
 	static CCamera* m_pCamera;					//カメラ
 	static CLight* m_pLight;					//ライト
 	static CTexture* m_pTexture;				//テクスチャ
+	static CButton2D* m_pButtonATK;				//攻撃ボタン
 	static CButton3D* m_pButton3D;				//3Dボタン
 	//仮
 	static CMeshField* m_pMeshField;			//仮：メッシュフィールド

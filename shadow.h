@@ -26,6 +26,9 @@ public:
 	//ïtó^Åiê∂ê¨Åj
 	static CShadow* Create(void);
 
+	//îjä¸
+	void Release(void);
+
 	//ê›íË
 	void Set(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot);
 private:

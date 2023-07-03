@@ -221,7 +221,7 @@ void CBuilding::AddDamage(int nDamage)
 
 		for (int cnt = 0; cnt < MAX_OBJ; cnt++)
 		{//全オブジェクト見る
-			CPict* pPict = CPict::GetPict(cnt);	//オブジェクト取得
+			CPictDestroyer* pPict = CPictDestroyer::GetPict(cnt);	//オブジェクト取得
 
 			if (pPict != NULL)	//ヌルチェ
 			{//なんかある
