@@ -26,12 +26,22 @@ class CPictPolice;
 class CPict : public CObject
 {
 public:
+	//ピクトさん種類列挙
+	typedef enum
+	{
+		TYPE_NORMAL = 0,
+		TYPE_DESTROYER,
+		TYPE_BLOCKER,
+		TYPE_TAXI,
+		TYPE_MAX
+	} TYPE;
+
 	//ピクトさん状態列挙
 	typedef enum
 	{
 		STATE_FACE = 0,	//対象に向かっている
 		STATE_ATTACK,	//攻撃中
-		STATE_LEAVE,		//帰っている
+		STATE_LEAVE,	//帰っている
 		STATE_MAX
 	} STATE;
 
@@ -74,7 +84,6 @@ public:
 	void AddDamage(int nDamage);
 	void SetState(STATE state) { m_state = state; }
 	static void SetAgit(CObjectX* pAgit) { m_pAgitObj = pAgit; }
-	virtual void UnsetTarget(void) = 0;
 
 	//当たり判定
 	void CollisionBlockX(D3DXVECTOR3* pPosNew);
@@ -194,6 +203,85 @@ private:
 
 	int m_nCounterAttack;				//攻撃カウンター
 	CPictPolice* m_pTargetPolice;		//ターゲット警察
+};
+
+//ピクタクシークラス
+class CPictTaxi : public CPict
+{
+public:
+	//ピクタクシーモード列挙
+	typedef enum
+	{
+		MODE_SABO = 0,	//サボり
+		MODE_PICK,		//収集
+		MODE_RESCUE,	//救助
+		MODE_MAX
+	} MODE;
+
+	//コンストラクタ・デストラクタ
+	CPictTaxi();
+	CPictTaxi(const D3DXVECTOR3 pos);
+	~CPictTaxi();
+
+	//基本処理
+	HRESULT Init(void);
+	void Uninit(void);
+	void Update(void);
+	void Draw(void);
+
+	//生成
+	static CPictTaxi* Create(const D3DXVECTOR3 pos);
+
+	//取得
+	static CPictTaxi* GetPict(int nID) { return m_apPict[nID]; }
+
+	//乗車
+	void SetTakeTaxi(const CPict::TYPE type, const int nTakeNum);
+
+private:
+	static CPictTaxi* m_apPict[MAX_OBJ];	//ピクトさんポインタ
+	static int m_nNumAll;					//ピクトさん総数
+	int m_nID;								//ピクトさんID
+
+	int m_nTakeDestroyer;	//デストロイヤーが乗っている人数
+	int m_nTakeBlocker;		//ブロッカーが乗っている人数
+	int m_nTakeNormal;		//一般人が乗っている人数
+};
+
+//一般人ピクトクラス
+class CPictNormal : public CPict
+{
+public:
+	//モーション種類
+	typedef enum
+	{
+		MOTIONTYPE_APPERL = 4
+	} MOTIONTYPE;
+
+	//コンストラクタ・デストラクタ
+	CPictNormal();
+	CPictNormal(const D3DXVECTOR3 pos);
+	~CPictNormal();
+
+	//基本処理
+	HRESULT Init(void);
+	void Uninit(void);
+	void Update(void);
+	void Draw(void);
+
+	//生成
+	static CPictNormal* Create(const D3DXVECTOR3 pos);
+	
+	//取得
+	static CPictNormal* GetPict(int nID) { return m_apPict[nID]; }
+
+	//収集
+	void TakeTaxi(CPictTaxi* taxi);
+
+private:
+	static CPictNormal* m_apPict[MAX_OBJ];	//ピクトさんポインタ
+	static int m_nNumAll;					//ピクトさん総数
+	int m_nID;								//ピクトさんID
 };
 
 //ピクト警察クラス

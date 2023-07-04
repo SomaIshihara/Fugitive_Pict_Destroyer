@@ -31,6 +31,13 @@
 #define PICT_DAMAGE_ALPHA			(0.9f)		//赤くする割合
 #define PICT_DAMAGE_TIME			(60)		//赤くする時間
 
+#define PICT_FORCEDRETURN_NUM		(2)			//強制帰宅するまでの人数
+#define PICT_NORMAL_D_PERCENT		(15)		//一般人ピクトがデストロイヤーになる確率
+#define PICT_NORMAL_B_PERCENT		(20)		//一般人ピクトがブロッカーになる確率
+#define PICT_NORMAL_N_PERCENT		(65)		//一般人ピクトでした
+#define PICT_NORMAL_NUM_MIN			(500)		//一般人ピクトの最低人数
+#define PICT_NORMAL_NUM_DEGREE		(2500)		//一般人ピクトの人数振れ幅
+
 //静的メンバ変数
 CPict* CPict::m_apPict[MAX_OBJ];
 int CPict::m_nNumAll = 0;
@@ -39,6 +46,10 @@ CPictDestroyer* CPictDestroyer::m_apPict[MAX_OBJ];
 int CPictDestroyer::m_nNumAll = 0;
 CPictBlocker* CPictBlocker::m_apPict[MAX_OBJ];
 int CPictBlocker::m_nNumAll = 0;
+CPictTaxi* CPictTaxi::m_apPict[MAX_OBJ];
+int CPictTaxi::m_nNumAll = 0;
+CPictNormal* CPictNormal::m_apPict[MAX_OBJ];
+int CPictNormal::m_nNumAll = 0;
 CPictPolice* CPictPolice::m_apPict[MAX_OBJ];
 int CPictPolice::m_nNumAll = 0;
 
@@ -393,7 +404,7 @@ void CPict::CollisionBlockX(D3DXVECTOR3* pPosNew)
 
 		if (pObj != NULL)	//ヌルチェ
 		{//なんかある
-			TYPE type = pObj->GetType();	//種類取得
+			CObject::TYPE type = pObj->GetType();	//種類取得
 
 			if (type == TYPE_BLOCK)
 			{//ブロック
@@ -436,7 +447,7 @@ bool CPict::CollisionBlockY(D3DXVECTOR3* pPosNew)
 
 		if (pObj != NULL)	//ヌルチェ
 		{//なんかある
-			TYPE type = pObj->GetType();	//種類取得
+			CObject::TYPE type = pObj->GetType();	//種類取得
 
 			if (type == TYPE_BLOCK)
 			{//ブロック
@@ -493,7 +504,7 @@ void CPict::CollisionBlockZ(D3DXVECTOR3* pPosNew)
 
 		if (pObj != NULL)	//ヌルチェ
 		{//なんかある
-			TYPE type = pObj->GetType();	//種類取得
+			CObject::TYPE type = pObj->GetType();	//種類取得
 
 			if (type == TYPE_BLOCK)
 			{//ブロック
@@ -912,6 +923,276 @@ void CPictBlocker::UnsetTarget(void)
 {
 	m_pTargetPolice = NULL;
 	SetState(STATE_LEAVE);
+}
+
+//******************************************************
+//ピクタクシークラス
+//******************************************************
+//=================================
+//コンストラクタ（デフォルト）
+//=================================
+CPictTaxi::CPictTaxi()
+{
+	for (int cnt = 0; cnt < MAX_OBJ; cnt++)
+	{//すべて確認
+		if (m_apPict[cnt] == NULL)
+		{//空っぽ
+			m_apPict[cnt] = this;	//自分自身のポインタを登録
+			m_nID = cnt;	//ID覚える
+			m_nNumAll++;	//総数増やす
+			break;
+		}
+	}
+	m_nTakeDestroyer = INT_ZERO;
+	m_nTakeBlocker = INT_ZERO;
+	m_nTakeNormal = INT_ZERO;
+}
+
+//=================================
+//コンストラクタ（オーバーロード）
+//=================================
+CPictTaxi::CPictTaxi(const D3DXVECTOR3 pos)
+{
+	for (int cnt = 0; cnt < MAX_OBJ; cnt++)
+	{//すべて確認
+		if (m_apPict[cnt] == NULL)
+		{//空っぽ
+			m_apPict[cnt] = this;	//自分自身のポインタを登録
+			m_nID = cnt;	//ID覚える
+			m_nNumAll++;	//総数増やす
+			break;
+		}
+	}
+	m_nTakeDestroyer = INT_ZERO;
+	m_nTakeBlocker = INT_ZERO;
+	m_nTakeNormal = INT_ZERO;
+}
+
+//=================================
+//デストラクタ
+//=================================
+CPictTaxi::~CPictTaxi()
+{
+}
+
+//========================
+//初期化処理
+//========================
+HRESULT CPictTaxi::Init(void)
+{
+	//親処理
+	CPict::Init();
+
+	return S_OK;
+}
+
+//========================
+//終了処理
+//========================
+void CPictTaxi::Uninit(void)
+{
+	//親処理
+	CPict::Uninit();
+}
+
+//========================
+//更新処理
+//========================
+void CPictTaxi::Update(void)
+{
+	if (GetState() != STATE_LEAVE)
+	{//自由
+		
+	}
+
+	//親処理
+	CPict::Update();
+}
+
+//========================
+//描画処理
+//========================
+void CPictTaxi::Draw(void)
+{
+	//親処理
+	CPict::Draw();
+}
+
+//========================
+//生成処理
+//========================
+CPictTaxi* CPictTaxi::Create(const D3DXVECTOR3 pos)
+{
+	CPictTaxi* pPict = NULL;
+
+	if (pPict == NULL)
+	{
+		//ピクトの生成
+		pPict = new CPictTaxi(pos);
+
+		//初期化
+		pPict->Init();
+
+		return pPict;
+	}
+	else
+	{
+		return NULL;
+	}
+}
+
+//========================
+//タクシー乗車処理
+//========================
+void CPictTaxi::SetTakeTaxi(const CPict::TYPE type, const int nTakeNum)
+{
+	switch (type)
+	{
+	case TYPE_DESTROYER:	//デストロイヤー
+		m_nTakeDestroyer += nTakeNum;
+		break;
+	case TYPE_BLOCKER:		//ブロッカー
+		m_nTakeBlocker += nTakeNum;
+		break;
+	case TYPE_NORMAL:		//一般人
+		m_nTakeNormal += nTakeNum;
+		break;
+	}
+
+	if (m_nTakeDestroyer + m_nTakeBlocker >= PICT_FORCEDRETURN_NUM)
+	{//強制帰宅する
+		SetState(STATE_LEAVE);
+	}
+}
+
+
+//******************************************************
+//一般人ピクトクラス
+//******************************************************
+//=================================
+//コンストラクタ（デフォルト）
+//=================================
+CPictNormal::CPictNormal()
+{
+	for (int cnt = 0; cnt < MAX_OBJ; cnt++)
+	{//すべて確認
+		if (m_apPict[cnt] == NULL)
+		{//空っぽ
+			m_apPict[cnt] = this;	//自分自身のポインタを登録
+			m_nID = cnt;	//ID覚える
+			m_nNumAll++;	//総数増やす
+			break;
+		}
+	}
+}
+
+//=================================
+//コンストラクタ（オーバーロード）
+//=================================
+CPictNormal::CPictNormal(const D3DXVECTOR3 pos) : CPict(pos)
+{
+	for (int cnt = 0; cnt < MAX_OBJ; cnt++)
+	{//すべて確認
+		if (m_apPict[cnt] == NULL)
+		{//空っぽ
+			m_apPict[cnt] = this;	//自分自身のポインタを登録
+			m_nID = cnt;	//ID覚える
+			m_nNumAll++;	//総数増やす
+			break;
+		}
+	}
+}
+
+//=================================
+//デストラクタ
+//=================================
+CPictNormal::~CPictNormal()
+{
+}
+
+//========================
+//初期化処理
+//========================
+HRESULT CPictNormal::Init(void)
+{
+	//親処理
+	CPict::Init();
+
+	return S_OK;
+}
+
+//========================
+//終了処理
+//========================
+void CPictNormal::Uninit(void)
+{
+	//親処理
+	CPict::Uninit();
+}
+
+//========================
+//更新処理
+//========================
+void CPictNormal::Update(void)
+{
+	//親処理
+	CPict::Update();
+}
+
+//========================
+//描画処理
+//========================
+void CPictNormal::Draw(void)
+{
+	//親処理
+	CPict::Draw();
+}
+
+//========================
+//生成処理
+//========================
+CPictNormal* CPictNormal::Create(const D3DXVECTOR3 pos)
+{
+	CPictNormal* pPict = NULL;
+
+	if (pPict == NULL)
+	{
+		//ピクトの生成
+		pPict = new CPictNormal(pos);
+
+		//初期化
+		pPict->Init();
+
+		return pPict;
+	}
+	else
+	{
+		return NULL;
+	}
+}
+
+//========================
+//タクシーに乗る処理
+//========================
+void CPictNormal::TakeTaxi(CPictTaxi* taxi)
+{
+	//抽選
+	int nRand = rand() % (PICT_NORMAL_D_PERCENT + PICT_NORMAL_B_PERCENT + PICT_NORMAL_N_PERCENT);
+
+	//分岐
+	if (nRand < PICT_NORMAL_D_PERCENT)
+	{//デストロイヤー
+		taxi->SetTakeTaxi(CPict::TYPE_DESTROYER, 1);
+	}
+	else if (nRand < PICT_NORMAL_D_PERCENT + PICT_NORMAL_B_PERCENT)
+	{//ブロッカー
+		taxi->SetTakeTaxi(CPict::TYPE_BLOCKER, 1);
+	}
+	else
+	{//一般人ピクト
+		int nPictNum = rand() % (PICT_NORMAL_NUM_DEGREE + 1) + PICT_NORMAL_NUM_MIN;	//乱数で人数決まる
+		taxi->SetTakeTaxi(CPict::TYPE_NORMAL, nPictNum);
+	}
 }
 
 //******************************************************

@@ -33,6 +33,9 @@ public:
 	//攻撃処理
 	void Attack(void);
 
+	//収容処理
+	void AddPict(const int nDestroyer, const int nBlocker, const int nNormal);
+
 private:
 	//関数
 	void Move(void);								//カメラ移動処理
@@ -44,6 +47,10 @@ private:
 	bool m_bControllPict;			//ピクトさんを操縦するかどうか
 	CBuilding* m_pSelectBuilding;	//選択中の建物
 	CPict* m_pSelectPict;			//選択中のピクトさん
+
+	int m_nHaveDestroyer;	//デストロイヤー所持数
+	int m_nHaveBlocker;		//ブロッカー所持数
+	int m_nHaveNormal;		//一般人所持数
 };
 
 #endif

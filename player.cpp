@@ -26,6 +26,10 @@ CPlayer::CPlayer()
 {
 	m_nChacePictNum = -1;
 	m_bControllPict = false;
+
+	m_nHaveDestroyer = INT_ZERO;
+	m_nHaveBlocker = INT_ZERO;
+	m_nHaveNormal = INT_ZERO;
 }
 
 //=================================
@@ -41,6 +45,12 @@ HRESULT CPlayer::Init(void)
 {
 	m_nChacePictNum = -1;
 	m_bControllPict = false;
+
+	//âºÅFêlêîê›íË
+	m_nHaveDestroyer = 1;
+	m_nHaveBlocker = 2;
+	m_nHaveNormal = 1500;
+
 	return S_OK;
 }
 
@@ -111,6 +121,16 @@ void CPlayer::Attack(void)
 			}
 		}
 	}
+}
+
+//=================================
+//é˚óe
+//=================================
+void CPlayer::AddPict(const int nDestroyer, const int nBlocker, const int nNormal)
+{//í«â¡
+	m_nHaveDestroyer += nDestroyer;
+	m_nHaveBlocker += nBlocker;
+	m_nHaveNormal += nNormal;
 }
 
 //=================================
