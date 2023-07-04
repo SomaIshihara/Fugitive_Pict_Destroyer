@@ -10,6 +10,7 @@
 #include "main.h"
 #include "manager.h"
 #include "object.h"
+#include "objectX.h"
 #include "collision.h"
 
 #define PICT_MODEL_NUM	(10)	//ピクトさんに使うモデル数
@@ -25,6 +26,22 @@ class CPictPolice;
 class CPict : public CObject
 {
 public:
+	//ピクトさん状態列挙
+	typedef enum
+	{
+		STATE_FACE = 0,	//対象に向かっている
+		STATE_ATTACK,	//攻撃中
+		STATE_LEAVE,		//帰っている
+		STATE_MAX
+	} STATE;
+
+	//モーション種類
+	typedef enum
+	{
+		MOTIONTYPE_NEUTRAL = 0,
+		MOTIONTYPE_MOVE
+	} MOTIONTYPE;
+
 	//コンストラクタ・デストラクタ
 	CPict();
 	CPict(const D3DXVECTOR3 pos);
@@ -47,12 +64,16 @@ public:
 	static CPict* GetPict(int nID) { return m_apPict[nID]; }
 	CMotion* GetMotion(void) { return m_pMotion; }
 	CCollision GetCollision(void) { return m_collision; }
+	STATE GetState(void) { return m_state; }
+	static D3DXVECTOR3 GetAgitPos(void) { return m_pAgitObj->GetPos(); }
 
 	//設定
 	void SetPos(D3DXVECTOR3 pos) { m_pos = pos; }
 	void SetRot(D3DXVECTOR3 rot) { m_rot = rot; }
 	void SetMove(D3DXVECTOR3 move) { m_move = move; }
 	void AddDamage(int nDamage);
+	void SetState(STATE state) { m_state = state; }
+	static void SetAgit(CObjectX* pAgit) { m_pAgitObj = pAgit; }
 	virtual void UnsetTarget(void) = 0;
 
 	//当たり判定
@@ -71,19 +92,27 @@ private:
 	static int m_nNumAll;				//ピクトさん総数
 	int m_nID;							//ピクトさんID
 	CMotion* m_pMotion;					//モーションポインタ
-	D3DXVECTOR3 m_pos;					//位置
-	D3DXVECTOR3 m_move;					//移動量
-	float m_fWidth, m_fHeight, m_fDepth;//サイズ
-	int m_nCounterJumpTime;				//ジャンプ時間
-	bool m_bJump;						//ジャンプ中か
-	D3DXVECTOR3 m_rot;					//向き
+
 	D3DXMATRIX m_mtxWorld;				//ワールドマトリ
 	CModel* m_apModel[PICT_MODEL_NUM];	//ピクトさんモデル
-	CCollision m_collision;				//コリジョン
 	int m_nNumModel;					//モデル数
+	CCollision m_collision;				//コリジョン
+
+	D3DXVECTOR3 m_pos;					//位置
+	D3DXVECTOR3 m_move;					//移動量
+	D3DXVECTOR3 m_rot;					//向き
+	float m_fWidth, m_fHeight, m_fDepth;//サイズ
+
+	bool m_bJump;						//ジャンプ中か
+	int m_nCounterJumpTime;				//ジャンプ時間
+
 	bool m_bControll;					//操縦できるか
 	CShadow* m_pShadow;					//影オブジェクトポインタ
+
 	int nLife;							//体力
+	float m_fRedAlpha;					//赤くする割合
+	STATE m_state;						//状態
+	static CObjectX* m_pAgitObj;		//アジトのポインタ
 };
 
 //デストロイヤーピクトクラス
@@ -93,10 +122,7 @@ public:
 	//モーション種類
 	typedef enum
 	{
-		MOTIONTYPE_NEUTRAL = 0,
-		MOTIONTYPE_MOVE,
-		MOTIONTYPE_DESTROY,
-		MOTIONTYPE_MAX
+		MOTIONTYPE_DESTROY = 2
 	} MOTIONTYPE;
 
 	//コンストラクタ・デストラクタ
@@ -119,7 +145,7 @@ public:
 
 	//設定
 	void SetTarget(CBuilding* target) { m_pTargetBuilding = target; }
-	void UnsetTarget(void) { m_pTargetBuilding = NULL; }
+	void UnsetTarget(void);
 
 private:
 	static CPictDestroyer* m_apPict[MAX_OBJ];	//ピクトさんポインタ
@@ -136,10 +162,7 @@ public:
 	//モーション種類
 	typedef enum
 	{
-		MOTIONTYPE_NEUTRAL = 0,
-		MOTIONTYPE_MOVE,
-		MOTIONTYPE_ATTACK = 3,
-		MOTIONTYPE_MAX
+		MOTIONTYPE_ATTACK = 3
 	} MOTIONTYPE;
 
 	//コンストラクタ・デストラクタ
@@ -162,7 +185,7 @@ public:
 
 	//設定
 	void SetTarget(CPictPolice* target) { m_pTargetPolice = target; }
-	void UnsetTarget(void) { m_pTargetPolice = NULL; }
+	void UnsetTarget(void);
 
 private:
 	static CPictBlocker* m_apPict[MAX_OBJ];	//ピクトさんポインタ
@@ -180,10 +203,7 @@ public:
 	//モーション種類
 	typedef enum
 	{
-		MOTIONTYPE_NEUTRAL = 0,
-		MOTIONTYPE_MOVE,
-		MOTIONTYPE_ATTACK = 3,
-		MOTIONTYPE_MAX
+		MOTIONTYPE_ATTACK = 3
 	} MOTIONTYPE;
 
 	//コンストラクタ・デストラクタ
@@ -207,6 +227,9 @@ public:
 	//設定
 	void SetTarget(CPict* target) { m_pTargetPict = target; }
 	void UnsetTarget(void) { m_pTargetPict = NULL; }
+
+	//仮設定
+	void SetBuilding(CBuilding* p) { m_pTargetBuilding = p; }
 
 private:
 	static CPictPolice* m_apPict[MAX_OBJ];	//ピクトさんポインタ

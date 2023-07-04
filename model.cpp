@@ -237,8 +237,19 @@ void CModel::Draw(void)
 
 	for (int nCntMat = 0; nCntMat < (int)m_dwNumMatModel; nCntMat++)
 	{
+		//マテリアル変更
+		D3DMATERIAL9 changeMat = pMat[nCntMat].MatD3D;
+
+		//メイン色変更
+		changeMat.Diffuse = m_changeMainColor;
+
+		//サブ色変更
+		changeMat.Diffuse.r = 1.0f * m_changeSubColor.r + changeMat.Diffuse.r * (1.0f - m_changeSubColor.r);
+		changeMat.Diffuse.g = 1.0f * m_changeSubColor.g + changeMat.Diffuse.g * (1.0f - m_changeSubColor.g);
+		changeMat.Diffuse.b = 1.0f * m_changeSubColor.b + changeMat.Diffuse.b * (1.0f - m_changeSubColor.b);
+
 		//マテリアル設定
-		pDevice->SetMaterial(&pMat[nCntMat].MatD3D);
+		pDevice->SetMaterial(&changeMat);
 
 		//テクスチャ設定
 		pDevice->SetTexture(0, pTexture->GetAddress(m_pIdxtexture[nCntMat]));

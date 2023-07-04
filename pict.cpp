@@ -23,13 +23,18 @@
 
 //マクロ
 #define PICT_WALK_SPEED				(6.0f)		//ピクトさんの歩行速度
+#define PICT_AGIT_STOP_LENGTH		(20.0f)		//ピクトさんがアジトから離れる距離
 #define PICT_BUIDING_STOP_LENGTH	(120.0f)	//ピクトさんが建物から離れる距離
 #define PICT_POLICE_STOP_LENGTH		(30.0f)		//ピクトさんが警察から離れる距離
+#define PICT_POLICE_SEARCH_LENGTH	(60.0f)		//ピクト警察のサーチ範囲
 #define PICT_ATTACK_TIME			(60)		//攻撃を行う間隔
+#define PICT_DAMAGE_ALPHA			(0.9f)		//赤くする割合
+#define PICT_DAMAGE_TIME			(60)		//赤くする時間
 
 //静的メンバ変数
 CPict* CPict::m_apPict[MAX_OBJ];
 int CPict::m_nNumAll = 0;
+CObjectX* CPict::m_pAgitObj = NULL;
 CPictDestroyer* CPictDestroyer::m_apPict[MAX_OBJ];
 int CPictDestroyer::m_nNumAll = 0;
 CPictBlocker* CPictBlocker::m_apPict[MAX_OBJ];
@@ -66,6 +71,8 @@ CPict::CPict()
 	m_bJump = false;
 	m_bControll = false;
 	nLife = INT_ZERO;
+	m_fRedAlpha = FLOAT_ZERO;
+	m_state = STATE_MAX;
 }
 
 //=================================
@@ -92,7 +99,9 @@ CPict::CPict(const D3DXVECTOR3 pos)
 	m_nCounterJumpTime = 0;
 	m_bJump = false;
 	m_bControll = false;
-	nLife = 1000;
+	nLife = INT_ZERO;
+	m_fRedAlpha = FLOAT_ZERO;
+	m_state = STATE_MAX;
 }
 
 //=================================
@@ -136,6 +145,9 @@ HRESULT CPict::Init(void)
 	//操縦しない設定
 	m_bControll = false;
 
+	//仮：体力設定
+	nLife = 1000;
+
 	//できた
 	return S_OK;
 }
@@ -177,7 +189,51 @@ void CPict::Uninit(void)
 void CPict::Update(void)
 {
 	CInputKeyboard* pKeyboard = CManager::GetInputKeyboard();	//キーボード取得
+	D3DXVECTOR3 targetPos = VEC3_ZERO;
+	float targetWidthHalf = FLOAT_ZERO;
+	float targetDepthHalf = FLOAT_ZERO;
 	D3DXVECTOR3 pos = m_pos;
+	CMotion* pMotion = GetMotion();
+
+	//ピクトさん全員知ってるアジトへの帰還
+	if (m_state == STATE_LEAVE)
+	{
+		if (CPict::IsControll() == false)
+		{
+			m_move.x = FLOAT_ZERO;
+			m_move.z = FLOAT_ZERO;
+			targetPos = m_pAgitObj->GetPos();
+			targetWidthHalf = m_pAgitObj->GetWidth() * 0.5f;
+			targetDepthHalf = m_pAgitObj->GetDepth() * 0.5f;
+
+			if (targetPos.x - targetWidthHalf - PICT_AGIT_STOP_LENGTH > pos.x || targetPos.x + targetWidthHalf + PICT_AGIT_STOP_LENGTH < pos.x ||
+				targetPos.z - targetDepthHalf - PICT_AGIT_STOP_LENGTH > pos.z || targetPos.z + targetDepthHalf + PICT_AGIT_STOP_LENGTH < pos.z)
+			{//移動中
+				float fTargetLenWidth, fTargetLenDepth;
+				float fTargetRot;
+
+				fTargetLenWidth = targetPos.x - pos.x;
+				fTargetLenDepth = targetPos.z - pos.z;
+
+				fTargetRot = atan2f(fTargetLenWidth, fTargetLenDepth);
+
+				m_move.x = sinf(fTargetRot) * PICT_WALK_SPEED;
+				m_move.z = cosf(fTargetRot) * PICT_WALK_SPEED;
+
+				m_rot.y = FIX_ROT(fTargetRot + D3DX_PI);
+
+				if (pMotion->GetType() != MOTIONTYPE_MOVE)
+				{
+					pMotion->Set(MOTIONTYPE_MOVE);
+				}
+			}
+			else
+			{//ついた
+				Uninit();
+				return;
+			}
+		}
+	}
 
 	//ジャンプカウンタ増やす
 	m_nCounterJumpTime++;
@@ -234,6 +290,17 @@ void CPict::Update(void)
 	}
 #endif
 
+	if (m_fRedAlpha >= FLOAT_ZERO)
+	{//まだ赤い
+	 //赤色具合を減らす
+		m_fRedAlpha -= PICT_DAMAGE_ALPHA / PICT_DAMAGE_TIME;
+
+		if (m_fRedAlpha < FLOAT_ZERO)
+		{//赤くなくなった
+			m_fRedAlpha = FLOAT_ZERO;
+		}
+	}
+
 	//影設定
 	m_pShadow->Set(m_pos, m_rot);
 	CManager::GetDebProc()->Print("pos = (x = %f, y = %f, z = %f)\n", m_pos.x, m_pos.y, m_pos.z);
@@ -274,6 +341,8 @@ void CPict::Draw(void)
 	//モデル描画
 	for (int cnt = 0; cnt < PICT_MODEL_NUM; cnt++)
 	{
+		m_apModel[cnt]->SetMainColor(D3DXCOLOR(0.0f, 0.6f, 0.0f, 1.0f));		//後々可変式に変更
+		m_apModel[cnt]->SetSubColor(D3DXCOLOR(m_fRedAlpha, 0.0f, 0.0f, 0.0f));
 		m_apModel[cnt]->Draw();
 	}
 
@@ -307,6 +376,8 @@ void CPict::AddDamage(int nDamage)
 		//爆散
 		Uninit();
 	}
+
+	m_fRedAlpha = PICT_DAMAGE_ALPHA;
 }
 
 //=================================
@@ -562,7 +633,7 @@ void CPictDestroyer::Update(void)
 
 			if (targetPos.x - targetWidthHalf - PICT_BUIDING_STOP_LENGTH > pos.x || targetPos.x + targetWidthHalf + PICT_BUIDING_STOP_LENGTH < pos.x ||
 				targetPos.z - targetDepthHalf - PICT_BUIDING_STOP_LENGTH > pos.z || targetPos.z + targetDepthHalf + PICT_BUIDING_STOP_LENGTH < pos.z)
-			{
+			{//移動中
 				float fTargetLenWidth, fTargetLenDepth;
 				float fTargetRot;
 
@@ -585,8 +656,12 @@ void CPictDestroyer::Update(void)
 				m_nCounterDestruction = INT_ZERO;
 			}
 			else
-			{
+			{//ついた
+				//攻撃状態にする
+				SetState(STATE_ATTACK);
+
 				m_nCounterDestruction++;
+
 				if (m_nCounterDestruction > PICT_ATTACK_TIME)
 				{
 					//破壊工作
@@ -601,13 +676,6 @@ void CPictDestroyer::Update(void)
 					pMotion->Set(MOTIONTYPE_DESTROY);
 				}
 			}
-		}
-	}
-	else
-	{
-		if (pMotion->GetType() != MOTIONTYPE_NEUTRAL)
-		{
-			pMotion->Set(MOTIONTYPE_NEUTRAL);
 		}
 	}
 
@@ -649,6 +717,15 @@ CPictDestroyer* CPictDestroyer::Create(const D3DXVECTOR3 pos)
 	{
 		return NULL;
 	}
+}
+
+//=================================
+//ターゲット解除（と帰宅）
+//=================================
+void CPictDestroyer::UnsetTarget(void)
+{
+	m_pTargetBuilding = NULL;
+	SetState(STATE_LEAVE);
 }
 
 //******************************************************
@@ -787,13 +864,6 @@ void CPictBlocker::Update(void)
 			}
 		}
 	}
-	else
-	{
-		if (pMotion->GetType() != MOTIONTYPE_NEUTRAL)
-		{
-			pMotion->Set(MOTIONTYPE_NEUTRAL);
-		}
-	}
 
 	//値設定
 	SetRot(rot);
@@ -833,6 +903,15 @@ CPictBlocker* CPictBlocker::Create(const D3DXVECTOR3 pos)
 	{
 		return NULL;
 	}
+}
+
+//=================================
+//ターゲット解除（と帰宅）
+//=================================
+void CPictBlocker::UnsetTarget(void)
+{
+	m_pTargetPolice = NULL;
+	SetState(STATE_LEAVE);
 }
 
 //******************************************************
@@ -920,9 +999,9 @@ void CPictPolice::Update(void)
 	D3DXVECTOR3 move = GetMove();
 	CMotion* pMotion = GetMotion();
 
-	if (m_pTargetPict != NULL)
+	if (CPict::IsControll() == false)
 	{
-		if (CPict::IsControll() == false)
+		if (m_pTargetPict != NULL)
 		{
 			move.x = FLOAT_ZERO;
 			move.z = FLOAT_ZERO;
@@ -956,6 +1035,14 @@ void CPictPolice::Update(void)
 			}
 			else
 			{
+				//向かせる
+				float fTargetLenWidth, fTargetLenDepth;
+				fTargetLenWidth = targetPos.x - pos.x;
+				fTargetLenDepth = targetPos.z - pos.z;
+
+				float fTargetRot = atan2f(fTargetLenWidth, fTargetLenDepth);
+				rot.y = FIX_ROT(fTargetRot + D3DX_PI);
+
 				m_nCounterAttack++;
 				if (m_nCounterAttack > PICT_ATTACK_TIME)
 				{
@@ -972,25 +1059,58 @@ void CPictPolice::Update(void)
 				}
 			}
 		}
-	}
-	else
-	{
-		for (int cnt = 0; cnt < MAX_OBJ; cnt++)
-		{//全オブジェクト見る
-			CPictBlocker* pPict = CPictBlocker::GetPict(cnt);	//オブジェクト取得
-
-			if (pPict != NULL)
+		else
+		{
+			if (m_pTargetBuilding != NULL)
 			{
-				if (D3DXVec3Length(&(pPict->GetPos() - this->GetPos())) <= 50.0f)
+				move.x = FLOAT_ZERO;
+				move.z = FLOAT_ZERO;
+				targetPos = m_pTargetBuilding->GetPos();
+				targetWidthHalf = m_pTargetBuilding->GetWidth() * 0.5f;
+				targetDepthHalf = m_pTargetBuilding->GetDepth() * 0.5f;
+
+				if (targetPos.x - targetWidthHalf - PICT_POLICE_STOP_LENGTH > pos.x || targetPos.x + targetWidthHalf + PICT_POLICE_STOP_LENGTH < pos.x ||
+					targetPos.z - targetDepthHalf - PICT_POLICE_STOP_LENGTH > pos.z || targetPos.z + targetDepthHalf + PICT_POLICE_STOP_LENGTH < pos.z)
 				{
-					m_pTargetPict = pPict;
+					float fTargetLenWidth, fTargetLenDepth;
+					float fTargetRot;
+
+					fTargetLenWidth = targetPos.x - pos.x;
+					fTargetLenDepth = targetPos.z - pos.z;
+
+					fTargetRot = atan2f(fTargetLenWidth, fTargetLenDepth);
+
+					move.x = sinf(fTargetRot) * PICT_WALK_SPEED;
+					move.z = cosf(fTargetRot) * PICT_WALK_SPEED;
+
+					rot.y = FIX_ROT(fTargetRot + D3DX_PI);
+
+					if (pMotion->GetType() != MOTIONTYPE_MOVE)
+					{
+						pMotion->Set(MOTIONTYPE_MOVE);
+					}
+
+					//攻撃カウンターリセット
+					m_nCounterAttack = INT_ZERO;
+				}
+				else if (pMotion->GetType() != MOTIONTYPE_NEUTRAL)
+				{
+					pMotion->Set(MOTIONTYPE_NEUTRAL);
 				}
 			}
-		}
 
-		if (pMotion->GetType() != MOTIONTYPE_NEUTRAL)
-		{
-			pMotion->Set(MOTIONTYPE_NEUTRAL);
+			for (int cnt = 0; cnt < MAX_OBJ; cnt++)
+			{//全オブジェクト見る
+				CPictBlocker* pPict = CPictBlocker::GetPict(cnt);	//オブジェクト取得
+
+				if (pPict != NULL)
+				{
+					if (D3DXVec3Length(&(pPict->GetPos() - this->GetPos())) <= PICT_POLICE_SEARCH_LENGTH)
+					{
+						m_pTargetPict = pPict;
+					}
+				}
+			}
 		}
 	}
 

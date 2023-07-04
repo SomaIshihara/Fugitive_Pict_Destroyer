@@ -40,11 +40,15 @@ public:
 	//設定
 	void SetPosMotioned(D3DXVECTOR3 pos) { m_posMotioned = pos; }
 	void SetRotMotioned(D3DXVECTOR3 rot) { m_rotMotioned = rot; }
+	void SetMainColor(D3DXCOLOR col) { m_changeMainColor = col; }
+	void SetSubColor(D3DXCOLOR col) { m_changeSubColor = col; }
 
 private:
 	//モデル
 	LPD3DXMESH m_pMesh;			//メッシュ
 	LPD3DXBUFFER m_pBuffMat;	//マテリアルポインタ
+	D3DXCOLOR m_changeMainColor;//変更する色（メイン）
+	D3DXCOLOR m_changeSubColor;	//変更する色（エフェクト等）
 	DWORD m_dwNumMatModel;		//マテ数
 	int* m_pIdxtexture;			//テクスチャ番号（動的確保）
 

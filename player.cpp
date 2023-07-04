@@ -93,7 +93,10 @@ void CPlayer::Attack(void)
 {
 	if (m_pSelectBuilding != NULL)
 	{//建物が選択されている
-		CPictDestroyer::GetPict(0)->SetTarget(m_pSelectBuilding);
+		//CPictDestroyer::GetPict(0)->SetTarget(m_pSelectBuilding);
+		CPictDestroyer* pict = CPictDestroyer::Create(CPict::GetAgitPos());
+		pict->SetTarget(m_pSelectBuilding);
+		pict->SetState(CPict::STATE_FACE);
 	}
 	else if (m_pSelectPict != NULL)
 	{//ピクト（なんでも）が選択されている
