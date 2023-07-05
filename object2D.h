@@ -34,7 +34,7 @@ public:
 	virtual void Draw(void);
 
 	//生成
-	static CObject2D* Create(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, const float fWidth, const float fHeight);
+	static CObject2D* Create(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, const float fWidth, const float fHeight, const int nPriority = PRIORITY_DEFAULT);
 
 	//テクスチャ設定
 	void BindTexture(int nIdx) { m_nIdxTexture = nIdx; }

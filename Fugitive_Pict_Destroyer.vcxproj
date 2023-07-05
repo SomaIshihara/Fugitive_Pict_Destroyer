@@ -196,6 +196,7 @@
     <ClCompile Include="renderer.cpp" />
     <ClCompile Include="score.cpp" />
     <ClCompile Include="shadow.cpp" />
+    <ClCompile Include="slider.cpp" />
     <ClCompile Include="sound.cpp" />
     <ClCompile Include="symbol.cpp" />
     <ClCompile Include="texture.cpp" />
@@ -238,6 +239,7 @@
     <ClInclude Include="renderer.h" />
     <ClInclude Include="score.h" />
     <ClInclude Include="shadow.h" />
+    <ClInclude Include="slider.h" />
     <ClInclude Include="sound.h" />
     <ClInclude Include="symbol.h" />
     <ClInclude Include="texture.h" />

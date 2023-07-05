@@ -22,6 +22,7 @@ class CPlayer;
 class CMeshField;
 class CButton2D;
 class CButton3D;
+class CSlider;
 
 //マクロ
 #define INT_ZERO	(0)							//int型の0
@@ -55,6 +56,7 @@ public:
 	static CCamera* GetCamera(void) { return m_pCamera; }
 	static CLight* GetLight(void) { return m_pLight; }
 	static CTexture* GetTexture(void) { return m_pTexture; }
+	static CSlider* GetSlider(void) { return m_pSlider; }
 	//仮
 	static CMeshField* GetMeshField(void) { return m_pMeshField; }
 
@@ -74,6 +76,7 @@ private:
 	static CTexture* m_pTexture;				//テクスチャ
 	static CButton2D* m_pButtonATK;				//攻撃ボタン
 	static CButton3D* m_pButton3D;				//3Dボタン
+	static CSlider* m_pSlider;					//スライダー
 	//仮
 	static CMeshField* m_pMeshField;			//仮：メッシュフィールド
 	//仮

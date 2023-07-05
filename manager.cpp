@@ -34,6 +34,7 @@
 #include "pict.h"
 #include "meshField.h"
 #include "button.h"
+#include "slider.h"
 
 //マクロ
 #define FPS_SPEED	(500)	//FPS計測時間
@@ -50,6 +51,7 @@ CTexture* CManager::m_pTexture = NULL;
 CPlayer* CManager::m_pPlayer = NULL;
 CButton2D* CManager::m_pButtonATK = NULL;
 CButton3D* CManager::m_pButton3D = NULL;
+CSlider* CManager::m_pSlider = NULL;
 int CManager::m_nFPS = 0;
 DWORD CManager::m_dwFrameCount = 0;
 
@@ -126,7 +128,7 @@ HRESULT CManager::Init(HINSTANCE hInstance, HWND hWnd, BOOL bWindow)
 	}
 
 	//テクスチャ初期化
-	if (FAILED(m_pTexture->Load()))
+	if (FAILED(m_pTexture->Load("data\\preload.txt")))
 	{
 		return E_FAIL;
 	}
@@ -160,6 +162,7 @@ HRESULT CManager::Init(HINSTANCE hInstance, HWND hWnd, BOOL bWindow)
 	CPict::SetAgit(pAgit);
 	m_pButton3D = CButton3D::Create(D3DXVECTOR3(200.0f,50.0f,200.0f), D3DXVECTOR3(-0.5f * D3DX_PI,0.0f,0.0f), 100.0f, 50.0f);
 	m_pButtonATK = CButton2D::Create(D3DXVECTOR3(20.0f, SCREEN_HEIGHT - 20.0f, 0.0f), VEC3_ZERO, 40.0f, 40.0f);
+	m_pSlider = CSlider::Create(D3DXVECTOR3(100.0f, SCREEN_HEIGHT - 20.0f, 0.0f), 40.0f, 40.0f, 3);
 
 	//FPS計測器初期化
 	m_nFPS = 0;
@@ -292,6 +295,8 @@ void CManager::Update(void)
 	{
 		m_pDebProc->Print("[[CLICKED!!]]\n");
 	}
+
+	m_pDebProc->Print("SLIDER_NUM = %d\n", m_pSlider->GetSelectIdx());
 }
 
 //=================================

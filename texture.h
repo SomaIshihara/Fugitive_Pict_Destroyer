@@ -15,6 +15,14 @@
 class CTexture
 {
 public:
+	//事前読み込みテクスチャ列挙
+	typedef enum
+	{
+		PRELOAD_SLIDER_01 = 0,
+		PRELOAD_SLIDER_02,
+		PRELOAD_SLIDER_03
+	} PRELOAD;
+
 	//パターンテクスチャ構造体定義
 	typedef struct
 	{
@@ -27,8 +35,8 @@ public:
 	~CTexture();
 
 	//全読み込み・破棄
-	HRESULT Load(void);		//あらかじめ読み込みたいテクスチャ読み込み
-	void Unload(void);		//追加した分も含めてすべて破棄
+	HRESULT Load(const char* pPath);	//あらかじめ読み込みたいテクスチャ読み込み
+	void Unload(void);					//追加した分も含めてすべて破棄
 
 	int Regist(const char* pPath, const int nPatWidth = 1, const int nPatHeight = 1);	//追加する分の読み込み
 	LPDIRECT3DTEXTURE9 GetAddress(int nIdx);											//テクスチャ取得

@@ -1,0 +1,27 @@
+#============================================================
+#
+# 初期読み込みテクスチャ
+# Author:石原颯馬
+#
+#============================================================
+SCRIPT_START
+
+START_LOAD		#00
+	TEXTURE_NAME = data\\TEXTURE\\slider_icon_01.png
+	PATTERN_WIDTH = 1
+	PATTERN_HEIGHT = 1
+END_LOAD
+
+START_LOAD		#01
+	TEXTURE_NAME = data\\TEXTURE\\slider_icon_02.png
+	PATTERN_WIDTH = 1
+	PATTERN_HEIGHT = 1
+END_LOAD
+
+START_LOAD		#02
+	TEXTURE_NAME = data\\TEXTURE\\slider_icon_03.png
+	PATTERN_WIDTH = 1
+	PATTERN_HEIGHT = 1
+END_LOAD
+
+SCRIPT_END

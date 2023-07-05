@@ -167,14 +167,14 @@ void CObject2D::Draw(void)
 //========================
 //生成処理（テクスチャなし）
 //========================
-CObject2D* CObject2D::Create(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, const float fWidth, const float fHeight)
+CObject2D* CObject2D::Create(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, const float fWidth, const float fHeight, const int nPriority)
 {
 	CObject2D* pObj2D = NULL;
 
 	if (pObj2D == NULL)
 	{
 		//オブジェクト2Dの生成
-		pObj2D = new CObject2D(pos, rot, fWidth, fHeight);
+		pObj2D = new CObject2D(pos, rot, fWidth, fHeight, nPriority);
 
 		//初期化
 		pObj2D->Init();
