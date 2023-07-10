@@ -18,6 +18,7 @@
 #include "building.h"
 #include "shadow.h"
 #include "meshField.h"
+#include "slider.h"
 #include "file.h"
 #include "Culc.h"
 
@@ -29,7 +30,9 @@
 #define PICT_POLICE_SEARCH_LENGTH	(60.0f)		//ピクト警察のサーチ範囲
 #define PICT_ATTACK_TIME			(60)		//攻撃を行う間隔
 #define PICT_DAMAGE_ALPHA			(0.9f)		//赤くする割合
-#define PICT_DAMAGE_TIME			(60)		//赤くする時間
+#define PICT_DAMAGE_TIME			(120)		//赤くする時間
+#define PICT_LIFE					(1000)		//体力
+#define PICT_RESCUE_LIFE			(0.5f)		//救助する体力割合
 
 #define PICT_FORCEDRETURN_NUM		(2)			//強制帰宅するまでの人数
 #define PICT_NORMAL_D_PERCENT		(15)		//一般人ピクトがデストロイヤーになる確率
@@ -81,7 +84,7 @@ CPict::CPict()
 	m_nCounterJumpTime = 0;
 	m_bJump = false;
 	m_bControll = false;
-	nLife = INT_ZERO;
+	m_nLife = INT_ZERO;
 	m_fRedAlpha = FLOAT_ZERO;
 	m_state = STATE_MAX;
 }
@@ -110,7 +113,7 @@ CPict::CPict(const D3DXVECTOR3 pos)
 	m_nCounterJumpTime = 0;
 	m_bJump = false;
 	m_bControll = false;
-	nLife = INT_ZERO;
+	m_nLife = INT_ZERO;
 	m_fRedAlpha = FLOAT_ZERO;
 	m_state = STATE_MAX;
 }
@@ -157,7 +160,7 @@ HRESULT CPict::Init(void)
 	m_bControll = false;
 
 	//仮：体力設定
-	nLife = 1000;
+	m_nLife = PICT_LIFE;
 
 	//できた
 	return S_OK;
@@ -168,6 +171,28 @@ HRESULT CPict::Init(void)
 //========================
 void CPict::Uninit(void)
 {
+	//警察ターゲット解除
+	for (int cnt = 0; cnt < MAX_OBJ; cnt++)
+	{//全オブジェクト見る
+		CPictPolice* pPict = CPictPolice::GetPict(cnt);	//オブジェクト取得
+
+		if (pPict != NULL)	//ヌルチェ
+		{//なんかある
+			pPict->UnsetTarget();	//ターゲット解除
+		}
+	}
+
+	//タクシーターゲット解除
+	for (int cnt = 0; cnt < MAX_OBJ; cnt++)
+	{//全オブジェクト見る
+		CPictTaxi* pPict = CPictTaxi::GetPict(cnt);	//オブジェクト取得
+
+		if (pPict != NULL)	//ヌルチェ
+		{//なんかある
+			pPict->UnsetTarget();	//ターゲット解除
+		}
+	}
+
 	//モーション破棄
 	if (m_pMotion != NULL)
 	{
@@ -366,10 +391,10 @@ void CPict::Draw(void)
 //========================
 void CPict::AddDamage(int nDamage)
 {
-	nLife -= nDamage;	//付与
+	m_nLife -= nDamage;	//付与
 
 	//0になったら消す
-	if (nLife <= INT_ZERO)
+	if (m_nLife <= INT_ZERO)
 	{
 		for (int cnt = 0; cnt < MAX_OBJ; cnt++)
 		{//全オブジェクト見る
@@ -543,6 +568,13 @@ void CPict::Controll(D3DXVECTOR3 move)
 	{//操縦可能
 		m_move = move;
 	}
+}
+
+//=================================
+//パラメータ読み込み
+//=================================
+void CPict::LoadPictParam(const char * pPath)
+{
 }
 
 //******************************************************
@@ -739,6 +771,15 @@ void CPictDestroyer::UnsetTarget(void)
 	SetState(STATE_LEAVE);
 }
 
+//=================================
+//タクシー乗車
+//=================================
+void CPictDestroyer::TakeTaxi(CPictTaxi * taxi)
+{
+	taxi->SetTakeTaxi(CPict::TYPE_DESTROYER, 1);
+	//ここに連れている一般人も乗せる処理
+}
+
 //******************************************************
 //ブロッカーピクトクラス
 //******************************************************
@@ -925,6 +966,15 @@ void CPictBlocker::UnsetTarget(void)
 	SetState(STATE_LEAVE);
 }
 
+//=================================
+//タクシー乗車
+//=================================
+void CPictBlocker::TakeTaxi(CPictTaxi * taxi)
+{
+	taxi->SetTakeTaxi(CPict::TYPE_BLOCKER, 1);
+	//ここに連れている一般人も乗せる処理
+}
+
 //******************************************************
 //ピクタクシークラス
 //******************************************************
@@ -980,6 +1030,9 @@ CPictTaxi::~CPictTaxi()
 //========================
 HRESULT CPictTaxi::Init(void)
 {
+	//設定されていたモードを取得
+	m_mode = (MODE)CManager::GetSlider()->GetSelectIdx();
+	
 	//親処理
 	CPict::Init();
 
@@ -991,6 +1044,8 @@ HRESULT CPictTaxi::Init(void)
 //========================
 void CPictTaxi::Uninit(void)
 {
+	m_apPict[m_nID] = NULL;
+
 	//親処理
 	CPict::Uninit();
 }
@@ -1000,10 +1055,125 @@ void CPictTaxi::Uninit(void)
 //========================
 void CPictTaxi::Update(void)
 {
-	if (GetState() != STATE_LEAVE)
-	{//自由
-		
+	D3DXVECTOR3 targetPos = VEC3_ZERO;
+	float targetWidthHalf = FLOAT_ZERO;
+	float targetDepthHalf = FLOAT_ZERO;
+	D3DXVECTOR3 pos = GetPos();
+	D3DXVECTOR3 rot = GetRot();
+	D3DXVECTOR3 move = GetMove();
+	CMotion* pMotion = GetMotion();
+	move.x = FLOAT_ZERO;
+	move.z = FLOAT_ZERO;
+
+	if (m_mode == MODE_SABO)
+	{//サボり
+		SetState(STATE_LEAVE);
 	}
+	else
+	{//働く
+		SetState(STATE_FACE);
+	}
+
+	//アジト帰還以外の処理
+	if (CPict::IsControll() == false)
+	{
+		if (GetState() != STATE_LEAVE)
+		{//帰還しない
+			if (m_mode == MODE_PICK)
+			{//収集
+				//ターゲット外れていたら探索
+				if (m_ptargetPict == NULL /* && pBulletObj == NULL*/)
+				{
+					SearchBullet();
+					m_ptargetPict = SearchNormal();
+
+					//ここに弾とピクトの距離測って比較する処理
+				}
+
+				if (m_ptargetPict != NULL)
+				{
+					targetPos = m_ptargetPict->GetPos();
+					targetWidthHalf = m_ptargetPict->GetWidth() * 0.5f;
+					targetDepthHalf = m_ptargetPict->GetDepth() * 0.5f;
+
+					if (targetPos.x - targetWidthHalf - PICT_POLICE_STOP_LENGTH > pos.x || targetPos.x + targetWidthHalf + PICT_POLICE_STOP_LENGTH < pos.x ||
+						targetPos.z - targetDepthHalf - PICT_POLICE_STOP_LENGTH > pos.z || targetPos.z + targetDepthHalf + PICT_POLICE_STOP_LENGTH < pos.z)
+					{
+						float fTargetLenWidth, fTargetLenDepth;
+						float fTargetRot;
+
+						fTargetLenWidth = targetPos.x - pos.x;
+						fTargetLenDepth = targetPos.z - pos.z;
+
+						fTargetRot = atan2f(fTargetLenWidth, fTargetLenDepth);
+
+						move.x = sinf(fTargetRot) * PICT_WALK_SPEED;
+						move.z = cosf(fTargetRot) * PICT_WALK_SPEED;
+
+						rot.y = FIX_ROT(fTargetRot + D3DX_PI);
+
+						if (pMotion->GetType() != MOTIONTYPE_MOVE)
+						{
+							pMotion->Set(MOTIONTYPE_MOVE);
+						}
+					}
+					else
+					{//到着
+						m_ptargetPict->TakeTaxi(this);
+						m_ptargetPict->Uninit();
+						m_ptargetPict = NULL;
+					}
+				}
+			}
+			else if (m_mode == MODE_RESCUE)
+			{//救助
+			 //ターゲット外れていたら探索
+				if (m_ptargetPict == NULL)
+				{
+					m_ptargetPict = SearchBattler();
+				}
+
+				if (m_ptargetPict != NULL)
+				{
+					targetPos = m_ptargetPict->GetPos();
+					targetWidthHalf = m_ptargetPict->GetWidth() * 0.5f;
+					targetDepthHalf = m_ptargetPict->GetDepth() * 0.5f;
+
+					if (targetPos.x - targetWidthHalf - PICT_POLICE_STOP_LENGTH > pos.x || targetPos.x + targetWidthHalf + PICT_POLICE_STOP_LENGTH < pos.x ||
+						targetPos.z - targetDepthHalf - PICT_POLICE_STOP_LENGTH > pos.z || targetPos.z + targetDepthHalf + PICT_POLICE_STOP_LENGTH < pos.z)
+					{
+						float fTargetLenWidth, fTargetLenDepth;
+						float fTargetRot;
+
+						fTargetLenWidth = targetPos.x - pos.x;
+						fTargetLenDepth = targetPos.z - pos.z;
+
+						fTargetRot = atan2f(fTargetLenWidth, fTargetLenDepth);
+
+						move.x = sinf(fTargetRot) * PICT_WALK_SPEED;
+						move.z = cosf(fTargetRot) * PICT_WALK_SPEED;
+
+						rot.y = FIX_ROT(fTargetRot + D3DX_PI);
+
+						if (pMotion->GetType() != MOTIONTYPE_MOVE)
+						{
+							pMotion->Set(MOTIONTYPE_MOVE);
+						}
+					}
+					else
+					{//到着
+						m_ptargetPict->TakeTaxi(this);
+						m_ptargetPict->Uninit();
+						m_ptargetPict = NULL;
+					}
+				}
+			}
+		}
+	}
+
+	//値設定
+	SetRot(rot);
+	SetMove(move);
 
 	//親処理
 	CPict::Update();
@@ -1062,6 +1232,111 @@ void CPictTaxi::SetTakeTaxi(const CPict::TYPE type, const int nTakeNum)
 	if (m_nTakeDestroyer + m_nTakeBlocker >= PICT_FORCEDRETURN_NUM)
 	{//強制帰宅する
 		SetState(STATE_LEAVE);
+	}
+}
+
+//========================
+//弾探索
+//========================
+void CPictTaxi::SearchBullet(void)
+{
+}
+
+//========================
+//一般人ピクト探索
+//========================
+CPictNormal* CPictTaxi::SearchNormal(void)
+{
+	CPictNormal* pPictNear = NULL;
+	float fNearLength;
+
+	for (int cnt = 0; cnt < MAX_OBJ; cnt++)
+	{//全オブジェクト見る
+		CPictNormal* pPict = CPictNormal::GetPict(cnt);	//オブジェクト取得
+
+		if (pPict != NULL)	//ヌルチェ
+		{//なんかある
+			float fLength = D3DXVec3Length(&(pPict->GetPos() - this->GetPos()));
+
+			if (pPictNear == NULL || fLength < fNearLength)
+			{//近いかそもそも1体しか知らん
+				fNearLength = fLength;
+				pPictNear = pPict;
+			}
+		}
+	}
+
+	//近いピクトのポインタ返す
+	return pPictNear;
+}
+
+//========================
+//戦闘要員ピクト探索
+//========================
+CPict* CPictTaxi::SearchBattler(void)
+{
+	CPictDestroyer* pPictD = NULL;
+	CPictBlocker* pPictB = NULL;
+	int nLifeD,nLifeB;
+
+	//デストロイヤー探索
+	for (int cnt = 0; cnt < MAX_OBJ; cnt++)
+	{//全オブジェクト見る
+		CPictDestroyer* pPict = CPictDestroyer::GetPict(cnt);	//オブジェクト取得
+
+		if (pPict != NULL)	//ヌルチェ
+		{//なんかある
+			int nLife = pPict->GetLife();
+
+			if ((((float)nLife / PICT_LIFE) <= PICT_RESCUE_LIFE) && (pPictD == NULL || nLifeD > nLife))
+			{//救助対象でありなおかつ体力が一番少ない
+				pPictD = pPict;
+				nLifeD = nLife;
+			}
+		}
+	}
+
+	//ブロッカー探索
+	for (int cnt = 0; cnt < MAX_OBJ; cnt++)
+	{//全オブジェクト見る
+		CPictBlocker* pPict = CPictBlocker::GetPict(cnt);	//オブジェクト取得
+
+		if (pPict != NULL)	//ヌルチェ
+		{//なんかある
+			int nLife = pPict->GetLife();
+
+			if ((((float)nLife / PICT_LIFE) <= PICT_RESCUE_LIFE) && (pPictB == NULL || nLifeB > nLife))
+			{//救助対象でありなおかつ体力が一番少ない
+				pPictB = pPict;
+				nLifeB = nLife;
+			}
+		}
+	}
+
+	//そもそもいるかどうか
+	if (pPictD != NULL && pPictB != NULL)
+	{//両方いる
+		//体力少ないほうを返す
+		if (nLifeD <= nLifeB)
+		{//どっちも体力同じならデストロイヤー優先
+			return pPictD;
+		}
+		else
+		{//ブロッカー
+			return pPictB;
+		}
+	}
+	else if(pPictD == NULL && pPictB != NULL)
+	{//ブロッカーしかいない
+		return pPictB;
+	}
+	else if (pPictD != NULL && pPictB == NULL)
+	{//デストロイヤーしかいない
+		return pPictD;
+	}
+	else
+	{//いない
+		return NULL;
 	}
 }
 
@@ -1126,6 +1401,8 @@ HRESULT CPictNormal::Init(void)
 //========================
 void CPictNormal::Uninit(void)
 {
+	m_apPict[m_nID] = NULL;
+
 	//親処理
 	CPict::Uninit();
 }
@@ -1328,7 +1605,7 @@ void CPictPolice::Update(void)
 				if (m_nCounterAttack > PICT_ATTACK_TIME)
 				{
 					//攻撃
-					m_pTargetPict->AddDamage(10);
+					m_pTargetPict->AddDamage(100);
 
 					//攻撃カウンターリセット
 					m_nCounterAttack = INT_ZERO;

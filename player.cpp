@@ -14,6 +14,7 @@
 #include "objectX.h"
 #include "pict.h"
 #include "building.h"
+#include "slider.h"
 
 #define CAMERA_MOVE_SPEED		(10.0f)		//カメラ移動速度
 #define CAMERA_MOU_ROT_SPEED	(0.0012f)	//マウス移動での回転速度
@@ -85,6 +86,21 @@ void CPlayer::Update(void)
 		Select();
 	}
 
+	//タクシーモード
+	CPictTaxi* pTaxi = CPictTaxi::GetPict(0);
+	int nIdxSlider = CManager::GetSlider()->GetSelectIdx();
+
+	//動けって言ってんのにタクシーいない
+	if (nIdxSlider != CPictTaxi::MODE_SABO && pTaxi == NULL)
+	{//いったん表出す
+		CPictTaxi::Create(CPict::GetAgitPos());
+	}
+
+	if (pTaxi != NULL)
+	{//タクシーいる
+		pTaxi->SetMode((CPictTaxi::MODE)nIdxSlider);
+	}
+
 	//デバッグ
 	if (m_pSelectBuilding != NULL)
 	{
@@ -117,7 +133,7 @@ void CPlayer::Attack(void)
 
 			if (m_pSelectPict == pPict)
 			{//選択しているピクトさんと警察リストのポインタが一致
-				CPictBlocker::GetPict(0)->SetTarget(pPict);
+				CPictBlocker::Create(CPict::GetAgitPos())->SetTarget(pPict);
 			}
 		}
 	}

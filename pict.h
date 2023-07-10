@@ -14,6 +14,7 @@
 #include "collision.h"
 
 #define PICT_MODEL_NUM	(10)	//ピクトさんに使うモデル数
+#define PICT_MAX_LEVEL	(30)	//ピクトの最大レベル
 
 //前方宣言
 class CModel;
@@ -21,11 +22,21 @@ class CMotion;
 class CBuilding;
 class CShadow;
 class CPictPolice;
+class CPictNormal;
+class CPictTaxi;
 
 //ピクトさんクラス
 class CPict : public CObject
 {
 public:
+	//ピクト共通パラメータ構造体
+	typedef struct
+	{
+		int nReqExp;		//要求EXP
+		float fATKPow;		//攻撃力倍率
+		int nUsePictNormal;	//一般人ピクトの使用可能人数
+	} PictParam;
+
 	//ピクトさん種類列挙
 	typedef enum
 	{
@@ -75,7 +86,10 @@ public:
 	CMotion* GetMotion(void) { return m_pMotion; }
 	CCollision GetCollision(void) { return m_collision; }
 	STATE GetState(void) { return m_state; }
+	int GetLife(void) { return m_nLife; }
 	static D3DXVECTOR3 GetAgitPos(void) { return m_pAgitObj->GetPos(); }
+	static PictParam GetPictParam(int nLv) { return m_pictParam[nLv]; }
+	
 
 	//設定
 	void SetPos(D3DXVECTOR3 pos) { m_pos = pos; }
@@ -95,6 +109,12 @@ public:
 	void Controll(D3DXVECTOR3 move);
 	void Uncontroll(void) { m_bControll = false; }
 	bool IsControll(void) { return m_bControll; }
+
+	//読み込み
+	void LoadPictParam(const char* pPath);
+
+	//乗車
+	virtual void TakeTaxi(CPictTaxi* taxi) = 0;
 
 private:
 	static CPict* m_apPict[MAX_OBJ];	//ピクトさんポインタ
@@ -118,7 +138,9 @@ private:
 	bool m_bControll;					//操縦できるか
 	CShadow* m_pShadow;					//影オブジェクトポインタ
 
-	int nLife;							//体力
+	static PictParam m_pictParam[PICT_MAX_LEVEL];	//ピクトのパラメータ
+
+	int m_nLife;							//体力
 	float m_fRedAlpha;					//赤くする割合
 	STATE m_state;						//状態
 	static CObjectX* m_pAgitObj;		//アジトのポインタ
@@ -156,12 +178,18 @@ public:
 	void SetTarget(CBuilding* target) { m_pTargetBuilding = target; }
 	void UnsetTarget(void);
 
+	//乗車
+	void TakeTaxi(CPictTaxi* taxi);
+
 private:
 	static CPictDestroyer* m_apPict[MAX_OBJ];	//ピクトさんポインタ
 	static int m_nNumAll;				//ピクトさん総数
 	int m_nID;							//ピクトさんID
 	CBuilding* m_pTargetBuilding;		//目的地
 	int m_nCounterDestruction;			//破壊カウンター
+
+	static int m_nLevel;				//レベル
+	static int m_nExp;					//経験値
 };
 
 //ブロッカーピクトクラス
@@ -196,6 +224,9 @@ public:
 	void SetTarget(CPictPolice* target) { m_pTargetPolice = target; }
 	void UnsetTarget(void);
 
+	//乗車
+	void TakeTaxi(CPictTaxi* taxi);
+
 private:
 	static CPictBlocker* m_apPict[MAX_OBJ];	//ピクトさんポインタ
 	static int m_nNumAll;				//ピクトさん総数
@@ -203,6 +234,9 @@ private:
 
 	int m_nCounterAttack;				//攻撃カウンター
 	CPictPolice* m_pTargetPolice;		//ターゲット警察
+
+	static int m_nLevel;				//レベル
+	static int m_nExp;					//経験値
 };
 
 //ピクタクシークラス
@@ -212,8 +246,8 @@ public:
 	//ピクタクシーモード列挙
 	typedef enum
 	{
-		MODE_SABO = 0,	//サボり
-		MODE_PICK,		//収集
+		MODE_PICK = 0,	//収集
+		MODE_SABO,		//サボり
 		MODE_RESCUE,	//救助
 		MODE_MAX
 	} MODE;
@@ -238,10 +272,29 @@ public:
 	//乗車
 	void SetTakeTaxi(const CPict::TYPE type, const int nTakeNum);
 
+	//設定
+	void SetMode(const MODE mode) { m_mode = mode; }
+	void UnsetTarget(void) { m_ptargetPict = NULL; }
+
+	//乗車
+	void TakeTaxi(CPictTaxi* taxi) {};
+
 private:
+	//関数
+	void SearchBullet(void);	//弾探索
+	CPictNormal* SearchNormal(void);	//一般人ピクト探索
+	CPict* SearchBattler(void);		//戦闘要員探索
+
+	//変数
 	static CPictTaxi* m_apPict[MAX_OBJ];	//ピクトさんポインタ
 	static int m_nNumAll;					//ピクトさん総数
 	int m_nID;								//ピクトさんID
+
+	MODE m_mode;			//タクシーモード
+
+	//ターゲット
+	/*ほげほげ* pBulletObj;*/
+	CPict* m_ptargetPict;	//ピクト（詳細不明）
 
 	int m_nTakeDestroyer;	//デストロイヤーが乗っている人数
 	int m_nTakeBlocker;		//ブロッカーが乗っている人数
@@ -275,7 +328,7 @@ public:
 	//取得
 	static CPictNormal* GetPict(int nID) { return m_apPict[nID]; }
 
-	//収集
+	//乗車
 	void TakeTaxi(CPictTaxi* taxi);
 
 private:
@@ -318,6 +371,9 @@ public:
 
 	//仮設定
 	void SetBuilding(CBuilding* p) { m_pTargetBuilding = p; }
+
+	//乗車
+	void TakeTaxi(CPictTaxi* taxi) {}
 
 private:
 	static CPictPolice* m_apPict[MAX_OBJ];	//ピクトさんポインタ

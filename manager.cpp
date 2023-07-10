@@ -152,17 +152,19 @@ HRESULT CManager::Init(HINSTANCE hInstance, HWND hWnd, BOOL bWindow)
 	//オブジェクト生成+初期化
 	CScore::Create(D3DXVECTOR3(SCREEN_WIDTH - 24.0f, 32.0f, 0.0f), VEC3_ZERO, 40.0f, 64.0f);
 	CTimer::Create(D3DXVECTOR3(SCREEN_WIDTH * 0.5f + 24.0f, 32.0f, 0.0f), VEC3_ZERO, 48.0f, 72.0f);
-	m_pMeshField = CMeshField::Create(D3DXVECTOR3(-1024.0f, 0.0f, 1024.0f), VEC3_ZERO, 64.0f, 64.0f, 32, 32);
+	m_pMeshField = CMeshField::Create(D3DXVECTOR3(-1280.0f, 0.0f, 1280.0f), VEC3_ZERO, 64.0f, 64.0f, 40, 40);
 	CBuilding* pTarget = CBuilding::Create(D3DXVECTOR3(64.0f, 0.0f, 580.0f), VEC3_ZERO, 0);
 	CBuilding::Create(D3DXVECTOR3(-440.0f,0.0f,-453.0f), VEC3_ZERO, 2);
-	//CPictDestroyer::Create(D3DXVECTOR3(100.0f, 0.0f, 0.0f));
-	CPictBlocker::Create(D3DXVECTOR3(300.0f,0.0f,0.0f));
 	CPictPolice::Create(D3DXVECTOR3(-300.0f, 0.0f, 0.0f))->SetBuilding(pTarget);
 	CObjectX* pAgit = CObjectX::Create(VEC3_ZERO, VEC3_ZERO, 4);
 	CPict::SetAgit(pAgit);
 	m_pButton3D = CButton3D::Create(D3DXVECTOR3(200.0f,50.0f,200.0f), D3DXVECTOR3(-0.5f * D3DX_PI,0.0f,0.0f), 100.0f, 50.0f);
 	m_pButtonATK = CButton2D::Create(D3DXVECTOR3(20.0f, SCREEN_HEIGHT - 20.0f, 0.0f), VEC3_ZERO, 40.0f, 40.0f);
 	m_pSlider = CSlider::Create(D3DXVECTOR3(100.0f, SCREEN_HEIGHT - 20.0f, 0.0f), 40.0f, 40.0f, 3);
+
+	CPictNormal::Create(D3DXVECTOR3(500.0f, 0.0f, 200.0f));
+	CPictNormal::Create(D3DXVECTOR3(300.0f, 0.0f, 300.0f));
+	CPictNormal::Create(D3DXVECTOR3(100.0f, 0.0f, 600.0f));
 
 	//FPS計測器初期化
 	m_nFPS = 0;
