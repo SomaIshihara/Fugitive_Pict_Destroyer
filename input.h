@@ -140,6 +140,7 @@ public:
 	bool GetRepeate(int nKey);
 	D3DXVECTOR3 GetPos(void);
 	D3DXVECTOR3 GetMove(void);
+	int GetWheel(void) { return m_mouse.state.lZ; }
 
 private:
 	Mouse m_mouse;	//ƒ}ƒEƒX‚·‚×‚Ä

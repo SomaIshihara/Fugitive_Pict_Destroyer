@@ -31,6 +31,8 @@ CPlayer::CPlayer()
 	m_nHaveDestroyer = INT_ZERO;
 	m_nHaveBlocker = INT_ZERO;
 	m_nHaveNormal = INT_ZERO;
+
+	m_cursorPos = VEC3_ZERO;
 }
 
 //=================================
@@ -71,19 +73,22 @@ void CPlayer::Update(void)
 	CInputMouse* pMouse = CManager::GetInputMouse();	//マウス取得
 	Move();
 
-	if (pMouse->GetPress(MOUSE_CLICK_RIGHT) == true)
+	if (pMouse->GetPress(MOUSE_CLICK_LEFT) == true)
 	{//回転
 		Rotate();
-		//カーソルを元の位置に戻す
-		POINT setCursorpos;
-		setCursorpos.x = SCREEN_WIDTH / 2;
-		setCursorpos.y = SCREEN_HEIGHT / 2;
-		ClientToScreen(FindWindowA(CLASS_NAME, nullptr), &setCursorpos);
-		SetCursorPos(setCursorpos.x, setCursorpos.y);
 	}
-	if (pMouse->GetPress(MOUSE_CLICK_LEFT) == true)
+	else
+	{//マウスカーソル位置保存
+		m_cursorPos = pMouse->GetPos();
+	}
+	if (pMouse->GetTrigger(MOUSE_CLICK_LEFT) == true)
 	{//位置特定
 		Select();
+	}
+	if (pMouse->GetPress(MOUSE_CLICK_RIGHT) == true)
+	{//モード変更
+		CSlider* slider = CManager::GetSlider();
+		slider->SetSelectIdx(slider->GetSelectIdx() - (pMouse->GetWheel() / 120));
 	}
 
 	//タクシーモード
@@ -215,10 +220,21 @@ void CPlayer::Rotate(void)
 	CInputMouse* pMouse = CManager::GetInputMouse();
 	D3DXVECTOR3 rot = VEC3_ZERO;
 
-	rot.y -= pMouse->GetMove().x * CAMERA_MOU_ROT_SPEED;
-	rot.x -= pMouse->GetMove().y * CAMERA_MOU_ROT_SPEED;
+	D3DXVECTOR3 move = VEC3_ZERO;
+	move.x = pMouse->GetMove().x;
+	move.y = pMouse->GetMove().y;
+
+	rot.y -= move.x * CAMERA_MOU_ROT_SPEED;
+	rot.x -= move.y * CAMERA_MOU_ROT_SPEED;
 
 	pCamera->SetCameraRot(rot);
+
+	//カーソルを元の位置に戻す
+	POINT setCursorpos;
+	setCursorpos.x = m_cursorPos.x;
+	setCursorpos.y = m_cursorPos.y;
+	ClientToScreen(FindWindowA(CLASS_NAME, nullptr), &setCursorpos);
+	SetCursorPos(setCursorpos.x, setCursorpos.y);
 }
 
 //=================================

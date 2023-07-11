@@ -51,6 +51,8 @@ private:
 	int m_nHaveDestroyer;	//デストロイヤー所持数
 	int m_nHaveBlocker;		//ブロッカー所持数
 	int m_nHaveNormal;		//一般人所持数
+
+	D3DXVECTOR3 m_cursorPos;	//クリック前のカーソル位置
 };
 
 #endif

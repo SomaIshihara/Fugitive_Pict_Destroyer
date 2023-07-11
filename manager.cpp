@@ -287,10 +287,10 @@ void CManager::Update(void)
 	//デバッグ表示
 	m_pDebProc->Print("FPS:%d\n", m_nFPS);
 	m_pDebProc->Print("[操作方法]\n");
-	m_pDebProc->Print("右クリック:視点移動\n");
+	m_pDebProc->Print("左クリック+移動:視点移動\n");
 	m_pDebProc->Print("WASD:プレイヤー（カメラ）移動\n");
 	m_pDebProc->Print("Space:弾発射\n");
-	m_pDebProc->Print("[モデルに向かって]マウス左クリック:ピクトさん移動\n");
+	m_pDebProc->Print("[モデル・ピクトに向かって]マウス左クリック:選択\n");
 	m_pDebProc->Print("[Debug]F3:タイマー設定(120秒カウントダウン)\n");
 
 	if (m_pButton3D->IsClickPress() == true)

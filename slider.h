@@ -40,6 +40,9 @@ public:
 	int GetModelIdx(void) { return INT_ZERO; }
 	int GetSelectIdx(void) { return m_nSelect; }
 
+	//設定
+	void SetSelectIdx(int nIdx) { m_nSelect = (nIdx + m_nIdxNum) % m_nIdxNum; }
+
 private:
 	//オブジェクト
 	CObject2D* m_pObjFrame;		//枠
