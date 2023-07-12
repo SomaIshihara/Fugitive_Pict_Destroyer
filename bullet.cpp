@@ -8,10 +8,11 @@
 #include "renderer.h"
 #include "texture.h"
 #include "object.h"
-//#include "player.h"
 #include "enemy.h"
 #include "block.h"
 #include "bullet.h"
+#include "building.h"
+#include "pict.h"
 #include "input.h"
 #include "explosion.h"
 #include "particle.h"
@@ -252,12 +253,15 @@ CBulletBillboard::CBulletBillboard(int nPriority) : CObjectBillboard(nPriority)
 //=================================
 //コンストラクタ（オーバーロード 位置向きandパターン幅高さ）
 //=================================
-CBulletBillboard::CBulletBillboard(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, const float fWidth, const float fHeight, const float fSpeed, int nPriority)
-	: CObjectBillboard(pos, rot, fWidth, fHeight, nPriority)
+CBulletBillboard::CBulletBillboard(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, const float fWidth, const float fHeight, const float fSpeed, 
+	const int nPower, CPict* firePict, int nPriority) : CObjectBillboard(pos, rot, fWidth, fHeight, nPriority)
 {
 	m_nIdxTexture = -1;
 	m_move.x = sinf(FIX_ROT(rot.y + D3DX_PI)) * fSpeed;
+	m_move.y = sinf(FIX_ROT(rot.x + D3DX_PI)) * fSpeed;
 	m_move.z = -cosf(FIX_ROT(rot.y + D3DX_PI)) * fSpeed;
+	m_nPower = nPower;
+	m_pfirePict = firePict;
 	CObject::SetType(TYPE_BULLET);
 }
 
@@ -317,13 +321,15 @@ void CBulletBillboard::Update(void)
 	//位置設定
 	SetPos(pos);
 
-	//敵との衝突判定
-	if (m_Type == TYPE_PLAYER && CollisionEnemy() == true)
-	{//弾が敵に当たった
+	//建物との衝突判定
+	if (CollisionBuilding() == true)
+	{
 		return;
 	}
-	if (m_Type == TYPE_PLAYER && CollisionBlock() == true)
-	{//弾がブロックに当たった
+
+	//ピクトとの判定
+	if (CollisionPict() == true)
+	{
 		return;
 	}
 
@@ -342,14 +348,15 @@ void CBulletBillboard::Draw(void)
 //=================================
 //生成処理
 //=================================
-CBulletBillboard* CBulletBillboard::Create(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, const float fWidth, const float fHeight, const float fSpeed, const TYPE type)
+CBulletBillboard* CBulletBillboard::Create(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, const float fWidth, const float fHeight, 
+	const float fSpeed, const int nPower, const TYPE type, CPict* firePict)
 {
 	CBulletBillboard* pBullet = NULL;
 
 	if (pBullet == NULL)
 	{
 		//オブジェクトアニメーション2Dの生成
-		pBullet = new CBulletBillboard(pos, rot, fWidth, fHeight, fSpeed);
+		pBullet = new CBulletBillboard(pos, rot, fWidth, fHeight, fSpeed, nPower, firePict);
 
 		//初期化
 		pBullet->Init();
@@ -372,39 +379,37 @@ CBulletBillboard* CBulletBillboard::Create(const D3DXVECTOR3 pos, const D3DXVECT
 }
 
 //=================================
-//敵との衝突判定
+//建物との衝突判定
 //=================================
-bool CBulletBillboard::CollisionEnemy(void)
+bool CBulletBillboard::CollisionBuilding(void)
 {
 	for (int cnt = 0; cnt < MAX_OBJ; cnt++)
 	{//全オブジェクト見る
-		CObject* pObj = GetObject(ENEMY_PRIORITY, cnt);	//オブジェクト取得
+		CBuilding* pBuilding = CBuilding::GetBuilding(cnt);
 
-		if (pObj != NULL)	//ヌルチェ
+		if (pBuilding != NULL)	//ヌルチェ
 		{//なんかある
-			TYPE type = pObj->GetType();	//種類取得
+			D3DXVECTOR3 buildPos = pBuilding->GetPos();
+			float buildWidth = pBuilding->GetWidth();
+			float buildDepth = pBuilding->GetDepth();
 
-			if (type == TYPE_ENEMY)
-			{//敵
-				if (GetPos().x > pObj->GetPos().x - pObj->GetWidth() * 0.5f &&
-					GetPos().x < pObj->GetPos().x + pObj->GetWidth() * 0.5f &&
-					GetPos().z > pObj->GetPos().z - pObj->GetDepth() * 0.5f &&
-					GetPos().z < pObj->GetPos().z + pObj->GetDepth() * 0.5f)
-				{
-					//爆発生成
-					//CParticle2D::Create(GetPos(), 48, 16, 2, 3, D3DXCOLOR(1.0f, 0.5f, 0.14f, 1.0f), 20.0f, 20.0f);
-					CParticleBillboard::Create(D3DXVECTOR3(0.0f, 20.0f, 0.0f), 48, 48, 2, 3, D3DXCOLOR(1.0f, 0.5f, 0.14f, 1.0f), 8.0f, 8.0f);
-					//CExplosion::Create(GetPos(), GetRot(), 80.0f, 80.0f, 8, 2, 3);
+			if (GetPos().x > buildPos.x - buildWidth * 0.5f &&
+				GetPos().x < buildPos.x + buildWidth * 0.5f &&
+				GetPos().z > buildPos.z - buildDepth * 0.5f &&
+				GetPos().z < buildPos.z + buildDepth * 0.5f)
+			{
+				//爆発生成
+				CParticleBillboard::Create(GetPos(), 30, 32, 0.2f, 3, D3DXCOLOR(1.0f, 0.5f, 0.14f, 1.0f), 20.0f, 20.0f);
+				//CParticleBillboard::Create(GetPos(), 120, 16, 0.2f, 3, D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f), 20.0f, 20.0f);
 
-					//敵にダメージ
-					pObj->Uninit();
+				//攻撃
+				pBuilding->AddDamage(m_nPower);
 
-					//自分終了
-					Uninit();
+				//自分終了
+				Uninit();
 
-					//弾は敵に当たった
-					return true;
-				}
+				//弾は敵に当たった
+				return true;
 			}
 		}
 	}
@@ -413,34 +418,36 @@ bool CBulletBillboard::CollisionEnemy(void)
 }
 
 //=================================
-//ブロックとの衝突判定
+//ピクトとの衝突判定
 //=================================
-bool CBulletBillboard::CollisionBlock(void)
+bool CBulletBillboard::CollisionPict(void)
 {
 	for (int cnt = 0; cnt < MAX_OBJ; cnt++)
 	{//全オブジェクト見る
-		CObject* pObj = GetObject(BLOCK_PRIORITY, cnt);	//オブジェクト取得
+		CPict* pPict = CPict::GetPict(cnt);
 
-		if (pObj != NULL)	//ヌルチェ
+		if (pPict != NULL && pPict != m_pfirePict)	//ヌルチェ
 		{//なんかある
-			TYPE type = pObj->GetType();	//種類取得
+			D3DXVECTOR3 pictPos = pPict->GetPos();
+			float pictWidth = pPict->GetWidth();
+			float pictDepth = pPict->GetDepth();
 
-			if (type == TYPE_BLOCK)
-			{//敵
-				if (GetPos().x > pObj->GetPos().x - pObj->GetWidth() * 0.5f &&
-					GetPos().x < pObj->GetPos().x + pObj->GetWidth() * 0.5f &&
-					GetPos().z > pObj->GetPos().z - pObj->GetDepth() * 0.5f &&
-					GetPos().z < pObj->GetPos().z + pObj->GetDepth() * 0.5f)
-				{
-					//爆発生成
-					CParticleBillboard::Create(GetPos(), 48, 16, 2, 3, D3DXCOLOR(1.0f, 0.5f, 0.14f, 1.0f), 20.0f, 20.0f);
+			if (GetPos().x > pictPos.x - pictWidth * 0.5f &&
+				GetPos().x < pictPos.x + pictWidth * 0.5f &&
+				GetPos().z > pictPos.z - pictDepth * 0.5f &&
+				GetPos().z < pictPos.z + pictDepth * 0.5f)
+			{
+				//爆発生成
+				CParticleBillboard::Create(GetPos(), 10, 4, 1, 2, D3DXCOLOR(1.0f, 0.0f, 0.0f, 1.0f), 20.0f, 20.0f);
 
-					//自分終了
-					Uninit();
+				//ダメージ
+				pPict->AddDamage(m_nPower);
 
-					//弾は敵に当たった
-					return true;
-				}
+				//自分終了
+				Uninit();
+
+				//弾は敵に当たった
+				return true;
 			}
 		}
 	}

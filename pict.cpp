@@ -707,8 +707,8 @@ void CPictDestroyer::Update(void)
 
 				if (m_nCounterDestruction > PICT_ATTACK_TIME)
 				{
-					//破壊工作
-					m_pTargetBuilding->AddDamage(1000);
+					//弾発射
+					CBulletBillboard::Create(GetPos(), D3DXVECTOR3(-0.3f * D3DX_PI,0.0f,0.0f), 10.0f, 10.0f, 3.0f, 1000, CObject::TYPE_PICT, this);
 
 					//破壊カウンターリセット
 					m_nCounterDestruction = INT_ZERO;
@@ -902,8 +902,8 @@ void CPictBlocker::Update(void)
 				m_nCounterAttack++;
 				if (m_nCounterAttack > PICT_ATTACK_TIME)
 				{
-					//攻撃
-					m_pTargetPolice->AddDamage(100);
+					//弾発射
+					CBulletBillboard::Create(GetPos() + D3DXVECTOR3(0.0f,10.0f,0.0f), GetRot() + D3DXVECTOR3(0.0f,D3DX_PI,0.0f), 10.0f, 10.0f, 10.0f, 100, TYPE_PICT, this);
 
 					//攻撃カウンターリセット
 					m_nCounterAttack = INT_ZERO;

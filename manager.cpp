@@ -35,6 +35,7 @@
 #include "meshField.h"
 #include "button.h"
 #include "slider.h"
+#include "meshsky.h"
 
 //マクロ
 #define FPS_SPEED	(500)	//FPS計測時間
@@ -165,6 +166,8 @@ HRESULT CManager::Init(HINSTANCE hInstance, HWND hWnd, BOOL bWindow)
 	CPictNormal::Create(D3DXVECTOR3(500.0f, 0.0f, 200.0f));
 	CPictNormal::Create(D3DXVECTOR3(300.0f, 0.0f, 300.0f));
 	CPictNormal::Create(D3DXVECTOR3(100.0f, 0.0f, 600.0f));
+
+	CMeshSky::Create(VEC3_ZERO, VEC3_ZERO, 3000.0f, 8, 8);
 
 	//FPS計測器初期化
 	m_nFPS = 0;

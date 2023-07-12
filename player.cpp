@@ -255,7 +255,8 @@ void CPlayer::Select(void)
 
 		if (pBuilding != NULL)	//ƒkƒ‹ƒ`ƒF
 		{//‚È‚ñ‚©‚ ‚é
-			if (CObjectX::GetModel(pBuilding->GetModelIdx())->m_collision.CollisionCheck(posNear, posFar, pBuilding->GetPos(), pBuilding->GetRot()) == true)
+			if (CObjectX::GetModel(pBuilding->GetModelIdx())->m_collision.CollisionCheck(posNear, posFar, pBuilding->GetPos(), pBuilding->GetRot()) == true &&
+				pBuilding->GetEndurance() > 0)
 			{//Œš•¨‘I‘ð
 				m_pSelectPict = NULL;
 				m_pSelectBuilding = pBuilding;
