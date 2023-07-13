@@ -58,7 +58,7 @@ HRESULT CMeshSky::Init(void)
 	m_nIdxTexture = pTexture->Regist("data\\TEXTURE\\Block_R_01.png");
 
 	//頂点バッファの生成
-	pDevice->CreateVertexBuffer(sizeof(VERTEX_3D) * (m_nBlockVertical + 1) * (m_nBlockHorizontal + 1) + 2,
+	pDevice->CreateVertexBuffer(sizeof(VERTEX_3D) * ((m_nBlockVertical) * (m_nBlockHorizontal + 1) + 2),
 		D3DUSAGE_WRITEONLY,
 		FVF_VERTEX_3D,
 		D3DPOOL_MANAGED,
@@ -81,6 +81,14 @@ HRESULT CMeshSky::Init(void)
 		&m_pIdxBuffMiddle,
 		NULL);
 
+	//インデックスバッファの生成
+	pDevice->CreateIndexBuffer(sizeof(WORD) * (m_nBlockHorizontal + 2),
+		D3DUSAGE_WRITEONLY,
+		D3DFMT_INDEX16,
+		D3DPOOL_MANAGED,
+		&m_pIdxBuffBottom,
+		NULL);
+
 	VERTEX_3D *pVtx;
 
 	//バッファロック
@@ -89,6 +97,7 @@ HRESULT CMeshSky::Init(void)
 
 	//上部
 	pVtx[0].pos = D3DXVECTOR3(0.0f, m_fRadius, 0.0f);
+	pVtx[0].nor = D3DXVECTOR3(0.0f, -1.0f, 0.0f);
 	pVtx[0].col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
 	pVtx[0].tex = D3DXVECTOR2(0.0f, 0.0f);
 
@@ -104,28 +113,29 @@ HRESULT CMeshSky::Init(void)
 
 			pVtx[cnt].pos = D3DXVECTOR3(sinf(fAngleH) * sinf(fAngleV) * m_fRadius, cosf(fAngleV) * m_fRadius, cosf(fAngleH) * sinf(fAngleV) * m_fRadius);
 			pVtx[cnt].col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
-			pVtx[cnt].tex = D3DXVECTOR2(0.0f, 0.0f);
+			pVtx[cnt].tex = D3DXVECTOR2((float)cntH / (m_nBlockHorizontal + 1), (float)(cntV + 1) / (m_nBlockVertical + 1));
 		}
 	}
 
 	//下部
-	int nLastVtx = (m_nBlockVertical - 1) * (m_nBlockHorizontal + 1) + m_nBlockHorizontal + 2;
+	int nLastVtx = (m_nBlockVertical) * (m_nBlockHorizontal + 1) + 1;
 	pVtx[nLastVtx].pos = D3DXVECTOR3(0.0f, -m_fRadius, 0.0f);
+	pVtx[nLastVtx].nor = D3DXVECTOR3(0.0f, 1.0f, 0.0f);
 	pVtx[nLastVtx].col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
-	pVtx[nLastVtx].tex = D3DXVECTOR2(0.0f, 0.0f);
+	pVtx[nLastVtx].tex = D3DXVECTOR2(1.0f, 1.0f);
 
-	vector<D3DXVECTOR3>* pNor = new vector<D3DXVECTOR3>[(m_nBlockVertical + 1) * (m_nBlockHorizontal + 1)];
+	vector<D3DXVECTOR3>* pNor = new vector<D3DXVECTOR3>[(m_nBlockVertical) * (m_nBlockHorizontal + 1) + 2];
 
-	for (int cntZ = 0; cntZ < m_nBlockHorizontal; cntZ++)
+	for (int cntZ = 0; cntZ < m_nBlockHorizontal - 1; cntZ++)
 	{
 		for (int cntX = 0; cntX < m_nBlockVertical; cntX++)
 		{
 			D3DXVECTOR3 nor0, nor1, nor2, nor3;
 			D3DXVECTOR3 vec0, vec1;
-			int nVtx0 = cntZ * (m_nBlockHorizontal + 1) + cntX;
-			int nVtx1 = cntZ * (m_nBlockHorizontal + 1) + cntX + 1;
-			int nVtx2 = (cntZ + 1) * (m_nBlockHorizontal + 1) + cntX;
-			int nVtx3 = (cntZ + 1) * (m_nBlockHorizontal + 1) + cntX + 1;
+			int nVtx0 = cntZ * (m_nBlockHorizontal + 1) + cntX + 1;
+			int nVtx1 = cntZ * (m_nBlockHorizontal + 1) + cntX + 2;
+			int nVtx2 = (cntZ + 1) * (m_nBlockHorizontal + 1) + cntX + 1;
+			int nVtx3 = (cntZ + 1) * (m_nBlockHorizontal + 1) + cntX + 2;
 
 			//1
 			vec0 = pVtx[nVtx3].pos - pVtx[nVtx1].pos;
@@ -153,7 +163,7 @@ HRESULT CMeshSky::Init(void)
 		}
 	}
 
-	for (int nCount = 0; nCount < (m_nBlockVertical + 1) * (m_nBlockHorizontal + 1); nCount++, pVtx++)
+	for (int nCount = 0; nCount < (m_nBlockVertical) * (m_nBlockHorizontal + 1) + 2; nCount++)
 	{
 		D3DXVECTOR3 nor = VEC3_ZERO;
 		//全法線を足す
@@ -164,7 +174,23 @@ HRESULT CMeshSky::Init(void)
 		D3DXVec3Normalize(&nor, &nor);
 
 		//法線ベクトル
-		pVtx->nor = nor;
+		pVtx[nCount].nor = nor;
+	}
+
+	//空専用同じところにある頂点の法線を一緒にする
+	for (int cnt = 0; cnt < m_nBlockVertical - 1; cnt++)
+	{
+		D3DXVECTOR3 nor = VEC3_ZERO;
+		//同じ場所の頂点の法線を足す
+		nor += pVtx[1 + (m_nBlockHorizontal + 1) * cnt].nor;
+		nor += pVtx[(m_nBlockHorizontal + 1) * (cnt + 1)].nor;
+
+		//正規化
+		D3DXVec3Normalize(&nor, &nor);
+
+		//代入
+		pVtx[1 + (m_nBlockHorizontal + 1) * cnt].nor = nor;
+		pVtx[(m_nBlockHorizontal + 1) * (cnt + 1)].nor = nor;
 	}
 
 	delete[] pNor;
@@ -211,6 +237,20 @@ HRESULT CMeshSky::Init(void)
 
 	//バッファアンロック
 	m_pIdxBuffMiddle->Unlock();
+
+	//下部バッファロック
+	m_pIdxBuffBottom->Lock(0, 0, (void **)&pIdx, 0);
+
+	int nVtxNum = (m_nBlockVertical) * (m_nBlockHorizontal + 1) + 2;
+
+	for (int cnt = 0; cnt < m_nBlockHorizontal + 1; cnt++)
+	{
+		pIdx[cnt] = nVtxNum - cnt - 1;
+	}
+	pIdx[m_nBlockHorizontal + 1] = nVtxNum - 2;
+
+	//下部バッファアンロック
+	m_pIdxBuffBottom->Unlock();
 
 	return S_OK;
 }
@@ -274,12 +314,27 @@ void CMeshSky::Draw(void)
 	//テクスチャ設定
 	pDevice->SetTexture(0, pTexture->GetAddress(m_nIdxTexture));
 
+	//両面カリングをON
+	pDevice->SetRenderState(D3DRS_CULLMODE, D3DCULL_CW);
+
+	//上部
 	//インデックスバッファをデータストリームに設定
 	pDevice->SetIndices(m_pIdxBuffTop);
 
 	//ポリゴン描画（インデックスされたやつ）
 	pDevice->DrawIndexedPrimitive(D3DPT_TRIANGLEFAN, 0, 0, (m_nBlockHorizontal + 1), 0, (m_nBlockHorizontal));
 
+	//下部
+	//インデックスバッファをデータストリームに設定
+	pDevice->SetIndices(m_pIdxBuffBottom);
+
+	//ポリゴン描画（インデックスされたやつ）
+	pDevice->DrawIndexedPrimitive(D3DPT_TRIANGLEFAN, 0, 0, (m_nBlockHorizontal + 1), 0, (m_nBlockHorizontal));
+
+	//普通のカリングモードにする
+	pDevice->SetRenderState(D3DRS_CULLMODE, D3DCULL_CCW);
+
+	//中部
 	//インデックスバッファをデータストリームに設定
 	pDevice->SetIndices(m_pIdxBuffMiddle);
 
@@ -302,6 +357,8 @@ CMeshSky* CMeshSky::Create(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, const f
 
 		//初期化
 		pMeshField->Init();
+
+		pMeshField->BindTexture(CManager::GetTexture()->Regist("data\\TEXTURE\\sky000.png"));
 
 		return pMeshField;
 	}

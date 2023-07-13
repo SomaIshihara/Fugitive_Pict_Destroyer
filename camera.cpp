@@ -12,7 +12,7 @@
 #include "Culc.h"
 
 //マクロ
-#define CAMERA_LENGTH			(5000.0f)	//カメラが見える最大距離
+#define CAMERA_LENGTH			(20000.0f)	//カメラが見える最大距離
 #define CAMERA_ROT_X_MIN		(-0.45f)	//カメラのX角度の最低値[rad]
 #define CAMERA_ROT_X_MAX		(-0.2f)	//カメラのX角度の最低値[rad]
 

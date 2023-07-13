@@ -167,7 +167,7 @@ HRESULT CManager::Init(HINSTANCE hInstance, HWND hWnd, BOOL bWindow)
 	CPictNormal::Create(D3DXVECTOR3(300.0f, 0.0f, 300.0f));
 	CPictNormal::Create(D3DXVECTOR3(100.0f, 0.0f, 600.0f));
 
-	CMeshSky::Create(VEC3_ZERO, VEC3_ZERO, 3000.0f, 8, 8);
+	CMeshSky::Create(VEC3_ZERO, VEC3_ZERO, 10000.0f, 8, 8);
 
 	//FPSåvë™äÌèâä˙âª
 	m_nFPS = 0;
