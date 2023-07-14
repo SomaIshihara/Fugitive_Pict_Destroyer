@@ -212,7 +212,7 @@ void CPict::Uninit(void)
 	//影消す
 	if (m_pShadow != NULL)
 	{
-		m_pShadow->Release();
+		m_pShadow->Uninit();
 	}
 
 	//自分自身破棄
@@ -288,9 +288,10 @@ void CPict::Update(void)
 
 	//当たり判定
 	pos.x += m_move.x;
-	CollisionBlockX(&pos);
+	//CollisionBlockX(&pos);
 
 	pos.y += m_move.y - (ACCELERATION_GRAVITY * m_nCounterJumpTime / MAX_FPS);
+
 	if (CollisionBlockY(&pos) == true)
 	{
 		m_bJump = false;
@@ -305,7 +306,7 @@ void CPict::Update(void)
 	}
 
 	pos.z += m_move.z;
-	CollisionBlockZ(&pos);
+	//CollisionBlockZ(&pos);
 
 	m_pos = pos;
 
@@ -416,6 +417,7 @@ void CPict::AddDamage(int nDamage)
 	m_fRedAlpha = PICT_DAMAGE_ALPHA;
 }
 
+#if 0
 //=================================
 //ブロックとの衝突判定(X)
 //=================================
@@ -457,6 +459,7 @@ void CPict::CollisionBlockX(D3DXVECTOR3* pPosNew)
 		}
 	}
 }
+#endif
 
 //=================================
 //ブロックとの衝突判定(Y)
@@ -466,6 +469,7 @@ bool CPict::CollisionBlockY(D3DXVECTOR3* pPosNew)
 	float fPlayerWidth = GetWidth() * 0.5f, fPlayerHeight = GetHeight() * 0.5f, fPlayerDepth = GetDepth() * 0.5f;
 	bool bLand = false;
 
+#if 0
 	for (int cnt = 0; cnt < MAX_OBJ; cnt++)
 	{//全オブジェクト見る
 		CObject* pObj = GetObject(BLOCK_PRIORITY, cnt);	//オブジェクト取得
@@ -502,6 +506,7 @@ bool CPict::CollisionBlockY(D3DXVECTOR3* pPosNew)
 			}
 		}
 	}
+#endif
 
 	//高さ取得
 	float fLandHeight = CManager::GetMeshField()->GetHeight(*pPosNew);
@@ -516,6 +521,7 @@ bool CPict::CollisionBlockY(D3DXVECTOR3* pPosNew)
 	return bLand;
 }
 
+#if 0
 //=================================
 //ブロックとの衝突判定(Z)
 //=================================
@@ -558,6 +564,7 @@ void CPict::CollisionBlockZ(D3DXVECTOR3* pPosNew)
 		}
 	}
 }
+#endif
 
 //=================================
 //ピクトさんの操縦

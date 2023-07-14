@@ -11,7 +11,9 @@
 #include "object.h"
 
 //静的変数初期化
-CObject* CObject::m_apObject[PRIORITY_MAX][MAX_OBJ];
+CObject* CObject::m_pTop = NULL;
+CObject* CObject::m_pCur = NULL;
+CObject* CObject::m_pProcessNext = NULL;
 int CObject::m_nNumAll = 0;
 
 //=================================
@@ -19,18 +21,19 @@ int CObject::m_nNumAll = 0;
 //=================================
 CObject::CObject(int nPriority)
 {
-	for (int cnt = 0; cnt < MAX_OBJ; cnt++)
-	{//すべて確認
-		if (m_apObject[nPriority][cnt] == NULL)
-		{//空っぽ
-			m_apObject[nPriority][cnt] = this;	//自分自身のポインタを登録
-			m_nID = cnt;	//ID覚える
-			m_nPriority = nPriority;	//優先順位覚える
-			m_Type = TYPE_NONE;	//いったん何でもないものとする
-			m_nNumAll++;	//総数増やす
-			break;
-		}
+	if (m_pCur == NULL)
+	{//最後尾がいない（すなわち先頭もいない）
+		m_pTop = this;	//俺が先頭
+		m_pPrev = NULL;	//前後誰もいない
+		m_pNext = NULL;
 	}
+	else
+	{//最後尾がいる
+		m_pPrev = m_pCur;		//最後尾が自分の前のオブジェ
+		m_pCur->m_pNext = this;	//最後尾の次のオブジェが自分
+		m_pNext = NULL;			//自分の次のオブジェはいない
+	}
+	m_pCur = this;	//俺が最後尾
 }
 
 //=================================
@@ -44,15 +47,23 @@ CObject::~CObject()
 //=================================
 void CObject::ReleaseAll(void)
 {
-	for (int cntPriority = 0; cntPriority < PRIORITY_MAX; cntPriority++)
-	{
-		for (int cntObj = 0; cntObj < MAX_OBJ; cntObj++)
-		{//すべて確認
-			if (m_apObject[cntPriority][cntObj] != NULL)
-			{//空っぽではない
-				m_apObject[cntPriority][cntObj]->Uninit();
-			}
-		}
+	CObject* pObject = m_pTop;	//先頭を入れる
+
+#if 0
+	while (pObject != NULL)
+	{//最後尾まで回し続ける
+		CObject* pObjectNext = pObject->m_pNext;	//次のオブジェ保存
+		pObject->Uninit();		//破棄
+		pObject = pObjectNext;	//次を入れる
+	}
+#endif
+	while (pObject != NULL)
+	{//最後尾まで回し続ける
+		 //CObject* pObjectNext = pObject->m_pNext;	//次のオブジェ保存
+		m_pProcessNext = pObject->m_pNext;	//次のオブジェ保存
+		pObject->Uninit();		//終了
+		//pObject = pObjectNext;	//次を入れる
+		pObject = m_pProcessNext;	//次を入れる
 	}
 }
 
@@ -61,15 +72,22 @@ void CObject::ReleaseAll(void)
 //=================================
 void CObject::UpdateAll(void)
 {
-	for (int cntPriority = 0; cntPriority < PRIORITY_MAX; cntPriority++)
-	{
-		for (int cntObj = 0; cntObj < MAX_OBJ; cntObj++)
-		{//すべて確認
-			if (m_apObject[cntPriority][cntObj] != NULL)
-			{//空っぽではない
-				m_apObject[cntPriority][cntObj]->Update();
-			}
-		}
+	CObject* pObject = m_pTop;	//先頭を入れる
+#if 0
+	while (pObject != NULL)
+	{//最後尾まで回し続ける
+		CObject* pObjectNext = pObject->m_pNext;	//次のオブジェ保存
+		pObject->Update();		//更新
+		pObject = pObjectNext;	//次を入れる
+	}
+#endif
+	while (pObject != NULL)
+	{//最後尾まで回し続ける
+		//CObject* pObjectNext = pObject->m_pNext;	//次のオブジェ保存
+		m_pProcessNext = pObject->m_pNext;	//次のオブジェ保存
+		pObject->Update();		//更新
+		//pObject = pObjectNext;	//次を入れる
+		pObject = m_pProcessNext;	//次を入れる
 	}
 }
 
@@ -80,15 +98,16 @@ void CObject::DrawAll(void)
 {
 	CCamera* pCamera = CManager::GetCamera();	//カメラ
 	pCamera->SetCamera();
-	for (int cntPriority = 0; cntPriority < PRIORITY_MAX; cntPriority++)
-	{
-		for (int cntObj = 0; cntObj < MAX_OBJ; cntObj++)
-		{//すべて確認
-			if (m_apObject[cntPriority][cntObj] != NULL)
-			{//空っぽではない
-				m_apObject[cntPriority][cntObj]->Draw();
-			}
-		}
+
+	CObject* pObject = m_pTop;	//先頭を入れる
+
+	while (pObject != NULL)
+	{//最後尾まで回し続ける
+		//CObject* pObjectNext = pObject->m_pNext;	//次のオブジェ保存
+		m_pProcessNext = pObject->m_pNext;	//次のオブジェ保存
+		pObject->Draw();		//描画
+		//pObject = pObjectNext;	//次を入れる
+		pObject = m_pProcessNext;	//次を入れる
 	}
 }
 
@@ -97,13 +116,31 @@ void CObject::DrawAll(void)
 //=================================
 void CObject::Release(void)
 {
-	int nID = m_nID;				//deleteしたら使えなくなるので保管
 	int nPriority = m_nPriority;
-	if (m_apObject[nPriority][nID] != NULL)
-	{//空っぽではない
-		//自分自身破棄
-		delete m_apObject[nPriority][nID];
-		m_apObject[nPriority][nID] = NULL;
-		m_nNumAll--;	//総数減らす
+
+	if (m_pPrev != NULL)
+	{//前にオブジェがいる
+		m_pPrev->m_pNext = m_pNext;	//前のオブジェの次のオブジェは自分の次のオブジェ
 	}
+	if (m_pNext != NULL)
+	{
+		m_pNext->m_pPrev = m_pPrev;	//次のオブジェの前のオブジェは自分の前のオブジェ
+	}
+
+	if (m_pCur == this)
+	{//最後尾でした
+		m_pCur = m_pPrev;	//最後尾を自分の前のオブジェにする
+	}
+	if (m_pTop == this)
+	{
+		m_pTop = m_pNext;	//先頭を自分の次のオブジェにする
+	}
+	if (m_pProcessNext == this)
+	{
+		m_pProcessNext = m_pPrev->m_pNext;
+	}
+
+	//成仏	
+	delete this;	//自分自身破棄
+	m_nNumAll--;	//総数減らす
 }

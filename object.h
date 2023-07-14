@@ -58,7 +58,8 @@ public:
 	//取得・設定
 	void SetType(TYPE type) { m_Type = type; }
 	TYPE GetType(void) { return m_Type; }
-	static CObject* GetObject(int nPriority, int nIdx) { return m_apObject[nPriority][nIdx]; }
+	static CObject* GetTop(void) { return m_pTop; }
+	CObject* GetNext(void) { return m_pNext; }
 
 	//純粋仮想取得
 	virtual D3DXVECTOR3 GetPos(void) = 0;
@@ -72,9 +73,14 @@ protected:
 	void Release(void);
 
 private:
-	static CObject* m_apObject[PRIORITY_MAX][MAX_OBJ];	//ポインタ
+	static CObject* m_pTop;	//先頭オブジェクト
+	static CObject* m_pCur;	//最後尾オブジェクト
+	//仮
+	static CObject* m_pProcessNext;
+	//仮
+	CObject* m_pNext;		//次のオブジェクト
+	CObject* m_pPrev;		//前のオブジェクト
 	static int m_nNumAll;					//総数
-	int m_nID;								//自分自身のID
 	int m_nPriority;						//優先順位
 	TYPE m_Type;							//種類
 };

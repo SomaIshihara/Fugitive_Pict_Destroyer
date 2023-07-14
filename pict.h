@@ -100,9 +100,9 @@ public:
 	static void SetAgit(CObjectX* pAgit) { m_pAgitObj = pAgit; }
 
 	//ìñÇΩÇËîªíË
-	void CollisionBlockX(D3DXVECTOR3* pPosNew);
+	//void CollisionBlockX(D3DXVECTOR3* pPosNew);
 	bool CollisionBlockY(D3DXVECTOR3* pPosNew);
-	void CollisionBlockZ(D3DXVECTOR3* pPosNew);
+	//void CollisionBlockZ(D3DXVECTOR3* pPosNew);
 
 	//ÉsÉNÉgëÄèc
 	void SetControll(void) { m_bControll = true; }

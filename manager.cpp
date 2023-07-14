@@ -321,6 +321,7 @@ void CManager::CheckFPS(DWORD dwCurrentTime, DWORD dwExecLastTime)
 	m_dwFrameCount = 0;
 }
 
+#if 0
 //=================================
 //çƒîzíu
 //=================================
@@ -345,3 +346,4 @@ void CManager::ResetObj(void)
 		}
 	}
 }
+#endif

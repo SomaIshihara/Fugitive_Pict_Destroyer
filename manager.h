@@ -62,7 +62,7 @@ public:
 
 private:
 	//再配置
-	void ResetObj(void);
+	//void ResetObj(void);
 
 	//変数
 	static CInputKeyboard* m_pInputKeyboard;	//キーボード

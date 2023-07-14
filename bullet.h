@@ -36,8 +36,8 @@ public:
 	void Draw(void);
 
 	//衝突判定
-	bool CollisionEnemy(void);	//敵
-	bool CollisionBlock(void);	//ブロック
+	//bool CollisionEnemy(void);	//敵
+	//bool CollisionBlock(void);	//ブロック
 
 	//設定処理
 	void SetType(TYPE type) { m_Type = type; }	//タイプ設定

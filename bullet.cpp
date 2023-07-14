@@ -100,21 +100,21 @@ void CBullet2D::Update(void)
 	//位置設定
 	SetPos(pos);
 
+#if 0
 	//敵との衝突判定
 	if (m_Type == TYPE_PLAYER && CollisionEnemy() == true)
 	{//弾が敵に当たった
 		return;
 	}
-#if 0
 	if (m_Type == TYPE_ENEMY && CollisionPlayer() == true)
 	{//弾がプレイヤーに当たった
 		return;
 	}
-#endif
 	if (m_Type == TYPE_PLAYER && CollisionBlock() == true)
 	{//弾がブロックに当たった
 		return;
 	}
+#endif
 
 	//親
 	CObject2D::Update();
@@ -160,6 +160,7 @@ CBullet2D* CBullet2D::Create(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, const
 	}
 }
 
+#if 0
 //=================================
 //敵との衝突判定
 //=================================
@@ -236,6 +237,7 @@ bool CBullet2D::CollisionBlock(void)
 	//弾は敵に当たっていなかった
 	return false;
 }
+#endif
 
 //****************************************
 //ビルボード弾
