@@ -50,8 +50,6 @@ CCamera* CManager::m_pCamera = NULL;
 CLight* CManager::m_pLight = NULL;
 CTexture* CManager::m_pTexture = NULL;
 CPlayer* CManager::m_pPlayer = NULL;
-CButton2D* CManager::m_pButtonATK = NULL;
-CButton3D* CManager::m_pButton3D = NULL;
 CSlider* CManager::m_pSlider = NULL;
 int CManager::m_nFPS = 0;
 DWORD CManager::m_dwFrameCount = 0;
@@ -159,8 +157,6 @@ HRESULT CManager::Init(HINSTANCE hInstance, HWND hWnd, BOOL bWindow)
 	CPictPolice::Create(D3DXVECTOR3(-300.0f, 0.0f, 0.0f))->SetBuilding(pTarget);
 	CObjectX* pAgit = CObjectX::Create(VEC3_ZERO, VEC3_ZERO, 4);
 	CPict::SetAgit(pAgit);
-	m_pButton3D = CButton3D::Create(D3DXVECTOR3(200.0f,50.0f,200.0f), D3DXVECTOR3(-0.5f * D3DX_PI,0.0f,0.0f), 100.0f, 50.0f);
-	m_pButtonATK = CButton2D::Create(D3DXVECTOR3(20.0f, SCREEN_HEIGHT - 20.0f, 0.0f), VEC3_ZERO, 40.0f, 40.0f);
 	m_pSlider = CSlider::Create(D3DXVECTOR3(100.0f, SCREEN_HEIGHT - 20.0f, 0.0f), 40.0f, 40.0f, 3);
 
 	CPictNormal::Create(D3DXVECTOR3(500.0f, 0.0f, 200.0f));
@@ -189,7 +185,7 @@ void CManager::Uninit(void)
 	CObjectX::Unload();			//Xモデル
 
 	//オブジェクト終了+破棄
-	CObject2D::ReleaseAll();
+	CObject::ReleaseAll();
 
 	//プレイヤー破棄
 	if (m_pPlayer != NULL)
@@ -274,15 +270,10 @@ void CManager::Update(void)
 	m_pRenderer->Update();
 	m_pCamera->Update();
 	m_pLight->Update();
-
-	//先にボタン処理
-	if (m_pButtonATK->IsClickTrigger() == true)
-	{//攻撃指示
-		m_pPlayer->Attack();
-	}
-
-	//プレイヤーは後で更新
 	m_pPlayer->Update();
+
+	//この時点で死亡フラグが立っているオブジェを殺す
+	CObject::Death();
 
 	//FPS計測器の処理
 	m_dwFrameCount++;
@@ -295,11 +286,6 @@ void CManager::Update(void)
 	m_pDebProc->Print("Space:弾発射\n");
 	m_pDebProc->Print("[モデル・ピクトに向かって]マウス左クリック:選択\n");
 	m_pDebProc->Print("[Debug]F3:タイマー設定(120秒カウントダウン)\n");
-
-	if (m_pButton3D->IsClickPress() == true)
-	{
-		m_pDebProc->Print("[[CLICKED!!]]\n");
-	}
 
 	m_pDebProc->Print("SLIDER_NUM = %d\n", m_pSlider->GetSelectIdx());
 }

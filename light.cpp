@@ -18,6 +18,7 @@ CLight::CLight()
 	ZeroMemory(&m_aLight[0], sizeof(D3DLIGHT9));
 	ZeroMemory(&m_aLight[1], sizeof(D3DLIGHT9));
 	ZeroMemory(&m_aLight[2], sizeof(D3DLIGHT9));
+	ZeroMemory(&m_aLight[3], sizeof(D3DLIGHT9));
 }
 
 //========================
@@ -40,21 +41,23 @@ HRESULT CLight::Init(void)
 	ZeroMemory(&m_aLight[0], sizeof(D3DLIGHT9));
 	ZeroMemory(&m_aLight[1], sizeof(D3DLIGHT9));
 	ZeroMemory(&m_aLight[2], sizeof(D3DLIGHT9));
+	ZeroMemory(&m_aLight[3], sizeof(D3DLIGHT9));
 
 	//ライト種類設定
 	m_aLight[0].Type = D3DLIGHT_DIRECTIONAL;
 	m_aLight[1].Type = D3DLIGHT_DIRECTIONAL;
 	m_aLight[2].Type = D3DLIGHT_DIRECTIONAL;
+	m_aLight[3].Type = D3DLIGHT_DIRECTIONAL;
 
 	//ライト拡散光設定
 	m_aLight[0].Diffuse = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
 	m_aLight[1].Diffuse = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
 	m_aLight[2].Diffuse = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
+	m_aLight[3].Diffuse = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
 
 	//ライトの方向
 	//0
 	vecDir = D3DXVECTOR3(0.22f, -0.87f, 0.44f);
-	//vecDir = D3DXVECTOR3(0.0f, -0.5f, 0.5f);
 	D3DXVec3Normalize(&vecDir, &vecDir);
 
 	m_aLight[0].Direction = vecDir;
@@ -70,6 +73,12 @@ HRESULT CLight::Init(void)
 	D3DXVec3Normalize(&vecDir, &vecDir);
 
 	m_aLight[2].Direction = vecDir;
+
+	//3
+	vecDir = D3DXVECTOR3(0.0f, -1.0f, 0.0f);
+	D3DXVec3Normalize(&vecDir, &vecDir);
+
+	m_aLight[3].Direction = vecDir;
 
 	//ライト設定
 	pDevice->SetLight(0, &m_aLight[0]);

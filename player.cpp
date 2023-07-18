@@ -14,6 +14,7 @@
 #include "objectX.h"
 #include "pict.h"
 #include "building.h"
+#include "button.h"
 #include "slider.h"
 
 #define CAMERA_MOVE_SPEED		(10.0f)		//カメラ移動速度
@@ -33,6 +34,7 @@ CPlayer::CPlayer()
 	m_nHaveNormal = INT_ZERO;
 
 	m_cursorPos = VEC3_ZERO;
+	m_pButtonATK = NULL;
 }
 
 //=================================
@@ -81,7 +83,14 @@ void CPlayer::Update(void)
 	{//マウスカーソル位置保存
 		m_cursorPos = pMouse->GetPos();
 	}
-	if (pMouse->GetTrigger(MOUSE_CLICK_LEFT) == true)
+	//ボタンが押されたか検知
+	if (m_pButtonATK != NULL && m_pButtonATK->IsClickTrigger() == true)
+	{
+		Attack();
+		m_pButtonATK->Uninit();
+		m_pButtonATK = NULL;
+	}
+	else if (pMouse->GetTrigger(MOUSE_CLICK_LEFT) == true)
 	{//位置特定
 		Select();
 	}
@@ -248,6 +257,13 @@ void CPlayer::Select(void)
 	D3DXVECTOR3 posNear = mouse->ConvertClickPosToWorld(0.0f);
 	D3DXVECTOR3 posFar = mouse->ConvertClickPosToWorld(1.0f);
 
+	//ボタン削除
+	if (m_pButtonATK != NULL)
+	{
+		m_pButtonATK->Uninit();
+		m_pButtonATK = NULL;
+	}
+
 	//建物
 	for (int cnt = 0; cnt < MAX_OBJ; cnt++)
 	{//全オブジェクト見る
@@ -260,6 +276,9 @@ void CPlayer::Select(void)
 			{//建物選択
 				m_pSelectPict = NULL;
 				m_pSelectBuilding = pBuilding;
+				
+				//ボタン生成
+				m_pButtonATK = CButton2D::Create(mouse->GetPos(), VEC3_ZERO, 40.0f, 40.0f);
 				return;
 			}
 		}
@@ -276,6 +295,9 @@ void CPlayer::Select(void)
 			{//ピクト選択
 				m_pSelectBuilding = NULL;
 				m_pSelectPict = pPict;
+
+				//ボタン生成
+				m_pButtonATK = CButton2D::Create(mouse->GetPos(), VEC3_ZERO, 40.0f, 40.0f);
 				return;
 			}
 		}

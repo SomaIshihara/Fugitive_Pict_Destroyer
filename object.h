@@ -58,7 +58,7 @@ public:
 	//取得・設定
 	void SetType(TYPE type) { m_Type = type; }
 	TYPE GetType(void) { return m_Type; }
-	static CObject* GetTop(void) { return m_pTop; }
+	static CObject* GetTop(const int nPriority) { return m_apTop[nPriority]; }
 	CObject* GetNext(void) { return m_pNext; }
 
 	//純粋仮想取得
@@ -69,20 +69,21 @@ public:
 	virtual float GetDepth(void) = 0;
 	virtual int GetModelIdx(void) = 0;
 
+	//死亡フラグが立っているオブジェを殺す
+	static void Death(void);
+
 protected:
 	void Release(void);
 
 private:
-	static CObject* m_pTop;	//先頭オブジェクト
-	static CObject* m_pCur;	//最後尾オブジェクト
-	//仮
-	static CObject* m_pProcessNext;
-	//仮
+	static CObject* m_apTop[PRIORITY_MAX];	//先頭オブジェクト
+	static CObject* m_apCur[PRIORITY_MAX];	//最後尾オブジェクト
 	CObject* m_pNext;		//次のオブジェクト
 	CObject* m_pPrev;		//前のオブジェクト
-	static int m_nNumAll;					//総数
-	int m_nPriority;						//優先順位
-	TYPE m_Type;							//種類
+	static int m_nNumAll;	//総数
+	int m_nPriority;		//優先順位
+	TYPE m_Type;			//種類
+	bool m_bDeath;			//死亡フラグ
 };
 
 #endif // !_OBJECT_H_

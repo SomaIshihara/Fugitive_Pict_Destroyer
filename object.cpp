@@ -11,9 +11,8 @@
 #include "object.h"
 
 //静的変数初期化
-CObject* CObject::m_pTop = NULL;
-CObject* CObject::m_pCur = NULL;
-CObject* CObject::m_pProcessNext = NULL;
+CObject* CObject::m_apTop[PRIORITY_MAX] = {};
+CObject* CObject::m_apCur[PRIORITY_MAX] = {};
 int CObject::m_nNumAll = 0;
 
 //=================================
@@ -21,19 +20,21 @@ int CObject::m_nNumAll = 0;
 //=================================
 CObject::CObject(int nPriority)
 {
-	if (m_pCur == NULL)
+	if (m_apCur[nPriority] == NULL)
 	{//最後尾がいない（すなわち先頭もいない）
-		m_pTop = this;	//俺が先頭
-		m_pPrev = NULL;	//前後誰もいない
+		m_apTop[nPriority] = this;	//俺が先頭
+		m_pPrev = NULL;				//前後誰もいない
 		m_pNext = NULL;
 	}
 	else
 	{//最後尾がいる
-		m_pPrev = m_pCur;		//最後尾が自分の前のオブジェ
-		m_pCur->m_pNext = this;	//最後尾の次のオブジェが自分
-		m_pNext = NULL;			//自分の次のオブジェはいない
+		m_pPrev = m_apCur[nPriority];		//最後尾が自分の前のオブジェ
+		m_apCur[nPriority]->m_pNext = this;	//最後尾の次のオブジェが自分
+		m_pNext = NULL;						//自分の次のオブジェはいない
 	}
-	m_pCur = this;	//俺が最後尾
+	m_nPriority = nPriority;	//優先順位入れる
+	m_apCur[nPriority] = this;	//俺が最後尾
+	m_bDeath = false;			//生きてる
 }
 
 //=================================
@@ -47,24 +48,20 @@ CObject::~CObject()
 //=================================
 void CObject::ReleaseAll(void)
 {
-	CObject* pObject = m_pTop;	//先頭を入れる
+	for (int cnt = 0; cnt < PRIORITY_MAX; cnt++)
+	{
+		CObject* pObject = m_apTop[cnt];	//先頭を入れる
 
-#if 0
-	while (pObject != NULL)
-	{//最後尾まで回し続ける
-		CObject* pObjectNext = pObject->m_pNext;	//次のオブジェ保存
-		pObject->Uninit();		//破棄
-		pObject = pObjectNext;	//次を入れる
+		while (pObject != NULL)
+		{//最後尾まで回し続ける
+			CObject* pObjectNext = pObject->m_pNext;	//次のオブジェ保存
+			pObject->Uninit();		//破棄
+			pObject = pObjectNext;	//次を入れる
+		}
 	}
-#endif
-	while (pObject != NULL)
-	{//最後尾まで回し続ける
-		 //CObject* pObjectNext = pObject->m_pNext;	//次のオブジェ保存
-		m_pProcessNext = pObject->m_pNext;	//次のオブジェ保存
-		pObject->Uninit();		//終了
-		//pObject = pObjectNext;	//次を入れる
-		pObject = m_pProcessNext;	//次を入れる
-	}
+
+	//殺す
+	Death();
 }
 
 //=================================
@@ -72,23 +69,25 @@ void CObject::ReleaseAll(void)
 //=================================
 void CObject::UpdateAll(void)
 {
-	CObject* pObject = m_pTop;	//先頭を入れる
-#if 0
-	while (pObject != NULL)
-	{//最後尾まで回し続ける
-		CObject* pObjectNext = pObject->m_pNext;	//次のオブジェ保存
-		pObject->Update();		//更新
-		pObject = pObjectNext;	//次を入れる
+	for (int cnt = 0; cnt < PRIORITY_MAX; cnt++)
+	{
+		CObject* pObject = m_apTop[cnt];	//先頭を入れる
+
+		while (pObject != NULL)
+		{//最後尾まで回し続ける
+			CObject* pObjectNext = pObject->m_pNext;	//次のオブジェ保存
+			
+			if (pObject->m_bDeath == false)
+			{
+				pObject->Update();		//更新
+			}
+
+			pObject = pObjectNext;	//次を入れる
+		}
 	}
-#endif
-	while (pObject != NULL)
-	{//最後尾まで回し続ける
-		//CObject* pObjectNext = pObject->m_pNext;	//次のオブジェ保存
-		m_pProcessNext = pObject->m_pNext;	//次のオブジェ保存
-		pObject->Update();		//更新
-		//pObject = pObjectNext;	//次を入れる
-		pObject = m_pProcessNext;	//次を入れる
-	}
+
+	//殺す
+	Death();
 }
 
 //=================================
@@ -99,15 +98,16 @@ void CObject::DrawAll(void)
 	CCamera* pCamera = CManager::GetCamera();	//カメラ
 	pCamera->SetCamera();
 
-	CObject* pObject = m_pTop;	//先頭を入れる
+	for (int cnt = 0; cnt < PRIORITY_MAX; cnt++)
+	{
+		CObject* pObject = m_apTop[cnt];	//先頭を入れる
 
-	while (pObject != NULL)
-	{//最後尾まで回し続ける
-		//CObject* pObjectNext = pObject->m_pNext;	//次のオブジェ保存
-		m_pProcessNext = pObject->m_pNext;	//次のオブジェ保存
-		pObject->Draw();		//描画
-		//pObject = pObjectNext;	//次を入れる
-		pObject = m_pProcessNext;	//次を入れる
+		while (pObject != NULL)
+		{//最後尾まで回し続ける
+			CObject* pObjectNext = pObject->m_pNext;	//次のオブジェ保存
+			pObject->Draw();		//描画
+			pObject = pObjectNext;	//次を入れる
+		}
 	}
 }
 
@@ -116,31 +116,48 @@ void CObject::DrawAll(void)
 //=================================
 void CObject::Release(void)
 {
-	int nPriority = m_nPriority;
+	m_bDeath = true;	//死亡フラグが立ちました。
+}
 
-	if (m_pPrev != NULL)
-	{//前にオブジェがいる
-		m_pPrev->m_pNext = m_pNext;	//前のオブジェの次のオブジェは自分の次のオブジェ
-	}
-	if (m_pNext != NULL)
+//=================================
+//ぶっ殺す
+//=================================
+void CObject::Death(void)
+{
+	for (int cnt = 0; cnt < PRIORITY_MAX; cnt++)
 	{
-		m_pNext->m_pPrev = m_pPrev;	//次のオブジェの前のオブジェは自分の前のオブジェ
-	}
+		CObject* pObject = m_apTop[cnt];	//先頭を入れる
 
-	if (m_pCur == this)
-	{//最後尾でした
-		m_pCur = m_pPrev;	//最後尾を自分の前のオブジェにする
-	}
-	if (m_pTop == this)
-	{
-		m_pTop = m_pNext;	//先頭を自分の次のオブジェにする
-	}
-	if (m_pProcessNext == this)
-	{
-		m_pProcessNext = m_pPrev->m_pNext;
-	}
+		while (pObject != NULL)
+		{//最後尾まで回し続ける
+			CObject* pObjectNext = pObject->m_pNext;	//次のオブジェ保存
 
-	//成仏	
-	delete this;	//自分自身破棄
-	m_nNumAll--;	//総数減らす
+			if (pObject->m_bDeath == true)
+			{//死亡フラグが立ってる
+				if (pObject->m_pPrev != NULL)
+				{//前にオブジェがいる
+					pObject->m_pPrev->m_pNext = pObject->m_pNext;	//前のオブジェの次のオブジェは自分の次のオブジェ
+				}
+				if (pObject->m_pNext != NULL)
+				{
+					pObject->m_pNext->m_pPrev = pObject->m_pPrev;	//次のオブジェの前のオブジェは自分の前のオブジェ
+				}
+
+				if (m_apCur[cnt] == pObject)
+				{//最後尾でした
+					m_apCur[cnt] = pObject->m_pPrev;	//最後尾を自分の前のオブジェにする
+				}
+				if (m_apTop[cnt] == pObject)
+				{
+					m_apTop[cnt] = pObject->m_pNext;	//先頭を自分の次のオブジェにする
+				}
+
+				//成仏	
+				delete pObject;	//自分自身破棄
+				m_nNumAll--;	//総数減らす
+			}
+
+			pObject = pObjectNext;	//次を入れる
+		}
+	}
 }

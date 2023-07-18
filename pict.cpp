@@ -107,6 +107,7 @@ CPict::CPict(const D3DXVECTOR3 pos)
 	//’lƒNƒŠƒA
 	m_pos = pos;
 	m_rot = VEC3_ZERO;
+	m_pMotion = NULL;
 	m_fWidth = FLOAT_ZERO;
 	m_fHeight = FLOAT_ZERO;
 	m_fDepth = FLOAT_ZERO;

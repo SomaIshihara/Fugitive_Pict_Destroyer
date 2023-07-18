@@ -12,6 +12,7 @@
 //前方宣言
 class CBuilding;
 class CPict;
+class CButton2D;
 
 //プレイヤークラス
 class CPlayer
@@ -43,6 +44,8 @@ private:
 	void Select(void);								//オブジェクト選択
 
 	//変数
+	CButton2D* m_pButtonATK;		//攻撃ボタン
+
 	int m_nChacePictNum;			//追従するピクトさんの番号
 	bool m_bControllPict;			//ピクトさんを操縦するかどうか
 	CBuilding* m_pSelectBuilding;	//選択中の建物

@@ -8,7 +8,7 @@
 #define _LIGHT_H_
 
 //マクロ
-#define MAX_LIGHT	(3)	//ライト数
+#define MAX_LIGHT	(4)	//ライト数
 
 //クラス化したものがこちらです
 class CLight

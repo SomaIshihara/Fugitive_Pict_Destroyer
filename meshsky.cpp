@@ -97,7 +97,7 @@ HRESULT CMeshSky::Init(void)
 
 	//上部
 	pVtx[0].pos = D3DXVECTOR3(0.0f, m_fRadius, 0.0f);
-	pVtx[0].nor = D3DXVECTOR3(0.0f, -1.0f, 0.0f);
+	pVtx[0].nor = D3DXVECTOR3(0.0f, 1.0f, 0.0f);
 	pVtx[0].col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
 	pVtx[0].tex = D3DXVECTOR2(0.0f, 0.0f);
 
@@ -105,15 +105,18 @@ HRESULT CMeshSky::Init(void)
 	for (int cntV = 0; cntV < m_nBlockVertical; cntV++)
 	{
 		float fAngleV = (1.0f * D3DX_PI) * ((float)(cntV + 1) / (m_nBlockVertical + 1));
+		float fTexV = (1.0 / (m_nBlockVertical + 2)) * cntV;
 
 		for (int cntH = 0; cntH < m_nBlockHorizontal + 1; cntH++)
 		{
 			float fAngleH = (2.0f * D3DX_PI) * ((float)cntH / (m_nBlockHorizontal));
+			float fTexU = (1.0 / (m_nBlockHorizontal + 1)) * cntH;
 			int cnt = cntV * (m_nBlockHorizontal + 1) + cntH + 1;
 
 			pVtx[cnt].pos = D3DXVECTOR3(sinf(fAngleH) * sinf(fAngleV) * m_fRadius, cosf(fAngleV) * m_fRadius, cosf(fAngleH) * sinf(fAngleV) * m_fRadius);
 			pVtx[cnt].col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
-			pVtx[cnt].tex = D3DXVECTOR2((float)cntH / (m_nBlockHorizontal + 1), (float)(cntV + 1) / (m_nBlockVertical + 1));
+			pVtx[cnt].tex = D3DXVECTOR2(fTexU, fTexV);
+			pVtx[cnt].nor = D3DXVECTOR3(0.0f,1.0f,0.0f);
 		}
 	}
 
@@ -122,78 +125,7 @@ HRESULT CMeshSky::Init(void)
 	pVtx[nLastVtx].pos = D3DXVECTOR3(0.0f, -m_fRadius, 0.0f);
 	pVtx[nLastVtx].nor = D3DXVECTOR3(0.0f, 1.0f, 0.0f);
 	pVtx[nLastVtx].col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
-	pVtx[nLastVtx].tex = D3DXVECTOR2(1.0f, 1.0f);
-
-	vector<D3DXVECTOR3>* pNor = new vector<D3DXVECTOR3>[(m_nBlockVertical) * (m_nBlockHorizontal + 1) + 2];
-
-	for (int cntZ = 0; cntZ < m_nBlockHorizontal - 1; cntZ++)
-	{
-		for (int cntX = 0; cntX < m_nBlockVertical; cntX++)
-		{
-			D3DXVECTOR3 nor0, nor1, nor2, nor3;
-			D3DXVECTOR3 vec0, vec1;
-			int nVtx0 = cntZ * (m_nBlockHorizontal + 1) + cntX + 1;
-			int nVtx1 = cntZ * (m_nBlockHorizontal + 1) + cntX + 2;
-			int nVtx2 = (cntZ + 1) * (m_nBlockHorizontal + 1) + cntX + 1;
-			int nVtx3 = (cntZ + 1) * (m_nBlockHorizontal + 1) + cntX + 2;
-
-			//1
-			vec0 = pVtx[nVtx3].pos - pVtx[nVtx1].pos;
-			vec1 = pVtx[nVtx0].pos - pVtx[nVtx1].pos;
-			D3DXVec3Cross(&nor1, &vec0, &vec1);
-			D3DXVec3Normalize(&nor1, &nor1);
-
-			//2
-			vec0 = pVtx[nVtx0].pos - pVtx[nVtx2].pos;
-			vec1 = pVtx[nVtx3].pos - pVtx[nVtx2].pos;
-			D3DXVec3Cross(&nor2, &vec0, &vec1);
-			D3DXVec3Normalize(&nor2, &nor2);
-
-			//0
-			nor0 = (nor1 + nor2);
-			D3DXVec3Normalize(&nor0, &nor0);
-			//3
-			nor3 = (nor1 + nor2);
-			D3DXVec3Normalize(&nor3, &nor3);
-
-			pNor[nVtx0].push_back(nor0);
-			pNor[nVtx1].push_back(nor1);
-			pNor[nVtx2].push_back(nor2);
-			pNor[nVtx3].push_back(nor3);
-		}
-	}
-
-	for (int nCount = 0; nCount < (m_nBlockVertical) * (m_nBlockHorizontal + 1) + 2; nCount++)
-	{
-		D3DXVECTOR3 nor = VEC3_ZERO;
-		//全法線を足す
-		for (int cntNor = 0; cntNor < pNor[nCount].size(); cntNor++)
-		{
-			nor += pNor[nCount].at(cntNor);
-		}
-		D3DXVec3Normalize(&nor, &nor);
-
-		//法線ベクトル
-		pVtx[nCount].nor = nor;
-	}
-
-	//空専用同じところにある頂点の法線を一緒にする
-	for (int cnt = 0; cnt < m_nBlockVertical - 1; cnt++)
-	{
-		D3DXVECTOR3 nor = VEC3_ZERO;
-		//同じ場所の頂点の法線を足す
-		nor += pVtx[1 + (m_nBlockHorizontal + 1) * cnt].nor;
-		nor += pVtx[(m_nBlockHorizontal + 1) * (cnt + 1)].nor;
-
-		//正規化
-		D3DXVec3Normalize(&nor, &nor);
-
-		//代入
-		pVtx[1 + (m_nBlockHorizontal + 1) * cnt].nor = nor;
-		pVtx[(m_nBlockHorizontal + 1) * (cnt + 1)].nor = nor;
-	}
-
-	delete[] pNor;
+	pVtx[nLastVtx].tex = D3DXVECTOR2(0.5f, 1.0f);
 
 	//頂点バッファをアンロック
 	m_pVtxbuff->Unlock();
