@@ -225,9 +225,11 @@ void CBuilding::AddDamage(int nDamage)
 
 			if (pPict != NULL)	//ヌルチェ
 			{//なんかある
-				if (pPict->GetTarget() == this)
+				if (pPict->GetTargetObj() == this)
 				{//自分がターゲット
-					pPict->UnsetTarget();	//ターゲット外す
+					pPict->UnsetTargetObj();
+					//pPict->UnsetTarget();	//ターゲット外す
+					//pPict->SetState(CPict::STATE_LEAVE);
 				}
 			}
 		}

@@ -36,6 +36,7 @@
 #include "button.h"
 #include "slider.h"
 #include "meshsky.h"
+#include "point.h"
 
 //マクロ
 #define FPS_SPEED	(500)	//FPS計測時間
@@ -154,14 +155,17 @@ HRESULT CManager::Init(HINSTANCE hInstance, HWND hWnd, BOOL bWindow)
 	m_pMeshField = CMeshField::Create(D3DXVECTOR3(-1280.0f, 0.0f, 1280.0f), VEC3_ZERO, 64.0f, 64.0f, 40, 40);
 	CBuilding* pTarget = CBuilding::Create(D3DXVECTOR3(64.0f, 0.0f, 580.0f), VEC3_ZERO, 0);
 	CBuilding::Create(D3DXVECTOR3(-440.0f,0.0f,-453.0f), VEC3_ZERO, 2);
-	CPictPolice::Create(D3DXVECTOR3(-300.0f, 0.0f, 0.0f))->SetBuilding(pTarget);
+	//CPictPolice::Create(D3DXVECTOR3(-300.0f, 0.0f, 0.0f))->SetBuilding(pTarget);
 	CObjectX* pAgit = CObjectX::Create(VEC3_ZERO, VEC3_ZERO, 4);
 	CPict::SetAgit(pAgit);
 	m_pSlider = CSlider::Create(D3DXVECTOR3(100.0f, SCREEN_HEIGHT - 20.0f, 0.0f), 40.0f, 40.0f, 3);
 
-	CPictNormal::Create(D3DXVECTOR3(500.0f, 0.0f, 200.0f));
-	CPictNormal::Create(D3DXVECTOR3(300.0f, 0.0f, 300.0f));
-	CPictNormal::Create(D3DXVECTOR3(100.0f, 0.0f, 600.0f));
+	//ポイント生成
+	CPoint::Update();
+
+	//CPictNormal::Create(D3DXVECTOR3(500.0f, 0.0f, 200.0f));
+	//CPictNormal::Create(D3DXVECTOR3(300.0f, 0.0f, 300.0f));
+	//CPictNormal::Create(D3DXVECTOR3(100.0f, 0.0f, 600.0f));
 
 	CMeshSky::Create(VEC3_ZERO, VEC3_ZERO, 10000.0f, 8, 8);
 

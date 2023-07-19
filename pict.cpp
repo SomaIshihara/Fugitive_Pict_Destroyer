@@ -21,9 +21,11 @@
 #include "slider.h"
 #include "file.h"
 #include "Culc.h"
+#include "point.h"
 
 //マクロ
 #define PICT_WALK_SPEED				(6.0f)		//ピクトさんの歩行速度
+#define PICT_POINT_RESEARCH_LENGTH	(5.0f)		//ピクトさんがポイントに到着したことにする距離
 #define PICT_AGIT_STOP_LENGTH		(20.0f)		//ピクトさんがアジトから離れる距離
 #define PICT_BUIDING_STOP_LENGTH	(120.0f)	//ピクトさんが建物から離れる距離
 #define PICT_POLICE_STOP_LENGTH		(30.0f)		//ピクトさんが警察から離れる距離
@@ -226,13 +228,11 @@ void CPict::Uninit(void)
 void CPict::Update(void)
 {
 	CInputKeyboard* pKeyboard = CManager::GetInputKeyboard();	//キーボード取得
-	D3DXVECTOR3 targetPos = VEC3_ZERO;
-	float targetWidthHalf = FLOAT_ZERO;
-	float targetDepthHalf = FLOAT_ZERO;
 	D3DXVECTOR3 pos = m_pos;
 	CMotion* pMotion = GetMotion();
 
 	//ピクトさん全員知ってるアジトへの帰還
+#if 0
 	if (m_state == STATE_LEAVE)
 	{
 		if (CPict::IsControll() == false)
@@ -268,6 +268,64 @@ void CPict::Update(void)
 			{//ついた
 				Uninit();
 				return;
+			}
+		}
+	}
+#endif
+
+	//ピクト共通:ポイント移動処理
+	if (CPict::IsControll() == false && m_state != STATE_ATTACK)
+	{
+		m_move.x = FLOAT_ZERO;
+		m_move.z = FLOAT_ZERO;
+
+		if (m_PointPos.x - PICT_POINT_RESEARCH_LENGTH > pos.x || m_PointPos.x + PICT_POINT_RESEARCH_LENGTH < pos.x ||
+			m_PointPos.z - PICT_POINT_RESEARCH_LENGTH > pos.z || m_PointPos.z + PICT_POINT_RESEARCH_LENGTH < pos.z)
+		{//移動中
+			float fTargetLenWidth, fTargetLenDepth;
+			float fTargetRot;
+
+			fTargetLenWidth = m_PointPos.x - pos.x;
+			fTargetLenDepth = m_PointPos.z - pos.z;
+
+			fTargetRot = atan2f(fTargetLenWidth, fTargetLenDepth);
+
+			m_move.x = sinf(fTargetRot) * PICT_WALK_SPEED;
+			m_move.z = cosf(fTargetRot) * PICT_WALK_SPEED;
+
+			m_rot.y = FIX_ROT(fTargetRot + D3DX_PI);
+
+			if (pMotion->GetType() != MOTIONTYPE_MOVE)
+			{
+				pMotion->Set(MOTIONTYPE_MOVE);
+			}
+		}
+		else
+		{//ついた
+			if (m_targetObj != NULL)
+			{
+				D3DXVECTOR3 targetPos = m_targetObj->GetPos();
+				float targetWidthHalf = m_targetObj->GetWidth() * 0.5f;
+				float targetDepthHalf = m_targetObj->GetDepth() * 0.5f;
+
+				if (targetPos.x - targetWidthHalf * 1.5f > pos.x || targetPos.x + targetWidthHalf * 1.5f < pos.x ||
+					targetPos.z - targetDepthHalf * 1.5f > pos.z || targetPos.z + targetDepthHalf * 1.5f < pos.z)
+				{//目的地ではない
+					Search();	//ポイント検索
+				}
+				else
+				{//ついた
+					switch (m_state)
+					{
+					case STATE_FACE:
+						m_state = STATE_ATTACK;
+						break;
+					case STATE_LEAVE:
+						Uninit();
+						return;
+						break;
+					}
+				}
 			}
 		}
 	}
@@ -585,6 +643,90 @@ void CPict::LoadPictParam(const char * pPath)
 {
 }
 
+//=================================
+//ポイント検索処理
+//=================================
+void CPict::Search(void)
+{
+	D3DXVECTOR3 vecTarget = m_targetObj->GetPos() - m_pos;
+	CPoint* pPointNear = NULL;
+	float fLenNear = 0.0f;
+	float fRadNear = 0.0f;
+	CPoint* pPoint = CPoint::GetTop();
+
+	while (pPoint != NULL)
+	{//リスト終了までやる
+		D3DXVECTOR3 vecPoint = pPoint->GetPos() - m_pos;
+		float fLength = D3DXVec3Length(&vecPoint);	//ポイントと現在地の距離
+		//ポイントと現在地の角度
+		float fRadius = fabsf(acosf(D3DXVec3Dot(&vecTarget, &(pPoint->GetPos() - m_pos)) / (D3DXVec3Length(&vecTarget) * D3DXVec3Length(&(pPoint->GetPos() - m_pos)))));
+		if (pPointNear == NULL && fLength > PICT_POINT_RESEARCH_LENGTH)
+		{//何も入っていない
+			pPointNear = pPoint;
+			fLenNear = fLength;
+			fRadNear = fRadius;
+		}
+		else if (fLength > PICT_POINT_RESEARCH_LENGTH && fRadNear > fRadius)
+		{//距離と角度が小さい
+			bool bCollision = false;
+			for (int cnt = 0; cnt < MAX_OBJ; cnt++)
+			{
+				CBuilding* pBuilding = CBuilding::GetBuilding(cnt);
+				if (pBuilding != NULL)
+				{
+					D3DXVECTOR3 pos = pBuilding->GetPos();
+					float fWidthHalf = pBuilding->GetWidth() * 0.5f;
+					float fDepthHalf = pBuilding->GetDepth() * 0.5f;
+
+					D3DXVECTOR3 posBuild[4];	//4頂点作る
+					posBuild[0] = pos + D3DXVECTOR3(-fWidthHalf, 0.0f, -fDepthHalf);
+					posBuild[1] = pos + D3DXVECTOR3(fWidthHalf, 0.0f, -fDepthHalf);
+					posBuild[2] = pos + D3DXVECTOR3(-fWidthHalf, 0.0f, fDepthHalf);
+					posBuild[3] = pos + D3DXVECTOR3(fWidthHalf, 0.0f, fDepthHalf);
+
+					bool bPlus = false;
+					bool bMinus = false;	//プラスマイナスがあったかのフラッグ
+					for (int cntPos = 0; cntPos < 4; cntPos++)
+					{
+						if (TASUKIGAKE(vecPoint.x, vecPoint.z, posBuild[cntPos].x, posBuild[cntPos].z) > 0.0f)
+						{//プラス
+							bPlus = true;
+						}
+						else if (TASUKIGAKE(vecPoint.x, vecPoint.z, posBuild[cntPos].x, posBuild[cntPos].z) < 0.0f)
+						{//マイナス
+							bMinus = true;
+						}
+						else
+						{//ゼロなので当たっている（まぁ両方trueにすれば当たったことになるからいいよね）
+							bPlus = true;
+							bMinus = true;
+							break;	//もう当たったので終了
+						}
+					}
+
+					if (bPlus == true && bMinus == true)
+					{
+						bCollision = true;	//衝突した
+						break;
+					}
+				}
+			}
+			
+			if (bCollision == false)
+			{//当たってない
+				pPointNear = pPoint;
+				fLenNear = fLength;
+				fRadNear = fRadius;
+			}
+		}
+		
+		//次のポイントへ
+		pPoint = pPoint->GetNext();
+	}
+
+	m_PointPos = pPointNear->GetPos();	//新しい位置を入れる
+}
+
 //******************************************************
 //デストロイヤーピクトクラス
 //******************************************************
@@ -660,18 +802,46 @@ void CPictDestroyer::Uninit(void)
 //========================
 void CPictDestroyer::Update(void)
 {
-	D3DXVECTOR3 targetPos = VEC3_ZERO;
-	float targetWidthHalf = FLOAT_ZERO;
-	float targetDepthHalf = FLOAT_ZERO;
 	D3DXVECTOR3 pos = GetPos();
 	D3DXVECTOR3 rot = GetRot();
-	D3DXVECTOR3 move = GetMove();
 	CMotion* pMotion = GetMotion();
 
-	//XZのみ消す
-	move.x = FLOAT_ZERO;
-	move.z = FLOAT_ZERO;
+	if (GetState() == STATE_ATTACK)
+	{
+		D3DXVECTOR3 targetPos = GetTargetObj()->GetPos();
+		float fTargetLenWidth, fTargetLenDepth;
+		float fTargetRot;
 
+		fTargetLenWidth = targetPos.x - pos.x;
+		fTargetLenDepth = targetPos.z - pos.z;
+
+		fTargetRot = atan2f(fTargetLenWidth, fTargetLenDepth);
+		rot.y = FIX_ROT(fTargetRot + D3DX_PI);
+
+		m_nCounterDestruction++;
+
+		if (m_nCounterDestruction > PICT_ATTACK_TIME)
+		{
+			//弾発射
+			CBulletBillboard::Create(GetPos(), rot + D3DXVECTOR3(-0.3f * D3DX_PI, 0.0f, 0.0f), 10.0f, 10.0f, 3.0f, 1000, CObject::TYPE_PICT, this);
+
+			//破壊カウンターリセット
+			m_nCounterDestruction = INT_ZERO;
+		}
+
+		if (pMotion->GetType() != MOTIONTYPE_DESTROY)
+		{
+			pMotion->Set(MOTIONTYPE_DESTROY);
+		}
+	}
+	else
+	{
+		//破壊カウンターリセット
+		m_nCounterDestruction = INT_ZERO;
+	}
+	SetRot(rot);
+
+#if 0
 	if (m_pTargetBuilding != NULL)
 	{
 		if (CPict::IsControll() == false)
@@ -733,7 +903,7 @@ void CPictDestroyer::Update(void)
 	//値設定
 	SetRot(rot);
 	SetMove(move);
-
+#endif
 	//親処理
 	CPict::Update();
 }
@@ -870,7 +1040,7 @@ void CPictBlocker::Update(void)
 	D3DXVECTOR3 rot = GetRot();
 	D3DXVECTOR3 move = GetMove();
 	CMotion* pMotion = GetMotion();
-
+#if 0
 	if (m_pTargetPolice != NULL)
 	{
 		if (CPict::IsControll() == false)
@@ -928,7 +1098,7 @@ void CPictBlocker::Update(void)
 	//値設定
 	SetRot(rot);
 	SetMove(move);
-
+#endif
 	//親処理
 	CPict::Update();
 }
@@ -1081,7 +1251,7 @@ void CPictTaxi::Update(void)
 	{//働く
 		SetState(STATE_FACE);
 	}
-
+#if 0
 	//アジト帰還以外の処理
 	if (CPict::IsControll() == false)
 	{
@@ -1182,7 +1352,7 @@ void CPictTaxi::Update(void)
 	//値設定
 	SetRot(rot);
 	SetMove(move);
-
+#endif
 	//親処理
 	CPict::Update();
 }
@@ -1564,7 +1734,7 @@ void CPictPolice::Update(void)
 	D3DXVECTOR3 rot = GetRot();
 	D3DXVECTOR3 move = GetMove();
 	CMotion* pMotion = GetMotion();
-
+#if 0
 	if (CPict::IsControll() == false)
 	{
 		if (m_pTargetPict != NULL)
@@ -1683,7 +1853,7 @@ void CPictPolice::Update(void)
 	//値設定
 	SetRot(rot);
 	SetMove(move);
-
+#endif
 	//親処理
 	CPict::Update();
 }

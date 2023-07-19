@@ -138,25 +138,28 @@
     <ClCompile Include="file.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="shadow.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="meshField.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="button.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
     <ClCompile Include="Culc.cpp">
       <Filter>ソース ファイル\Core</Filter>
     </ClCompile>
-    <ClCompile Include="symbol.cpp">
-      <Filter>ソース ファイル</Filter>
+    <ClCompile Include="button.cpp">
+      <Filter>ソース ファイル\Derivation</Filter>
     </ClCompile>
-    <ClCompile Include="slider.cpp">
-      <Filter>ソース ファイル</Filter>
+    <ClCompile Include="meshField.cpp">
+      <Filter>ソース ファイル\Derivation</Filter>
     </ClCompile>
     <ClCompile Include="meshsky.cpp">
+      <Filter>ソース ファイル\Derivation</Filter>
+    </ClCompile>
+    <ClCompile Include="shadow.cpp">
+      <Filter>ソース ファイル\Derivation</Filter>
+    </ClCompile>
+    <ClCompile Include="slider.cpp">
+      <Filter>ソース ファイル\Derivation</Filter>
+    </ClCompile>
+    <ClCompile Include="symbol.cpp">
+      <Filter>ソース ファイル\Derivation</Filter>
+    </ClCompile>
+    <ClCompile Include="point.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
   </ItemGroup>
@@ -269,22 +272,25 @@
     <ClInclude Include="file.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="shadow.h">
-      <Filter>ヘッダー ファイル</Filter>
+    <ClInclude Include="button.h">
+      <Filter>ヘッダー ファイル\Derivation</Filter>
     </ClInclude>
     <ClInclude Include="meshField.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="button.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="symbol.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="slider.h">
-      <Filter>ヘッダー ファイル</Filter>
+      <Filter>ヘッダー ファイル\Derivation</Filter>
     </ClInclude>
     <ClInclude Include="meshsky.h">
+      <Filter>ヘッダー ファイル\Derivation</Filter>
+    </ClInclude>
+    <ClInclude Include="shadow.h">
+      <Filter>ヘッダー ファイル\Derivation</Filter>
+    </ClInclude>
+    <ClInclude Include="slider.h">
+      <Filter>ヘッダー ファイル\Derivation</Filter>
+    </ClInclude>
+    <ClInclude Include="symbol.h">
+      <Filter>ヘッダー ファイル\Derivation</Filter>
+    </ClInclude>
+    <ClInclude Include="point.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
   </ItemGroup>

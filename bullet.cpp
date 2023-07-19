@@ -261,7 +261,7 @@ CBulletBillboard::CBulletBillboard(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot,
 	m_nIdxTexture = -1;
 	m_move.x = sinf(FIX_ROT(rot.y + D3DX_PI)) * fSpeed;
 	m_move.y = sinf(FIX_ROT(rot.x + D3DX_PI)) * fSpeed;
-	m_move.z = -cosf(FIX_ROT(rot.y + D3DX_PI)) * fSpeed;
+	m_move.z = cosf(FIX_ROT(rot.y + D3DX_PI)) * fSpeed;
 	m_nPower = nPower;
 	m_pfirePict = firePict;
 	CObject::SetType(TYPE_BULLET);

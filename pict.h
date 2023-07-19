@@ -87,8 +87,10 @@ public:
 	CCollision GetCollision(void) { return m_collision; }
 	STATE GetState(void) { return m_state; }
 	int GetLife(void) { return m_nLife; }
+	static CObject* GetAgit(void) { return m_pAgitObj; }
 	static D3DXVECTOR3 GetAgitPos(void) { return m_pAgitObj->GetPos(); }
 	static PictParam GetPictParam(int nLv) { return m_pictParam[nLv]; }
+	CObject* GetTargetObj(void) { return m_targetObj; }
 	
 
 	//設定
@@ -98,6 +100,8 @@ public:
 	void AddDamage(int nDamage);
 	void SetState(STATE state) { m_state = state; }
 	static void SetAgit(CObjectX* pAgit) { m_pAgitObj = pAgit; }
+	void SetTargetObj(CObject* pObj) { m_targetObj = pObj; }
+	void UnsetTargetObj(void) { m_targetObj = GetAgit(); m_state = STATE_LEAVE; }
 
 	//当たり判定
 	//void CollisionBlockX(D3DXVECTOR3* pPosNew);
@@ -117,6 +121,10 @@ public:
 	virtual void TakeTaxi(CPictTaxi* taxi) = 0;
 
 private:
+	//関数
+	void Search(void);
+
+	//変数
 	static CPict* m_apPict[MAX_OBJ];	//ピクトさんポインタ
 	static int m_nNumAll;				//ピクトさん総数
 	int m_nID;							//ピクトさんID
@@ -140,10 +148,13 @@ private:
 
 	static PictParam m_pictParam[PICT_MAX_LEVEL];	//ピクトのパラメータ
 
-	int m_nLife;							//体力
+	int m_nLife;						//体力
 	float m_fRedAlpha;					//赤くする割合
 	STATE m_state;						//状態
 	static CObjectX* m_pAgitObj;		//アジトのポインタ
+
+	CObject* m_targetObj;				//目的のオブジェ
+	D3DXVECTOR3 m_PointPos;				//目的ポイントの位置
 };
 
 //デストロイヤーピクトクラス

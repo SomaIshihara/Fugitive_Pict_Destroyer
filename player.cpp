@@ -135,7 +135,8 @@ void CPlayer::Attack(void)
 	{//Œš•¨‚ª‘I‘ð‚³‚ê‚Ä‚¢‚é
 		//CPictDestroyer::GetPict(0)->SetTarget(m_pSelectBuilding);
 		CPictDestroyer* pict = CPictDestroyer::Create(CPict::GetAgitPos());
-		pict->SetTarget(m_pSelectBuilding);
+		pict->SetTargetObj((CObject*)m_pSelectBuilding);
+		//pict->SetTarget(m_pSelectBuilding);
 		pict->SetState(CPict::STATE_FACE);
 	}
 	else if (m_pSelectPict != NULL)

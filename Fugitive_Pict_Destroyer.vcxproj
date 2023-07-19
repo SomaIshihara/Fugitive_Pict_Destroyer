@@ -189,6 +189,7 @@
     <ClCompile Include="particle.cpp" />
     <ClCompile Include="pict.cpp" />
     <ClCompile Include="player.cpp" />
+    <ClCompile Include="point.cpp" />
     <ClCompile Include="precompile.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">precompile.h</PrecompiledHeaderFile>
@@ -237,6 +238,7 @@
     <ClInclude Include="particle.h" />
     <ClInclude Include="pict.h" />
     <ClInclude Include="player.h" />
+    <ClInclude Include="point.h" />
     <ClInclude Include="precompile.h" />
     <ClInclude Include="renderer.h" />
     <ClInclude Include="score.h" />
