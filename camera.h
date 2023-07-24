@@ -7,6 +7,9 @@
 #ifndef _CAMERA_H_
 #define _CAMERA_H_
 
+#define CAMERA_MOVE_SPEED		(10.0f)		//カメラ移動速度
+#define CAMERA_MOU_ROT_SPEED	(0.0012f)	//マウス移動での回転速度
+
 //クラス化したものがこちらです
 class CCamera
 {

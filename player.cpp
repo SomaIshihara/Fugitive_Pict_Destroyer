@@ -6,6 +6,7 @@
 //======================================================
 #include "player.h"
 #include "manager.h"
+#include "game.h"
 #include "renderer.h"
 #include "debugproc.h"
 #include "object.h"
@@ -17,8 +18,6 @@
 #include "button.h"
 #include "slider.h"
 
-#define CAMERA_MOVE_SPEED		(10.0f)		//カメラ移動速度
-#define CAMERA_MOU_ROT_SPEED	(0.0012f)	//マウス移動での回転速度
 #define PICT_MOVE_LENGTH		(1000.0f)	//ピクトさん移動処理選択半径
 
 //=================================
@@ -96,13 +95,13 @@ void CPlayer::Update(void)
 	}
 	if (pMouse->GetPress(MOUSE_CLICK_RIGHT) == true)
 	{//モード変更
-		CSlider* slider = CManager::GetSlider();
+		CSlider* slider = CGame::GetSlider();
 		slider->SetSelectIdx(slider->GetSelectIdx() - (pMouse->GetWheel() / 120));
 	}
 
 	//タクシーモード
 	CPictTaxi* pTaxi = CPictTaxi::GetPict(0);
-	int nIdxSlider = CManager::GetSlider()->GetSelectIdx();
+	int nIdxSlider = CGame::GetSlider()->GetSelectIdx();
 
 	//動けって言ってんのにタクシーいない
 	if (nIdxSlider != CPictTaxi::MODE_SABO && pTaxi == NULL)

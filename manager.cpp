@@ -13,30 +13,13 @@
 #include "light.h"
 #include "texture.h"
 #include "object.h"
-#include "object2D.h"
-#include "objectAnim2D.h"
-#include "player.h"
-#include "bg.h"
-#include "multiplebg.h"
-#include "bullet.h"
-#include "enemy.h"
-#include "explosion.h"
-#include "block.h"
-#include "item.h"
-#include "effect.h"
-#include "particle.h"
-#include "score.h"
-#include "timer.h"
-#include "object3D.h"
 #include "objectX.h"
-#include "building.h"
-#include "objectBillboard.h"
-#include "pict.h"
-#include "meshField.h"
-#include "button.h"
-#include "slider.h"
-#include "meshsky.h"
-#include "point.h"
+
+//シーン
+#include "title.h"
+#include "game.h"
+#include "result.h"
+#include "ranking.h"
 
 //マクロ
 #define FPS_SPEED	(500)	//FPS計測時間
@@ -50,14 +33,14 @@ CSound* CManager::m_pSound = NULL;
 CCamera* CManager::m_pCamera = NULL;
 CLight* CManager::m_pLight = NULL;
 CTexture* CManager::m_pTexture = NULL;
-CPlayer* CManager::m_pPlayer = NULL;
-CSlider* CManager::m_pSlider = NULL;
+CScene* CManager::m_pScene = NULL;
+
 int CManager::m_nFPS = 0;
 DWORD CManager::m_dwFrameCount = 0;
 
-//仮
-CMeshField* CManager::m_pMeshField = NULL;
-
+//************************************************
+//マネージャクラス
+//************************************************
 //=================================
 //コンストラクタ
 //=================================
@@ -86,7 +69,6 @@ HRESULT CManager::Init(HINSTANCE hInstance, HWND hWnd, BOOL bWindow)
 	m_pCamera = new CCamera;
 	m_pLight = new CLight;
 	m_pTexture = new CTexture;
-	m_pPlayer = new CPlayer;
 
 	//レンダラー初期化
 	if (FAILED(m_pRenderer->Init(hWnd, TRUE)))
@@ -133,12 +115,6 @@ HRESULT CManager::Init(HINSTANCE hInstance, HWND hWnd, BOOL bWindow)
 		return E_FAIL;
 	}
 
-	//プレイヤー初期化
-	if (FAILED(m_pPlayer->Init()))
-	{
-		return E_FAIL;
-	}
-
 	//3Dモデル読み込み
 	CObjectX::Load("data\\MODEL\\jobi.x");
 	CObjectX::Load("data\\MODEL\\zahyoukanban002.x");
@@ -146,35 +122,15 @@ HRESULT CManager::Init(HINSTANCE hInstance, HWND hWnd, BOOL bWindow)
 	CObjectX::Load("data\\MODEL\\hako.x");
 	CObjectX::Load("data\\MODEL\\Agit.x");
 
-	//建物パラメータ読み込み
-	CBuilding::LoadParam("data\\CSV\\BuildingParam.csv");
-
-	//オブジェクト生成+初期化
-	CScore::Create(D3DXVECTOR3(SCREEN_WIDTH - 24.0f, 32.0f, 0.0f), VEC3_ZERO, 40.0f, 64.0f);
-	CTimer::Create(D3DXVECTOR3(SCREEN_WIDTH * 0.5f + 24.0f, 32.0f, 0.0f), VEC3_ZERO, 48.0f, 72.0f);
-	m_pMeshField = CMeshField::Create(D3DXVECTOR3(-1280.0f, 0.0f, 1280.0f), VEC3_ZERO, 64.0f, 64.0f, 40, 40);
-	CBuilding* pTarget = CBuilding::Create(D3DXVECTOR3(64.0f, 0.0f, 580.0f), VEC3_ZERO, 0);
-	CBuilding::Create(D3DXVECTOR3(-440.0f,0.0f,-453.0f), VEC3_ZERO, 2);
-	//CPictPolice::Create(D3DXVECTOR3(-300.0f, 0.0f, 0.0f))->SetBuilding(pTarget);
-	CObjectX* pAgit = CObjectX::Create(VEC3_ZERO, VEC3_ZERO, 4);
-	CPict::SetAgit(pAgit);
-	m_pSlider = CSlider::Create(D3DXVECTOR3(100.0f, SCREEN_HEIGHT - 20.0f, 0.0f), 40.0f, 40.0f, 3);
-
-	//ポイント生成
-	CPoint::Update();
-
-	//CPictNormal::Create(D3DXVECTOR3(500.0f, 0.0f, 200.0f));
-	//CPictNormal::Create(D3DXVECTOR3(300.0f, 0.0f, 300.0f));
-	//CPictNormal::Create(D3DXVECTOR3(100.0f, 0.0f, 600.0f));
-
-	CMeshSky::Create(VEC3_ZERO, VEC3_ZERO, 10000.0f, 8, 8);
-
 	//FPS計測器初期化
 	m_nFPS = 0;
 	m_dwFrameCount = 0;
 
 	//サウンド流す
 	m_pSound->Play(CSound::SOUND_LABEL_BGM_TITLE);
+
+	//モード設定
+	SetMode(CScene::MODE_TITLE);
 
 	//できた
 	return S_OK;
@@ -190,14 +146,6 @@ void CManager::Uninit(void)
 
 	//オブジェクト終了+破棄
 	CObject::ReleaseAll();
-
-	//プレイヤー破棄
-	if (m_pPlayer != NULL)
-	{//プレイヤー終了
-		m_pPlayer->Uninit();
-		delete m_pPlayer;
-		m_pPlayer = NULL;
-	}
 
 	//テクスチャ破棄
 	if (m_pTexture != NULL)
@@ -274,7 +222,8 @@ void CManager::Update(void)
 	m_pRenderer->Update();
 	m_pCamera->Update();
 	m_pLight->Update();
-	m_pPlayer->Update();
+
+	m_pScene->Update();
 
 	//この時点で死亡フラグが立っているオブジェを殺す
 	CObject::Death();
@@ -290,8 +239,6 @@ void CManager::Update(void)
 	m_pDebProc->Print("Space:弾発射\n");
 	m_pDebProc->Print("[モデル・ピクトに向かって]マウス左クリック:選択\n");
 	m_pDebProc->Print("[Debug]F3:タイマー設定(120秒カウントダウン)\n");
-
-	m_pDebProc->Print("SLIDER_NUM = %d\n", m_pSlider->GetSelectIdx());
 }
 
 //=================================
@@ -309,6 +256,29 @@ void CManager::CheckFPS(DWORD dwCurrentTime, DWORD dwExecLastTime)
 {
 	m_nFPS = (m_dwFrameCount * 1000) / (dwCurrentTime - dwExecLastTime);
 	m_dwFrameCount = 0;
+}
+
+//=================================
+//モード設定
+//=================================
+void CManager::SetMode(CScene::MODE mode)
+{
+	//音止める
+	m_pSound->Stop();
+
+	//現在のモード破棄
+	if (m_pScene != NULL)
+	{//なんか入ってる
+		m_pScene->Uninit();
+		delete m_pScene;
+		m_pScene = NULL;
+	}
+
+	if (m_pScene == NULL)
+	{//ぬるぬる
+		//新モード生成
+		m_pScene = CScene::Create(mode);
+	}
 }
 
 #if 0
@@ -337,3 +307,63 @@ void CManager::ResetObj(void)
 	}
 }
 #endif
+
+//************************************************
+//シーン（抽象）クラス
+//************************************************
+//=================================
+//コンストラクタ
+//=================================
+CScene::CScene()
+{
+}
+
+//=================================
+//デストラクタ
+//=================================
+CScene::~CScene()
+{
+}
+
+//=================================
+//生成
+//=================================
+CScene* CScene::Create(MODE mode)
+{
+	CScene* pScene = NULL;
+
+	if (pScene == NULL)
+	{
+		//シーンの生成
+		switch (mode)
+		{
+		case MODE_TITLE:
+			pScene = new CTitle;
+			break;
+		case MODE_GAME:
+			pScene = new CGame;
+			break;
+		case MODE_RESULT:
+			pScene = new CResult;
+			break;
+		case MODE_RANKING:
+			pScene = new CRanking;
+			break;
+		default:	//んなもんはない
+			return NULL;
+			break;
+		}
+
+		//初期化
+		pScene->Init();
+
+		//モード入れとく
+		pScene->m_mode = mode;
+
+		return pScene;
+	}
+	else
+	{
+		return NULL;
+	}
+}

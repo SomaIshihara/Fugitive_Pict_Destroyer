@@ -8,6 +8,7 @@
 #include "debugproc.h"
 #include "model.h"
 #include "manager.h"
+#include "game.h"
 #include "renderer.h"
 #include "input.h"	//仮
 #include "camera.h"	//仮
@@ -230,48 +231,6 @@ void CPict::Update(void)
 	CInputKeyboard* pKeyboard = CManager::GetInputKeyboard();	//キーボード取得
 	D3DXVECTOR3 pos = m_pos;
 	CMotion* pMotion = GetMotion();
-
-	//ピクトさん全員知ってるアジトへの帰還
-#if 0
-	if (m_state == STATE_LEAVE)
-	{
-		if (CPict::IsControll() == false)
-		{
-			m_move.x = FLOAT_ZERO;
-			m_move.z = FLOAT_ZERO;
-			targetPos = m_pAgitObj->GetPos();
-			targetWidthHalf = m_pAgitObj->GetWidth() * 0.5f;
-			targetDepthHalf = m_pAgitObj->GetDepth() * 0.5f;
-
-			if (targetPos.x - targetWidthHalf - PICT_AGIT_STOP_LENGTH > pos.x || targetPos.x + targetWidthHalf + PICT_AGIT_STOP_LENGTH < pos.x ||
-				targetPos.z - targetDepthHalf - PICT_AGIT_STOP_LENGTH > pos.z || targetPos.z + targetDepthHalf + PICT_AGIT_STOP_LENGTH < pos.z)
-			{//移動中
-				float fTargetLenWidth, fTargetLenDepth;
-				float fTargetRot;
-
-				fTargetLenWidth = targetPos.x - pos.x;
-				fTargetLenDepth = targetPos.z - pos.z;
-
-				fTargetRot = atan2f(fTargetLenWidth, fTargetLenDepth);
-
-				m_move.x = sinf(fTargetRot) * PICT_WALK_SPEED;
-				m_move.z = cosf(fTargetRot) * PICT_WALK_SPEED;
-
-				m_rot.y = FIX_ROT(fTargetRot + D3DX_PI);
-
-				if (pMotion->GetType() != MOTIONTYPE_MOVE)
-				{
-					pMotion->Set(MOTIONTYPE_MOVE);
-				}
-			}
-			else
-			{//ついた
-				Uninit();
-				return;
-			}
-		}
-	}
-#endif
 
 	//ピクト共通:ポイント移動処理
 	if (CPict::IsControll() == false && m_state != STATE_ATTACK)
@@ -568,7 +527,7 @@ bool CPict::CollisionBlockY(D3DXVECTOR3* pPosNew)
 #endif
 
 	//高さ取得
-	float fLandHeight = CManager::GetMeshField()->GetHeight(*pPosNew);
+	float fLandHeight = CGame::GetMeshField()->GetHeight(*pPosNew);
 	if (pPosNew->y < fLandHeight)
 	{
 		pPosNew->y = fLandHeight;
@@ -841,69 +800,6 @@ void CPictDestroyer::Update(void)
 	}
 	SetRot(rot);
 
-#if 0
-	if (m_pTargetBuilding != NULL)
-	{
-		if (CPict::IsControll() == false)
-		{
-			move.x = FLOAT_ZERO;
-			move.z = FLOAT_ZERO;
-			targetPos = m_pTargetBuilding->GetPos();
-			targetWidthHalf = m_pTargetBuilding->GetWidth() * 0.5f;
-			targetDepthHalf = m_pTargetBuilding->GetDepth() * 0.5f;
-
-			if (targetPos.x - targetWidthHalf - PICT_BUIDING_STOP_LENGTH > pos.x || targetPos.x + targetWidthHalf + PICT_BUIDING_STOP_LENGTH < pos.x ||
-				targetPos.z - targetDepthHalf - PICT_BUIDING_STOP_LENGTH > pos.z || targetPos.z + targetDepthHalf + PICT_BUIDING_STOP_LENGTH < pos.z)
-			{//移動中
-				float fTargetLenWidth, fTargetLenDepth;
-				float fTargetRot;
-
-				fTargetLenWidth = targetPos.x - pos.x;
-				fTargetLenDepth = targetPos.z - pos.z;
-
-				fTargetRot = atan2f(fTargetLenWidth, fTargetLenDepth);
-
-				move.x = sinf(fTargetRot) * PICT_WALK_SPEED;
-				move.z = cosf(fTargetRot) * PICT_WALK_SPEED;
-
-				rot.y = FIX_ROT(fTargetRot + D3DX_PI);
-
-				if (pMotion->GetType() != MOTIONTYPE_MOVE)
-				{
-					pMotion->Set(MOTIONTYPE_MOVE);
-				}
-
-				//破壊カウンターリセット
-				m_nCounterDestruction = INT_ZERO;
-			}
-			else
-			{//ついた
-				//攻撃状態にする
-				SetState(STATE_ATTACK);
-
-				m_nCounterDestruction++;
-
-				if (m_nCounterDestruction > PICT_ATTACK_TIME)
-				{
-					//弾発射
-					CBulletBillboard::Create(GetPos(), D3DXVECTOR3(-0.3f * D3DX_PI,0.0f,0.0f), 10.0f, 10.0f, 3.0f, 1000, CObject::TYPE_PICT, this);
-
-					//破壊カウンターリセット
-					m_nCounterDestruction = INT_ZERO;
-				}
-
-				if (pMotion->GetType() != MOTIONTYPE_DESTROY)
-				{
-					pMotion->Set(MOTIONTYPE_DESTROY);
-				}
-			}
-		}
-	}
-
-	//値設定
-	SetRot(rot);
-	SetMove(move);
-#endif
 	//親処理
 	CPict::Update();
 }
@@ -1033,72 +929,44 @@ void CPictBlocker::Uninit(void)
 //========================
 void CPictBlocker::Update(void)
 {
-	D3DXVECTOR3 targetPos = VEC3_ZERO;
-	float targetWidthHalf = FLOAT_ZERO;
-	float targetDepthHalf = FLOAT_ZERO;
 	D3DXVECTOR3 pos = GetPos();
 	D3DXVECTOR3 rot = GetRot();
-	D3DXVECTOR3 move = GetMove();
 	CMotion* pMotion = GetMotion();
-#if 0
-	if (m_pTargetPolice != NULL)
+
+	if (GetState() == STATE_ATTACK)
 	{
-		if (CPict::IsControll() == false)
+		D3DXVECTOR3 targetPos = GetTargetObj()->GetPos();
+		float fTargetLenWidth, fTargetLenDepth;
+		float fTargetRot;
+
+		fTargetLenWidth = targetPos.x - pos.x;
+		fTargetLenDepth = targetPos.z - pos.z;
+
+		fTargetRot = atan2f(fTargetLenWidth, fTargetLenDepth);
+		rot.y = FIX_ROT(fTargetRot + D3DX_PI);
+
+		m_nCounterAttack++;
+		if (m_nCounterAttack > PICT_ATTACK_TIME)
 		{
-			move.x = FLOAT_ZERO;
-			move.z = FLOAT_ZERO;
-			targetPos = m_pTargetPolice->GetPos();
-			targetWidthHalf = m_pTargetPolice->GetWidth() * 0.5f;
-			targetDepthHalf = m_pTargetPolice->GetDepth() * 0.5f;
+			//弾発射
+			CBulletBillboard::Create(GetPos() + D3DXVECTOR3(0.0f, 10.0f, 0.0f), GetRot() + D3DXVECTOR3(0.0f, D3DX_PI, 0.0f), 10.0f, 10.0f, 10.0f, 100, TYPE_PICT, this);
 
-			if (targetPos.x - targetWidthHalf - PICT_POLICE_STOP_LENGTH > pos.x || targetPos.x + targetWidthHalf + PICT_POLICE_STOP_LENGTH < pos.x ||
-				targetPos.z - targetDepthHalf - PICT_POLICE_STOP_LENGTH > pos.z || targetPos.z + targetDepthHalf + PICT_POLICE_STOP_LENGTH < pos.z)
-			{
-				float fTargetLenWidth, fTargetLenDepth;
-				float fTargetRot;
+			//攻撃カウンターリセット
+			m_nCounterAttack = INT_ZERO;
+		}
 
-				fTargetLenWidth = targetPos.x - pos.x;
-				fTargetLenDepth = targetPos.z - pos.z;
-
-				fTargetRot = atan2f(fTargetLenWidth, fTargetLenDepth);
-
-				move.x = sinf(fTargetRot) * PICT_WALK_SPEED;
-				move.z = cosf(fTargetRot) * PICT_WALK_SPEED;
-
-				rot.y = FIX_ROT(fTargetRot + D3DX_PI);
-
-				if (pMotion->GetType() != MOTIONTYPE_MOVE)
-				{
-					pMotion->Set(MOTIONTYPE_MOVE);
-				}
-
-				//攻撃カウンターリセット
-				m_nCounterAttack = INT_ZERO;
-			}
-			else
-			{
-				m_nCounterAttack++;
-				if (m_nCounterAttack > PICT_ATTACK_TIME)
-				{
-					//弾発射
-					CBulletBillboard::Create(GetPos() + D3DXVECTOR3(0.0f,10.0f,0.0f), GetRot() + D3DXVECTOR3(0.0f,D3DX_PI,0.0f), 10.0f, 10.0f, 10.0f, 100, TYPE_PICT, this);
-
-					//攻撃カウンターリセット
-					m_nCounterAttack = INT_ZERO;
-				}
-
-				if (pMotion->GetType() != MOTIONTYPE_ATTACK)
-				{
-					pMotion->Set(MOTIONTYPE_ATTACK);
-				}
-			}
+		if (pMotion->GetType() != MOTIONTYPE_ATTACK)
+		{
+			pMotion->Set(MOTIONTYPE_ATTACK);
 		}
 	}
-
-	//値設定
+	else
+	{
+		//攻撃カウンターリセット
+		m_nCounterAttack = INT_ZERO;
+	}
 	SetRot(rot);
-	SetMove(move);
-#endif
+
 	//親処理
 	CPict::Update();
 }
@@ -1209,7 +1077,7 @@ CPictTaxi::~CPictTaxi()
 HRESULT CPictTaxi::Init(void)
 {
 	//設定されていたモードを取得
-	m_mode = (MODE)CManager::GetSlider()->GetSelectIdx();
+	m_mode = (MODE)CGame::GetSlider()->GetSelectIdx();
 	
 	//親処理
 	CPict::Init();
@@ -1252,98 +1120,94 @@ void CPictTaxi::Update(void)
 		SetState(STATE_FACE);
 	}
 #if 0
-	//アジト帰還以外の処理
-	if (CPict::IsControll() == false)
-	{
-		if (GetState() != STATE_LEAVE)
-		{//帰還しない
-			if (m_mode == MODE_PICK)
-			{//収集
-				//ターゲット外れていたら探索
-				if (m_ptargetPict == NULL /* && pBulletObj == NULL*/)
+	if (GetState() != STATE_LEAVE)
+	{//帰還しない
+		if (m_mode == MODE_PICK)
+		{//収集
+		 //ターゲット外れていたら探索
+			if (m_ptargetPict == NULL /* && pBulletObj == NULL*/)
+			{
+				SearchBullet();
+				m_ptargetPict = SearchNormal();
+
+				//ここに弾とピクトの距離測って比較する処理
+			}
+
+			if (m_ptargetPict != NULL)
+			{
+				targetPos = m_ptargetPict->GetPos();
+				targetWidthHalf = m_ptargetPict->GetWidth() * 0.5f;
+				targetDepthHalf = m_ptargetPict->GetDepth() * 0.5f;
+
+				if (targetPos.x - targetWidthHalf - PICT_POLICE_STOP_LENGTH > pos.x || targetPos.x + targetWidthHalf + PICT_POLICE_STOP_LENGTH < pos.x ||
+					targetPos.z - targetDepthHalf - PICT_POLICE_STOP_LENGTH > pos.z || targetPos.z + targetDepthHalf + PICT_POLICE_STOP_LENGTH < pos.z)
 				{
-					SearchBullet();
-					m_ptargetPict = SearchNormal();
+					float fTargetLenWidth, fTargetLenDepth;
+					float fTargetRot;
 
-					//ここに弾とピクトの距離測って比較する処理
-				}
+					fTargetLenWidth = targetPos.x - pos.x;
+					fTargetLenDepth = targetPos.z - pos.z;
 
-				if (m_ptargetPict != NULL)
-				{
-					targetPos = m_ptargetPict->GetPos();
-					targetWidthHalf = m_ptargetPict->GetWidth() * 0.5f;
-					targetDepthHalf = m_ptargetPict->GetDepth() * 0.5f;
+					fTargetRot = atan2f(fTargetLenWidth, fTargetLenDepth);
 
-					if (targetPos.x - targetWidthHalf - PICT_POLICE_STOP_LENGTH > pos.x || targetPos.x + targetWidthHalf + PICT_POLICE_STOP_LENGTH < pos.x ||
-						targetPos.z - targetDepthHalf - PICT_POLICE_STOP_LENGTH > pos.z || targetPos.z + targetDepthHalf + PICT_POLICE_STOP_LENGTH < pos.z)
+					move.x = sinf(fTargetRot) * PICT_WALK_SPEED;
+					move.z = cosf(fTargetRot) * PICT_WALK_SPEED;
+
+					rot.y = FIX_ROT(fTargetRot + D3DX_PI);
+
+					if (pMotion->GetType() != MOTIONTYPE_MOVE)
 					{
-						float fTargetLenWidth, fTargetLenDepth;
-						float fTargetRot;
-
-						fTargetLenWidth = targetPos.x - pos.x;
-						fTargetLenDepth = targetPos.z - pos.z;
-
-						fTargetRot = atan2f(fTargetLenWidth, fTargetLenDepth);
-
-						move.x = sinf(fTargetRot) * PICT_WALK_SPEED;
-						move.z = cosf(fTargetRot) * PICT_WALK_SPEED;
-
-						rot.y = FIX_ROT(fTargetRot + D3DX_PI);
-
-						if (pMotion->GetType() != MOTIONTYPE_MOVE)
-						{
-							pMotion->Set(MOTIONTYPE_MOVE);
-						}
+						pMotion->Set(MOTIONTYPE_MOVE);
 					}
-					else
-					{//到着
-						m_ptargetPict->TakeTaxi(this);
-						m_ptargetPict->Uninit();
-						m_ptargetPict = NULL;
-					}
+				}
+				else
+				{//到着
+					m_ptargetPict->TakeTaxi(this);
+					m_ptargetPict->Uninit();
+					m_ptargetPict = NULL;
 				}
 			}
-			else if (m_mode == MODE_RESCUE)
-			{//救助
-			 //ターゲット外れていたら探索
-				if (m_ptargetPict == NULL)
-				{
-					m_ptargetPict = SearchBattler();
-				}
+		}
+		else if (m_mode == MODE_RESCUE)
+		{//救助
+		 //ターゲット外れていたら探索
+			if (m_ptargetPict == NULL)
+			{
+				m_ptargetPict = SearchBattler();
+			}
 
-				if (m_ptargetPict != NULL)
-				{
-					targetPos = m_ptargetPict->GetPos();
-					targetWidthHalf = m_ptargetPict->GetWidth() * 0.5f;
-					targetDepthHalf = m_ptargetPict->GetDepth() * 0.5f;
+			if (m_ptargetPict != NULL)
+			{
+				targetPos = m_ptargetPict->GetPos();
+				targetWidthHalf = m_ptargetPict->GetWidth() * 0.5f;
+				targetDepthHalf = m_ptargetPict->GetDepth() * 0.5f;
 
-					if (targetPos.x - targetWidthHalf - PICT_POLICE_STOP_LENGTH > pos.x || targetPos.x + targetWidthHalf + PICT_POLICE_STOP_LENGTH < pos.x ||
-						targetPos.z - targetDepthHalf - PICT_POLICE_STOP_LENGTH > pos.z || targetPos.z + targetDepthHalf + PICT_POLICE_STOP_LENGTH < pos.z)
+				if (targetPos.x - targetWidthHalf - PICT_POLICE_STOP_LENGTH > pos.x || targetPos.x + targetWidthHalf + PICT_POLICE_STOP_LENGTH < pos.x ||
+					targetPos.z - targetDepthHalf - PICT_POLICE_STOP_LENGTH > pos.z || targetPos.z + targetDepthHalf + PICT_POLICE_STOP_LENGTH < pos.z)
+				{
+					float fTargetLenWidth, fTargetLenDepth;
+					float fTargetRot;
+
+					fTargetLenWidth = targetPos.x - pos.x;
+					fTargetLenDepth = targetPos.z - pos.z;
+
+					fTargetRot = atan2f(fTargetLenWidth, fTargetLenDepth);
+
+					move.x = sinf(fTargetRot) * PICT_WALK_SPEED;
+					move.z = cosf(fTargetRot) * PICT_WALK_SPEED;
+
+					rot.y = FIX_ROT(fTargetRot + D3DX_PI);
+
+					if (pMotion->GetType() != MOTIONTYPE_MOVE)
 					{
-						float fTargetLenWidth, fTargetLenDepth;
-						float fTargetRot;
-
-						fTargetLenWidth = targetPos.x - pos.x;
-						fTargetLenDepth = targetPos.z - pos.z;
-
-						fTargetRot = atan2f(fTargetLenWidth, fTargetLenDepth);
-
-						move.x = sinf(fTargetRot) * PICT_WALK_SPEED;
-						move.z = cosf(fTargetRot) * PICT_WALK_SPEED;
-
-						rot.y = FIX_ROT(fTargetRot + D3DX_PI);
-
-						if (pMotion->GetType() != MOTIONTYPE_MOVE)
-						{
-							pMotion->Set(MOTIONTYPE_MOVE);
-						}
+						pMotion->Set(MOTIONTYPE_MOVE);
 					}
-					else
-					{//到着
-						m_ptargetPict->TakeTaxi(this);
-						m_ptargetPict->Uninit();
-						m_ptargetPict = NULL;
-					}
+				}
+				else
+				{//到着
+					m_ptargetPict->TakeTaxi(this);
+					m_ptargetPict->Uninit();
+					m_ptargetPict = NULL;
 				}
 			}
 		}
