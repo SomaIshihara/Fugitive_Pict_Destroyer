@@ -14,6 +14,7 @@
 #include "texture.h"
 #include "object.h"
 #include "objectX.h"
+#include "item.h"
 
 //ÉVÅ[Éì
 #include "title.h"
@@ -121,6 +122,7 @@ HRESULT CManager::Init(HINSTANCE hInstance, HWND hWnd, BOOL bWindow)
 	CObjectX::Load("data\\MODEL\\DoshinBill_01.x");
 	CObjectX::Load("data\\MODEL\\hako.x");
 	CObjectX::Load("data\\MODEL\\Agit.x");
+	CItemBullet::SetModelNum(CObjectX::Load("data\\MODEL\\BulletBox.x"));
 
 	//FPSåvë™äÌèâä˙âª
 	m_nFPS = 0;

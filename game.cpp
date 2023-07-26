@@ -41,6 +41,7 @@ CGame::~CGame()
 //=================================
 HRESULT CGame::Init(void)
 {
+	m_pSlider = CSlider::Create(D3DXVECTOR3(100.0f, SCREEN_HEIGHT - 20.0f, 0.0f), 40.0f, 40.0f, 3);
 	m_pPlayer = new CPlayer;
 
 	//プレイヤー初期化
@@ -51,7 +52,6 @@ HRESULT CGame::Init(void)
 
 	//仮オブジェ生成
 	m_pMeshField = CMeshField::Create(D3DXVECTOR3(-1280.0f, 0.0f, 1280.0f), VEC3_ZERO, 64.0f, 64.0f, 40, 40);
-	m_pSlider = CSlider::Create(D3DXVECTOR3(100.0f, SCREEN_HEIGHT - 20.0f, 0.0f), 40.0f, 40.0f, 3);
 
 	//建物パラメータ読み込み
 	CBuilding::LoadParam("data\\CSV\\BuildingParam.csv");
@@ -64,6 +64,9 @@ HRESULT CGame::Init(void)
 	CObjectX* pAgit = CObjectX::Create(VEC3_ZERO, VEC3_ZERO, 4);
 	CPict::SetAgit(pAgit);
 	CMeshSky::Create(VEC3_ZERO, VEC3_ZERO, 10000.0f, 8, 8);
+
+	//仮
+	CPictPolice::Create(D3DXVECTOR3(-200.0f, 0.0f, 50.0f))->SetTargetObj(CBuilding::GetBuilding(0));
 
 	//ポイント生成
 	CPoint::Update();

@@ -8,8 +8,6 @@
 #include "manager.h"
 #include "game.h"
 #include "renderer.h"
-#include "debugproc.h"
-#include "object.h"
 #include "input.h"
 #include "camera.h"
 #include "objectX.h"
@@ -18,14 +16,11 @@
 #include "button.h"
 #include "slider.h"
 
-#define PICT_MOVE_LENGTH		(1000.0f)	//ピクトさん移動処理選択半径
-
 //=================================
 //コンストラクタ
 //=================================
 CPlayer::CPlayer()
 {
-	m_nChacePictNum = -1;
 	m_bControllPict = false;
 
 	m_nHaveDestroyer = INT_ZERO;
@@ -47,8 +42,10 @@ CPlayer::~CPlayer()
 //=================================
 HRESULT CPlayer::Init(void)
 {
-	m_nChacePictNum = -1;
 	m_bControllPict = false;
+
+	//スライダー初期設定
+	CGame::GetSlider()->SetSelectIdx(CPictTaxi::MODE_SABO);
 
 	//仮：人数設定
 	m_nHaveDestroyer = 1;
@@ -113,16 +110,6 @@ void CPlayer::Update(void)
 	{//タクシーいる
 		pTaxi->SetMode((CPictTaxi::MODE)nIdxSlider);
 	}
-
-	//デバッグ
-	if (m_pSelectBuilding != NULL)
-	{
-		CManager::GetDebProc()->Print("[BUILDING]\n");
-	}
-	if (m_pSelectPict != NULL)
-	{
-		CManager::GetDebProc()->Print("[PICT]\n");
-	}
 }
 
 //=================================
@@ -132,10 +119,8 @@ void CPlayer::Attack(void)
 {
 	if (m_pSelectBuilding != NULL)
 	{//建物が選択されている
-		//CPictDestroyer::GetPict(0)->SetTarget(m_pSelectBuilding);
 		CPictDestroyer* pict = CPictDestroyer::Create(CPict::GetAgitPos());
 		pict->SetTargetObj((CObject*)m_pSelectBuilding);
-		//pict->SetTarget(m_pSelectBuilding);
 		pict->SetState(CPict::STATE_FACE);
 	}
 	else if (m_pSelectPict != NULL)
@@ -147,7 +132,7 @@ void CPlayer::Attack(void)
 
 			if (m_pSelectPict == pPict)
 			{//選択しているピクトさんと警察リストのポインタが一致
-				CPictBlocker::Create(CPict::GetAgitPos())->SetTarget(pPict);
+				CPictBlocker::Create(CPict::GetAgitPos())->SetTargetObj(pPict);
 			}
 		}
 	}
@@ -198,10 +183,6 @@ void CPlayer::Move(void)
 	if (m_bControllPict == true)
 	{//操縦設定
 		CPict::GetPict(0)->Controll(move);
-	}
-	else if (m_nChacePictNum != -1)
-	{//追従設定
-		move = CPict::GetPict(m_nChacePictNum)->GetMove();
 	}
 
 	//移動

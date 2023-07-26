@@ -9,6 +9,16 @@
 #include "texture.h"
 #include "item.h"
 
+//マクロ
+#define ITEMBULLET_MIN		(20)	//アイテム最低個数
+#define ITEMBULLET_DEGREE	(80)	//振れ幅
+
+//静的メンバ変数
+int CItemBullet::m_nModelNum = -1;
+
+//************************************************
+//[未使用]2Dアイテムクラス
+//************************************************
 //=================================
 //コンストラクタ（デフォルト）
 //=================================
@@ -89,6 +99,92 @@ CItem* CItem::Create(const D3DXVECTOR3 pos, const float fWidth, const float fHei
 
 		//テクスチャ設定
 		pItem->BindTexture(pItem->m_nIdxTexture);
+
+		return pItem;
+	}
+	else
+	{
+		return NULL;
+	}
+}
+
+//************************************************
+//アイテム弾クラス
+//************************************************
+//=================================
+//コンストラクタ（デフォルト）
+//=================================
+CItemBullet::CItemBullet()
+{
+	//値クリア
+	m_nBulletNum = INT_ZERO;
+}
+
+//=================================
+//コンストラクタ（オーバーロード 位置幅高さ）
+//=================================
+CItemBullet::CItemBullet(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot) : CObjectX(pos, rot, m_nModelNum)
+{
+	//値クリア
+	m_nBulletNum = INT_ZERO;
+}
+
+//=================================
+//デストラクタ
+//=================================
+CItemBullet::~CItemBullet()
+{
+}
+
+//=================================
+//初期化
+//=================================
+HRESULT CItemBullet::Init(void)
+{
+	SetType(TYPE_ITEM);	//タイプ設定
+	m_nBulletNum = rand() % (ITEMBULLET_DEGREE + 1) + ITEMBULLET_MIN;	//弾数設定
+
+	return CObjectX::Init();
+}
+
+//=================================
+//終了
+//=================================
+void CItemBullet::Uninit(void)
+{
+	CObjectX::Uninit();
+}
+
+//=================================
+//更新
+//=================================
+void CItemBullet::Update(void)
+{
+	CObjectX::Update();
+}
+
+//=================================
+//描画
+//=================================
+void CItemBullet::Draw(void)
+{
+	CObjectX::Draw();
+}
+
+//=================================
+//生成処理
+//=================================
+CItemBullet* CItemBullet::Create(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot)
+{
+	CItemBullet* pItem = NULL;
+
+	if (pItem == NULL)
+	{
+		//オブジェクトアニメーション2Dの生成
+		pItem = new CItemBullet(pos, rot);
+
+		//初期化
+		pItem->Init();
 
 		return pItem;
 	}

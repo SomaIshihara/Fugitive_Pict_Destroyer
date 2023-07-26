@@ -27,10 +27,6 @@ public:
 	void Uninit(void);
 	void Update(void);
 
-	//追従設定
-	void Chace(int nPictNum) { m_nChacePictNum = nPictNum; }
-	void Unchace(void) { m_nChacePictNum = -1; }
-
 	//攻撃処理
 	void Attack(void);
 
@@ -46,7 +42,6 @@ private:
 	//変数
 	CButton2D* m_pButtonATK;		//攻撃ボタン
 
-	int m_nChacePictNum;			//追従するピクトさんの番号
 	bool m_bControllPict;			//ピクトさんを操縦するかどうか
 	CBuilding* m_pSelectBuilding;	//選択中の建物
 	CPict* m_pSelectPict;			//選択中のピクトさん

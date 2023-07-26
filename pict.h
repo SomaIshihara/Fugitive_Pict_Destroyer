@@ -66,7 +66,7 @@ public:
 
 	//コンストラクタ・デストラクタ
 	CPict();
-	CPict(const D3DXVECTOR3 pos);
+	CPict(const D3DXVECTOR3 pos, const TYPE type);
 	virtual ~CPict();
 
 	//基本処理
@@ -87,13 +87,13 @@ public:
 	CMotion* GetMotion(void) { return m_pMotion; }
 	CCollision GetCollision(void) { return m_collision; }
 	STATE GetState(void) { return m_state; }
+	TYPE GetType(void) { return m_type; }
 	int GetLife(void) { return m_nLife; }
 	static CObject* GetAgit(void) { return m_pAgitObj; }
 	static D3DXVECTOR3 GetAgitPos(void) { return m_pAgitObj->GetPos(); }
 	static PictParam GetPictParam(int nLv) { return m_pictParam[nLv]; }
 	CObject* GetTargetObj(void) { return m_targetObj; }
 	
-
 	//設定
 	void SetPos(D3DXVECTOR3 pos) { m_pos = pos; }
 	void SetRot(D3DXVECTOR3 rot) { m_rot = rot; }
@@ -105,9 +105,7 @@ public:
 	void UnsetTargetObj(void) { m_targetObj = GetAgit(); m_state = STATE_LEAVE; }
 
 	//当たり判定
-	//void CollisionBlockX(D3DXVECTOR3* pPosNew);
-	bool CollisionBlockY(D3DXVECTOR3* pPosNew);
-	//void CollisionBlockZ(D3DXVECTOR3* pPosNew);
+	bool CollisionField(D3DXVECTOR3* pPosNew);
 
 	//ピクト操縦
 	void SetControll(void) { m_bControll = true; }
@@ -152,6 +150,8 @@ private:
 	int m_nLife;						//体力
 	float m_fRedAlpha;					//赤くする割合
 	STATE m_state;						//状態
+	TYPE m_type;						//ピクト種類
+
 	static CObjectX* m_pAgitObj;		//アジトのポインタ
 
 	CObject* m_targetObj;				//目的のオブジェ
@@ -170,7 +170,7 @@ public:
 
 	//コンストラクタ・デストラクタ
 	CPictDestroyer();
-	CPictDestroyer(const D3DXVECTOR3 pos);
+	CPictDestroyer(const D3DXVECTOR3 pos, const TYPE type = TYPE_DESTROYER);
 	~CPictDestroyer();
 
 	//基本処理
@@ -183,12 +183,7 @@ public:
 	static CPictDestroyer* Create(const D3DXVECTOR3 pos);
 
 	//取得
-	CBuilding* GetTarget(void) { return m_pTargetBuilding; }
 	static CPictDestroyer* GetPict(int nID) { return m_apPict[nID]; }
-
-	//設定
-	void SetTarget(CBuilding* target) { m_pTargetBuilding = target; }
-	void UnsetTarget(void);
 
 	//乗車
 	void TakeTaxi(CPictTaxi* taxi);
@@ -197,7 +192,6 @@ private:
 	static CPictDestroyer* m_apPict[MAX_OBJ];	//ピクトさんポインタ
 	static int m_nNumAll;				//ピクトさん総数
 	int m_nID;							//ピクトさんID
-	CBuilding* m_pTargetBuilding;		//目的地
 	int m_nCounterDestruction;			//破壊カウンター
 
 	static int m_nLevel;				//レベル
@@ -216,7 +210,7 @@ public:
 
 	//コンストラクタ・デストラクタ
 	CPictBlocker();
-	CPictBlocker(const D3DXVECTOR3 pos);
+	CPictBlocker(const D3DXVECTOR3 pos, const TYPE type = TYPE_BLOCKER);
 	~CPictBlocker();
 
 	//基本処理
@@ -229,12 +223,7 @@ public:
 	static CPictBlocker* Create(const D3DXVECTOR3 pos);
 
 	//取得
-	CPictPolice* GetTarget(void) { return m_pTargetPolice; }
 	static CPictBlocker* GetPict(int nID) { return m_apPict[nID]; }
-
-	//設定
-	void SetTarget(CPictPolice* target) { m_pTargetPolice = target; }
-	void UnsetTarget(void);
 
 	//乗車
 	void TakeTaxi(CPictTaxi* taxi);
@@ -245,7 +234,6 @@ private:
 	int m_nID;							//ピクトさんID
 
 	int m_nCounterAttack;				//攻撃カウンター
-	CPictPolice* m_pTargetPolice;		//ターゲット警察
 
 	static int m_nLevel;				//レベル
 	static int m_nExp;					//経験値
@@ -266,7 +254,7 @@ public:
 
 	//コンストラクタ・デストラクタ
 	CPictTaxi();
-	CPictTaxi(const D3DXVECTOR3 pos);
+	CPictTaxi(const D3DXVECTOR3 pos, const TYPE type = TYPE_TAXI);
 	~CPictTaxi();
 
 	//基本処理
@@ -286,7 +274,7 @@ public:
 
 	//設定
 	void SetMode(const MODE mode) { m_mode = mode; }
-	void UnsetTarget(void) { m_ptargetPict = NULL; }
+	void UnsetTargetPict(void) { m_ptargetPict = NULL; }
 
 	//乗車
 	void TakeTaxi(CPictTaxi* taxi) {};
@@ -325,7 +313,7 @@ public:
 
 	//コンストラクタ・デストラクタ
 	CPictNormal();
-	CPictNormal(const D3DXVECTOR3 pos);
+	CPictNormal(const D3DXVECTOR3 pos, const TYPE type = TYPE_NORMAL);
 	~CPictNormal();
 
 	//基本処理
@@ -361,7 +349,7 @@ public:
 
 	//コンストラクタ・デストラクタ
 	CPictPolice();
-	CPictPolice(const D3DXVECTOR3 pos);
+	CPictPolice(const D3DXVECTOR3 pos, const TYPE type = TYPE_POLICE);
 	~CPictPolice();
 
 	//基本処理

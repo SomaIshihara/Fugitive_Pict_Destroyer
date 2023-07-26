@@ -90,12 +90,13 @@ CPict::CPict()
 	m_nLife = INT_ZERO;
 	m_fRedAlpha = FLOAT_ZERO;
 	m_state = STATE_MAX;
+	m_type = TYPE_MAX;
 }
 
 //=================================
 //コンストラクタ（オーバーロード）
 //=================================
-CPict::CPict(const D3DXVECTOR3 pos)
+CPict::CPict(const D3DXVECTOR3 pos, const TYPE type)
 {
 	for (int cnt = 0; cnt < MAX_OBJ; cnt++)
 	{//すべて確認
@@ -120,6 +121,7 @@ CPict::CPict(const D3DXVECTOR3 pos)
 	m_nLife = INT_ZERO;
 	m_fRedAlpha = FLOAT_ZERO;
 	m_state = STATE_MAX;
+	m_type = type;
 }
 
 //=================================
@@ -160,6 +162,9 @@ HRESULT CPict::Init(void)
 	m_nCounterJumpTime = 0;
 	m_bJump = false;
 
+	//状態設定
+	m_state = STATE_FACE;
+
 	//操縦しない設定
 	m_bControll = false;
 
@@ -193,7 +198,7 @@ void CPict::Uninit(void)
 
 		if (pPict != NULL)	//ヌルチェ
 		{//なんかある
-			pPict->UnsetTarget();	//ターゲット解除
+			pPict->UnsetTargetPict();	//ターゲット解除
 		}
 	}
 
@@ -238,52 +243,53 @@ void CPict::Update(void)
 		m_move.x = FLOAT_ZERO;
 		m_move.z = FLOAT_ZERO;
 
-		if (m_PointPos.x - PICT_POINT_RESEARCH_LENGTH > pos.x || m_PointPos.x + PICT_POINT_RESEARCH_LENGTH < pos.x ||
-			m_PointPos.z - PICT_POINT_RESEARCH_LENGTH > pos.z || m_PointPos.z + PICT_POINT_RESEARCH_LENGTH < pos.z)
-		{//移動中
-			float fTargetLenWidth, fTargetLenDepth;
-			float fTargetRot;
+		if (m_targetObj != NULL)
+		{//目的地がある
+			D3DXVECTOR3 targetPos = m_targetObj->GetPos();
+			float targetWidthHalf = m_targetObj->GetWidth() * 0.5f;
+			float targetDepthHalf = m_targetObj->GetDepth() * 0.5f;
 
-			fTargetLenWidth = m_PointPos.x - pos.x;
-			fTargetLenDepth = m_PointPos.z - pos.z;
+			if (targetPos.x - targetWidthHalf * 1.5f > pos.x || targetPos.x + targetWidthHalf * 1.5f < pos.x ||
+				targetPos.z - targetDepthHalf * 1.5f > pos.z || targetPos.z + targetDepthHalf * 1.5f < pos.z)
+			{//目的地ではない
+				//ポイント移動
+				if (m_PointPos.x - PICT_POINT_RESEARCH_LENGTH > pos.x || m_PointPos.x + PICT_POINT_RESEARCH_LENGTH < pos.x ||
+					m_PointPos.z - PICT_POINT_RESEARCH_LENGTH > pos.z || m_PointPos.z + PICT_POINT_RESEARCH_LENGTH < pos.z)
+				{//移動中
+					float fTargetLenWidth, fTargetLenDepth;
+					float fTargetRot;
 
-			fTargetRot = atan2f(fTargetLenWidth, fTargetLenDepth);
+					fTargetLenWidth = m_PointPos.x - pos.x;
+					fTargetLenDepth = m_PointPos.z - pos.z;
 
-			m_move.x = sinf(fTargetRot) * PICT_WALK_SPEED;
-			m_move.z = cosf(fTargetRot) * PICT_WALK_SPEED;
+					fTargetRot = atan2f(fTargetLenWidth, fTargetLenDepth);
 
-			m_rot.y = FIX_ROT(fTargetRot + D3DX_PI);
+					m_move.x = sinf(fTargetRot) * PICT_WALK_SPEED;
+					m_move.z = cosf(fTargetRot) * PICT_WALK_SPEED;
 
-			if (pMotion->GetType() != MOTIONTYPE_MOVE)
-			{
-				pMotion->Set(MOTIONTYPE_MOVE);
-			}
-		}
-		else
-		{//ついた
-			if (m_targetObj != NULL)
-			{
-				D3DXVECTOR3 targetPos = m_targetObj->GetPos();
-				float targetWidthHalf = m_targetObj->GetWidth() * 0.5f;
-				float targetDepthHalf = m_targetObj->GetDepth() * 0.5f;
+					m_rot.y = FIX_ROT(fTargetRot + D3DX_PI);
 
-				if (targetPos.x - targetWidthHalf * 1.5f > pos.x || targetPos.x + targetWidthHalf * 1.5f < pos.x ||
-					targetPos.z - targetDepthHalf * 1.5f > pos.z || targetPos.z + targetDepthHalf * 1.5f < pos.z)
-				{//目的地ではない
-					Search();	//ポイント検索
+					if (pMotion->GetType() != MOTIONTYPE_MOVE)
+					{
+						pMotion->Set(MOTIONTYPE_MOVE);
+					}
 				}
 				else
 				{//ついた
-					switch (m_state)
-					{
-					case STATE_FACE:
-						m_state = STATE_ATTACK;
-						break;
-					case STATE_LEAVE:
-						Uninit();
-						return;
-						break;
-					}
+					Search();	//ポイント検索
+				}
+			}
+			else
+			{//ついた
+				switch (m_state)
+				{
+				case STATE_FACE:
+					m_state = STATE_ATTACK;
+					break;
+				case STATE_LEAVE:
+					Uninit();
+					return;
+					break;
 				}
 			}
 		}
@@ -306,11 +312,9 @@ void CPict::Update(void)
 
 	//当たり判定
 	pos.x += m_move.x;
-	//CollisionBlockX(&pos);
-
 	pos.y += m_move.y - (ACCELERATION_GRAVITY * m_nCounterJumpTime / MAX_FPS);
 
-	if (CollisionBlockY(&pos) == true)
+	if (CollisionField(&pos) == true)
 	{
 		m_bJump = false;
 
@@ -324,26 +328,7 @@ void CPict::Update(void)
 	}
 
 	pos.z += m_move.z;
-	//CollisionBlockZ(&pos);
-
 	m_pos = pos;
-
-#if 0 
-	if (pKeyboard->GetRepeate(DIK_SPACE) == true)
-	{
-		CBulletBillboard::Create(m_pos, m_rot, 16.0f, 16.0f, 10.0f, CObject::TYPE_PLAYER);
-	}
-
-	//追従設定
-	if (pKeyboard->GetTrigger(DIK_C) == true)
-	{
-		CManager::GetPlayer()->Chace(m_nID);
-	}
-	else if (pKeyboard->GetTrigger(DIK_U) == true)
-	{
-		CManager::GetPlayer()->Unchace();
-	}
-#endif
 
 	if (m_fRedAlpha >= FLOAT_ZERO)
 	{//まだ赤い
@@ -358,7 +343,6 @@ void CPict::Update(void)
 
 	//影設定
 	m_pShadow->Set(m_pos, m_rot);
-	CManager::GetDebProc()->Print("pos = (x = %f, y = %f, z = %f)\n", m_pos.x, m_pos.y, m_pos.z);
 }
 
 //========================
@@ -421,9 +405,9 @@ void CPict::AddDamage(int nDamage)
 
 			if (pPict != NULL)	//ヌルチェ
 			{//なんかある
-				if (pPict->GetTarget() == this)
+				if (pPict->GetTargetObj() == this)
 				{//自分がターゲット
-					pPict->UnsetTarget();	//ターゲット外す
+					pPict->UnsetTargetObj();	//ターゲット外す
 				}
 			}
 		}
@@ -435,96 +419,12 @@ void CPict::AddDamage(int nDamage)
 	m_fRedAlpha = PICT_DAMAGE_ALPHA;
 }
 
-#if 0
 //=================================
-//ブロックとの衝突判定(X)
+//フィールドの当たり判定
 //=================================
-void CPict::CollisionBlockX(D3DXVECTOR3* pPosNew)
+bool CPict::CollisionField(D3DXVECTOR3* pPosNew)
 {
-	float fPlayerWidth = GetWidth() * 0.5f, fPlayerHeight = GetHeight() * 0.5f, fPlayerDepth = GetDepth() * 0.5f;
-
-	for (int cnt = 0; cnt < MAX_OBJ; cnt++)
-	{//全オブジェクト見る
-		CObject* pObj = GetObject(BLOCK_PRIORITY, cnt);	//オブジェクト取得
-
-		if (pObj != NULL)	//ヌルチェ
-		{//なんかある
-			CObject::TYPE type = pObj->GetType();	//種類取得
-
-			if (type == TYPE_BLOCK)
-			{//ブロック
-				float fOtherWidth = pObj->GetWidth() * 0.5f, fOtherHeight = pObj->GetHeight() * 0.5f, fOtherDepth = pObj->GetDepth() * 0.5f;
-				D3DXVECTOR3 otherPos = pObj->GetPos();
-				if (pPosNew->y - fPlayerHeight < otherPos.y + fOtherHeight &&
-					pPosNew->y + fPlayerHeight > otherPos.y - fOtherHeight && 
-					pPosNew->z - fPlayerDepth < otherPos.z + fOtherDepth &&
-					pPosNew->z + fPlayerDepth > otherPos.z - fOtherDepth)
-				{
-					if (GetPos().x + fPlayerWidth <= otherPos.x - fOtherWidth &&
-						pPosNew->x + fPlayerWidth > otherPos.x - fOtherWidth)
-					{
-						pPosNew->x = otherPos.x - fOtherWidth - fPlayerWidth;
-						m_move.x = 0.0f;
-					}
-					else if (GetPos().x - fPlayerWidth >= otherPos.x + fOtherWidth &&
-						pPosNew->x - fPlayerWidth < otherPos.x + fOtherWidth)
-					{
-						pPosNew->x = otherPos.x + fOtherWidth + fPlayerWidth;
-						m_move.x = 0.0f;
-					}
-				}
-			}
-		}
-	}
-}
-#endif
-
-//=================================
-//ブロックとの衝突判定(Y)
-//=================================
-bool CPict::CollisionBlockY(D3DXVECTOR3* pPosNew)
-{
-	float fPlayerWidth = GetWidth() * 0.5f, fPlayerHeight = GetHeight() * 0.5f, fPlayerDepth = GetDepth() * 0.5f;
 	bool bLand = false;
-
-#if 0
-	for (int cnt = 0; cnt < MAX_OBJ; cnt++)
-	{//全オブジェクト見る
-		CObject* pObj = GetObject(BLOCK_PRIORITY, cnt);	//オブジェクト取得
-
-		if (pObj != NULL)	//ヌルチェ
-		{//なんかある
-			CObject::TYPE type = pObj->GetType();	//種類取得
-
-			if (type == TYPE_BLOCK)
-			{//ブロック
-				float fOtherWidth = pObj->GetWidth() * 0.5f, fOtherHeight = pObj->GetHeight() * 0.5f, fOtherDepth = pObj->GetDepth() * 0.5f;
-				D3DXVECTOR3 otherPos = pObj->GetPos();
-				if (pPosNew->x - fPlayerWidth < otherPos.x + fOtherWidth &&
-					pPosNew->x + fPlayerWidth > otherPos.x - fOtherWidth &&
-					pPosNew->z - fPlayerDepth < otherPos.z + fOtherDepth &&
-					pPosNew->z + fPlayerDepth > otherPos.z - fOtherDepth)
-				{
-					if (GetPos().y + fPlayerHeight <= otherPos.y - fOtherHeight &&
-						pPosNew->y + fPlayerHeight > otherPos.y - fOtherHeight)
-					{
-						pPosNew->y = otherPos.y - fOtherHeight - fPlayerHeight;
-						m_move.y = 0.0f;
-						m_nCounterJumpTime = 0;
-						bLand = true;
-					}
-					else if (GetPos().y - fPlayerHeight >= otherPos.y + fOtherHeight &&
-						pPosNew->y - fPlayerHeight < otherPos.y + fOtherHeight)
-					{
-						pPosNew->y = otherPos.y + fOtherHeight + fPlayerHeight;
-						m_move.x = 0.0f;
-						m_nCounterJumpTime = 0;
-					}
-				}
-			}
-		}
-	}
-#endif
 
 	//高さ取得
 	float fLandHeight = CGame::GetMeshField()->GetHeight(*pPosNew);
@@ -538,51 +438,6 @@ bool CPict::CollisionBlockY(D3DXVECTOR3* pPosNew)
 
 	return bLand;
 }
-
-#if 0
-//=================================
-//ブロックとの衝突判定(Z)
-//=================================
-void CPict::CollisionBlockZ(D3DXVECTOR3* pPosNew)
-{
-	float fPlayerWidth = GetWidth() * 0.5f, fPlayerHeight = GetHeight() * 0.5f, fPlayerDepth = GetDepth() * 0.5f;
-
-	for (int cnt = 0; cnt < MAX_OBJ; cnt++)
-	{//全オブジェクト見る
-		CObject* pObj = GetObject(BLOCK_PRIORITY, cnt);	//オブジェクト取得
-
-		if (pObj != NULL)	//ヌルチェ
-		{//なんかある
-			CObject::TYPE type = pObj->GetType();	//種類取得
-
-			if (type == TYPE_BLOCK)
-			{//ブロック
-				float fOtherWidth = pObj->GetWidth() * 0.5f, fOtherHeight = pObj->GetHeight() * 0.5f, fOtherDepth = pObj->GetDepth() * 0.5f;
-				D3DXVECTOR3 otherPos = pObj->GetPos();
-				if (pPosNew->x - fPlayerWidth < otherPos.x + fOtherWidth &&
-					pPosNew->x + fPlayerWidth > otherPos.x - fOtherWidth &&
-					pPosNew->y - fPlayerHeight < otherPos.y + fOtherHeight &&
-					pPosNew->y + fPlayerHeight > otherPos.y - fOtherHeight
-					)
-				{
-					if (GetPos().z + fPlayerDepth <= otherPos.z - fOtherDepth &&
-						pPosNew->z + fPlayerDepth > otherPos.z - fOtherDepth)
-					{
-						pPosNew->z = otherPos.z - fOtherDepth - fPlayerDepth;
-						m_move.z = 0.0f;
-					}
-					else if (GetPos().z - fPlayerDepth >= otherPos.z + fOtherDepth &&
-						pPosNew->z - fPlayerDepth < otherPos.z + fOtherDepth)
-					{
-						pPosNew->z = otherPos.z + fOtherDepth + fPlayerDepth;
-						m_move.z = 0.0f;
-					}
-				}
-			}
-		}
-	}
-}
-#endif
 
 //=================================
 //ピクトさんの操縦
@@ -704,14 +559,13 @@ CPictDestroyer::CPictDestroyer()
 			break;
 		}
 	}
-	m_pTargetBuilding = NULL;
 	m_nCounterDestruction = INT_ZERO;
 }
 
 //=================================
 //コンストラクタ（オーバーロード）
 //=================================
-CPictDestroyer::CPictDestroyer(const D3DXVECTOR3 pos) : CPict(pos)
+CPictDestroyer::CPictDestroyer(const D3DXVECTOR3 pos, const TYPE type) : CPict(pos,type)
 {
 	for (int cnt = 0; cnt < MAX_OBJ; cnt++)
 	{//すべて確認
@@ -723,7 +577,6 @@ CPictDestroyer::CPictDestroyer(const D3DXVECTOR3 pos) : CPict(pos)
 			break;
 		}
 	}
-	m_pTargetBuilding = NULL;
 	m_nCounterDestruction = INT_ZERO;
 }
 
@@ -837,15 +690,6 @@ CPictDestroyer* CPictDestroyer::Create(const D3DXVECTOR3 pos)
 }
 
 //=================================
-//ターゲット解除（と帰宅）
-//=================================
-void CPictDestroyer::UnsetTarget(void)
-{
-	m_pTargetBuilding = NULL;
-	SetState(STATE_LEAVE);
-}
-
-//=================================
 //タクシー乗車
 //=================================
 void CPictDestroyer::TakeTaxi(CPictTaxi * taxi)
@@ -873,13 +717,12 @@ CPictBlocker::CPictBlocker()
 		}
 	}
 	m_nCounterAttack = INT_ZERO;
-	m_pTargetPolice = NULL;
 }
 
 //=================================
 //コンストラクタ（オーバーロード）
 //=================================
-CPictBlocker::CPictBlocker(const D3DXVECTOR3 pos) : CPict(pos)
+CPictBlocker::CPictBlocker(const D3DXVECTOR3 pos, const TYPE type) : CPict(pos,type)
 {
 	for (int cnt = 0; cnt < MAX_OBJ; cnt++)
 	{//すべて確認
@@ -892,7 +735,6 @@ CPictBlocker::CPictBlocker(const D3DXVECTOR3 pos) : CPict(pos)
 		}
 	}
 	m_nCounterAttack = INT_ZERO;
-	m_pTargetPolice = NULL;
 }
 
 //=================================
@@ -949,7 +791,7 @@ void CPictBlocker::Update(void)
 		if (m_nCounterAttack > PICT_ATTACK_TIME)
 		{
 			//弾発射
-			CBulletBillboard::Create(GetPos() + D3DXVECTOR3(0.0f, 10.0f, 0.0f), GetRot() + D3DXVECTOR3(0.0f, D3DX_PI, 0.0f), 10.0f, 10.0f, 10.0f, 100, TYPE_BLOCKER, this);
+			CBulletBillboard::Create(GetPos() + D3DXVECTOR3(0.0f, 30.0f, 0.0f), GetRot(), 10.0f, 10.0f, 10.0f, 100, TYPE_BLOCKER, this);
 
 			//攻撃カウンターリセット
 			m_nCounterAttack = INT_ZERO;
@@ -1004,15 +846,6 @@ CPictBlocker* CPictBlocker::Create(const D3DXVECTOR3 pos)
 }
 
 //=================================
-//ターゲット解除（と帰宅）
-//=================================
-void CPictBlocker::UnsetTarget(void)
-{
-	m_pTargetPolice = NULL;
-	SetState(STATE_LEAVE);
-}
-
-//=================================
 //タクシー乗車
 //=================================
 void CPictBlocker::TakeTaxi(CPictTaxi * taxi)
@@ -1047,7 +880,7 @@ CPictTaxi::CPictTaxi()
 //=================================
 //コンストラクタ（オーバーロード）
 //=================================
-CPictTaxi::CPictTaxi(const D3DXVECTOR3 pos)
+CPictTaxi::CPictTaxi(const D3DXVECTOR3 pos, const TYPE type) : CPict(pos,type)
 {
 	for (int cnt = 0; cnt < MAX_OBJ; cnt++)
 	{//すべて確認
@@ -1101,16 +934,6 @@ void CPictTaxi::Uninit(void)
 //========================
 void CPictTaxi::Update(void)
 {
-	D3DXVECTOR3 targetPos = VEC3_ZERO;
-	float targetWidthHalf = FLOAT_ZERO;
-	float targetDepthHalf = FLOAT_ZERO;
-	D3DXVECTOR3 pos = GetPos();
-	D3DXVECTOR3 rot = GetRot();
-	D3DXVECTOR3 move = GetMove();
-	CMotion* pMotion = GetMotion();
-	move.x = FLOAT_ZERO;
-	move.z = FLOAT_ZERO;
-
 	if (m_mode == MODE_SABO)
 	{//サボり
 		SetState(STATE_LEAVE);
@@ -1119,12 +942,13 @@ void CPictTaxi::Update(void)
 	{//働く
 		SetState(STATE_FACE);
 	}
-#if 0
-	if (GetState() != STATE_LEAVE)
-	{//帰還しない
-		if (m_mode == MODE_PICK)
-		{//収集
-		 //ターゲット外れていたら探索
+
+	if (GetState() == STATE_ATTACK)
+	{//目的地到着
+		switch (m_mode)
+		{
+		case MODE_PICK:
+			//ターゲット外れていたら探索
 			if (m_ptargetPict == NULL /* && pBulletObj == NULL*/)
 			{
 				SearchBullet();
@@ -1135,42 +959,18 @@ void CPictTaxi::Update(void)
 
 			if (m_ptargetPict != NULL)
 			{
-				targetPos = m_ptargetPict->GetPos();
-				targetWidthHalf = m_ptargetPict->GetWidth() * 0.5f;
-				targetDepthHalf = m_ptargetPict->GetDepth() * 0.5f;
+				//タクシーに乗せる
+				m_ptargetPict->TakeTaxi(this);
+				m_ptargetPict->Uninit();
+				m_ptargetPict = NULL;
 
-				if (targetPos.x - targetWidthHalf - PICT_POLICE_STOP_LENGTH > pos.x || targetPos.x + targetWidthHalf + PICT_POLICE_STOP_LENGTH < pos.x ||
-					targetPos.z - targetDepthHalf - PICT_POLICE_STOP_LENGTH > pos.z || targetPos.z + targetDepthHalf + PICT_POLICE_STOP_LENGTH < pos.z)
-				{
-					float fTargetLenWidth, fTargetLenDepth;
-					float fTargetRot;
-
-					fTargetLenWidth = targetPos.x - pos.x;
-					fTargetLenDepth = targetPos.z - pos.z;
-
-					fTargetRot = atan2f(fTargetLenWidth, fTargetLenDepth);
-
-					move.x = sinf(fTargetRot) * PICT_WALK_SPEED;
-					move.z = cosf(fTargetRot) * PICT_WALK_SPEED;
-
-					rot.y = FIX_ROT(fTargetRot + D3DX_PI);
-
-					if (pMotion->GetType() != MOTIONTYPE_MOVE)
-					{
-						pMotion->Set(MOTIONTYPE_MOVE);
-					}
-				}
-				else
-				{//到着
-					m_ptargetPict->TakeTaxi(this);
-					m_ptargetPict->Uninit();
-					m_ptargetPict = NULL;
-				}
+				//ターゲット解除
+				UnsetTargetObj();
+				
 			}
-		}
-		else if (m_mode == MODE_RESCUE)
-		{//救助
-		 //ターゲット外れていたら探索
+			break;
+		case MODE_RESCUE:
+			//ターゲット外れていたら探索
 			if (m_ptargetPict == NULL)
 			{
 				m_ptargetPict = SearchBattler();
@@ -1178,45 +978,18 @@ void CPictTaxi::Update(void)
 
 			if (m_ptargetPict != NULL)
 			{
-				targetPos = m_ptargetPict->GetPos();
-				targetWidthHalf = m_ptargetPict->GetWidth() * 0.5f;
-				targetDepthHalf = m_ptargetPict->GetDepth() * 0.5f;
+				//タクシーに乗せる
+				m_ptargetPict->TakeTaxi(this);
+				m_ptargetPict->Uninit();
+				m_ptargetPict = NULL;
 
-				if (targetPos.x - targetWidthHalf - PICT_POLICE_STOP_LENGTH > pos.x || targetPos.x + targetWidthHalf + PICT_POLICE_STOP_LENGTH < pos.x ||
-					targetPos.z - targetDepthHalf - PICT_POLICE_STOP_LENGTH > pos.z || targetPos.z + targetDepthHalf + PICT_POLICE_STOP_LENGTH < pos.z)
-				{
-					float fTargetLenWidth, fTargetLenDepth;
-					float fTargetRot;
-
-					fTargetLenWidth = targetPos.x - pos.x;
-					fTargetLenDepth = targetPos.z - pos.z;
-
-					fTargetRot = atan2f(fTargetLenWidth, fTargetLenDepth);
-
-					move.x = sinf(fTargetRot) * PICT_WALK_SPEED;
-					move.z = cosf(fTargetRot) * PICT_WALK_SPEED;
-
-					rot.y = FIX_ROT(fTargetRot + D3DX_PI);
-
-					if (pMotion->GetType() != MOTIONTYPE_MOVE)
-					{
-						pMotion->Set(MOTIONTYPE_MOVE);
-					}
-				}
-				else
-				{//到着
-					m_ptargetPict->TakeTaxi(this);
-					m_ptargetPict->Uninit();
-					m_ptargetPict = NULL;
-				}
+				//ターゲット解除
+				UnsetTargetObj();
 			}
+			break;
 		}
 	}
 
-	//値設定
-	SetRot(rot);
-	SetMove(move);
-#endif
 	//親処理
 	CPict::Update();
 }
@@ -1406,7 +1179,7 @@ CPictNormal::CPictNormal()
 //=================================
 //コンストラクタ（オーバーロード）
 //=================================
-CPictNormal::CPictNormal(const D3DXVECTOR3 pos) : CPict(pos)
+CPictNormal::CPictNormal(const D3DXVECTOR3 pos, const TYPE type) : CPict(pos,type)
 {
 	for (int cnt = 0; cnt < MAX_OBJ; cnt++)
 	{//すべて確認
@@ -1539,7 +1312,7 @@ CPictPolice::CPictPolice()
 //=================================
 //コンストラクタ（オーバーロード）
 //=================================
-CPictPolice::CPictPolice(const D3DXVECTOR3 pos) : CPict(pos)
+CPictPolice::CPictPolice(const D3DXVECTOR3 pos, const TYPE type) : CPict(pos,type)
 {
 	for (int cnt = 0; cnt < MAX_OBJ; cnt++)
 	{//すべて確認
@@ -1645,7 +1418,7 @@ void CPictPolice::Update(void)
 				if (m_nCounterAttack > PICT_ATTACK_TIME)
 				{
 					//弾発射
-					CBulletBillboard::Create(GetPos() + D3DXVECTOR3(0.0f, 10.0f, 0.0f), GetRot() + D3DXVECTOR3(0.0f, D3DX_PI, 0.0f), 10.0f, 10.0f, 10.0f, 100, TYPE_POLICE, this);
+					CBulletBillboard::Create(GetPos() + D3DXVECTOR3(0.0f, 30.0f, 0.0f), GetRot(), 10.0f, 10.0f, 10.0f, 100, TYPE_POLICE, this);
 
 					//攻撃カウンターリセット
 					m_nCounterAttack = INT_ZERO;
@@ -1661,15 +1434,19 @@ void CPictPolice::Update(void)
 		{//見張りなう
 			for (int cnt = 0; cnt < MAX_OBJ; cnt++)
 			{//全オブジェクト見る
-				CPictBlocker* pPict = CPictBlocker::GetPict(cnt);	//オブジェクト取得
+				CPict* pPict = CPict::GetPict(cnt);	//オブジェクト取得
 
-				if (pPict != NULL)
+				if (pPict != NULL && pPict != this && GetType() != TYPE_NORMAL)
 				{
 					if (D3DXVec3Length(&(pPict->GetPos() - this->GetPos())) <= PICT_POLICE_SEARCH_LENGTH)
 					{
 						m_pTargetPict = pPict;
 					}
 				}
+			}
+			if (pMotion->GetType() != MOTIONTYPE_NEUTRAL)
+			{
+				pMotion->Set(MOTIONTYPE_NEUTRAL);
 			}
 		}
 	}
