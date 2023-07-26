@@ -10,9 +10,7 @@
 #include "main.h"
 #include "objectAnim2D.h"
 #include "objectBillboard.h"
-
-//前方宣言
-class CPict;
+#include "pict.h"
 
 //優先順位
 #define BULLET_PRIORITY	(PRIORITY_DEFAULT)
@@ -59,7 +57,7 @@ public:
 
 	//生成
 	static CBulletBillboard* Create(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, const float fWidth, const float fHeight, const float fSpeed, 
-		const int nPower, const TYPE type, CPict* firePict);
+		const int nPower, const CPict::TYPE type, CPict* firePict);
 
 	//基本処理
 	HRESULT Init(void);
@@ -71,13 +69,10 @@ public:
 	bool CollisionBuilding(void);	//敵
 	bool CollisionPict(void);	//ブロック
 
-	//設定処理
-	void SetType(TYPE type) { m_Type = type; }	//タイプ設定
-
 private:
 	int m_nIdxTexture;		//テクスチャ番号
 	D3DXVECTOR3 m_move;		//移動量
-	TYPE m_Type;			//誰の弾か
+	CPict::TYPE m_Type;			//誰の弾か
 	int m_nPower;			//攻撃力
 	CPict* m_pfirePict;		//発射したピクト
 };

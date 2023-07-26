@@ -236,7 +236,6 @@ void CManager::Update(void)
 	m_pDebProc->Print("[操作方法]\n");
 	m_pDebProc->Print("左クリック+移動:視点移動\n");
 	m_pDebProc->Print("WASD:プレイヤー（カメラ）移動\n");
-	m_pDebProc->Print("Space:弾発射\n");
 	m_pDebProc->Print("[モデル・ピクトに向かって]マウス左クリック:選択\n");
 	m_pDebProc->Print("[Debug]F3:タイマー設定(120秒カウントダウン)\n");
 }

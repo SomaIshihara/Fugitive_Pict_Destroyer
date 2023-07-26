@@ -205,6 +205,9 @@ void CMeshSky::Uninit(void)
 		m_pIdxBuffMiddle->Release();
 		m_pIdxBuffMiddle = NULL;
 	}
+
+	//©•ª©g”jŠü
+	Release();
 }
 
 //=================================

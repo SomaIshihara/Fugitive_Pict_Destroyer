@@ -44,6 +44,7 @@ public:
 		TYPE_DESTROYER,
 		TYPE_BLOCKER,
 		TYPE_TAXI,
+		TYPE_POLICE,
 		TYPE_MAX
 	} TYPE;
 
@@ -380,8 +381,8 @@ public:
 	void SetTarget(CPict* target) { m_pTargetPict = target; }
 	void UnsetTarget(void) { m_pTargetPict = NULL; }
 
-	//仮設定
-	void SetBuilding(CBuilding* p) { m_pTargetBuilding = p; }
+	//建物設定
+	void SetBuilding(CBuilding* pBuilding) { SetTargetObj((CObject*)pBuilding); }
 
 	//乗車
 	void TakeTaxi(CPictTaxi* taxi) {}
@@ -390,7 +391,6 @@ private:
 	static CPictPolice* m_apPict[MAX_OBJ];	//ピクトさんポインタ
 	static int m_nNumAll;				//ピクトさん総数
 	int m_nID;							//ピクトさんID
-	CBuilding* m_pTargetBuilding;		//目的地
 	int m_nCounterAttack;				//攻撃カウンター
 	CPict* m_pTargetPict;				//ターゲットピクト（味方）
 };

@@ -4,7 +4,6 @@
 //Author:石原颯馬
 //
 //======================================================
-#include "precompile.h"
 #include "game.h"
 #include "player.h"
 #include "meshField.h"
@@ -16,6 +15,7 @@
 #include "pict.h"
 #include "meshsky.h"
 #include "point.h"
+#include "input.h"
 
 //静的メンバ変数
 CPlayer* CGame::m_pPlayer = NULL;
@@ -76,6 +76,8 @@ HRESULT CGame::Init(void)
 //=================================
 void CGame::Uninit(void)
 {
+	CObject::ReleaseAll();
+
 	//プレイヤー破棄
 	if (m_pPlayer != NULL)
 	{//プレイヤー終了
@@ -91,6 +93,11 @@ void CGame::Uninit(void)
 void CGame::Update(void)
 {
 	m_pPlayer->Update();
+
+	if (CManager::GetInputKeyboard()->GetPress(DIK_F6))
+	{
+		CManager::SetMode(CScene::MODE_TITLE);
+	}
 }
 
 //=================================

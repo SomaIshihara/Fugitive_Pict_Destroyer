@@ -27,7 +27,6 @@ public:
 	void Draw(void);
 
 private:
-	D3DXVECTOR3 m_cursorPos;	//クリック前のカーソル位置
 	static CButton3D* m_pButton;
 };
 

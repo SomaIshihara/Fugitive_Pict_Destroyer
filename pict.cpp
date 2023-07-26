@@ -782,7 +782,7 @@ void CPictDestroyer::Update(void)
 		if (m_nCounterDestruction > PICT_ATTACK_TIME)
 		{
 			//弾発射
-			CBulletBillboard::Create(GetPos(), rot + D3DXVECTOR3(-0.3f * D3DX_PI, 0.0f, 0.0f), 10.0f, 10.0f, 3.0f, 1000, CObject::TYPE_PICT, this);
+			CBulletBillboard::Create(GetPos(), rot + D3DXVECTOR3(-0.3f * D3DX_PI, 0.0f, 0.0f), 10.0f, 10.0f, 3.0f, 1000, TYPE_DESTROYER, this);
 
 			//破壊カウンターリセット
 			m_nCounterDestruction = INT_ZERO;
@@ -949,7 +949,7 @@ void CPictBlocker::Update(void)
 		if (m_nCounterAttack > PICT_ATTACK_TIME)
 		{
 			//弾発射
-			CBulletBillboard::Create(GetPos() + D3DXVECTOR3(0.0f, 10.0f, 0.0f), GetRot() + D3DXVECTOR3(0.0f, D3DX_PI, 0.0f), 10.0f, 10.0f, 10.0f, 100, TYPE_PICT, this);
+			CBulletBillboard::Create(GetPos() + D3DXVECTOR3(0.0f, 10.0f, 0.0f), GetRot() + D3DXVECTOR3(0.0f, D3DX_PI, 0.0f), 10.0f, 10.0f, 10.0f, 100, TYPE_BLOCKER, this);
 
 			//攻撃カウンターリセット
 			m_nCounterAttack = INT_ZERO;
@@ -1532,7 +1532,6 @@ CPictPolice::CPictPolice()
 			break;
 		}
 	}
-	m_pTargetBuilding = NULL;
 	m_nCounterAttack = INT_ZERO;
 	m_pTargetPict = NULL;
 }
@@ -1552,7 +1551,6 @@ CPictPolice::CPictPolice(const D3DXVECTOR3 pos) : CPict(pos)
 			break;
 		}
 	}
-	m_pTargetBuilding = NULL;
 	m_nCounterAttack = INT_ZERO;
 	m_pTargetPict = NULL;
 }
@@ -1598,11 +1596,11 @@ void CPictPolice::Update(void)
 	D3DXVECTOR3 rot = GetRot();
 	D3DXVECTOR3 move = GetMove();
 	CMotion* pMotion = GetMotion();
-#if 0
-	if (CPict::IsControll() == false)
+
+	if (GetState() == STATE_ATTACK)
 	{
 		if (m_pTargetPict != NULL)
-		{
+		{//狙いを定めている
 			move.x = FLOAT_ZERO;
 			move.z = FLOAT_ZERO;
 			targetPos = m_pTargetPict->GetPos();
@@ -1611,7 +1609,7 @@ void CPictPolice::Update(void)
 
 			if (targetPos.x - targetWidthHalf - PICT_POLICE_STOP_LENGTH > pos.x || targetPos.x + targetWidthHalf + PICT_POLICE_STOP_LENGTH < pos.x ||
 				targetPos.z - targetDepthHalf - PICT_POLICE_STOP_LENGTH > pos.z || targetPos.z + targetDepthHalf + PICT_POLICE_STOP_LENGTH < pos.z)
-			{
+			{//到着してない
 				float fTargetLenWidth, fTargetLenDepth;
 				float fTargetRot;
 
@@ -1634,7 +1632,7 @@ void CPictPolice::Update(void)
 				m_nCounterAttack = INT_ZERO;
 			}
 			else
-			{
+			{//ついた
 				//向かせる
 				float fTargetLenWidth, fTargetLenDepth;
 				fTargetLenWidth = targetPos.x - pos.x;
@@ -1646,8 +1644,8 @@ void CPictPolice::Update(void)
 				m_nCounterAttack++;
 				if (m_nCounterAttack > PICT_ATTACK_TIME)
 				{
-					//攻撃
-					m_pTargetPict->AddDamage(100);
+					//弾発射
+					CBulletBillboard::Create(GetPos() + D3DXVECTOR3(0.0f, 10.0f, 0.0f), GetRot() + D3DXVECTOR3(0.0f, D3DX_PI, 0.0f), 10.0f, 10.0f, 10.0f, 100, TYPE_POLICE, this);
 
 					//攻撃カウンターリセット
 					m_nCounterAttack = INT_ZERO;
@@ -1660,45 +1658,7 @@ void CPictPolice::Update(void)
 			}
 		}
 		else
-		{
-			if (m_pTargetBuilding != NULL)
-			{
-				move.x = FLOAT_ZERO;
-				move.z = FLOAT_ZERO;
-				targetPos = m_pTargetBuilding->GetPos();
-				targetWidthHalf = m_pTargetBuilding->GetWidth() * 0.5f;
-				targetDepthHalf = m_pTargetBuilding->GetDepth() * 0.5f;
-
-				if (targetPos.x - targetWidthHalf - PICT_POLICE_STOP_LENGTH > pos.x || targetPos.x + targetWidthHalf + PICT_POLICE_STOP_LENGTH < pos.x ||
-					targetPos.z - targetDepthHalf - PICT_POLICE_STOP_LENGTH > pos.z || targetPos.z + targetDepthHalf + PICT_POLICE_STOP_LENGTH < pos.z)
-				{
-					float fTargetLenWidth, fTargetLenDepth;
-					float fTargetRot;
-
-					fTargetLenWidth = targetPos.x - pos.x;
-					fTargetLenDepth = targetPos.z - pos.z;
-
-					fTargetRot = atan2f(fTargetLenWidth, fTargetLenDepth);
-
-					move.x = sinf(fTargetRot) * PICT_WALK_SPEED;
-					move.z = cosf(fTargetRot) * PICT_WALK_SPEED;
-
-					rot.y = FIX_ROT(fTargetRot + D3DX_PI);
-
-					if (pMotion->GetType() != MOTIONTYPE_MOVE)
-					{
-						pMotion->Set(MOTIONTYPE_MOVE);
-					}
-
-					//攻撃カウンターリセット
-					m_nCounterAttack = INT_ZERO;
-				}
-				else if (pMotion->GetType() != MOTIONTYPE_NEUTRAL)
-				{
-					pMotion->Set(MOTIONTYPE_NEUTRAL);
-				}
-			}
-
+		{//見張りなう
 			for (int cnt = 0; cnt < MAX_OBJ; cnt++)
 			{//全オブジェクト見る
 				CPictBlocker* pPict = CPictBlocker::GetPict(cnt);	//オブジェクト取得
@@ -1713,11 +1673,14 @@ void CPictPolice::Update(void)
 			}
 		}
 	}
-
-	//値設定
+	else
+	{
+		//攻撃カウンターリセット
+		m_nCounterAttack = INT_ZERO;
+	}
 	SetRot(rot);
 	SetMove(move);
-#endif
+
 	//親処理
 	CPict::Update();
 }

@@ -162,47 +162,6 @@ CBullet2D* CBullet2D::Create(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, const
 
 #if 0
 //=================================
-//敵との衝突判定
-//=================================
-bool CBullet2D::CollisionEnemy(void)
-{
-	for (int cnt = 0; cnt < MAX_OBJ; cnt++)
-	{//全オブジェクト見る
-		CObject* pObj = GetObject(ENEMY_PRIORITY,cnt);	//オブジェクト取得
-
-		if (pObj != NULL)	//ヌルチェ
-		{//なんかある
-			TYPE type = pObj->GetType();	//種類取得
-
-			if (type == TYPE_ENEMY)
-			{//敵
-				if (GetPos().x > pObj->GetPos().x - pObj->GetWidth() * 0.5f &&
-					GetPos().x < pObj->GetPos().x + pObj->GetWidth() * 0.5f &&
-					GetPos().y > pObj->GetPos().y - pObj->GetHeight() * 0.5f &&
-					GetPos().y < pObj->GetPos().y + pObj->GetHeight() * 0.5f)
-				{
-					//爆発生成
-					//CParticle2D::Create(GetPos(), 48, 16, 2, 3, D3DXCOLOR(1.0f, 0.5f, 0.14f, 1.0f), 20.0f, 20.0f);
-					CParticleBillboard::Create(D3DXVECTOR3(0.0f,20.0f,0.0f), 48, 48, 2, 3, D3DXCOLOR(1.0f, 0.5f, 0.14f, 1.0f), 8.0f, 8.0f);
-					//CExplosion::Create(GetPos(), GetRot(), 80.0f, 80.0f, 8, 2, 3);
-
-					//敵にダメージ
-					pObj->Uninit();
-
-					//自分終了
-					Uninit();
-
-					//弾は敵に当たった
-					return true;
-				}
-			}
-		}
-	}
-	//弾は敵に当たっていなかった
-	return false;
-}
-
-//=================================
 //ブロックとの衝突判定
 //=================================
 bool CBullet2D::CollisionBlock(void)
@@ -286,7 +245,7 @@ HRESULT CBulletBillboard::Init(void)
 	m_nIdxTexture = pTexture->Regist("data\\TEXTURE\\EnergyBullet_01.png");
 
 	//種類設定
-	m_Type = TYPE_PLAYER;
+	m_Type = CPict::TYPE_NORMAL;
 
 	return S_OK;
 }
@@ -324,13 +283,13 @@ void CBulletBillboard::Update(void)
 	SetPos(pos);
 
 	//建物との衝突判定
-	if (CollisionBuilding() == true)
+	if (m_Type == CPict::TYPE_DESTROYER && CollisionBuilding() == true)
 	{
 		return;
 	}
 
 	//ピクトとの判定
-	if (CollisionPict() == true)
+	if ((m_Type == CPict::TYPE_BLOCKER || m_Type == CPict::TYPE_POLICE) && CollisionPict() == true)
 	{
 		return;
 	}
@@ -351,7 +310,7 @@ void CBulletBillboard::Draw(void)
 //生成処理
 //=================================
 CBulletBillboard* CBulletBillboard::Create(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, const float fWidth, const float fHeight, 
-	const float fSpeed, const int nPower, const TYPE type, CPict* firePict)
+	const float fSpeed, const int nPower, const CPict::TYPE type, CPict* firePict)
 {
 	CBulletBillboard* pBullet = NULL;
 
@@ -364,7 +323,7 @@ CBulletBillboard* CBulletBillboard::Create(const D3DXVECTOR3 pos, const D3DXVECT
 		pBullet->Init();
 
 		//タイプ設定
-		pBullet->SetType(type);
+		pBullet->m_Type = type;
 
 		//仮置き
 		pBullet->SetCol(D3DXCOLOR(1.0f, 0.5f, 0.16f, 1.0f));

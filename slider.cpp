@@ -87,6 +87,9 @@ void CSlider::Uninit(void)
 		delete[] m_ppObjIcon;
 		m_ppObjIcon = NULL;
 	}
+
+	//©•ª©g”jŠü
+	Release();
 }
 
 //========================
