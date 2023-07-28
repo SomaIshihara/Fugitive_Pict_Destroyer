@@ -272,6 +272,9 @@ public:
 	//乗車
 	void SetTakeTaxi(const CPict::TYPE type, const int nTakeNum);
 
+	//拾得
+	void SetBullet(const int nBullet) { m_nHaveBullet += nBullet; }
+
 	//設定
 	void SetMode(const MODE mode) { m_mode = mode; }
 	void UnsetTargetPict(void) { m_ptargetPict = NULL; }
@@ -299,6 +302,7 @@ private:
 	int m_nTakeDestroyer;	//デストロイヤーが乗っている人数
 	int m_nTakeBlocker;		//ブロッカーが乗っている人数
 	int m_nTakeNormal;		//一般人が乗っている人数
+	int m_nHaveBullet;		//弾の所持数
 };
 
 //一般人ピクトクラス

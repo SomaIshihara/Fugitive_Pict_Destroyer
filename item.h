@@ -10,6 +10,9 @@
 #include "object2D.h"
 #include "objectX.h"
 
+//前方宣言
+class CPictTaxi;
+
 //優先順位
 #define ITEM_PRIORITY	(PRIORITY_DEFAULT)
 
@@ -41,6 +44,7 @@ public:
 	//コンストラクタ・デストラクタ
 	CItemBullet();
 	CItemBullet(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot);
+	~CItemBullet();
 
 	//基本処理
 	HRESULT Init(void);
@@ -56,6 +60,9 @@ public:
 
 	//取得
 	int GetBulletNum(void) { return m_nBulletNum; }
+
+	//取り込み
+	void PickBullet(CPictTaxi* taxi);
 
 private:
 	int m_nBulletNum;	//弾数

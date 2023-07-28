@@ -875,6 +875,7 @@ CPictTaxi::CPictTaxi()
 	m_nTakeDestroyer = INT_ZERO;
 	m_nTakeBlocker = INT_ZERO;
 	m_nTakeNormal = INT_ZERO;
+	m_nHaveBullet = INT_ZERO;
 }
 
 //=================================
@@ -895,6 +896,7 @@ CPictTaxi::CPictTaxi(const D3DXVECTOR3 pos, const TYPE type) : CPict(pos,type)
 	m_nTakeDestroyer = INT_ZERO;
 	m_nTakeBlocker = INT_ZERO;
 	m_nTakeNormal = INT_ZERO;
+	m_nHaveBullet = INT_ZERO;
 }
 
 //=================================
