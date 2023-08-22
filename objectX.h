@@ -9,28 +9,38 @@
 #include "main.h"
 #include "manager.h"
 #include "object.h"
-#include "collision.h"
 
-//マクロ
-#define X_MODEL_NUM		(64)	//モデル保管個数
-#define X_TEXTURE_NUM	(16)	//テクスチャ使用数
+typedef unsigned char BINCODE;
+//バイナリのコード内容
+//システム(0b00xxxxxx)
+#define BIN_CODE_SYSTEM				(0b00000000)
+#define BIN_CODE_SCRIPT				(BIN_CODE_SYSTEM + 0b000000)
+#define BIN_CODE_END_SCRIPT			(BIN_CODE_SYSTEM + 0b000001)
+//モデル系(0b01xxxxxx)
+#define BIN_CODE_MODEL				(0b01000000)
+#define BIN_CODE_TEXTURE_FILENAME	(BIN_CODE_MODEL + 0b000000)
+#define BIN_CODE_MODEL_FILENAME		(BIN_CODE_MODEL + 0b000001)
+#define BIN_CODE_MODELSET			(BIN_CODE_MODEL + 0b000010)
+//モーション系(0b10xxxxxx)
+#define BIN_CODE_MOTION				(0b10000000)
+
+//前方宣言
+class CXModel;
 
 //オブジェクトクラス
 class CObjectX : public CObject
 {
 public:
-	typedef struct
+	enum LOADRESULT
 	{
-		LPD3DXMESH m_pMesh;			//メッシュ
-		LPD3DXBUFFER m_pBuffMat;	//マテリアルポインタ
-		DWORD m_dwNumMatModel;		//マテ数
-		int* m_pIdxtexture;			//テクスチャ番号（動的確保）
-									
-		CCollision m_collision;		//コリジョン
-	} Model;
+		RES_OK = 0,
+		RES_ERR_FILE_NOTFOUND,
+		RES_MAX
+	};
+
 	//コンストラクタ・デストラクタ
 	CObjectX(int nPriority = PRIORITY_DEFAULT);																	//デフォルト
-	CObjectX(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, const int nIdx, int nPriority = PRIORITY_DEFAULT);	//オーバーロード（位置向きサイズ）
+	CObjectX(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, CXModel* pModel, int nPriority = PRIORITY_DEFAULT);	//オーバーロード（位置向きサイズ）
 	virtual ~CObjectX();
 
 	//基本処理
@@ -39,34 +49,54 @@ public:
 	virtual void Update(void);
 	virtual void Draw(void);
 
-	//読み込み
-	static int Load(const char* pPath);
-	static void Unload(void);
-
 	//生成
-	static CObjectX* Create(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, const int nIdx);
+	static CObjectX* Create(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, CXModel* pModel);
 
 	//取得
 	D3DXVECTOR3 GetPos(void) { return m_pos; }
 	D3DXVECTOR3 GetRot(void) { return m_rot; }
-	float GetWidth(void) { return m_fWidth; }
-	float GetHeight(void) { return m_fHeight; }
-	float GetDepth(void) { return m_fDepth; }
-	static Model* GetModel(int nIdx) { return m_aModel[nIdx]; }
-	int GetModelIdx(void) { return m_nIdx; }
+	float GetWidth(void) { return FLOAT_ZERO; }
+	float GetHeight(void) { return FLOAT_ZERO; }
+	float GetDepth(void) { return FLOAT_ZERO; }
+	static CObjectX* GetTop(void) { return m_pTop; }
+	CObjectX* GetNext(void) { return m_pNext; }
+	CXModel* GetModel(void) { return m_pModel; }
+	bool GetBreakable(void) { return m_bBreakale; }
+
+	//設定
+	void SetPos(D3DXVECTOR3 pos) { m_pos = pos; }
+	void SetRot(D3DXVECTOR3 rot) { m_rot = rot; }
+	void SetBreakable(bool bFrag) { m_bBreakale = bFrag; }
+
+	//使用モデル単位で消す
+	static void Delete(CXModel* pTarget);
+
+	//読み込み
+	static LOADRESULT LoadData(const char* pPath);
+	static LOADRESULT SaveData(const char* pPath);
+
+	//死亡フラグが立っているオブジェを殺す
+	static void Exclusion(void);
 
 private:
 	//モデル
-	static Model* m_aModel[X_MODEL_NUM];	//モデル
-	D3DXMATRIX mtxWorld;					//ワールドマトリ
-	int m_nIdx;								//モデル番号
+	D3DXMATRIX mtxWorld;	//ワールドマトリ
+	CXModel* m_pModel;		//モデル
 
 	//位置類
 	D3DXVECTOR3 m_pos;	//位置
 	D3DXVECTOR3 m_rot;	//向き
-	float m_fWidth;		//幅(X)
-	float m_fHeight;	//高さ(Y)
-	float m_fDepth;		//奥行(Z)
+
+	//状態
+	bool m_bBreakale;	//破壊可能設定
+
+	//リスト
+	static CObjectX* m_pTop;	//先頭オブジェクト
+	static CObjectX* m_pCur;	//最後尾オブジェクト
+	CObjectX* m_pNext;			//次のオブジェクト
+	CObjectX* m_pPrev;			//前のオブジェクト
+	bool m_bExclusion;			//除外フラグ
+	static int m_nNumAll;		//総数
 };
 
 #endif // !_OBJECT_H_

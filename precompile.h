@@ -7,6 +7,8 @@
 #define DIRECTINPUT_VERSION	(0x0800)	//ビルド時の警告対処
 #include "dinput.h"
 #include "xaudio2.h"
+#include <assert.h>
+#include <stdio.h>
 
 //ライブラリのリンク
 #pragma comment(lib,"d3d9.lib")

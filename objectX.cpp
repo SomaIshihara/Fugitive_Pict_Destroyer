@@ -10,10 +10,16 @@
 #include "texture.h"
 #include "input.h"
 #include "objectX.h"
+#include "xmodel.h"
 #include <assert.h>
 
+//マクロ
+#define PATH_LENGTH	(256)
+
 //静的メンバ変数
-CObjectX::Model* CObjectX::m_aModel[X_MODEL_NUM] = {};
+CObjectX* CObjectX::m_pTop = NULL;
+CObjectX* CObjectX::m_pCur = NULL;
+int CObjectX::m_nNumAll = 0;
 
 //=================================
 //コンストラクタ（デフォルト）
@@ -23,31 +29,50 @@ CObjectX::CObjectX(int nPriority) : CObject(nPriority)
 	//クリア
 	m_pos = VEC3_ZERO;
 	m_rot = VEC3_ZERO;
-	m_fWidth = FLOAT_ZERO;
-	m_fHeight = FLOAT_ZERO;
-	m_fDepth = FLOAT_ZERO;
-	m_nIdx = 0;
+
+	if (m_pCur == NULL)
+	{//最後尾がいない（すなわち先頭もいない）
+		m_pTop = this;		//俺が先頭
+		m_pPrev = NULL;		//前後誰もいない
+		m_pNext = NULL;
+	}
+	else
+	{//最後尾がいる
+		m_pPrev = m_pCur;		//最後尾が自分の前のオブジェ
+		m_pCur->m_pNext = this;	//最後尾の次のオブジェが自分
+		m_pNext = NULL;			//自分の次のオブジェはいない
+	}
+	m_pCur = this;				//俺が最後尾
+	m_bExclusion = false;		//生きてる
+	m_pModel = NULL;
+	m_nNumAll++;
 }
 
 //=================================
 //コンストラクタ（オーバーロード 位置向き）
 //=================================
-CObjectX::CObjectX(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, const int nIdx, int nPriority) : CObject(nPriority)
+CObjectX::CObjectX(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, CXModel* pModel, int nPriority) : CObject(nPriority)
 {
 	//クリア
 	m_pos = pos;
 	m_rot = rot;
-	m_fWidth = FLOAT_ZERO;
-	m_fHeight = FLOAT_ZERO;
-	m_fDepth = FLOAT_ZERO;
-	m_nIdx = nIdx;
 
-	//サイズ設定
-	D3DXVECTOR3 vtxMin, vtxMax;
-	m_aModel[m_nIdx]->m_collision.GetVtx(&vtxMin, &vtxMax);
-	m_fWidth = vtxMax.x - vtxMin.x;
-	m_fHeight = vtxMax.y - vtxMin.y;
-	m_fDepth = vtxMax.z - vtxMin.z;
+	if (m_pCur == NULL)
+	{//最後尾がいない（すなわち先頭もいない）
+		m_pTop = this;		//俺が先頭
+		m_pPrev = NULL;		//前後誰もいない
+		m_pNext = NULL;
+	}
+	else
+	{//最後尾がいる
+		m_pPrev = m_pCur;		//最後尾が自分の前のオブジェ
+		m_pCur->m_pNext = this;	//最後尾の次のオブジェが自分
+		m_pNext = NULL;			//自分の次のオブジェはいない
+	}
+	m_pCur = this;				//俺が最後尾
+	m_bExclusion = false;		//生きてる
+	m_pModel = pModel;
+	m_nNumAll++;
 }
 
 //=================================
@@ -70,6 +95,8 @@ HRESULT CObjectX::Init(void)
 //========================
 void CObjectX::Uninit(void)
 {
+	m_bExclusion = true;		//除外予定
+
 	//自分自身破棄
 	Release();
 }
@@ -116,18 +143,18 @@ void CObjectX::Draw(void)
 	pDevice->SetTransform(D3DTS_WORLD, &mtxWorld);
 
 	//マテリアルデータへのポインタ取得
-	pMat = (D3DXMATERIAL*)m_aModel[m_nIdx]->m_pBuffMat->GetBufferPointer();
+	pMat = (D3DXMATERIAL*)m_pModel->GetBufMat()->GetBufferPointer();
 
-	for (int nCntMat = 0; nCntMat < (int)m_aModel[m_nIdx]->m_dwNumMatModel; nCntMat++)
+	for (int nCntMat = 0; nCntMat < (int)m_pModel->GetNumMat(); nCntMat++)
 	{
 		//マテリアル設定
 		pDevice->SetMaterial(&pMat[nCntMat].MatD3D);
 
 		//テクスチャ設定
-		pDevice->SetTexture(0, pTexture->GetAddress(m_aModel[m_nIdx]->m_pIdxtexture[nCntMat]));
+		pDevice->SetTexture(0, pTexture->GetAddress(m_pModel->GetIdxTexture()[nCntMat]));
 
 		//モデル描画
-		m_aModel[m_nIdx]->m_pMesh->DrawSubset(nCntMat);
+		m_pModel->GetMesh()->DrawSubset(nCntMat);
 	}
 
 	//マテリアルを戻す
@@ -137,14 +164,14 @@ void CObjectX::Draw(void)
 //========================
 //生成処理
 //========================
-CObjectX* CObjectX::Create(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, const int nIdx)
+CObjectX* CObjectX::Create(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, CXModel* pModel)
 {
 	CObjectX* pObjX = NULL;
 
 	if (pObjX == NULL)
 	{
 		//オブジェクト2Dの生成
-		pObjX = new CObjectX(pos, rot, nIdx);
+		pObjX = new CObjectX(pos, rot, pModel);
 
 		//初期化
 		pObjX->Init();
@@ -158,166 +185,202 @@ CObjectX* CObjectX::Create(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, const i
 }
 
 //========================
-//ファイル読み込み処理
+//オブジェクト単位除外処理
 //========================
-int CObjectX::Load(const char * pPath)
+void CObjectX::Delete(CXModel * pTarget)
 {
-	LPDIRECT3DDEVICE9 pDevice = CManager::GetRenderer()->GetDevice();	//デバイス取得
-	CTexture* pTexture = CManager::GetTexture();						//テクスチャオブジェクト取得
+	CObjectX* pObject = m_pTop;	//先頭を入れる
 
-	for (int cnt = 0; cnt < X_MODEL_NUM; cnt++)
-	{
-		if (m_aModel[cnt] == NULL)
+	while (pObject != NULL)
+	{//最後尾まで回し続ける
+		CObjectX* pObjectNext = pObject->m_pNext;	//次のオブジェ保存
+
+		if (pObject->GetModel() == pTarget)
 		{
-			m_aModel[cnt] = new Model;
-			m_aModel[cnt]->m_pIdxtexture = NULL;	//テクスチャ番号ポインタをNULLにする
-
-			if (SUCCEEDED(D3DXLoadMeshFromX(
-				pPath,
-				D3DXMESH_SYSTEMMEM,
-				pDevice,
-				NULL,
-				&m_aModel[cnt]->m_pBuffMat,
-				NULL,
-				&m_aModel[cnt]->m_dwNumMatModel,
-				&m_aModel[cnt]->m_pMesh)))
-			{
-				//テクスチャポインタ確保
-				if (m_aModel[cnt]->m_pIdxtexture == NULL)
-				{//NULL
-				 //テクスチャ番号配列確保
-					m_aModel[cnt]->m_pIdxtexture = new int[(int)m_aModel[cnt]->m_dwNumMatModel];
-
-					//当たり判定生成
-					int nNumVtx;		//頂点数
-					DWORD dwSizeFVF;	//頂点フォーマットのサイズ
-					BYTE *pVtxBuff;		//頂点バッファポインタ
-
-					//頂点数を取得
-					nNumVtx = m_aModel[cnt]->m_pMesh->GetNumVertices();
-
-					//頂点フォーマット
-					dwSizeFVF = D3DXGetFVFVertexSize(m_aModel[cnt]->m_pMesh->GetFVF());
-
-					//頂点バッファロック
-					m_aModel[cnt]->m_pMesh->LockVertexBuffer(D3DLOCK_READONLY, (void **)&pVtxBuff);
-
-					//最初だけ全部入れる
-					D3DXVECTOR3 vtx = *(D3DXVECTOR3 *)pVtxBuff;
-
-					D3DXVECTOR3 vtxMax = vtx;
-					D3DXVECTOR3 vtxMin = vtx;
-
-					pVtxBuff += dwSizeFVF;
-
-					for (int nCntVtx = 1; nCntVtx < nNumVtx; nCntVtx++, pVtxBuff += dwSizeFVF)
-					{
-						D3DXVECTOR3 vtx = *(D3DXVECTOR3 *)pVtxBuff;
-
-						if (vtxMax.x < vtx.x)
-						{
-							vtxMax.x = vtx.x;
-						}
-						if (vtxMax.y < vtx.y)
-						{
-							vtxMax.y = vtx.y;
-						}
-						if (vtxMax.z < vtx.z)
-						{
-							vtxMax.z = vtx.z;
-						}
-						if (vtxMin.x > vtx.x)
-						{
-							vtxMin.x = vtx.x;
-						}
-						if (vtxMin.y > vtx.y)
-						{
-							vtxMin.y = vtx.y;
-						}
-						if (vtxMin.z > vtx.z)
-						{
-							vtxMin.z = vtx.z;
-						}
-					}
-
-					//設定
-					m_aModel[cnt]->m_collision.SetVtx(vtxMin, vtxMax);
-
-					//頂点バッファアンロック
-					m_aModel[cnt]->m_pMesh->UnlockVertexBuffer();
-
-					//テクスチャ読み込み
-					D3DXMATERIAL* pMat;	//マテリアルポインタ
-
-					//マテリアル情報に対するポインタ取得
-					pMat = (D3DXMATERIAL*)m_aModel[cnt]->m_pBuffMat->GetBufferPointer();
-
-					//テクスチャ読み込み
-					for (int nCntTex = 0; nCntTex < (int)m_aModel[cnt]->m_dwNumMatModel; nCntTex++)
-					{
-						m_aModel[cnt]->m_pIdxtexture[nCntTex] = NULL;
-						if (pMat[nCntTex].pTextureFilename != NULL)
-						{//テクスチャあるよ
-						 //テクスチャ読み込み
-							m_aModel[cnt]->m_pIdxtexture[nCntTex] = pTexture->Regist(pMat[nCntTex].pTextureFilename);
-						}
-						else
-						{//ないよ
-							m_aModel[cnt]->m_pIdxtexture[nCntTex] = -1;	//テクスチャ取得時にNULLになるようにする
-						}
-					}
-				}
-				else
-				{//おかしい
-					assert(false);
-				}
-
-				//番号返す
-				return cnt;
-			}
-			else
-			{
-				return -1;
-			}
+			pObject->Uninit();	//除外
 		}
-	}
 
-	return -1;
+		pObject = pObjectNext;	//次を入れる
+	}
 }
 
 //========================
-//ファイル破棄処理
+//データ読み込み
 //========================
-void CObjectX::Unload(void)
+CObjectX::LOADRESULT CObjectX::LoadData(const char * pPath)
 {
-	for (int cntModel = 0; cntModel < X_MODEL_NUM; cntModel++)
-	{
-		if (m_aModel[cntModel] != NULL)
-		{//なんかある
-			//メッシュの破棄
-			if (m_aModel[cntModel]->m_pMesh != NULL)
-			{
-				m_aModel[cntModel]->m_pMesh->Release();
-				m_aModel[cntModel]->m_pMesh = NULL;
-			}
+	FILE* pFile;
+	BINCODE code;
+	bool bRead = false;
 
-			//マテリアルの破棄
-			if (m_aModel[cntModel]->m_pBuffMat != NULL)
-			{
-				m_aModel[cntModel]->m_pBuffMat->Release();
-				m_aModel[cntModel]->m_pBuffMat = NULL;
-			}
+	pFile = fopen(pPath, "rb");
 
-			//テクスチャ番号破棄
-			if (m_aModel[cntModel]->m_pIdxtexture != NULL)
-			{
-				delete[] m_aModel[cntModel]->m_pIdxtexture;
-				m_aModel[cntModel]->m_pIdxtexture = NULL;
-			}
+	if (pFile != NULL)
+	{//開けた
+		while (1)
+		{
+			fread(&code, sizeof(BINCODE), 1, pFile);
 
-			//モデル破棄
-			delete m_aModel[cntModel];
-			m_aModel[cntModel] = NULL;
+			//文字列チェック
+			if (code == BIN_CODE_SCRIPT)
+			{//読み取り開始
+				bRead = true;
+			}
+			else if (code == BIN_CODE_END_SCRIPT)
+			{//読み取り終了
+				bRead = false;
+				break;
+			}
+			else if (bRead == true)
+			{//読み取り
+				if (code == BIN_CODE_TEXTURE_FILENAME)
+				{
+					char aPath[PATH_LENGTH];
+					fread(&aPath[0], sizeof(char), PATH_LENGTH, pFile);
+					CManager::GetTexture()->Load(&aPath[0]);
+				}
+				else if (code == BIN_CODE_MODEL_FILENAME)
+				{
+					char aPath[PATH_LENGTH];
+					fread(&aPath[0], sizeof(char), PATH_LENGTH, pFile);
+					CXModel::Load(&aPath[0]);
+				}
+				else if (code == BIN_CODE_MODELSET)
+				{
+					D3DXVECTOR3 pos, rot;
+					int nModelNum = -1;
+					CXModel* pModel = CXModel::GetTop();
+					fread(&pos, sizeof(D3DXVECTOR3), 1, pFile);
+					fread(&rot, sizeof(D3DXVECTOR3), 1, pFile);
+					fread(&nModelNum, sizeof(int), 1, pFile);
+					for (int cnt = 0; cnt < nModelNum; cnt++)
+					{
+						pModel = pModel->GetNext();
+					}
+
+					//state設定（破壊可能設定）
+					int nState = INT_ZERO;
+					fread(&nState, sizeof(int), 1, pFile);
+
+					//生成
+					CObjectX::Create(pos, rot, pModel)->SetBreakable(((nState == 1) ? true : false));
+				}
+			}
 		}
+
+		fclose(pFile);
+		return RES_OK;
+	}
+	else
+	{//開けなかった（ファイルないんじゃね？）
+		return RES_ERR_FILE_NOTFOUND;
+	}
+}
+
+//========================
+//データ書き込み
+//========================
+CObjectX::LOADRESULT CObjectX::SaveData(const char * pPath)
+{
+	FILE* pFile;
+
+	pFile = fopen(pPath, "wb");
+
+	if (pFile != NULL)
+	{//普通に開けた
+		//開始コード書き込み
+		BINCODE code = BIN_CODE_SCRIPT;
+		fwrite(&code, sizeof(BINCODE), 1, pFile);
+
+		//モデルファイルパス書き込み
+		code = BIN_CODE_MODEL_FILENAME;
+		CXModel* pModel = CXModel::GetTop();	//リスト書き込み体制
+		while (pModel != NULL)
+		{
+			CXModel* pObjectNext = pModel->GetNext();
+
+			fwrite(&code, sizeof(BINCODE), 1, pFile);				//コード
+			fwrite(pModel->GetPath(), sizeof(char), 256, pFile);	//データ
+
+			pModel = pObjectNext;
+		}
+
+		//モデル配置情報書き込み
+		code = BIN_CODE_MODELSET;
+		CObjectX* pObject = CObjectX::GetTop();
+		while (pObject != NULL)
+		{
+			CObjectX* pObjectNext = pObject->GetNext();
+
+			fwrite(&code, sizeof(BINCODE), 1, pFile);				//コード
+			fwrite(&pObject->GetPos(), sizeof(D3DXVECTOR3), 1, pFile);
+			fwrite(&pObject->GetRot(), sizeof(D3DXVECTOR3), 1, pFile);
+
+			//モデル種類番号化
+			int nModelNum = 0;
+			CXModel* pModel = CXModel::GetTop();
+			while (pModel != NULL && pModel != pObject->GetModel())
+			{
+				pModel = pModel->GetNext();
+				nModelNum++;
+			}
+			fwrite(&nModelNum, sizeof(int), 1, pFile);
+
+			//state設定（破壊可能設定）
+			int nState = (pObject->GetBreakable() == true) ? 1 : 0;
+			fwrite(&nState, sizeof(int), 1, pFile);
+
+			pObject = pObjectNext;
+		}
+
+		//終了コード書き込み
+		code = BIN_CODE_END_SCRIPT;
+		fwrite(&code, sizeof(BINCODE), 1, pFile);
+
+		fclose(pFile);
+		return RES_OK;
+	}
+	else
+	{//なぜか開けなかった（なんで？）
+		return RES_ERR_FILE_NOTFOUND;
+	}
+}
+
+//========================
+//除外処理
+//========================
+void CObjectX::Exclusion(void)
+{
+	CObjectX* pObject = m_pTop;	//先頭を入れる
+
+	while (pObject != NULL)
+	{//最後尾まで回し続ける
+		CObjectX* pObjectNext = pObject->m_pNext;	//次のオブジェ保存
+
+		if (pObject->m_bExclusion == true)
+		{//死亡フラグが立ってる
+			if (pObject->m_pPrev != NULL)
+			{//前にオブジェがいる
+				pObject->m_pPrev->m_pNext = pObject->m_pNext;	//前のオブジェの次のオブジェは自分の次のオブジェ
+			}
+			if (pObject->m_pNext != NULL)
+			{
+				pObject->m_pNext->m_pPrev = pObject->m_pPrev;	//次のオブジェの前のオブジェは自分の前のオブジェ
+			}
+
+			if (m_pCur == pObject)
+			{//最後尾でした
+				m_pCur = pObject->m_pPrev;	//最後尾を自分の前のオブジェにする
+			}
+			if (m_pTop == pObject)
+			{
+				m_pTop = pObject->m_pNext;	//先頭を自分の次のオブジェにする
+			}
+
+			//成仏
+			m_nNumAll--;	//総数減らす
+		}
+
+		pObject = pObjectNext;	//次を入れる
 	}
 }
