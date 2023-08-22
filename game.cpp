@@ -13,6 +13,7 @@
 #include "timer.h"
 #include "objectX.h"
 #include "pict.h"
+#include "item.h"
 #include "meshsky.h"
 #include "point.h"
 #include "input.h"
@@ -67,6 +68,8 @@ HRESULT CGame::Init(void)
 
 	//âº
 	CPictPolice::Create(D3DXVECTOR3(-200.0f, 0.0f, 50.0f))->SetTargetObj(CBuilding::GetBuilding(0));
+	CPictNormal::Create(D3DXVECTOR3(48.0f, 0.0f, 556.0f));
+	CItemBullet::Create(D3DXVECTOR3(0.0f, 0.0f, 10.0f), VEC3_ZERO);
 
 	//É|ÉCÉìÉgê∂ê¨
 	CPoint::Update();

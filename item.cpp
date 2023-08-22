@@ -16,6 +16,8 @@
 
 //静的メンバ変数
 int CItemBullet::m_nModelNum = -1;
+CItemBullet* CItemBullet::m_pItemBullet[];
+int CItemBullet::m_nNumAll = 0;
 
 //************************************************
 //[未使用]2Dアイテムクラス
@@ -117,6 +119,16 @@ CItem* CItem::Create(const D3DXVECTOR3 pos, const float fWidth, const float fHei
 //=================================
 CItemBullet::CItemBullet()
 {
+	for (int cnt = 0; cnt < MAX_OBJ; cnt++)
+	{//すべて確認
+		if (m_pItemBullet[cnt] == NULL)
+		{//空っぽ
+			m_pItemBullet[cnt] = this;	//自分自身のポインタを登録
+			m_nID = cnt;	//ID覚える
+			m_nNumAll++;	//総数増やす
+			break;
+		}
+	}
 	//値クリア
 	m_nBulletNum = INT_ZERO;
 }
@@ -126,6 +138,16 @@ CItemBullet::CItemBullet()
 //=================================
 CItemBullet::CItemBullet(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot) : CObjectX(pos, rot, m_nModelNum)
 {
+	for (int cnt = 0; cnt < MAX_OBJ; cnt++)
+	{//すべて確認
+		if (m_pItemBullet[cnt] == NULL)
+		{//空っぽ
+			m_pItemBullet[cnt] = this;	//自分自身のポインタを登録
+			m_nID = cnt;	//ID覚える
+			m_nNumAll++;	//総数増やす
+			break;
+		}
+	}
 	//値クリア
 	m_nBulletNum = INT_ZERO;
 }
@@ -153,6 +175,9 @@ HRESULT CItemBullet::Init(void)
 //=================================
 void CItemBullet::Uninit(void)
 {
+	//削除
+	m_pItemBullet[m_nID] = NULL;
+
 	CObjectX::Uninit();
 }
 

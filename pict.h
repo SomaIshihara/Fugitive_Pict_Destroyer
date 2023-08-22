@@ -24,6 +24,7 @@ class CShadow;
 class CPictPolice;
 class CPictNormal;
 class CPictTaxi;
+class CItemBullet;
 
 //ピクトさんクラス
 class CPict : public CObject
@@ -284,7 +285,8 @@ public:
 
 private:
 	//関数
-	void SearchBullet(void);	//弾探索
+	bool SearchPick(void);				//アイテム類探す
+	CItemBullet* SearchBullet(void);	//弾探索
 	CPictNormal* SearchNormal(void);	//一般人ピクト探索
 	CPict* SearchBattler(void);		//戦闘要員探索
 
@@ -296,8 +298,8 @@ private:
 	MODE m_mode;			//タクシーモード
 
 	//ターゲット
-	/*ほげほげ* pBulletObj;*/
-	CPict* m_ptargetPict;	//ピクト（詳細不明）
+	CItemBullet* m_pItemBullet;	//アイテム弾
+	CPict* m_ptargetPict;		//ピクト（詳細不明）
 
 	int m_nTakeDestroyer;	//デストロイヤーが乗っている人数
 	int m_nTakeBlocker;		//ブロッカーが乗っている人数

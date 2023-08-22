@@ -60,11 +60,15 @@ public:
 
 	//æ“¾
 	int GetBulletNum(void) { return m_nBulletNum; }
+	static CItemBullet* GetItemBullet(const int nIdx) { return m_pItemBullet[nIdx]; }
 
 	//æ‚è‚İ
 	void PickBullet(CPictTaxi* taxi);
 
 private:
+	static CItemBullet* m_pItemBullet[MAX_OBJ];
+	int m_nID;
+	static int m_nNumAll;
 	int m_nBulletNum;	//’e”
 	static int m_nModelNum;	//’e–ò” ƒ‚ƒfƒ‹‚Ì”Ô†
 };

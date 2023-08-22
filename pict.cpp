@@ -23,6 +23,7 @@
 #include "file.h"
 #include "Culc.h"
 #include "point.h"
+#include "item.h"
 
 //マクロ
 #define PICT_WALK_SPEED				(6.0f)		//ピクトさんの歩行速度
@@ -913,6 +914,17 @@ HRESULT CPictTaxi::Init(void)
 {
 	//設定されていたモードを取得
 	m_mode = (MODE)CGame::GetSlider()->GetSelectIdx();
+
+	//モードによって変わるかも
+	switch (m_mode)
+	{
+	case MODE_PICK:
+		//アイテム類探す
+		SearchPick();
+		break;
+	case MODE_RESCUE:
+		break;
+	}
 	
 	//親処理
 	CPict::Init();
@@ -939,10 +951,7 @@ void CPictTaxi::Update(void)
 	if (m_mode == MODE_SABO)
 	{//サボり
 		SetState(STATE_LEAVE);
-	}
-	else
-	{//働く
-		SetState(STATE_FACE);
+		UnsetTargetObj();
 	}
 
 	if (GetState() == STATE_ATTACK)
@@ -950,15 +959,6 @@ void CPictTaxi::Update(void)
 		switch (m_mode)
 		{
 		case MODE_PICK:
-			//ターゲット外れていたら探索
-			if (m_ptargetPict == NULL /* && pBulletObj == NULL*/)
-			{
-				SearchBullet();
-				m_ptargetPict = SearchNormal();
-
-				//ここに弾とピクトの距離測って比較する処理
-			}
-
 			if (m_ptargetPict != NULL)
 			{
 				//タクシーに乗せる
@@ -968,8 +968,27 @@ void CPictTaxi::Update(void)
 
 				//ターゲット解除
 				UnsetTargetObj();
-				
 			}
+			else if (m_pItemBullet != NULL)
+			{
+				//タクシーに乗せる
+				m_pItemBullet->PickBullet(this);
+				m_pItemBullet->Uninit();
+				m_pItemBullet = NULL;
+
+				//ターゲット解除
+				UnsetTargetObj();
+			}
+
+			//次のアイテム類探す
+			if (SearchPick() == false)
+			{//なんもない
+				if (GetMotion()->GetType() != MOTIONTYPE_NEUTRAL)
+				{
+					GetMotion()->Set(MOTIONTYPE_NEUTRAL);
+				}
+			}
+			SetState(STATE_FACE);
 			break;
 		case MODE_RESCUE:
 			//ターゲット外れていたら探索
@@ -1053,10 +1072,83 @@ void CPictTaxi::SetTakeTaxi(const CPict::TYPE type, const int nTakeNum)
 }
 
 //========================
+//アイテム類探索
+//========================
+bool CPictTaxi::SearchPick(void)
+{
+	//ターゲット外れていたら探索
+	if (m_ptargetPict == NULL && m_pItemBullet == NULL)
+	{
+		//取得
+		m_ptargetPict = SearchNormal();
+		m_pItemBullet = SearchBullet();
+
+		//ここに弾とピクトの距離測って比較する処理
+		float fLengthPict = -1.0f;
+		float fLengthItem = -1.0f;
+
+		if (m_ptargetPict != NULL && m_pItemBullet != NULL)
+		{//両方取得した
+			fLengthPict = D3DXVec3Length(&(m_ptargetPict->GetPos() - this->GetPos()));
+			fLengthItem = D3DXVec3Length(&(m_pItemBullet->GetPos() - this->GetPos()));
+
+			//遠いほうをNULLにする
+			if (fLengthPict <= fLengthItem)
+			{//ピクトのほうが近い（距離が同じの場合も含む）
+				SetTargetObj(m_ptargetPict);
+				m_pItemBullet = NULL;
+			}
+			else
+			{//弾のほうが近い
+				SetTargetObj(m_pItemBullet);
+				m_ptargetPict = NULL;
+			}
+		}
+		else if(m_ptargetPict != NULL)
+		{//ピクトだけ
+			SetTargetObj(m_ptargetPict);
+		}
+		else if (m_pItemBullet != NULL)
+		{//弾だけ
+			SetTargetObj(m_pItemBullet);
+		}
+		else
+		{//無
+			return false;
+		}
+
+		return true;
+	}
+
+	return false;
+}
+
+//========================
 //弾探索
 //========================
-void CPictTaxi::SearchBullet(void)
+CItemBullet* CPictTaxi::SearchBullet(void)
 {
+	CItemBullet* pItemNear = NULL;
+	float fNearLength;
+
+	for (int cnt = 0; cnt < MAX_OBJ; cnt++)
+	{//全オブジェクト見る
+		CItemBullet* pItem = CItemBullet::GetItemBullet(cnt);	//オブジェクト取得
+
+		if (pItem != NULL)	//ヌルチェ
+		{//なんかある
+			float fLength = D3DXVec3Length(&(pItem->GetPos() - this->GetPos()));
+
+			if (pItemNear == NULL || fLength < fNearLength)
+			{//近いかそもそも1つしか知らん
+				fNearLength = fLength;
+				pItemNear = pItem;
+			}
+		}
+	}
+
+	//近いピクトのポインタ返す
+	return pItemNear;
 }
 
 //========================
@@ -1372,12 +1464,13 @@ void CPictPolice::Update(void)
 	D3DXVECTOR3 move = GetMove();
 	CMotion* pMotion = GetMotion();
 
+	move.x = FLOAT_ZERO;
+	move.z = FLOAT_ZERO;
+
 	if (GetState() == STATE_ATTACK)
 	{
 		if (m_pTargetPict != NULL)
 		{//狙いを定めている
-			move.x = FLOAT_ZERO;
-			move.z = FLOAT_ZERO;
 			targetPos = m_pTargetPict->GetPos();
 			targetWidthHalf = m_pTargetPict->GetWidth() * 0.5f;
 			targetDepthHalf = m_pTargetPict->GetDepth() * 0.5f;
