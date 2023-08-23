@@ -69,6 +69,9 @@ HRESULT CGame::Init(void)
 	CPictNormal::Create(D3DXVECTOR3(48.0f, 0.0f, 556.0f));
 	CItemBullet::Create(D3DXVECTOR3(0.0f, 0.0f, 10.0f), VEC3_ZERO);
 
+	//仮配置
+	CObjectX::LoadData("data\\map.ismd");
+
 	//ポイント生成
 	CPoint::Update();
 
