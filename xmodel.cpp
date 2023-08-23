@@ -169,10 +169,8 @@ CXModel* CXModel::Load(const char* pPath)
 		}
 
 		//ファイルパス保存
-		pObject->m_pFilePath = new char[strlen(pPath)];
+		pObject->m_pFilePath = new char[strlen(pPath)+1];
 		strcpy(pObject->m_pFilePath, pPath);
-
-		m_nNumAll++;	//読み込んだモデル数増やす
 
 		//番号返す
 		return pObject;
@@ -180,6 +178,7 @@ CXModel* CXModel::Load(const char* pPath)
 	else
 	{
 		delete pObject;
+		m_nNumAll--;
 		return NULL;
 	}
 
@@ -207,6 +206,34 @@ void CXModel::Unload(void)
 	if (m_pTop == this)
 	{
 		m_pTop = m_pNext;	//先頭を自分の次のオブジェにする
+	}
+
+	//メッシュの破棄
+	if (m_pMesh != NULL)
+	{
+		m_pMesh->Release();
+		m_pMesh = NULL;
+	}
+
+	//マテリアルの破棄
+	if (m_pBuffMat != NULL)
+	{
+		m_pBuffMat->Release();
+		m_pBuffMat = NULL;
+	}
+
+	//テクスチャ番号破棄
+	if (m_pIdxtexture != NULL)
+	{
+		delete[] m_pIdxtexture;
+		m_pIdxtexture = NULL;
+	}
+
+	//ファイルパス破棄
+	if (m_pFilePath != NULL)
+	{
+		delete[] m_pFilePath;
+		m_pFilePath = NULL;
 	}
 
 	//成仏	
