@@ -60,9 +60,7 @@ HRESULT CGame::Init(void)
 	//オブジェクト生成+初期化
 	CScore::Create(D3DXVECTOR3(SCREEN_WIDTH - 24.0f, 32.0f, 0.0f), VEC3_ZERO, 40.0f, 64.0f);
 	CTimer::Create(D3DXVECTOR3(SCREEN_WIDTH * 0.5f + 24.0f, 32.0f, 0.0f), VEC3_ZERO, 48.0f, 72.0f);
-	CBuilding* pTarget = CBuilding::Create(D3DXVECTOR3(64.0f, 0.0f, 580.0f), VEC3_ZERO, 0);
-	CBuilding::Create(D3DXVECTOR3(-440.0f, 0.0f, -453.0f), VEC3_ZERO, 2);
-	CObjectX* pAgit = CObjectX::Create(VEC3_ZERO, VEC3_ZERO, 4);
+	CObjectX* pAgit = CObjectX::Create(VEC3_ZERO, VEC3_ZERO, CManager::GetAgitModel());
 	CPict::SetAgit(pAgit);
 	CMeshSky::Create(VEC3_ZERO, VEC3_ZERO, 10000.0f, 8, 8);
 

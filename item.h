@@ -12,6 +12,7 @@
 
 //‘O•ûéŒ¾
 class CPictTaxi;
+class CXModel;
 
 //—Dæ‡ˆÊ
 #define ITEM_PRIORITY	(PRIORITY_DEFAULT)
@@ -56,7 +57,7 @@ public:
 	static CItemBullet* Create(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot);
 
 	//İ’è
-	static void SetModelNum(const int nIdx) { m_nModelNum = nIdx; }
+	static void SetModel(CXModel* nModel) { m_pModel = nModel; }
 
 	//æ“¾
 	int GetBulletNum(void) { return m_nBulletNum; }
@@ -70,7 +71,7 @@ private:
 	int m_nID;
 	static int m_nNumAll;
 	int m_nBulletNum;	//’e”
-	static int m_nModelNum;	//’e–ò” ƒ‚ƒfƒ‹‚Ì”Ô†
+	static CXModel* m_pModel;	//’e–ò” ƒ‚ƒfƒ‹‚Ì”Ô†
 };
 
 #endif // !_BLOCK_H_

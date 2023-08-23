@@ -67,7 +67,6 @@ public:
 	virtual float GetWidth(void) = 0;
 	virtual float GetHeight(void) = 0;
 	virtual float GetDepth(void) = 0;
-	virtual int GetModelIdx(void) = 0;
 
 	//死亡フラグが立っているオブジェを殺す
 	static void Death(void);

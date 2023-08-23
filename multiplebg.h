@@ -35,7 +35,6 @@ public:
 	float GetWidth(void) { return FLOAT_ZERO; }
 	float GetHeight(void) { return FLOAT_ZERO; }
 	float GetDepth(void) { return FLOAT_ZERO; }
-	int GetModelIdx(void) { return -1; }
 
 private:
 	CObject2D* m_pObj2D[MAX_MULTIPLE_BG];	//2Dオブジェクト

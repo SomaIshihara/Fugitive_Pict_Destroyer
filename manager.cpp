@@ -14,6 +14,7 @@
 #include "texture.h"
 #include "object.h"
 #include "objectX.h"
+#include "xmodel.h"
 #include "item.h"
 
 //シーン
@@ -35,6 +36,8 @@ CCamera* CManager::m_pCamera = NULL;
 CLight* CManager::m_pLight = NULL;
 CTexture* CManager::m_pTexture = NULL;
 CScene* CManager::m_pScene = NULL;
+//仮
+CXModel* CManager::m_pAgitModel = NULL;
 
 int CManager::m_nFPS = 0;
 DWORD CManager::m_dwFrameCount = 0;
@@ -117,12 +120,12 @@ HRESULT CManager::Init(HINSTANCE hInstance, HWND hWnd, BOOL bWindow)
 	}
 
 	//3Dモデル読み込み
-	CObjectX::Load("data\\MODEL\\jobi.x");
-	CObjectX::Load("data\\MODEL\\zahyoukanban002.x");
-	CObjectX::Load("data\\MODEL\\DoshinBill_01.x");
-	CObjectX::Load("data\\MODEL\\hako.x");
-	CObjectX::Load("data\\MODEL\\Agit.x");
-	CItemBullet::SetModelNum(CObjectX::Load("data\\MODEL\\BulletBox.x"));
+	CXModel::Load("data\\MODEL\\jobi.x");
+	CXModel::Load("data\\MODEL\\zahyoukanban002.x");
+	CXModel::Load("data\\MODEL\\DoshinBill_01.x");
+	CXModel::Load("data\\MODEL\\hako.x");
+	m_pAgitModel = CXModel::Load("data\\MODEL\\Agit.x");
+	CItemBullet::SetModel(CXModel::Load("data\\MODEL\\BulletBox.x"));
 
 	//FPS計測器初期化
 	m_nFPS = 0;
@@ -144,7 +147,7 @@ HRESULT CManager::Init(HINSTANCE hInstance, HWND hWnd, BOOL bWindow)
 void CManager::Uninit(void)
 {
 	//モデル破棄
-	CObjectX::Unload();			//Xモデル
+	CXModel::UnloadAll();			//Xモデル
 
 	//オブジェクト終了+破棄
 	CObject::ReleaseAll();

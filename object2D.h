@@ -47,7 +47,6 @@ public:
 	float GetDepth(void) { return FLOAT_ZERO; }
 	float GetLength(void) { return m_fLength; }
 	int GetIdxTexture(void) { return m_nIdxTexture; }
-	int GetModelIdx(void) { return -1; }
 
 	//ê›íË
 	HRESULT SetPos(const D3DXVECTOR3 pos);	//à íu

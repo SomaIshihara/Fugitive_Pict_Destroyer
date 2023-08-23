@@ -13,6 +13,7 @@
 #include "number.h"
 #include "symbol.h"
 #include "building.h"
+#include "xmodel.h"
 
 //マクロ
 #define SCORE_INVISIBLE	(4)	//何桁分かを非表示にする
@@ -116,7 +117,14 @@ void CScore::Update(void)
 		CBuilding* pBuilding = CBuilding::GetBuilding(cnt);	//建物オブジェクト取得
 		if (pBuilding != NULL)
 		{//なんかある
-			CBuilding::BuildingParam buildingParam = CBuilding::GetBuildingParam(pBuilding->GetModelIdx());		//建物パラメータ取得
+			CXModel* pModel = CXModel::GetTop();
+			int nModelNum = 0;
+			while (pModel != NULL && pModel != pBuilding->GetModel())
+			{
+				pModel = pModel->GetNext();
+				nModelNum++;
+			}
+			CBuilding::BuildingParam buildingParam = CBuilding::GetBuildingParam(nModelNum);		//建物パラメータ取得
 			float fParcent = ((float)pBuilding->GetEndurance() / buildingParam.nEndurance);
 			long long nScore = (1.0f - fParcent) * buildingParam.nValue;	//スコア算出
 			Add(nScore);

@@ -9,7 +9,6 @@
 #include "texture.h"
 #include "object.h"
 #include "enemy.h"
-#include "block.h"
 #include "bullet.h"
 #include "building.h"
 #include "pict.h"

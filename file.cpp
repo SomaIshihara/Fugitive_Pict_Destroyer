@@ -12,6 +12,7 @@
 #include "objectBillboard.h"
 #include "motion.h"
 #include "Culc.h"
+#include "xmodel.h"
 #include <stdio.h>
 #include <assert.h>
 
@@ -209,7 +210,7 @@ void LoadModelViewerFile(const char *path)
 						}
 
 						//ÉÇÉfÉãì«Ç›çûÇ›
-						CObjectX::Load(pSprit);
+						CXModel::Load(pSprit);
 					}
 					break;
 #if 0
@@ -468,13 +469,18 @@ void LoadModelViewerFile(const char *path)
 				case READSTAT_MODELSET:		//ÉÇÉfÉãèÓïÒéÊìæ
 					if (strncmp(&aCode[0], CODE_END_MODELSET, sizeof CODE_END_MODELSET / sizeof(char) - 1) == 0)
 					{
+						CXModel* pModel = CXModel::GetTop();
+						for (int cnt = 0; cnt < nType; cnt++)
+						{
+							pModel->GetNext();
+						}
 						if (nState == TYPE_BUILDING)
 						{//CBuilding
-							CBuilding::Create(pos, rot, nType);
+							CBuilding::Create(pos, rot, pModel);
 						}
 						else
 						{//CObjectX
-							CObjectX::Create(pos, rot, nType);
+							CObjectX::Create(pos, rot, pModel);
 						}
 						g_readStat = READSTAT_NONE;
 					}

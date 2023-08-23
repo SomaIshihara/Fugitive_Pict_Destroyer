@@ -18,6 +18,7 @@ class CSound;
 class CCamera;
 class CLight;
 class CTexture;
+class CXModel;
 
 //マクロ
 #define INT_ZERO	(0)							//int型の0
@@ -83,6 +84,8 @@ public:
 	static CCamera* GetCamera(void) { return m_pCamera; }
 	static CLight* GetLight(void) { return m_pLight; }
 	static CTexture* GetTexture(void) { return m_pTexture; }
+	//仮
+	static CXModel* GetAgitModel(void) { return m_pAgitModel; }
 
 	//シーン系
 	static void SetMode(CScene::MODE mode);
@@ -101,6 +104,7 @@ private:
 	static CCamera* m_pCamera;					//カメラ
 	static CLight* m_pLight;					//ライト
 	static CTexture* m_pTexture;				//テクスチャ
+	static CXModel* m_pAgitModel;				//仮：アジトモデルポインタ
 	static int m_nFPS;							//FPS
 	static DWORD m_dwFrameCount;				//回したフレーム数
 

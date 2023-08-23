@@ -12,7 +12,6 @@
 #include "renderer.h"
 #include "input.h"	//‰¼
 #include "camera.h"	//‰¼
-#include "block.h"	//‰¼
 #include "player.h"
 #include "bullet.h"
 #include "motion.h"

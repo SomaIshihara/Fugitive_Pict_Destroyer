@@ -15,6 +15,8 @@
 #include "building.h"
 #include "button.h"
 #include "slider.h"
+#include "building.h"
+#include "xmodel.h"
 
 //=================================
 //コンストラクタ
@@ -252,7 +254,7 @@ void CPlayer::Select(void)
 
 		if (pBuilding != NULL)	//ヌルチェ
 		{//なんかある
-			if (CObjectX::GetModel(pBuilding->GetModelIdx())->m_collision.CollisionCheck(posNear, posFar, pBuilding->GetPos(), pBuilding->GetRot()) == true &&
+			if (pBuilding->GetModel()->GetCollision().CollisionCheck(posNear, posFar, pBuilding->GetPos(), pBuilding->GetRot()) == true &&
 				pBuilding->GetEndurance() > 0)
 			{//建物選択
 				m_pSelectPict = NULL;

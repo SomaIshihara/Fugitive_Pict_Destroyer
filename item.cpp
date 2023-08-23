@@ -15,8 +15,8 @@
 #define ITEMBULLET_DEGREE	(80)	//振れ幅
 
 //静的メンバ変数
-int CItemBullet::m_nModelNum = -1;
 CItemBullet* CItemBullet::m_pItemBullet[];
+CXModel* CItemBullet::m_pModel = NULL;
 int CItemBullet::m_nNumAll = 0;
 
 //************************************************
@@ -136,7 +136,7 @@ CItemBullet::CItemBullet()
 //=================================
 //コンストラクタ（オーバーロード 位置幅高さ）
 //=================================
-CItemBullet::CItemBullet(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot) : CObjectX(pos, rot, m_nModelNum)
+CItemBullet::CItemBullet(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot) : CObjectX(pos, rot, m_pModel)
 {
 	for (int cnt = 0; cnt < MAX_OBJ; cnt++)
 	{//すべて確認

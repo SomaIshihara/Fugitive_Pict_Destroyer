@@ -35,7 +35,6 @@ public:
 	float GetHeight(void) { return FLOAT_ZERO; }
 	float GetDepth(void) { return m_fDepth; }
 	int GetIdxTexture(void) { return m_nIdxTexture; }
-	int GetModelIdx(void) { return -1; }
 
 	//テクスチャ設定
 	void BindTexture(int nIdx) { m_nIdxTexture = nIdx; }

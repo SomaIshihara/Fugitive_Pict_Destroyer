@@ -10,6 +10,7 @@
 #include "objectX.h"
 #include "pict.h"
 #include "score.h"
+#include "xmodel.h"
 #include <stdio.h>
 #include <assert.h>
 
@@ -37,19 +38,18 @@ CBuilding::CBuilding()
 			break;
 		}
 	}
-	m_nEndurance = INT_ZERO;
 	m_pos = VEC3_ZERO;
 	m_rot = VEC3_ZERO;
 	m_fWidth = FLOAT_ZERO;
 	m_fHeight = FLOAT_ZERO;
 	m_fDepth = FLOAT_ZERO;
-	m_nIdx = 0;
+	m_nEndurance = INT_ZERO;
 }
 
 //=================================
 //コンストラクタ（オーバーロード）
 //=================================
-CBuilding::CBuilding(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, const int nIdx)
+CBuilding::CBuilding(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, CXModel* pModel)
 {
 	for (int cnt = 0; cnt < MAX_OBJ; cnt++)
 	{//すべて確認
@@ -61,18 +61,25 @@ CBuilding::CBuilding(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, const int nId
 			break;
 		}
 	}
-	m_nIdx = nIdx;
-	m_nEndurance = m_aBuildingParam[m_nIdx].nEndurance;
 	m_pos = pos;
 	m_rot = rot;
 	m_fWidth = FLOAT_ZERO;
 	m_fHeight = FLOAT_ZERO;
 	m_fDepth = FLOAT_ZERO;
+	m_pModel = pModel;
+
+	int nModelNum = 0;
+	CXModel* pXModel = CXModel::GetTop();
+	while (pXModel != NULL && pXModel != m_pModel)
+	{
+		pXModel = pXModel->GetNext();
+		nModelNum++;
+	}
+	m_nEndurance = m_aBuildingParam[nModelNum].nEndurance;
 
 	//サイズ設定
 	D3DXVECTOR3 vtxMin, vtxMax;
-	CObjectX::Model* model = CObjectX::GetModel(m_nIdx);
-	model->m_collision.GetVtx(&vtxMin, &vtxMax);
+	m_pModel->GetCollision().GetVtx(&vtxMin, &vtxMax);
 	m_fWidth = vtxMax.x - vtxMin.x;
 	m_fHeight = vtxMax.y - vtxMin.y;
 	m_fDepth = vtxMax.z - vtxMin.z;
@@ -156,10 +163,9 @@ void CBuilding::Draw(void)
 		pDevice->SetTransform(D3DTS_WORLD, &mtxWorld);
 
 		//マテリアルデータへのポインタ取得
-		CObjectX::Model* model = CObjectX::GetModel(m_nIdx);
-		pMat = (D3DXMATERIAL*)model->m_pBuffMat->GetBufferPointer();
+		pMat = (D3DXMATERIAL*)m_pModel->GetBufMat()->GetBufferPointer();
 
-		for (int nCntMat = 0; nCntMat < (int)model->m_dwNumMatModel; nCntMat++)
+		for (int nCntMat = 0; nCntMat < (int)m_pModel->GetNumMat(); nCntMat++)
 		{
 			//マテリアル設定
 			D3DMATERIAL9 changeMat = pMat[nCntMat].MatD3D;
@@ -175,10 +181,10 @@ void CBuilding::Draw(void)
 			pDevice->SetMaterial(&changeMat);
 
 			//テクスチャ設定
-			pDevice->SetTexture(0, pTexture->GetAddress(model->m_pIdxtexture[nCntMat]));
+			pDevice->SetTexture(0, pTexture->GetAddress(m_pModel->GetIdxTexture()[nCntMat]));
 
 			//モデル描画
-			model->m_pMesh->DrawSubset(nCntMat);
+			m_pModel->GetMesh()->DrawSubset(nCntMat);
 		}
 
 		//マテリアルを戻す
@@ -189,14 +195,14 @@ void CBuilding::Draw(void)
 //========================
 //生成処理
 //========================
-CBuilding* CBuilding::Create(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, const int nIdx)
+CBuilding* CBuilding::Create(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, CXModel* pModel)
 {
 	CBuilding* pBuilding = NULL;
 
 	if (pBuilding == NULL)
 	{
 		//オブジェクト2Dの生成
-		pBuilding = new CBuilding(pos, rot, nIdx);
+		pBuilding = new CBuilding(pos, rot, pModel);
 
 		//初期化
 		pBuilding->Init();

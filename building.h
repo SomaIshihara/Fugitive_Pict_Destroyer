@@ -10,6 +10,9 @@
 #include "main.h"
 #include "objectX.h"
 
+//前方宣言
+class CXModel;
+
 //建物クラス
 class CBuilding : public CObject
 {
@@ -24,7 +27,7 @@ public:
 
 	//コンストラクタ・デストラクタ
 	CBuilding();
-	CBuilding(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, const int nIdx);
+	CBuilding(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, CXModel* pModel);
 	~CBuilding();
 
 	//基本処理
@@ -37,7 +40,7 @@ public:
 	static void LoadParam(const char* pPath);
 
 	//生成
-	static CBuilding* Create(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, const int nIdx);
+	static CBuilding* Create(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, CXModel* pModel);
 
 	//取得
 	static CBuilding* GetBuilding(int nIdx) { return m_apBuilding[nIdx]; }
@@ -46,7 +49,7 @@ public:
 	float GetWidth(void) { return m_fWidth; }
 	float GetHeight(void) { return m_fHeight; }
 	float GetDepth(void) { return m_fDepth; }
-	int GetModelIdx(void) { return m_nIdx; }
+	CXModel* GetModel(void) { return m_pModel; }
 	int GetEndurance(void) { return m_nEndurance; }
 	static BuildingParam GetBuildingParam(int nIdx) { return m_aBuildingParam[nIdx]; }
 
@@ -60,7 +63,7 @@ private:
 	int m_nID;						//建物クラス内でのID
 	int m_nEndurance;				//耐久値
 	D3DXMATRIX mtxWorld;			//ワールドマトリ
-	int m_nIdx;						//モデル番号
+	CXModel* m_pModel;				//モデルポインタ
 
 	//位置類
 	D3DXVECTOR3 m_pos;	//位置
