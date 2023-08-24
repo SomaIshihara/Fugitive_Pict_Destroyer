@@ -10,6 +10,7 @@
 #include "texture.h"
 #include "input.h"
 #include "objectX.h"
+#include "building.h"
 #include "xmodel.h"
 #include <assert.h>
 
@@ -20,6 +21,8 @@
 CObjectX* CObjectX::m_pTop = NULL;
 CObjectX* CObjectX::m_pCur = NULL;
 int CObjectX::m_nNumAll = 0;
+
+using namespace std;
 
 //=================================
 //コンストラクタ（デフォルト）
@@ -212,6 +215,8 @@ CObjectX::LOADRESULT CObjectX::LoadData(const char * pPath)
 	FILE* pFile;
 	BINCODE code;
 	bool bRead = false;
+	char** ppFilePath = NULL;
+	int nReadedModel = 0;
 
 	pFile = fopen(pPath, "rb");
 
@@ -239,31 +244,46 @@ CObjectX::LOADRESULT CObjectX::LoadData(const char * pPath)
 					fread(&aPath[0], sizeof(char), PATH_LENGTH, pFile);
 					CManager::GetTexture()->Load(&aPath[0]);
 				}
+				else if (code == BIN_CODE_MODEL_NUM)
+				{
+					int nNumAll;
+					fread(&nNumAll, sizeof(int), 1, pFile);
+					ppFilePath = new char*[nNumAll];
+				}
 				else if (code == BIN_CODE_MODEL_FILENAME)
 				{
 					char aPath[PATH_LENGTH];
 					fread(&aPath[0], sizeof(char), PATH_LENGTH, pFile);
 					CXModel::Load(&aPath[0]);
+
+					//モデルパス読み取り（引き出し用に使う）
+					ppFilePath[nReadedModel] = new char[strlen(&aPath[0]) + 1];
+					strcpy(ppFilePath[nReadedModel], &aPath[0]);
+					nReadedModel++;
 				}
 				else if (code == BIN_CODE_MODELSET)
 				{
 					D3DXVECTOR3 pos, rot;
 					int nModelNum = -1;
-					CXModel* pModel = CXModel::GetTop();
+					CXModel* pModel = NULL;
 					fread(&pos, sizeof(D3DXVECTOR3), 1, pFile);
 					fread(&rot, sizeof(D3DXVECTOR3), 1, pFile);
 					fread(&nModelNum, sizeof(int), 1, pFile);
-					for (int cnt = 0; cnt < nModelNum; cnt++)
-					{
-						pModel = pModel->GetNext();
-					}
+					pModel = CXModel::Load(ppFilePath[nModelNum]);
 
 					//state設定（破壊可能設定）
 					int nState = INT_ZERO;
 					fread(&nState, sizeof(int), 1, pFile);
 
 					//生成
-					CObjectX::Create(pos, rot, pModel)->SetBreakable(((nState == 1) ? true : false));
+					if (nState == 1)	//仮
+					{//建物
+						CBuilding::Create(pos, rot, pModel);
+					}
+					else if (nState == 0)	//仮
+					{
+						CObjectX::Create(pos, rot, pModel);
+					}
 				}
 			}
 		}
@@ -291,6 +311,12 @@ CObjectX::LOADRESULT CObjectX::SaveData(const char * pPath)
 		//開始コード書き込み
 		BINCODE code = BIN_CODE_SCRIPT;
 		fwrite(&code, sizeof(BINCODE), 1, pFile);
+
+		//モデル個数書き込み
+		code = BIN_CODE_MODEL_NUM;
+		int nNumAll = CXModel::GetNumAll();
+		fwrite(&code, sizeof(BINCODE), 1, pFile);
+		fwrite(&nNumAll, sizeof(int), 1, pFile);
 
 		//モデルファイルパス書き込み
 		code = BIN_CODE_MODEL_FILENAME;

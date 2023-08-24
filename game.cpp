@@ -70,7 +70,7 @@ HRESULT CGame::Init(void)
 	CItemBullet::Create(D3DXVECTOR3(0.0f, 0.0f, 10.0f), VEC3_ZERO);
 
 	//仮配置
-	CObjectX::LoadData("data\\map.ismd");
+	CObjectX::LoadData("data\\Fugitive_Pict_MapData_v11.ismd");
 
 	//ポイント生成
 	CPoint::Update();

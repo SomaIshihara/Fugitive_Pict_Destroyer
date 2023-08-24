@@ -120,10 +120,10 @@ HRESULT CManager::Init(HINSTANCE hInstance, HWND hWnd, BOOL bWindow)
 	}
 
 	//3DÉÇÉfÉãì«Ç›çûÇ›
-	CXModel::Load("data\\MODEL\\jobi.x");
-	CXModel::Load("data\\MODEL\\zahyoukanban002.x");
-	CXModel::Load("data\\MODEL\\DoshinBill_01.x");
-	CXModel::Load("data\\MODEL\\hako.x");
+	//CXModel::Load("data\\MODEL\\jobi.x");
+	//CXModel::Load("data\\MODEL\\zahyoukanban002.x");
+	//CXModel::Load("data\\MODEL\\DoshinBill_01.x");
+	//CXModel::Load("data\\MODEL\\hako.x");
 	m_pAgitModel = CXModel::Load("data\\MODEL\\Agit.x");
 	CItemBullet::SetModel(CXModel::Load("data\\MODEL\\BulletBox.x"));
 

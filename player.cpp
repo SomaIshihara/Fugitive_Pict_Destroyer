@@ -92,10 +92,12 @@ void CPlayer::Update(void)
 	{//位置特定
 		Select();
 	}
+
+	CSlider* slider = CGame::GetSlider();
+	slider->SetSelectIdx(slider->GetSelectIdx() - (pMouse->GetWheel() / 120));
 	if (pMouse->GetPress(MOUSE_CLICK_RIGHT) == true)
 	{//モード変更
-		CSlider* slider = CGame::GetSlider();
-		slider->SetSelectIdx(slider->GetSelectIdx() - (pMouse->GetWheel() / 120));
+		
 	}
 
 	//タクシーモード
