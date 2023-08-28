@@ -40,6 +40,14 @@ public:
 		RES_MAX
 	};
 
+	enum STATE
+	{
+		STATE_NONE = 0,		//設定なし
+		STATE_BREAKABLE,	//破壊可能設定
+		STATE_KOBAN,		//交番設定
+		STATE_MAX
+	};
+
 	//コンストラクタ・デストラクタ
 	CObjectX(int nPriority = PRIORITY_DEFAULT);																	//デフォルト
 	CObjectX(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, CXModel* pModel, int nPriority = PRIORITY_DEFAULT);	//オーバーロード（位置向きサイズ）
@@ -64,11 +72,13 @@ public:
 	CObjectX* GetNext(void) { return m_pNext; }
 	CXModel* GetModel(void) { return m_pModel; }
 	bool GetBreakable(void) { return m_bBreakale; }
+	bool GetStateKoban(void) { return m_bKoban; }
 
 	//設定
 	void SetPos(D3DXVECTOR3 pos) { m_pos = pos; }
 	void SetRot(D3DXVECTOR3 rot) { m_rot = rot; }
 	void SetBreakable(bool bFrag) { m_bBreakale = bFrag; }
+	void SetStateKoban(bool bFrag) { m_bKoban = bFrag; }
 
 	//使用モデル単位で消す
 	static void Delete(CXModel* pTarget);
@@ -94,6 +104,7 @@ private:
 
 	//状態
 	bool m_bBreakale;	//破壊可能設定
+	bool m_bKoban;		//交番設定
 
 	//リスト
 	static CObjectX* m_pTop;	//先頭オブジェクト

@@ -11,6 +11,7 @@
 #include "input.h"
 #include "objectX.h"
 #include "building.h"
+#include "koban.h"
 #include "xmodel.h"
 #include <assert.h>
 
@@ -279,18 +280,22 @@ CObjectX::LOADRESULT CObjectX::LoadData(const char * pPath)
 					fread(&nModelNum, sizeof(int), 1, pFile);
 					pModel = CXModel::Load(ppFilePath[nModelNum]);
 
-					//state設定（破壊可能設定）
+					//state設定（破壊可能・交番設定）
 					int nState = INT_ZERO;
 					fread(&nState, sizeof(int), 1, pFile);
 
 					//生成
-					if (nState == 1)	//仮
+					if (nState == STATE_NONE)
+					{//オブジェクト
+						CObjectX::Create(pos, rot, pModel);
+					}
+					else if (nState == STATE_BREAKABLE)
 					{//建物
 						CBuilding::Create(pos, rot, pModel);
 					}
-					else if (nState == 0)	//仮
-					{
-						CObjectX::Create(pos, rot, pModel);
+					else if (nState == STATE_KOBAN)
+					{//交番
+						CKoban::Create(pos, rot, pModel);
 					}
 				}
 			}
@@ -360,8 +365,16 @@ CObjectX::LOADRESULT CObjectX::SaveData(const char * pPath)
 			}
 			fwrite(&nModelNum, sizeof(int), 1, pFile);
 
-			//state設定（破壊可能設定）
-			int nState = (pObject->GetBreakable() == true) ? 1 : 0;
+			//state設定（破壊可能・交番設定）
+			int nState = INT_ZERO;
+			if (pObject->GetBreakable() == true)
+			{//破壊可能設定
+				nState = STATE_BREAKABLE;
+			}
+			else if (pObject->GetStateKoban() == true)
+			{//交番設定
+				nState = STATE_KOBAN;
+			}
 			fwrite(&nState, sizeof(int), 1, pFile);
 
 			pObject = pObjectNext;

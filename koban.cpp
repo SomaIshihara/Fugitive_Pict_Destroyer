@@ -10,7 +10,6 @@
 
 //静的メンバ変数
 CKoban* CKoban::m_apKoban[];
-CXModel* CKoban::m_pModel = nullptr;
 int CKoban::m_nNumAll = INT_ZERO;
 int CKoban::m_nCounterSpawn = INT_ZERO;
 int CKoban::m_nSpawnSpan = INT_ZERO;
@@ -35,7 +34,7 @@ CKoban::CKoban()
 //=================================
 //コンストラクタ（オーバーロード）
 //=================================
-CKoban::CKoban(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot) : CObjectX(pos, rot, m_pModel)
+CKoban::CKoban(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, CXModel* pModel) : CObjectX(pos, rot, pModel)
 {
 	for (int cnt = 0; cnt < MAX_OBJ; cnt++)
 	{//すべて確認
@@ -112,14 +111,14 @@ void CKoban::CommonUpdate(void)
 //=================================
 //生成
 //=================================
-CKoban* CKoban::Create(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot)
+CKoban* CKoban::Create(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, CXModel* pModel)
 {
 	CKoban* pKoban = NULL;
 
 	if (pKoban == NULL)
 	{
 		//交番の生成
-		pKoban = new CKoban(pos, rot);
+		pKoban = new CKoban(pos, rot, pModel);
 
 		//初期化
 		pKoban->Init();

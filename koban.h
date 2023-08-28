@@ -15,7 +15,7 @@ class CKoban : CObjectX
 public:
 	//コンストラクタ・デストラクタ
 	CKoban();
-	CKoban(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot);
+	CKoban(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, CXModel* pModel);
 	~CKoban();
 
 	//基本処理
@@ -26,17 +26,13 @@ public:
 	static void CommonUpdate(void);	//交番共通更新処理
 
 	//生成
-	static CKoban* Create(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot);
+	static CKoban* Create(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, CXModel* pModel);
 
 	//設定
 	static void SetKobanParam(const int nSpawnSpan, const int nPoliceMax);
 
-	//モデル設定
-	static void BindModel(CXModel* pModel) { m_pModel = pModel; }
-
 private:
 	static CKoban* m_apKoban[MAX_OBJ];	//交番情報
-	static CXModel* m_pModel;	//クラス共通交番モデル
 	static int m_nNumAll;		//総数
 	static int m_nCounterSpawn;	//沸きカウンタ
 	static int m_nSpawnSpan;	//沸きの速さ
