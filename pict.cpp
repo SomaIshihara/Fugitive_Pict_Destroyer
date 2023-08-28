@@ -26,7 +26,7 @@
 
 //マクロ
 #define PICT_WALK_SPEED				(6.0f)		//ピクトさんの歩行速度
-#define PICT_POINT_RESEARCH_LENGTH	(5.0f)		//ピクトさんがポイントに到着したことにする距離
+#define PICT_POINT_RESEARCH_LENGTH	(2.0f)		//ピクトさんがポイントに到着したことにする距離
 #define PICT_AGIT_STOP_LENGTH		(20.0f)		//ピクトさんがアジトから離れる距離
 #define PICT_BUIDING_STOP_LENGTH	(120.0f)	//ピクトさんが建物から離れる距離
 #define PICT_POLICE_STOP_LENGTH		(30.0f)		//ピクトさんが警察から離れる距離
@@ -36,6 +36,7 @@
 #define PICT_DAMAGE_TIME			(120)		//赤くする時間
 #define PICT_LIFE					(1000)		//体力
 #define PICT_RESCUE_LIFE			(0.5f)		//救助する体力割合
+#define PICT_SOCIAL_DISTANCE		(15.0f)		//ソーシャルディスタンス範囲
 
 #define PICT_FORCEDRETURN_NUM		(2)			//強制帰宅するまでの人数
 #define PICT_NORMAL_D_PERCENT		(15)		//一般人ピクトがデストロイヤーになる確率
@@ -236,13 +237,12 @@ void CPict::Update(void)
 	CInputKeyboard* pKeyboard = CManager::GetInputKeyboard();	//キーボード取得
 	D3DXVECTOR3 pos = m_pos;
 	CMotion* pMotion = GetMotion();
+	m_move.x = FLOAT_ZERO;
+	m_move.z = FLOAT_ZERO;
 
 	//ピクト共通:ポイント移動処理
 	if (CPict::IsControll() == false && m_state != STATE_ATTACK)
 	{
-		m_move.x = FLOAT_ZERO;
-		m_move.z = FLOAT_ZERO;
-
 		if (m_targetObj != NULL)
 		{//目的地がある
 			D3DXVECTOR3 targetPos = m_targetObj->GetPos();
@@ -292,6 +292,45 @@ void CPict::Update(void)
 					break;
 				}
 			}
+		}
+
+		//ソーシャルディスタンス処理
+		float fLengthNear = FLOAT_ZERO;
+		D3DXVECTOR3 posAfter = pos + m_move;
+		CPict* pPictNear = nullptr;
+
+		//近いの調べる
+		for (int cnt = 0; cnt < MAX_OBJ; cnt++)
+		{
+			if (m_apPict[cnt] != nullptr && m_apPict[cnt] != this)
+			{//リストにある
+				float fLength = D3DXVec3Length(&(m_apPict[cnt]->GetPos() - posAfter));
+				if (pPictNear == nullptr || fLengthNear < fLength)
+				{//なんも見てない
+					pPictNear = m_apPict[cnt];
+					fLengthNear = fLength;
+				}
+			}
+		}
+
+		//近すぎない？
+		if (pPictNear != nullptr && fLengthNear <= PICT_SOCIAL_DISTANCE)
+		{//密です
+			float fTargetLenWidth, fTargetLenDepth;
+			float fTargetRot;
+			D3DXVECTOR3 posNearPict = pPictNear->GetPos();
+
+			//距離測って離れる
+			fTargetLenWidth = posNearPict.x - posAfter.x;
+			fTargetLenDepth = posNearPict.z - posAfter.z;
+
+			fTargetRot = atan2f(fTargetLenWidth, fTargetLenDepth);
+
+			posAfter.x = posNearPict.x + (sinf(fTargetRot) * PICT_SOCIAL_DISTANCE * 2.0f);
+			posAfter.z = posNearPict.z + (cosf(fTargetRot) * PICT_SOCIAL_DISTANCE * 2.0f);
+
+			//差分を移動量にする
+			m_move = posAfter - m_pos;
 		}
 	}
 
