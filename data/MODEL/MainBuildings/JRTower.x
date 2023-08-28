@@ -1831,7 +1831,7 @@ Mesh {
    0.000000;0.000000;0.000000;;
    0.000000;0.000000;0.000000;;
    TextureFilename {
-    "TEXTURE\\tex_JRTower_01.png";
+    "data\\TEXTURE\\tex_JRTower_01.png";
    }
   }
   Material {
@@ -1840,7 +1840,7 @@ Mesh {
    0.000000;0.000000;0.000000;;
    0.000000;0.000000;0.000000;;
    TextureFilename {
-    "TEXTURE\\tex_JRTower_01.png";
+    "data\\TEXTURE\\tex_JRTower_01.png";
    }
   }
   Material {
@@ -1849,7 +1849,7 @@ Mesh {
    0.000000;0.000000;0.000000;;
    0.000000;0.000000;0.000000;;
    TextureFilename {
-    "TEXTURE\\tex_JRTower_01.png";
+    "data\\TEXTURE\\tex_JRTower_01.png";
    }
   }
   Material {
@@ -1858,7 +1858,7 @@ Mesh {
    0.000000;0.000000;0.000000;;
    0.000000;0.000000;0.000000;;
    TextureFilename {
-    "TEXTURE\\tex_JRTower_01.png";
+    "data\\TEXTURE\\tex_JRTower_01.png";
    }
   }
   Material {

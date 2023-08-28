@@ -717,7 +717,7 @@ Mesh {
    0.000000;0.000000;0.000000;;
    0.000000;0.000000;0.000000;;
    TextureFilename {
-    "C:\\Users\\student\\Desktop\\新雑多\\素材\\制作ゲーム\\逃走者ピクト_市街の破壊者（デストロイヤー）\\TEXTURE\\tex_esta_01.png";
+    "data\\TEXTURE\\tex_esta_01.png";
    }
   }
   Material {
@@ -726,7 +726,7 @@ Mesh {
    0.000000;0.000000;0.000000;;
    0.000000;0.000000;0.000000;;
    TextureFilename {
-    "C:\\Users\\student\\Desktop\\新雑多\\素材\\制作ゲーム\\逃走者ピクト_市街の破壊者（デストロイヤー）\\TEXTURE\\tex_esta_01.png";
+    "data\\TEXTURE\\tex_esta_01.png";
    }
   }
   Material {
@@ -747,7 +747,7 @@ Mesh {
    0.000000;0.000000;0.000000;;
    0.000000;0.000000;0.000000;;
    TextureFilename {
-    "TEXTURE\\tex_esta_02.png";
+    "data\\TEXTURE\\tex_esta_02.png";
    }
   }
   Material {
