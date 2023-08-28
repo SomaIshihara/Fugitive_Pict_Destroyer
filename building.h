@@ -52,6 +52,7 @@ public:
 	CXModel* GetModel(void) { return m_pModel; }
 	int GetEndurance(void) { return m_nEndurance; }
 	static BuildingParam GetBuildingParam(int nIdx) { return m_aBuildingParam[nIdx]; }
+	static int GetNumAll(void) { return m_nNumAll; }
 
 	//ダメージ付与
 	void AddDamage(int nDamage);

@@ -13,6 +13,7 @@
 #include "timer.h"
 #include "objectX.h"
 #include "pict.h"
+#include "koban.h"
 #include "item.h"
 #include "meshsky.h"
 #include "point.h"
@@ -76,6 +77,9 @@ HRESULT CGame::Init(void)
 	//ポイント生成
 	CPoint::Update();
 
+	//交番パラメータ設定
+	CKoban::SetKobanParam(600, 10);	//仮設定
+
 	return S_OK;
 }
 
@@ -100,6 +104,7 @@ void CGame::Uninit(void)
 //=================================
 void CGame::Update(void)
 {
+	CKoban::CommonUpdate();	//交番共通更新処理
 	m_pPlayer->Update();
 
 	if (CManager::GetInputKeyboard()->GetPress(DIK_F6))

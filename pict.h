@@ -94,6 +94,7 @@ public:
 	static D3DXVECTOR3 GetAgitPos(void) { return m_pAgitObj->GetPos(); }
 	static PictParam GetPictParam(int nLv) { return m_pictParam[nLv]; }
 	CObject* GetTargetObj(void) { return m_targetObj; }
+	static int GetNumAll(void) { return m_nNumAll; }
 	
 	//İ’è
 	void SetPos(D3DXVECTOR3 pos) { m_pos = pos; }
@@ -185,6 +186,7 @@ public:
 
 	//æ“¾
 	static CPictDestroyer* GetPict(int nID) { return m_apPict[nID]; }
+	static int GetNumAll(void) { return m_nNumAll; }
 
 	//æÔ
 	void TakeTaxi(CPictTaxi* taxi);
@@ -225,6 +227,7 @@ public:
 
 	//æ“¾
 	static CPictBlocker* GetPict(int nID) { return m_apPict[nID]; }
+	static int GetNumAll(void) { return m_nNumAll; }
 
 	//æÔ
 	void TakeTaxi(CPictTaxi* taxi);
@@ -269,6 +272,7 @@ public:
 
 	//æ“¾
 	static CPictTaxi* GetPict(int nID) { return m_apPict[nID]; }
+	static int GetNumAll(void) { return m_nNumAll; }
 
 	//æÔ
 	void SetTakeTaxi(const CPict::TYPE type, const int nTakeNum);
@@ -333,6 +337,7 @@ public:
 	
 	//æ“¾
 	static CPictNormal* GetPict(int nID) { return m_apPict[nID]; }
+	static int GetNumAll(void) { return m_nNumAll; }
 
 	//æÔ
 	void TakeTaxi(CPictTaxi* taxi);
@@ -368,11 +373,12 @@ public:
 	static CPictPolice* Create(const D3DXVECTOR3 pos);
 
 	//æ“¾
-	CPict* GetTarget(void) { return m_pTargetPict; }
+	CPict* GetTargetPict(void) { return m_pTargetPict; }
 	static CPictPolice* GetPict(int nID) { return m_apPict[nID]; }
+	static int GetNumAll(void) { return m_nNumAll; }
 
 	//İ’è
-	void SetTarget(CPict* target) { m_pTargetPict = target; }
+	void SetTargetPict(CPict* target) { m_pTargetPict = target; }
 	void UnsetTarget(void) { m_pTargetPict = NULL; }
 
 	//Œš•¨İ’è

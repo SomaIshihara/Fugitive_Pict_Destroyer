@@ -38,7 +38,7 @@ CPoint::CPoint()
 }
 
 //=================================
-//デストラクタ（デフォルト）
+//デストラクタ
 //=================================
 CPoint::~CPoint()
 {
@@ -139,7 +139,7 @@ CPoint* CPoint::Create(const D3DXVECTOR3 pos)
 
 	if (pPoint == NULL)
 	{
-		//オブジェクトアニメーション2Dの生成
+		//ポイントの生成
 		pPoint = new CPoint;
 
 		//初期化
