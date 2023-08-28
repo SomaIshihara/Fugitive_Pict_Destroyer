@@ -60,17 +60,18 @@ HRESULT CGame::Init(void)
 	//オブジェクト生成+初期化
 	CScore::Create(D3DXVECTOR3(SCREEN_WIDTH - 24.0f, 32.0f, 0.0f), VEC3_ZERO, 40.0f, 64.0f);
 	CTimer::Create(D3DXVECTOR3(SCREEN_WIDTH * 0.5f + 24.0f, 32.0f, 0.0f), VEC3_ZERO, 48.0f, 72.0f);
-	CObjectX* pAgit = CObjectX::Create(VEC3_ZERO, VEC3_ZERO, CManager::GetAgitModel());
+	CObjectX* pAgit = CObjectX::Create(D3DXVECTOR3(300.0f,0.0f,0.0f), VEC3_ZERO, CManager::GetAgitModel());
 	CPict::SetAgit(pAgit);
 	CMeshSky::Create(VEC3_ZERO, VEC3_ZERO, 10000.0f, 8, 8);
 
 	//仮
-	CPictPolice::Create(D3DXVECTOR3(-200.0f, 0.0f, 50.0f))->SetTargetObj(CBuilding::GetBuilding(0));
-	CPictNormal::Create(D3DXVECTOR3(48.0f, 0.0f, 556.0f));
+	//CPictPolice::Create(D3DXVECTOR3(-200.0f, 0.0f, 50.0f))->SetTargetObj(CBuilding::GetBuilding(0));
+	//CPictNormal::Create(D3DXVECTOR3(48.0f, 0.0f, 556.0f));
 	CItemBullet::Create(D3DXVECTOR3(0.0f, 0.0f, 10.0f), VEC3_ZERO);
 
 	//仮配置
-	CObjectX::LoadData("data\\Fugitive_Pict_MapData_v11.ismd");
+	//CObjectX::LoadData("data\\Fugitive_Pict_MapData_v11.ismd");
+	CObjectX::LoadData("data\\test.ismd");
 
 	//ポイント生成
 	CPoint::Update();

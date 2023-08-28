@@ -57,9 +57,9 @@ public:
 	//取得
 	D3DXVECTOR3 GetPos(void) { return m_pos; }
 	D3DXVECTOR3 GetRot(void) { return m_rot; }
-	float GetWidth(void) { return FLOAT_ZERO; }
-	float GetHeight(void) { return FLOAT_ZERO; }
-	float GetDepth(void) { return FLOAT_ZERO; }
+	float GetWidth(void) { return m_fWidth; }
+	float GetHeight(void) { return m_fHeight; }
+	float GetDepth(void) { return m_fDepth; }
 	static CObjectX* GetTop(void) { return m_pTop; }
 	CObjectX* GetNext(void) { return m_pNext; }
 	CXModel* GetModel(void) { return m_pModel; }
@@ -88,6 +88,9 @@ private:
 	//位置類
 	D3DXVECTOR3 m_pos;	//位置
 	D3DXVECTOR3 m_rot;	//向き
+	float m_fWidth;		//幅
+	float m_fHeight;	//高さ
+	float m_fDepth;		//奥行
 
 	//状態
 	bool m_bBreakale;	//破壊可能設定

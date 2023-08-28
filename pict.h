@@ -102,8 +102,8 @@ public:
 	void AddDamage(int nDamage);
 	void SetState(STATE state) { m_state = state; }
 	static void SetAgit(CObjectX* pAgit) { m_pAgitObj = pAgit; }
-	void SetTargetObj(CObject* pObj) { m_targetObj = pObj; }
-	void UnsetTargetObj(void) { m_targetObj = GetAgit(); m_state = STATE_LEAVE; }
+	void SetTargetObj(CObject* pObj);
+	void UnsetTargetObj(void);
 
 	//“–‚½‚è”»’è
 	bool CollisionField(D3DXVECTOR3* pPosNew);

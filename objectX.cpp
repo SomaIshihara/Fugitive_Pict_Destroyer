@@ -74,8 +74,16 @@ CObjectX::CObjectX(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, CXModel* pModel
 	}
 	m_pCur = this;				//俺が最後尾
 	m_bExclusion = false;		//生きてる
-	m_pModel = pModel;
-	m_nNumAll++;
+	m_pModel = pModel;			//モデル設定
+
+	//サイズ設定
+	D3DXVECTOR3 vtxMin, vtxMax;
+	m_pModel->GetCollision().GetVtx(&vtxMin, &vtxMax);
+	m_fWidth = vtxMax.x - vtxMin.x;
+	m_fHeight = vtxMax.y - vtxMin.y;
+	m_fDepth = vtxMax.z - vtxMin.z;
+
+	m_nNumAll++;	//オブジェクト個数増やす
 }
 
 //=================================

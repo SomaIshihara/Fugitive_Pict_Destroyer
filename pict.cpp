@@ -420,6 +420,25 @@ void CPict::AddDamage(int nDamage)
 }
 
 //=================================
+//ターゲット設定
+//=================================
+void CPict::SetTargetObj(CObject * pObj)
+{
+	m_targetObj = pObj;		//目的地設定
+	Search();				//経路探索
+}
+
+//=================================
+//ターゲット解除
+//=================================
+void CPict::UnsetTargetObj(void)
+{
+	m_targetObj = GetAgit();	//目的地をアジトにする
+	m_state = STATE_LEAVE;		//帰る状態
+	Search();					//経路探索
+}
+
+//=================================
 //フィールドの当たり判定
 //=================================
 bool CPict::CollisionField(D3DXVECTOR3* pPosNew)
@@ -481,7 +500,7 @@ void CPict::Search(void)
 			fRadNear = fRadius;
 		}
 		else if (fLength > PICT_POINT_RESEARCH_LENGTH && fRadNear > fRadius)
-		{//距離と角度が小さい
+		{//角度が小さい
 			bool bCollision = false;
 			for (int cnt = 0; cnt < MAX_OBJ; cnt++)
 			{

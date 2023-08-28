@@ -42,7 +42,7 @@ public:
 	int* GetIdxTexture(void) { return m_pIdxtexture; }
 	char* GetPath(void) { return m_pFilePath; }
 	CCollision GetCollision(void) { return m_collision; }
-	static int GetNumAll(void) { return m_nNumAll; }
+	static int GetNumAll(void) { return m_nNumAll; }	
 
 	//リスト取得
 	static CXModel* GetTop(void) { return m_pTop; }
@@ -50,8 +50,8 @@ public:
 
 private:
 	//リスト
-	static CXModel* m_pTop;	//先頭オブジェクト
-	static CXModel* m_pCur;	//最後尾オブジェクト
+	static CXModel* m_pTop;		//先頭オブジェクト
+	static CXModel* m_pCur;		//最後尾オブジェクト
 	CXModel* m_pNext;			//次のオブジェクト
 	CXModel* m_pPrev;			//前のオブジェクト
 	bool m_bExclusion;			//除外フラグ
