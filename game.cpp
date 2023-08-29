@@ -72,7 +72,7 @@ HRESULT CGame::Init(void)
 
 	//仮配置
 	//CObjectX::LoadData("data\\Fugitive_Pict_MapData_v11.ismd");
-	CObjectX::LoadData("data\\test.ismd");
+	CObjectX::LoadData("data\\Fugitive_Pict_MapData_v111.ismd");
 
 	//ポイント生成
 	CPoint::Update();

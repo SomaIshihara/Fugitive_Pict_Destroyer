@@ -305,7 +305,7 @@ void CPict::Update(void)
 			if (m_apPict[cnt] != nullptr && m_apPict[cnt] != this)
 			{//ƒŠƒXƒg‚É‚ ‚é
 				float fLength = D3DXVec3Length(&(m_apPict[cnt]->GetPos() - posAfter));
-				if (pPictNear == nullptr || fLengthNear < fLength)
+				if (pPictNear == nullptr || fLengthNear > fLength)
 				{//‚È‚ñ‚àŒ©‚Ä‚È‚¢
 					pPictNear = m_apPict[cnt];
 					fLengthNear = fLength;
@@ -325,6 +325,7 @@ void CPict::Update(void)
 			fTargetLenDepth = posNearPict.z - posAfter.z;
 
 			fTargetRot = atan2f(fTargetLenWidth, fTargetLenDepth);
+			fTargetRot = FIX_ROT(fTargetRot + (1.1f * D3DX_PI));
 
 			posAfter.x = posNearPict.x + (sinf(fTargetRot) * PICT_SOCIAL_DISTANCE * 2.0f);
 			posAfter.z = posNearPict.z + (cosf(fTargetRot) * PICT_SOCIAL_DISTANCE * 2.0f);
