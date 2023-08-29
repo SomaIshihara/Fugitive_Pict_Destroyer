@@ -140,7 +140,10 @@ void CObject2D::Uninit(void)
 //========================
 void CObject2D::Update(void)
 {
-	
+	if (m_bEnable == true)
+	{//有効
+
+	}
 }
 
 //========================
@@ -148,20 +151,23 @@ void CObject2D::Update(void)
 //========================
 void CObject2D::Draw(void)
 {
-	LPDIRECT3DDEVICE9 pDevice = CManager::GetRenderer()->GetDevice();	//デバイス取得
-	CTexture* pTexture = CManager::GetTexture();						//テクスチャオブジェクト取得
+	if (m_bEnable == true)
+	{//有効
+		LPDIRECT3DDEVICE9 pDevice = CManager::GetRenderer()->GetDevice();	//デバイス取得
+		CTexture* pTexture = CManager::GetTexture();						//テクスチャオブジェクト取得
 
-	//頂点バッファをデータストリームに設定
-	pDevice->SetStreamSource(0, m_pVtxbuff, 0, sizeof(VERTEX_2D));
+																			//頂点バッファをデータストリームに設定
+		pDevice->SetStreamSource(0, m_pVtxbuff, 0, sizeof(VERTEX_2D));
 
-	//頂点フォーマットの設定
-	pDevice->SetFVF(FVF_VERTEX_2D);
+		//頂点フォーマットの設定
+		pDevice->SetFVF(FVF_VERTEX_2D);
 
-	//テクスチャ設定
-	pDevice->SetTexture(0, pTexture->GetAddress(m_nIdxTexture));
+		//テクスチャ設定
+		pDevice->SetTexture(0, pTexture->GetAddress(m_nIdxTexture));
 
-	//描画
-	pDevice->DrawPrimitive(D3DPT_TRIANGLESTRIP, 0, 2);
+		//描画
+		pDevice->DrawPrimitive(D3DPT_TRIANGLESTRIP, 0, 2);
+	}
 }
 
 //========================

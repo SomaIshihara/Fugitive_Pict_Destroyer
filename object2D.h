@@ -53,6 +53,7 @@ public:
 	HRESULT SetRot(const D3DXVECTOR3 rot);	//向き
 	HRESULT SetCol(const D3DXCOLOR col);	//色
 	HRESULT SetTex(const D3DXVECTOR2 tex0, const D3DXVECTOR2 tex3);	//テクスチャ座標
+	void SetEnable(const bool bFrag) { m_bEnable = bFrag; }
 
 private:
 	//頂点位置設定
@@ -66,6 +67,7 @@ private:
 	float m_fAngle;		//角度
 	float m_fWidth;		//幅
 	float m_fHeight;	//高さ
+	bool m_bEnable;		//有効・無効設定
 };
 
 #endif // !_OBJECT_H_

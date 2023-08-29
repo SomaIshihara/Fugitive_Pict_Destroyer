@@ -66,8 +66,6 @@ HRESULT CGame::Init(void)
 	CMeshSky::Create(VEC3_ZERO, VEC3_ZERO, 10000.0f, 8, 8);
 
 	//仮
-	//CPictPolice::Create(D3DXVECTOR3(-200.0f, 0.0f, 50.0f))->SetTargetObj(CBuilding::GetBuilding(0));
-	//CPictNormal::Create(D3DXVECTOR3(48.0f, 0.0f, 556.0f));
 	CItemBullet::Create(D3DXVECTOR3(0.0f, 0.0f, 10.0f), VEC3_ZERO);
 
 	//マップデータ読み込みと配置

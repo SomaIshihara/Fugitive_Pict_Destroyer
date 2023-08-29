@@ -35,10 +35,6 @@ HRESULT CBG::Init(void)
 		return E_FAIL;
 	}
 
-	//テクスチャ読み込み
-	CTexture* pTexture = CManager::GetTexture();
-	m_nIdxTexture = pTexture->Regist("data\\TEXTURE\\wasitu01_.jpg");
-
 	return S_OK;
 }
 
@@ -83,9 +79,6 @@ CBG* CBG::Create(void)
 
 		//初期化
 		pObjBG->Init();
-
-		//テクスチャ設定
-		pObjBG->BindTexture(pObjBG->m_nIdxTexture);
 
 		return pObjBG;
 	}

@@ -188,6 +188,7 @@
     <ClCompile Include="objectBillboard.cpp" />
     <ClCompile Include="objectX.cpp" />
     <ClCompile Include="particle.cpp" />
+    <ClCompile Include="pause.cpp" />
     <ClCompile Include="pict.cpp" />
     <ClCompile Include="player.cpp" />
     <ClCompile Include="point.cpp" />
@@ -242,6 +243,7 @@
     <ClInclude Include="objectBillboard.h" />
     <ClInclude Include="objectX.h" />
     <ClInclude Include="particle.h" />
+    <ClInclude Include="pause.h" />
     <ClInclude Include="pict.h" />
     <ClInclude Include="player.h" />
     <ClInclude Include="point.h" />
