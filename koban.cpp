@@ -8,6 +8,10 @@
 #include "pict.h"
 #include "building.h"
 
+//マクロ
+#define KOBAN_BUILDING_SEARCH_NUM	(5)		//建物探索回数（これを過ぎると沸かない）
+#define KOBAN_NOBUILDING_TIME_PERCE	(0.5f)	//建物が見つからなかった場合の探索時間割合
+
 //静的メンバ変数
 CKoban* CKoban::m_apKoban[];
 int CKoban::m_nNumAll = INT_ZERO;
@@ -98,12 +102,22 @@ void CKoban::CommonUpdate(void)
 		if (m_nCounterSpawn >= m_nSpawnSpan)
 		{//沸かす
 			int nSpawnKoban = rand() % m_nNumAll;	//適当に決める
-			int nAssignBuilding = rand() % CBuilding::GetNumAll();
+			int nAssignBuilding;
 
-			CPictPolice* pPolice = CPictPolice::Create(m_apKoban[nSpawnKoban]->GetPos());	//適当に決めた交番から沸かす
-			pPolice->SetTargetObj(CBuilding::GetBuilding(nAssignBuilding));					//適当に決めた建物に配属
+			for (int cnt = 0; cnt < KOBAN_BUILDING_SEARCH_NUM; cnt++)
+			{
+				nAssignBuilding = rand() % CBuilding::GetNumAll();
+				if (CBuilding::GetBuilding(nAssignBuilding)->GetEndurance() > 0)
+				{//耐久値が残っている
+					CPictPolice* pPolice = CPictPolice::Create(m_apKoban[nSpawnKoban]->GetPos());	//適当に決めた交番から沸かす
+					pPolice->SetTargetObj(CBuilding::GetBuilding(nAssignBuilding));					//適当に決めた建物に配属
+					m_nCounterSpawn = 0;	//カウンタリセット
+					break;
+				}
+			}
 
-			m_nCounterSpawn = 0;	//カウンタリセット
+			//いや見つからないんですが->沸き時間の何割かたったらまた探す
+			m_nCounterSpawn = (int)((float)m_nSpawnSpan * KOBAN_NOBUILDING_TIME_PERCE);	//カウンタリセット
 		}
 	}
 }

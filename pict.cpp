@@ -32,7 +32,6 @@
 #define PICT_POLICE_STOP_LENGTH		(30.0f)		//ピクトさんが警察から離れる距離
 #define PICT_POLICE_SEARCH_LENGTH	(60.0f)		//ピクト警察のサーチ範囲
 #define PICT_ATTACK_TIME			(60)		//攻撃を行う間隔
-#define PICT_DAMAGE_ALPHA			(0.9f)		//赤くする割合
 #define PICT_DAMAGE_TIME			(120)		//赤くする時間
 #define PICT_LIFE					(1000)		//体力
 #define PICT_RESCUE_LIFE			(0.5f)		//救助する体力割合
@@ -45,18 +44,30 @@
 #define PICT_NORMAL_NUM_MIN			(500)		//一般人ピクトの最低人数
 #define PICT_NORMAL_NUM_DEGREE		(2500)		//一般人ピクトの人数振れ幅
 
+//計算
+#define PICT_POWER(lv,hpct)	((int)ceil((50 + (50 * ((float)hpct / PICT_HAVENPICT(lv)) * 1.2f) + hpct) * PICT_ATK(lv)))
+
 //静的メンバ変数
 CPict* CPict::m_apPict[MAX_OBJ];
 int CPict::m_nNumAll = 0;
 CObjectX* CPict::m_pAgitObj = NULL;
+
 CPictDestroyer* CPictDestroyer::m_apPict[MAX_OBJ];
 int CPictDestroyer::m_nNumAll = 0;
+int CPictDestroyer::m_nLv = 1;
+int CPictDestroyer::m_nExp = 0;
+
 CPictBlocker* CPictBlocker::m_apPict[MAX_OBJ];
 int CPictBlocker::m_nNumAll = 0;
+int CPictBlocker::m_nLv = 1;
+int CPictBlocker::m_nExp = 0;
+
 CPictTaxi* CPictTaxi::m_apPict[MAX_OBJ];
 int CPictTaxi::m_nNumAll = 0;
+
 CPictNormal* CPictNormal::m_apPict[MAX_OBJ];
 int CPictNormal::m_nNumAll = 0;
+
 CPictPolice* CPictPolice::m_apPict[MAX_OBJ];
 int CPictPolice::m_nNumAll = 0;
 
@@ -88,7 +99,6 @@ CPict::CPict()
 	m_nCounterJumpTime = 0;
 	m_bJump = false;
 	m_bControll = false;
-	m_nLife = INT_ZERO;
 	m_fRedAlpha = FLOAT_ZERO;
 	m_state = STATE_MAX;
 	m_type = TYPE_MAX;
@@ -119,7 +129,6 @@ CPict::CPict(const D3DXVECTOR3 pos, const TYPE type)
 	m_nCounterJumpTime = 0;
 	m_bJump = false;
 	m_bControll = false;
-	m_nLife = INT_ZERO;
 	m_fRedAlpha = FLOAT_ZERO;
 	m_state = STATE_MAX;
 	m_type = type;
@@ -140,7 +149,7 @@ HRESULT CPict::Init(void)
 	//モーション生成・初期化
 	m_pMotion = new CMotion;
 	m_pMotion->Init();
-
+	
 	//モーションビューアのファイルを読み込み
 	LoadMotionViewerFile("data\\motion_exithuman.txt", &m_apModel[0], m_pMotion, &m_nNumModel);
 
@@ -168,9 +177,6 @@ HRESULT CPict::Init(void)
 
 	//操縦しない設定
 	m_bControll = false;
-
-	//仮：体力設定
-	m_nLife = PICT_LIFE;
 
 	//できた
 	return S_OK;
@@ -427,36 +433,6 @@ void CPict::Draw(void)
 
 	//マテリアルを戻す
 	pDevice->SetMaterial(&matDef);
-}
-
-//========================
-//ダメージ付与処理
-//========================
-void CPict::AddDamage(int nDamage)
-{
-	m_nLife -= nDamage;	//付与
-
-	//0になったら消す
-	if (m_nLife <= INT_ZERO)
-	{
-		for (int cnt = 0; cnt < MAX_OBJ; cnt++)
-		{//全オブジェクト見る
-			CPictBlocker* pPict = CPictBlocker::GetPict(cnt);	//オブジェクト取得
-
-			if (pPict != NULL)	//ヌルチェ
-			{//なんかある
-				if (pPict->GetTargetObj() == this)
-				{//自分がターゲット
-					pPict->UnsetTargetObj();	//ターゲット外す
-				}
-			}
-		}
-
-		//爆散
-		Uninit();
-	}
-
-	m_fRedAlpha = PICT_DAMAGE_ALPHA;
 }
 
 //=================================
@@ -775,6 +751,54 @@ void CPictDestroyer::TakeTaxi(CPictTaxi * taxi)
 	//ここに連れている一般人も乗せる処理
 }
 
+//========================
+//ダメージ付与処理
+//========================
+void CPictDestroyer::AddDamage(int nDamage)
+{
+	m_nLife -= nDamage;	//付与
+
+						//0になったら消す
+	if (m_nLife <= INT_ZERO)
+	{
+		for (int cnt = 0; cnt < MAX_OBJ; cnt++)
+		{//全オブジェクト見る
+			CPictBlocker* pPict = CPictBlocker::GetPict(cnt);	//オブジェクト取得
+
+			if (pPict != NULL)	//ヌルチェ
+			{//なんかある
+				if (pPict->GetTargetObj() == this)
+				{//自分がターゲット
+					pPict->UnsetTargetObj();	//ターゲット外す
+				}
+			}
+		}
+
+		//爆散
+		Uninit();
+	}
+
+	//赤くする
+	SetRedAlpha();
+}
+
+
+//=================================
+//経験値取得（レベルアップ処理含む）
+//=================================
+void CPictDestroyer::AddExp(const int nExp)
+{
+	//経験値加算
+	m_nExp += nExp;
+
+	//一定量超えたらレベルアップ
+	while (REQUIRE_EXP(m_nLv + 1) <= m_nExp)
+	{//上げきる
+		m_nExp -= REQUIRE_EXP(m_nLv + 1);	//所持経験値減算
+		m_nLv++;							//レベルアップ
+	}
+}
+
 //******************************************************
 //ブロッカーピクトクラス
 //******************************************************
@@ -929,6 +953,53 @@ void CPictBlocker::TakeTaxi(CPictTaxi * taxi)
 {
 	taxi->SetTakeTaxi(CPict::TYPE_BLOCKER, 1);
 	//ここに連れている一般人も乗せる処理
+}
+
+//========================
+//ダメージ付与処理
+//========================
+void CPictBlocker::AddDamage(int nDamage)
+{
+	m_nLife -= nDamage;	//付与
+
+						//0になったら消す
+	if (m_nLife <= INT_ZERO)
+	{
+		for (int cnt = 0; cnt < MAX_OBJ; cnt++)
+		{//全オブジェクト見る
+			CPictBlocker* pPict = CPictBlocker::GetPict(cnt);	//オブジェクト取得
+
+			if (pPict != NULL)	//ヌルチェ
+			{//なんかある
+				if (pPict->GetTargetObj() == this)
+				{//自分がターゲット
+					pPict->UnsetTargetObj();	//ターゲット外す
+				}
+			}
+		}
+
+		//爆散
+		Uninit();
+	}
+
+	//赤くする
+	SetRedAlpha();
+}
+
+//=================================
+//経験値取得（レベルアップ処理含む）
+//=================================
+void CPictBlocker::AddExp(const int nExp)
+{
+	//経験値加算
+	m_nExp += nExp;
+
+	//一定量超えたらレベルアップ
+	while (REQUIRE_EXP(m_nLv + 1) <= m_nExp)
+	{//上げきる
+		m_nExp -= REQUIRE_EXP(m_nLv + 1);	//所持経験値減算
+		m_nLv++;							//レベルアップ
+	}
 }
 
 //******************************************************
@@ -1325,6 +1396,37 @@ CPict* CPictTaxi::SearchBattler(void)
 	}
 }
 
+//========================
+//ダメージ付与処理
+//========================
+void CPictTaxi::AddDamage(int nDamage)
+{
+	m_nLife -= nDamage;	//付与
+
+	//0になったら消す
+	if (m_nLife <= INT_ZERO)
+	{
+		for (int cnt = 0; cnt < MAX_OBJ; cnt++)
+		{//全オブジェクト見る
+			CPictBlocker* pPict = CPictBlocker::GetPict(cnt);	//オブジェクト取得
+
+			if (pPict != NULL)	//ヌルチェ
+			{//なんかある
+				if (pPict->GetTargetObj() == this)
+				{//自分がターゲット
+					pPict->UnsetTargetObj();	//ターゲット外す
+				}
+			}
+		}
+
+		//爆散
+		Uninit();
+	}
+
+	//赤くする
+	SetRedAlpha();
+}
+
 
 //******************************************************
 //一般人ピクトクラス
@@ -1664,4 +1766,38 @@ CPictPolice* CPictPolice::Create(const D3DXVECTOR3 pos)
 	{
 		return NULL;
 	}
+}
+
+//========================
+//ダメージ付与処理
+//========================
+void CPictPolice::AddDamage(int nDamage)
+{
+	m_nLife -= nDamage;	//付与
+
+	//0になったら消す
+	if (m_nLife <= INT_ZERO)
+	{
+		for (int cnt = 0; cnt < MAX_OBJ; cnt++)
+		{//全オブジェクト見る
+			CPictBlocker* pPict = CPictBlocker::GetPict(cnt);	//オブジェクト取得
+
+			if (pPict != NULL)	//ヌルチェ
+			{//なんかある
+				if (pPict->GetTargetObj() == this)
+				{//自分がターゲット
+					pPict->UnsetTargetObj();	//ターゲット外す
+				}
+			}
+		}
+
+		//経験値付与
+		CPictBlocker::AddExp(DROP_EXP(9));	//いったんレベル9として扱う
+
+		//爆散
+		Uninit();
+	}
+
+	//赤くする
+	SetRedAlpha();
 }

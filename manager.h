@@ -93,9 +93,6 @@ public:
 	static CScene::MODE GetMode(void) { return m_pScene->GetMode(); }
 
 private:
-	//再配置
-	//void ResetObj(void);
-
 	//変数
 	static CInputKeyboard* m_pInputKeyboard;	//キーボード
 	static CInputMouse* m_pInputMouse;			//マウス

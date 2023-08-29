@@ -72,7 +72,7 @@ public:
 private:
 	int m_nIdxTexture;		//テクスチャ番号
 	D3DXVECTOR3 m_move;		//移動量
-	CPict::TYPE m_Type;			//誰の弾か
+	CPict::TYPE m_Type;		//誰の弾か
 	int m_nPower;			//攻撃力
 	CPict* m_pfirePict;		//発射したピクト
 };

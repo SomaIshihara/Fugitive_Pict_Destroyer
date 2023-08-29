@@ -234,11 +234,12 @@ void CBuilding::AddDamage(int nDamage)
 				if (pPict->GetTargetObj() == this)
 				{//自分がターゲット
 					pPict->UnsetTargetObj();
-					//pPict->UnsetTarget();	//ターゲット外す
-					//pPict->SetState(CPict::STATE_LEAVE);
 				}
 			}
 		}
+
+		//経験値付与
+		CPictDestroyer::AddExp(DROP_EXP(9));	//いったんレベル9として扱う
 	}
 
 	//赤くする

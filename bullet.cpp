@@ -382,35 +382,103 @@ bool CBulletBillboard::CollisionBuilding(void)
 //=================================
 bool CBulletBillboard::CollisionPict(void)
 {
-	for (int cnt = 0; cnt < MAX_OBJ; cnt++)
-	{//全オブジェクト見る
-		CPict* pPict = CPict::GetPict(cnt);
+	if (m_Type == CPict::TYPE_BLOCKER)
+	{//ブロッカー（標的：警察）
+		for (int cnt = 0; cnt < MAX_OBJ; cnt++)
+		{//全オブジェクト見る
+			CPictPolice* pPict = CPictPolice::GetPict(cnt);
 
-		if (pPict != NULL && pPict != m_pfirePict)	//ヌルチェ
-		{//なんかある
-			D3DXVECTOR3 pictPos = pPict->GetPos();
-			float pictWidth = pPict->GetWidth();
-			float pictDepth = pPict->GetDepth();
+			if (pPict != NULL && pPict != m_pfirePict)	//ヌルチェ
+			{//なんかある
+				D3DXVECTOR3 pictPos = pPict->GetPos();
+				float pictWidth = pPict->GetWidth();
+				float pictDepth = pPict->GetDepth();
 
-			if (GetPos().x > pictPos.x - pictWidth * 0.5f &&
-				GetPos().x < pictPos.x + pictWidth * 0.5f &&
-				GetPos().z > pictPos.z - pictDepth * 0.5f &&
-				GetPos().z < pictPos.z + pictDepth * 0.5f)
-			{
-				//爆発生成
-				CParticleBillboard::Create(GetPos(), 10, 4, 1, 2, D3DXCOLOR(1.0f, 0.0f, 0.0f, 1.0f), 20.0f, 20.0f);
+				if (GetPos().x > pictPos.x - pictWidth * 0.5f &&
+					GetPos().x < pictPos.x + pictWidth * 0.5f &&
+					GetPos().z > pictPos.z - pictDepth * 0.5f &&
+					GetPos().z < pictPos.z + pictDepth * 0.5f)
+				{
+					//爆発生成
+					CParticleBillboard::Create(GetPos(), 10, 4, 1, 2, D3DXCOLOR(1.0f, 0.0f, 0.0f, 1.0f), 20.0f, 20.0f);
 
-				//ダメージ
-				pPict->AddDamage(m_nPower);
+					//ダメージ
+					pPict->AddDamage(m_nPower);
 
-				//自分終了
-				Uninit();
+					//自分終了
+					Uninit();
 
-				//弾は敵に当たった
-				return true;
+					//弾は敵に当たった
+					return true;
+				}
 			}
 		}
 	}
+	else if (m_Type == CPict::TYPE_POLICE)
+	{//警察（標的：デストロイヤー・ブロッカー）
+		//デストロイヤー
+		for (int cnt = 0; cnt < MAX_OBJ; cnt++)
+		{//全オブジェクト見る
+			CPictDestroyer* pPict = CPictDestroyer::GetPict(cnt);
+
+			if (pPict != NULL && pPict != m_pfirePict)	//ヌルチェ
+			{//なんかある
+				D3DXVECTOR3 pictPos = pPict->GetPos();
+				float pictWidth = pPict->GetWidth();
+				float pictDepth = pPict->GetDepth();
+
+				if (GetPos().x > pictPos.x - pictWidth * 0.5f &&
+					GetPos().x < pictPos.x + pictWidth * 0.5f &&
+					GetPos().z > pictPos.z - pictDepth * 0.5f &&
+					GetPos().z < pictPos.z + pictDepth * 0.5f)
+				{
+					//爆発生成
+					CParticleBillboard::Create(GetPos(), 10, 4, 1, 2, D3DXCOLOR(1.0f, 0.0f, 0.0f, 1.0f), 20.0f, 20.0f);
+
+					//ダメージ
+					pPict->AddDamage(m_nPower);
+
+					//自分終了
+					Uninit();
+
+					//弾は敵に当たった
+					return true;
+				}
+			}
+		}
+
+		//ブロッカー
+		for (int cnt = 0; cnt < MAX_OBJ; cnt++)
+		{//全オブジェクト見る
+			CPictBlocker* pPict = CPictBlocker::GetPict(cnt);
+
+			if (pPict != NULL && pPict != m_pfirePict)	//ヌルチェ
+			{//なんかある
+				D3DXVECTOR3 pictPos = pPict->GetPos();
+				float pictWidth = pPict->GetWidth();
+				float pictDepth = pPict->GetDepth();
+
+				if (GetPos().x > pictPos.x - pictWidth * 0.5f &&
+					GetPos().x < pictPos.x + pictWidth * 0.5f &&
+					GetPos().z > pictPos.z - pictDepth * 0.5f &&
+					GetPos().z < pictPos.z + pictDepth * 0.5f)
+				{
+					//爆発生成
+					CParticleBillboard::Create(GetPos(), 10, 4, 1, 2, D3DXCOLOR(1.0f, 0.0f, 0.0f, 1.0f), 20.0f, 20.0f);
+
+					//ダメージ
+					pPict->AddDamage(m_nPower);
+
+					//自分終了
+					Uninit();
+
+					//弾は敵に当たった
+					return true;
+				}
+			}
+		}
+	}
+
 	//弾は敵に当たっていなかった
 	return false;
 }

@@ -23,6 +23,9 @@
 #include "result.h"
 #include "ranking.h"
 
+//—”
+#include <time.h>
+
 //ƒ}ƒNƒ
 #define FPS_SPEED	(500)	//FPSŒv‘ªŠÔ
 
@@ -65,6 +68,9 @@ CManager::~CManager()
 //=================================
 HRESULT CManager::Init(HINSTANCE hInstance, HWND hWnd, BOOL bWindow)
 {
+	//—”‚ğ—”‚É‚·‚é
+	srand((unsigned int)time(NULL));
+
 	//¶¬
 	m_pInputKeyboard = new CInputKeyboard;
 	m_pInputMouse = new CInputMouse;
