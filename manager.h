@@ -86,6 +86,7 @@ public:
 	static CTexture* GetTexture(void) { return m_pTexture; }
 	//仮
 	static CXModel* GetAgitModel(void) { return m_pAgitModel; }
+	static CXModel* GetFragModel(void) { return m_pFragModel; }
 
 	//シーン系
 	static void SetMode(CScene::MODE mode);
@@ -107,6 +108,9 @@ private:
 	static CXModel* m_pAgitModel;				//仮：アジトモデルポインタ
 	static int m_nFPS;							//FPS
 	static DWORD m_dwFrameCount;				//回したフレーム数
+
+	//仮
+	static CXModel* m_pFragModel;	//旗モデル
 
 	static CScene* m_pScene;	//シーン
 };

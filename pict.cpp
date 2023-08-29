@@ -26,7 +26,7 @@
 
 //マクロ
 #define PICT_WALK_SPEED				(6.0f)		//ピクトさんの歩行速度
-#define PICT_POINT_RESEARCH_LENGTH	(2.0f)		//ピクトさんがポイントに到着したことにする距離
+#define PICT_POINT_RESEARCH_LENGTH	(5.0f)		//ピクトさんがポイントに到着したことにする距離
 #define PICT_AGIT_STOP_LENGTH		(20.0f)		//ピクトさんがアジトから離れる距離
 #define PICT_BUIDING_STOP_LENGTH	(120.0f)	//ピクトさんが建物から離れる距離
 #define PICT_POLICE_STOP_LENGTH		(30.0f)		//ピクトさんが警察から離れる距離
@@ -249,12 +249,29 @@ void CPict::Update(void)
 			float targetWidthHalf = m_targetObj->GetWidth() * 0.5f;
 			float targetDepthHalf = m_targetObj->GetDepth() * 0.5f;
 
-			if (targetPos.x - targetWidthHalf * 1.5f > pos.x || targetPos.x + targetWidthHalf * 1.5f < pos.x ||
-				targetPos.z - targetDepthHalf * 1.5f > pos.z || targetPos.z + targetDepthHalf * 1.5f < pos.z)
+			if (targetPos.x - targetWidthHalf * 1.5f < pos.x && targetPos.x + targetWidthHalf * 1.5f > pos.x &&
+				targetPos.z - targetDepthHalf * 1.5f < pos.z && targetPos.z + targetDepthHalf * 1.5f > pos.z)
+			{//ついた
+				switch (m_state)
+				{
+				case STATE_FACE:
+					m_state = STATE_ATTACK;
+					break;
+				case STATE_LEAVE:
+					Uninit();
+					return;
+					break;
+				}
+			}
+			else
 			{//目的地ではない
 				//ポイント移動
-				if (m_PointPos.x - PICT_POINT_RESEARCH_LENGTH > pos.x || m_PointPos.x + PICT_POINT_RESEARCH_LENGTH < pos.x ||
-					m_PointPos.z - PICT_POINT_RESEARCH_LENGTH > pos.z || m_PointPos.z + PICT_POINT_RESEARCH_LENGTH < pos.z)
+				if (m_PointPos.x - PICT_POINT_RESEARCH_LENGTH < pos.x && m_PointPos.x + PICT_POINT_RESEARCH_LENGTH > pos.x &&
+					m_PointPos.z - PICT_POINT_RESEARCH_LENGTH < pos.z && m_PointPos.z + PICT_POINT_RESEARCH_LENGTH > pos.z)
+				{//ついた
+					Search();	//ポイント検索
+				}
+				else
 				{//移動中
 					float fTargetLenWidth, fTargetLenDepth;
 					float fTargetRot;
@@ -273,23 +290,6 @@ void CPict::Update(void)
 					{
 						pMotion->Set(MOTIONTYPE_MOVE);
 					}
-				}
-				else
-				{//ついた
-					Search();	//ポイント検索
-				}
-			}
-			else
-			{//ついた
-				switch (m_state)
-				{
-				case STATE_FACE:
-					m_state = STATE_ATTACK;
-					break;
-				case STATE_LEAVE:
-					Uninit();
-					return;
-					break;
 				}
 			}
 		}
@@ -521,76 +521,94 @@ void CPict::LoadPictParam(const char * pPath)
 //=================================
 void CPict::Search(void)
 {
-	D3DXVECTOR3 vecTarget = m_targetObj->GetPos() - m_pos;
+	D3DXVECTOR3 posTarget = m_targetObj->GetPos();
 	CPoint* pPointNear = NULL;
 	float fLenNear = 0.0f;
 	float fRadNear = 0.0f;
 	CPoint* pPoint = CPoint::GetTop();
 
+	//現在地と建物までの角度を計算
+	float fTargetLenWidth = posTarget.x - m_pos.x;
+	float fTargetLenDepth = posTarget.z - m_pos.z;
+	float fRadiusBuilding = atan2f(fTargetLenWidth, fTargetLenDepth);
+
 	while (pPoint != NULL)
 	{//リスト終了までやる
 		D3DXVECTOR3 vecPoint = pPoint->GetPos() - m_pos;
-		float fLength = D3DXVec3Length(&vecPoint);	//ポイントと現在地の距離
-		//ポイントと現在地の角度
-		float fRadius = fabsf(acosf(D3DXVec3Dot(&vecTarget, &(pPoint->GetPos() - m_pos)) / (D3DXVec3Length(&vecTarget) * D3DXVec3Length(&(pPoint->GetPos() - m_pos)))));
-		if (pPointNear == NULL && fLength > PICT_POINT_RESEARCH_LENGTH)
-		{//何も入っていない
-			pPointNear = pPoint;
-			fLenNear = fLength;
-			fRadNear = fRadius;
-		}
-		else if (fLength > PICT_POINT_RESEARCH_LENGTH && fRadNear > fRadius)
-		{//角度が小さい
-			bool bCollision = false;
-			for (int cnt = 0; cnt < MAX_OBJ; cnt++)
+
+		//float fRadius = fabsf(acosf(D3DXVec3Dot(&vecTarget, &(pPoint->GetPos() - m_pos)) / (D3DXVec3Length(&vecTarget) * D3DXVec3Length(&(pPoint->GetPos() - m_pos)))));
+		bool bCollision = false;
+		for (int cnt = 0; cnt < MAX_OBJ; cnt++)
+		{
+			CBuilding* pBuilding = CBuilding::GetBuilding(cnt);
+			if (pBuilding != NULL)
 			{
-				CBuilding* pBuilding = CBuilding::GetBuilding(cnt);
-				if (pBuilding != NULL)
+				D3DXVECTOR3 posBuilding = pBuilding->GetPos();
+				float fWidthHalf = pBuilding->GetWidth() * 0.5f;
+				float fDepthHalf = pBuilding->GetDepth() * 0.5f;
+
+				//4頂点作る
+				D3DXVECTOR3 posBuild[4];	
+				posBuild[0] = posBuilding + D3DXVECTOR3(-fWidthHalf, 0.0f, -fDepthHalf);
+				posBuild[1] = posBuilding + D3DXVECTOR3(fWidthHalf, 0.0f, -fDepthHalf);
+				posBuild[2] = posBuilding + D3DXVECTOR3(-fWidthHalf, 0.0f, fDepthHalf);
+				posBuild[3] = posBuilding + D3DXVECTOR3(fWidthHalf, 0.0f, fDepthHalf);
+
+				//プラスマイナスがあったかのフラッグ
+				bool bPlus = false;
+				bool bMinus = false;	
+				for (int cntPos = 0; cntPos < 4; cntPos++)
 				{
-					D3DXVECTOR3 pos = pBuilding->GetPos();
-					float fWidthHalf = pBuilding->GetWidth() * 0.5f;
-					float fDepthHalf = pBuilding->GetDepth() * 0.5f;
-
-					D3DXVECTOR3 posBuild[4];	//4頂点作る
-					posBuild[0] = pos + D3DXVECTOR3(-fWidthHalf, 0.0f, -fDepthHalf);
-					posBuild[1] = pos + D3DXVECTOR3(fWidthHalf, 0.0f, -fDepthHalf);
-					posBuild[2] = pos + D3DXVECTOR3(-fWidthHalf, 0.0f, fDepthHalf);
-					posBuild[3] = pos + D3DXVECTOR3(fWidthHalf, 0.0f, fDepthHalf);
-
-					bool bPlus = false;
-					bool bMinus = false;	//プラスマイナスがあったかのフラッグ
-					for (int cntPos = 0; cntPos < 4; cntPos++)
-					{
-						if (TASUKIGAKE(vecPoint.x, vecPoint.z, posBuild[cntPos].x, posBuild[cntPos].z) > 0.0f)
-						{//プラス
-							bPlus = true;
-						}
-						else if (TASUKIGAKE(vecPoint.x, vecPoint.z, posBuild[cntPos].x, posBuild[cntPos].z) < 0.0f)
-						{//マイナス
-							bMinus = true;
-						}
-						else
-						{//ゼロなので当たっている（まぁ両方trueにすれば当たったことになるからいいよね）
-							bPlus = true;
-							bMinus = true;
-							break;	//もう当たったので終了
-						}
+					if (TASUKIGAKE(vecPoint.x, vecPoint.z, (posBuild[cntPos].x - m_pos.x), (posBuild[cntPos].z - m_pos.z)) > 0.0f)
+					{//プラス
+						bPlus = true;
 					}
-
-					if (bPlus == true && bMinus == true)
-					{
-						bCollision = true;	//衝突した
-						break;
+					else if (TASUKIGAKE(vecPoint.x, vecPoint.z, (posBuild[cntPos].x - m_pos.x), (posBuild[cntPos].z - m_pos.z)) < 0.0f)
+					{//マイナス
+						bMinus = true;
+					}
+					else
+					{//ゼロなので当たっている（まぁ両方trueにすれば当たったことになるからいいよね）
+						bPlus = true;
+						bMinus = true;
+						break;	//もう当たったので終了
 					}
 				}
+
+				if (bPlus == true && bMinus == true)
+				{
+					bCollision = true;	//衝突した
+					break;
+				}
 			}
-			
-			if (bCollision == false)
-			{//当たってない
+		}
+
+		if (bCollision == false)
+		{//当たってない
+			float fLength = D3DXVec3Length(&vecPoint);	//ポイントと現在地の距離
+			//ポイントと現在地の角度
+			fTargetLenWidth = pPoint->GetPos().x - m_pos.x;
+			fTargetLenDepth = pPoint->GetPos().z - m_pos.z;
+			float fRadius = atan2f(fTargetLenWidth, fTargetLenDepth);
+
+			if(fLength > PICT_POINT_RESEARCH_LENGTH && (pPointNear == NULL || fabsf(fRadNear - fRadiusBuilding) > fabsf(fRadius - fRadiusBuilding)))
+			{//何も入っていない・角度が小さい
 				pPointNear = pPoint;
 				fLenNear = fLength;
 				fRadNear = fRadius;
 			}
+			//if (pPointNear == NULL && fLength > PICT_POINT_RESEARCH_LENGTH)
+			//{//何も入っていない
+			//	pPointNear = pPoint;
+			//	fLenNear = fLength;
+			//	fRadNear = fRadius;
+			//}
+			//else if (fLength > PICT_POINT_RESEARCH_LENGTH && fabsf(fRadNear - fRadiusBuilding) > fabsf(fRadius - fRadiusBuilding))
+			//{//角度が小さい
+			//	pPointNear = pPoint;
+			//	fLenNear = fLength;
+			//	fRadNear = fRadius;
+			//}
 		}
 		
 		//次のポイントへ
@@ -1588,8 +1606,9 @@ void CPictPolice::Update(void)
 			for (int cnt = 0; cnt < MAX_OBJ; cnt++)
 			{//全オブジェクト見る
 				CPict* pPict = CPict::GetPict(cnt);	//オブジェクト取得
+				CPict::TYPE type = GetType();
 
-				if (pPict != NULL && pPict != this && GetType() != TYPE_NORMAL)
+				if (pPict != NULL && pPict != this && type != TYPE_NORMAL && type != TYPE_POLICE)
 				{
 					if (D3DXVec3Length(&(pPict->GetPos() - this->GetPos())) <= PICT_POLICE_SEARCH_LENGTH)
 					{

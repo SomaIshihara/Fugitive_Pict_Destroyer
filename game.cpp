@@ -61,7 +61,7 @@ HRESULT CGame::Init(void)
 	//オブジェクト生成+初期化
 	CScore::Create(D3DXVECTOR3(SCREEN_WIDTH - 24.0f, 32.0f, 0.0f), VEC3_ZERO, 40.0f, 64.0f);
 	CTimer::Create(D3DXVECTOR3(SCREEN_WIDTH * 0.5f + 24.0f, 32.0f, 0.0f), VEC3_ZERO, 48.0f, 72.0f);
-	CObjectX* pAgit = CObjectX::Create(D3DXVECTOR3(300.0f,0.0f,0.0f), VEC3_ZERO, CManager::GetAgitModel());
+	CObjectX* pAgit = CObjectX::Create(D3DXVECTOR3(600.0f,0.0f,0.0f), VEC3_ZERO, CManager::GetAgitModel());
 	CPict::SetAgit(pAgit);
 	CMeshSky::Create(VEC3_ZERO, VEC3_ZERO, 10000.0f, 8, 8);
 
@@ -70,15 +70,14 @@ HRESULT CGame::Init(void)
 	//CPictNormal::Create(D3DXVECTOR3(48.0f, 0.0f, 556.0f));
 	CItemBullet::Create(D3DXVECTOR3(0.0f, 0.0f, 10.0f), VEC3_ZERO);
 
-	//仮配置
-	//CObjectX::LoadData("data\\Fugitive_Pict_MapData_v11.ismd");
+	//マップデータ読み込みと配置
 	CObjectX::LoadData("data\\Fugitive_Pict_MapData_v111.ismd");
 
 	//ポイント生成
 	CPoint::Update();
 
 	//交番パラメータ設定
-	CKoban::SetKobanParam(600, 10);	//仮設定
+	CKoban::SetKobanParam(300, 10);	//仮設定
 
 	return S_OK;
 }

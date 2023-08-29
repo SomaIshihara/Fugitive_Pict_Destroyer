@@ -27,17 +27,18 @@
 #define FPS_SPEED	(500)	//FPSåvë™éûä‘
 
 //ê√ìIÉÅÉìÉoïœêî
-CRenderer* CManager::m_pRenderer = NULL;
-CInputKeyboard* CManager::m_pInputKeyboard = NULL;
-CInputMouse* CManager::m_pInputMouse = NULL;
-CDebugProc* CManager::m_pDebProc = NULL;
-CSound* CManager::m_pSound = NULL;
-CCamera* CManager::m_pCamera = NULL;
-CLight* CManager::m_pLight = NULL;
-CTexture* CManager::m_pTexture = NULL;
-CScene* CManager::m_pScene = NULL;
+CRenderer* CManager::m_pRenderer = nullptr;
+CInputKeyboard* CManager::m_pInputKeyboard = nullptr;
+CInputMouse* CManager::m_pInputMouse = nullptr;
+CDebugProc* CManager::m_pDebProc = nullptr;
+CSound* CManager::m_pSound = nullptr;
+CCamera* CManager::m_pCamera = nullptr;
+CLight* CManager::m_pLight = nullptr;
+CTexture* CManager::m_pTexture = nullptr;
+CScene* CManager::m_pScene = nullptr;
 //âº
-CXModel* CManager::m_pAgitModel = NULL;
+CXModel* CManager::m_pAgitModel = nullptr;
+CXModel* CManager::m_pFragModel = nullptr;
 
 int CManager::m_nFPS = 0;
 DWORD CManager::m_dwFrameCount = 0;
@@ -124,6 +125,7 @@ HRESULT CManager::Init(HINSTANCE hInstance, HWND hWnd, BOOL bWindow)
 	//CXModel::Load("data\\MODEL\\zahyoukanban002.x");
 	//CXModel::Load("data\\MODEL\\DoshinBill_01.x");
 	//CXModel::Load("data\\MODEL\\hako.x");
+	m_pFragModel = CXModel::Load("data\\MODEL\\frag.x");
 	m_pAgitModel = CXModel::Load("data\\MODEL\\Agit.x");
 	CItemBullet::SetModel(CXModel::Load("data\\MODEL\\BulletBox.x"));
 

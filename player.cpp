@@ -73,7 +73,7 @@ void CPlayer::Update(void)
 	CInputMouse* pMouse = CManager::GetInputMouse();	//マウス取得
 	Move();
 
-	if (pMouse->GetPress(MOUSE_CLICK_LEFT) == true)
+	if (pMouse->GetPress(MOUSE_CLICK_RIGHT) == true)
 	{//回転
 		Rotate();
 	}
@@ -95,10 +95,6 @@ void CPlayer::Update(void)
 
 	CSlider* slider = CGame::GetSlider();
 	slider->SetSelectIdx(slider->GetSelectIdx() - (pMouse->GetWheel() / 120));
-	if (pMouse->GetPress(MOUSE_CLICK_RIGHT) == true)
-	{//モード変更
-		
-	}
 
 	//タクシーモード
 	CPictTaxi* pTaxi = CPictTaxi::GetPict(0);
