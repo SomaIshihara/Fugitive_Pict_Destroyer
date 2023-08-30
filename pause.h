@@ -4,9 +4,8 @@
 //Author:石原颯馬
 //
 //======================================================
-#ifndef _GAME_H_
-#define _GAME_H_
-#include "manager.h"
+#ifndef _PAUSE_H_
+#define _PAUSE_H_
 
 //前方宣言
 class CObject2D;
@@ -14,12 +13,12 @@ class CButton2D;
 class CBG;
 
 //タイトルクラス
-class CGame
+class CPause
 {
 public:
 	//コンストラクタ・デストラクタ
-	CGame();
-	~CGame();
+	CPause();
+	~CPause();
 
 	//基本処理
 	HRESULT Init(void);
@@ -32,7 +31,7 @@ public:
 
 private:
 	CBG* m_pBG;					//背景
-	CObject2D* m_pPolygon;		//昨日を持たないポリゴン
+	CObject2D* m_pPolygon;		//機能を持たないポリゴン
 	CButton2D* m_pContinue;		//再開ボタン
 	CButton2D* m_pRestart;		//リスタートボタン
 	CButton2D* m_pExit;			//終了ボタン

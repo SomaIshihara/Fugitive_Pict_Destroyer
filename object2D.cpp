@@ -25,6 +25,7 @@ CObject2D::CObject2D(int nPriority) : CObject(nPriority)
 
 	m_pos = D3DXVECTOR3(428.0f, 428.0f, 0.0f);
 	m_rot = VEC3_ZERO;
+	m_bEnable = true;
 }
 
 //=================================
@@ -41,6 +42,7 @@ CObject2D::CObject2D(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, const float f
 
 	m_pos = pos;
 	m_rot = rot;
+	m_bEnable = true;
 }
 
 //=================================

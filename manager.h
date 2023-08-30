@@ -84,6 +84,7 @@ public:
 	static CCamera* GetCamera(void) { return m_pCamera; }
 	static CLight* GetLight(void) { return m_pLight; }
 	static CTexture* GetTexture(void) { return m_pTexture; }
+	static bool GetPause(void) { return m_bPause; }
 	//仮
 	static CXModel* GetAgitModel(void) { return m_pAgitModel; }
 	static CXModel* GetFragModel(void) { return m_pFragModel; }
@@ -91,6 +92,9 @@ public:
 	//シーン系
 	static void SetMode(CScene::MODE mode);
 	static CScene::MODE GetMode(void) { return m_pScene->GetMode(); }
+
+	//設定
+	static void SetPause(const bool bFrag) { m_bPause = bFrag; }
 
 private:
 	//変数
@@ -110,6 +114,8 @@ private:
 	static CXModel* m_pFragModel;	//旗モデル
 
 	static CScene* m_pScene;	//シーン
+
+	static bool m_bPause;		//ポーズ状態
 };
 
 #endif

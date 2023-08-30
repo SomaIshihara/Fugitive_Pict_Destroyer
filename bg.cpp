@@ -61,21 +61,27 @@ void CBG::Update(void)
 //=================================
 void CBG::Draw(void)
 {
+	//Zバッファを使用しない
+	CManager::GetRenderer()->SetZEnable(false);
+
 	//親クラス処理
 	CObject2D::Draw();
+	
+	//Zバッファを使用する
+	CManager::GetRenderer()->SetZEnable(true);
 }
 
 //=================================
 //生成処理
 //=================================
-CBG* CBG::Create(void)
+CBG* CBG::Create(const int nPriority)
 {
 	CBG* pObjBG = NULL;
 
 	if (pObjBG == NULL)
 	{
 		//背景の生成
-		pObjBG = new CBG();
+		pObjBG = new CBG(nPriority);
 
 		//初期化
 		pObjBG->Init();

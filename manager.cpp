@@ -43,6 +43,8 @@ CScene* CManager::m_pScene = nullptr;
 CXModel* CManager::m_pAgitModel = nullptr;
 CXModel* CManager::m_pFragModel = nullptr;
 
+bool CManager::m_bPause = false;
+
 int CManager::m_nFPS = 0;
 DWORD CManager::m_dwFrameCount = 0;
 
@@ -230,12 +232,21 @@ void CManager::Uninit(void)
 //=================================
 void CManager::Update(void)
 {
+	//入力系
 	m_pInputKeyboard->Update();
 	m_pInputMouse->Update();
-	m_pRenderer->Update();
+
+	//描画系
+	if (m_bPause == false)
+	{//ポーズしていなければ全オブジェクト更新
+		m_pRenderer->Update();
+	}
+
+	//3D系
 	m_pCamera->Update();
 	m_pLight->Update();
 
+	//中身知らんけど何かしらのシーン
 	m_pScene->Update();
 
 	//この時点で死亡フラグが立っているオブジェを殺す

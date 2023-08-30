@@ -17,7 +17,7 @@ public:
 	~CBG();
 
 	//¶¬
-	static CBG* Create(void);
+	static CBG* Create(const int nPriority = PRIORITY_BG);
 
 	//Šî–{ˆ—
 	HRESULT Init(void);

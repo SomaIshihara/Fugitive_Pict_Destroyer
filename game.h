@@ -12,6 +12,7 @@
 class CPlayer;
 class CMeshField;
 class CSlider;
+class CPause;
 
 //タイトルクラス
 class CGame : public CScene
@@ -33,9 +34,10 @@ public:
 	static CMeshField* GetMeshField(void) { return m_pMeshField; }
 
 private:
-	static CPlayer* m_pPlayer;					//プレイヤー
-	static CSlider* m_pSlider;					//スライダー
-	static CMeshField* m_pMeshField;			//メッシュフィールド
+	CPause* m_pPause;					//ポーズ
+	static CPlayer* m_pPlayer;			//プレイヤー
+	static CSlider* m_pSlider;			//スライダー
+	static CMeshField* m_pMeshField;	//メッシュフィールド
 };
 
 #endif // !_GAME_H_

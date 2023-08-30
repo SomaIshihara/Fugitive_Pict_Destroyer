@@ -33,6 +33,7 @@ public:
 
 	//ê›íË
 	void SetBlendType(BLENDTYPE type);
+	void SetZEnable(const bool bEnable);
 	void SetEnableZTest(bool bEnable);
 	void SetEnableAlplaTest(bool bEnable);
 

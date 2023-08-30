@@ -5,6 +5,7 @@
 //
 //======================================================
 #include "game.h"
+#include "pause.h"
 #include "player.h"
 #include "meshField.h"
 #include "slider.h"
@@ -29,6 +30,7 @@ CMeshField* CGame::m_pMeshField = NULL;
 //=================================
 CGame::CGame()
 {
+	m_pPause = nullptr;
 }
 
 //=================================
@@ -101,12 +103,36 @@ void CGame::Uninit(void)
 //=================================
 void CGame::Update(void)
 {
-	CKoban::CommonUpdate();	//交番共通更新処理
-	m_pPlayer->Update();
+	CInputKeyboard* pKeyboard = CManager::GetInputKeyboard();	//キーボード取得
 
-	if (CManager::GetInputKeyboard()->GetPress(DIK_F6))
-	{
-		CManager::SetMode(CScene::MODE_TITLE);
+	if (pKeyboard->GetTrigger(DIK_P) == true)
+	{//ポーズ切り替え
+		CManager::SetPause((CManager::GetPause() == true ? false : true));
+	}
+
+	if (CManager::GetPause() == true)
+	{//ポーズしてる
+		if (m_pPause == nullptr)
+		{//ポーズがぬるぽ
+			m_pPause = new CPause;		//ポーズ生成
+			m_pPause->Init();			//ポーズ初期化
+		}
+
+		//ポーズ時の処理
+		m_pPause->Update();
+	}
+	else
+	{//ポーズしてない
+		if (m_pPause != nullptr)
+		{//なんか入ってる
+			m_pPause->Uninit();	//終了
+			delete m_pPause;	//破棄
+			m_pPause = nullptr;	//ぬるぽ入れる
+		}
+
+		//普段の処理
+		CKoban::CommonUpdate();	//交番共通更新処理
+		m_pPlayer->Update();
 	}
 }
 
@@ -115,4 +141,7 @@ void CGame::Update(void)
 //=================================
 void CGame::Draw(void)
 {
+	//普段はすべてCObjectクラス継承してるものが動いているので自動描画
+	//ポーズの中身もすべてCObjectクラス継承してるので自動描画
+	//よってここですることはない
 }
