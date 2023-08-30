@@ -72,9 +72,6 @@
     <ClCompile Include="enemy.cpp">
       <Filter>ソース ファイル\Derivation</Filter>
     </ClCompile>
-    <ClCompile Include="multiplebg.cpp">
-      <Filter>ソース ファイル\Object</Filter>
-    </ClCompile>
     <ClCompile Include="explosion.cpp">
       <Filter>ソース ファイル\Derivation</Filter>
     </ClCompile>
@@ -135,9 +132,6 @@
     <ClCompile Include="precompile.cpp">
       <Filter>ソース ファイル\Core</Filter>
     </ClCompile>
-    <ClCompile Include="motion.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
     <ClCompile Include="file.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
@@ -162,9 +156,6 @@
     <ClCompile Include="symbol.cpp">
       <Filter>ソース ファイル\Derivation</Filter>
     </ClCompile>
-    <ClCompile Include="point.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
     <ClCompile Include="title.cpp">
       <Filter>ソース ファイル\Scene</Filter>
     </ClCompile>
@@ -180,11 +171,17 @@
     <ClCompile Include="xmodel.cpp">
       <Filter>ソース ファイル\Core</Filter>
     </ClCompile>
-    <ClCompile Include="koban.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
     <ClCompile Include="pause.cpp">
       <Filter>ソース ファイル\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="motion.cpp">
+      <Filter>ソース ファイル\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="koban.cpp">
+      <Filter>ソース ファイル\Derivation</Filter>
+    </ClCompile>
+    <ClCompile Include="point.cpp">
+      <Filter>ソース ファイル\Core</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -223,9 +220,6 @@
     </ClInclude>
     <ClInclude Include="enemy.h">
       <Filter>ヘッダー ファイル\Derivation</Filter>
-    </ClInclude>
-    <ClInclude Include="multiplebg.h">
-      <Filter>ヘッダー ファイル\Object</Filter>
     </ClInclude>
     <ClInclude Include="explosion.h">
       <Filter>ヘッダー ファイル\Derivation</Filter>
@@ -287,9 +281,6 @@
     <ClInclude Include="precompile.h">
       <Filter>ヘッダー ファイル\Core</Filter>
     </ClInclude>
-    <ClInclude Include="motion.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
     <ClInclude Include="file.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
@@ -311,9 +302,6 @@
     <ClInclude Include="symbol.h">
       <Filter>ヘッダー ファイル\Derivation</Filter>
     </ClInclude>
-    <ClInclude Include="point.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
     <ClInclude Include="title.h">
       <Filter>ヘッダー ファイル\Scene</Filter>
     </ClInclude>
@@ -329,11 +317,17 @@
     <ClInclude Include="xmodel.h">
       <Filter>ヘッダー ファイル\Core</Filter>
     </ClInclude>
-    <ClInclude Include="koban.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
     <ClInclude Include="pause.h">
       <Filter>ヘッダー ファイル\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="motion.h">
+      <Filter>ヘッダー ファイル\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="koban.h">
+      <Filter>ヘッダー ファイル\Derivation</Filter>
+    </ClInclude>
+    <ClInclude Include="point.h">
+      <Filter>ヘッダー ファイル\Core</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -205,6 +205,9 @@ public:
 	//経験値付与
 	static void AddExp(const int nExp);
 
+	//レベル・経験値リセット
+	static void ResetLevelExp(void) { m_nLv = 1; m_nExp = 0; }
+
 private:
 	static CPictDestroyer* m_apPict[MAX_OBJ];	//ピクトさんポインタ
 	static int m_nNumAll;				//ピクトさん総数
@@ -254,6 +257,9 @@ public:
 
 	//経験値付与
 	static void AddExp(const int nExp);
+
+	//レベル・経験値リセット
+	static void ResetLevelExp(void) { m_nLv = 1; m_nExp = 0; }
 
 private:
 	static CPictBlocker* m_apPict[MAX_OBJ];	//ピクトさんポインタ

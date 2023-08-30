@@ -16,7 +16,7 @@
 
 //Ã“Iƒƒ“ƒo•Ï”
 CItemBullet* CItemBullet::m_pItemBullet[];
-CXModel* CItemBullet::m_pModel = NULL;
+CXModel* CItemBullet::m_pModel = nullptr;
 int CItemBullet::m_nNumAll = 0;
 
 //************************************************

@@ -98,18 +98,6 @@ void CScore::Uninit(void)
 //=================================
 void CScore::Update(void)
 {
-#ifdef _DEBUG
-	//[debug]数字設定
-	if (CManager::GetInputKeyboard()->GetTrigger(DIK_F1) == true)
-	{
-		Set(12345678);	//デバッグ用だからこれでいいよね
-	}
-	if (CManager::GetInputKeyboard()->GetTrigger(DIK_F2) == true)
-	{
-		Add(100);	//デバッグ用だからこれでいいよね
-	}
-#endif // DEBUG
-
 	//建物オブジェクト全検索
 	Set(0);
 	for (int cnt = 0; cnt < MAX_OBJ; cnt++)

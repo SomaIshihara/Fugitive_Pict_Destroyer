@@ -21,9 +21,9 @@
 #include "input.h"
 
 //静的メンバ変数
-CPlayer* CGame::m_pPlayer = NULL;
-CSlider* CGame::m_pSlider = NULL;
-CMeshField* CGame::m_pMeshField = NULL;
+CPlayer* CGame::m_pPlayer = nullptr;
+CSlider* CGame::m_pSlider = nullptr;
+CMeshField* CGame::m_pMeshField = nullptr;
 
 //=================================
 //コンストラクタ
@@ -96,6 +96,10 @@ void CGame::Uninit(void)
 		delete m_pPlayer;
 		m_pPlayer = NULL;
 	}
+
+	m_pPlayer = nullptr;
+	m_pSlider = nullptr;
+	m_pMeshField = nullptr;
 }
 
 //=================================

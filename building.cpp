@@ -110,6 +110,9 @@ void CBuilding::Uninit(void)
 	//Œš•¨ƒNƒ‰ƒX“à‚Å‚Ìˆ—
 	m_apBuilding[m_nID] = NULL;
 
+	//Œš•¨ŒÂ”Œ¸‚ç‚·
+	m_nNumAll--;
+
 	//©•ª©g”jŠü
 	Release();
 }

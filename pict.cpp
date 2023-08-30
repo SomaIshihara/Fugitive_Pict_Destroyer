@@ -50,7 +50,7 @@
 //静的メンバ変数
 CPict* CPict::m_apPict[MAX_OBJ];
 int CPict::m_nNumAll = 0;
-CObjectX* CPict::m_pAgitObj = NULL;
+CObjectX* CPict::m_pAgitObj = nullptr;
 
 CPictDestroyer* CPictDestroyer::m_apPict[MAX_OBJ];
 int CPictDestroyer::m_nNumAll = 0;
@@ -230,6 +230,9 @@ void CPict::Uninit(void)
 	{
 		m_pShadow->Uninit();
 	}
+
+	//人数減らす
+	m_nNumAll--;
 
 	//自分自身破棄
 	Release();

@@ -258,7 +258,7 @@ void CManager::Update(void)
 	//デバッグ表示
 	m_pDebProc->Print("FPS:%d\n", m_nFPS);
 	m_pDebProc->Print("[操作方法]\n");
-	m_pDebProc->Print("左クリック+移動:視点移動\n");
+	m_pDebProc->Print("右クリック+移動:視点移動\n");
 	m_pDebProc->Print("WASD:プレイヤー（カメラ）移動\n");
 	m_pDebProc->Print("[モデル・ピクトに向かって]マウス左クリック:選択\n");
 	m_pDebProc->Print("[Debug]F3:タイマー設定(120秒カウントダウン)\n");
@@ -303,33 +303,6 @@ void CManager::SetMode(CScene::MODE mode)
 		m_pScene = CScene::Create(mode);
 	}
 }
-
-#if 0
-//=================================
-//再配置
-//=================================
-void CManager::ResetObj(void)
-{
-	//ぶっ壊す
-	for (int cntPriority = 0; cntPriority < PRIORITY_MAX; cntPriority++)
-	{
-		for (int cntObj = 0; cntObj < MAX_OBJ; cntObj++)
-		{//全オブジェクト見る
-			CObject* pObj = CObject::GetObject(cntPriority, cntObj);	//オブジェクト取得
-
-			if (pObj != NULL)	//ヌルチェ
-			{//なんかある
-				CObject::TYPE type = pObj->GetType();	//種類取得
-
-				if (type == CObject::TYPE_ENEMY || type == CObject::TYPE_ITEM)
-				{//破壊対象
-					pObj->Uninit();	//デストロイ
-				}
-			}
-		}
-	}
-}
-#endif
 
 //************************************************
 //シーン（抽象）クラス

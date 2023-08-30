@@ -33,6 +33,7 @@ public:
 
 private:
 	static CKoban* m_apKoban[MAX_OBJ];	//Œğ”Ôî•ñ
+	int m_nID;					//ID
 	static int m_nNumAll;		//‘”
 	static int m_nCounterSpawn;	//•¦‚«ƒJƒEƒ“ƒ^
 	static int m_nSpawnSpan;	//•¦‚«‚Ì‘¬‚³

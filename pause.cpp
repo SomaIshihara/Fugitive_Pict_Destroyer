@@ -104,8 +104,9 @@ void CPause::Update(void)
 		}
 		else if (m_pExit->IsClickTrigger() == true)
 		{//終了
-			//CManager::SetMode(CScene::MODE_TITLE);	//ふつうはこれ
-			CManager::SetMode(CScene::MODE_RESULT);		//いったんリザルト遷移用
+			CManager::SetMode(CScene::MODE_TITLE);	//ふつうはこれ
+			//CManager::SetMode(CScene::MODE_RESULT);		//いったんリザルト遷移用
+			CManager::SetPause(false);
 		}
 		else if (m_pScreenShot->IsClickTrigger() == true)
 		{//スクショモード

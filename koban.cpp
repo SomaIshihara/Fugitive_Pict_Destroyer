@@ -29,6 +29,7 @@ CKoban::CKoban()
 		if (m_apKoban[cnt] == NULL)
 		{//空っぽ
 			m_apKoban[cnt] = this;	//自分自身のポインタを登録
+			m_nID = cnt;
 			m_nNumAll++;	//総数増やす
 			break;
 		}
@@ -45,6 +46,7 @@ CKoban::CKoban(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, CXModel* pModel) : 
 		if (m_apKoban[cnt] == NULL)
 		{//空っぽ
 			m_apKoban[cnt] = this;	//自分自身のポインタを登録
+			m_nID = cnt;
 			m_nNumAll++;	//総数増やす
 			break;
 		}
@@ -72,6 +74,17 @@ HRESULT CKoban::Init(void)
 //=================================
 void CKoban::Uninit(void)
 {
+	m_apKoban[m_nID] = nullptr;
+	m_nNumAll--;
+
+	//なくなったら静的メンバ変数初期化
+	if (m_nNumAll <= 0)
+	{
+		m_nCounterSpawn = INT_ZERO;
+		m_nSpawnSpan = INT_ZERO;
+		m_nPoliceMax = INT_ZERO;
+	}
+
 	CObjectX::Uninit();
 }
 

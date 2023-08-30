@@ -48,6 +48,7 @@ HRESULT CTitle::Init(void)
 void CTitle::Uninit(void)
 {
 	CObject::ReleaseAll();
+	m_pButton = nullptr;
 }
 
 //=================================
@@ -64,7 +65,6 @@ void CTitle::Update(void)
 	move.y = pMouse->GetMove().y;
 
 	rot.y += move.x * TITLE_CAMERA_ROT;
-	//rot.x += move.y * TITLE_CAMERA_ROT;
 
 	pCamera->SetCameraRot(rot);
 
