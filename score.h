@@ -49,8 +49,8 @@ public:
 	int GetModelIdx(void) { return -1; }
 
 	//設定
-	static void Set(const int nScore);	//スコア設定
-	static void Add(const int nAdd);	//スコア加算
+	void Set(const int nScore);	//スコア設定
+	void Add(const int nAdd);	//スコア加算
 
 private:
 	//関数
@@ -68,7 +68,7 @@ private:
 	D3DXVECTOR3 m_rot;					//向き（1桁目の数字の中心を想定）
 	float m_fOneWidth;					//1桁当たりのサイズ幅
 	float m_fOneHeight;					//1桁当たりのサイズ高さ
-	static long long m_nScore;			//スコア
+	long long m_nScore;			//スコア
 };
 
 #endif // !_SCORE_H_

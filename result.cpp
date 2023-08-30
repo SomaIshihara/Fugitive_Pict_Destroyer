@@ -5,7 +5,12 @@
 //
 //======================================================
 #include "precompile.h"
+#include "manager.h"
+#include "texture.h"
+#include "input.h"
 #include "result.h"
+#include "object.h"
+#include "bg.h"
 
 //=================================
 //コンストラクタ
@@ -26,7 +31,9 @@ CResult::~CResult()
 //=================================
 HRESULT CResult::Init(void)
 {
-	return E_NOTIMPL;
+	CBG::Create()->BindTexture(9);
+	
+	return S_OK;
 }
 
 //=================================
@@ -34,6 +41,7 @@ HRESULT CResult::Init(void)
 //=================================
 void CResult::Uninit(void)
 {
+	CObject::ReleaseAll();
 }
 
 //=================================
@@ -41,6 +49,12 @@ void CResult::Uninit(void)
 //=================================
 void CResult::Update(void)
 {
+	CInputMouse* pMouse = CManager::GetInputMouse();
+
+	if (pMouse->GetTrigger(MOUSE_CLICK_LEFT) == true)
+	{//仮
+		CManager::SetMode(CScene::MODE_TITLE);
+	}
 }
 
 //=================================
@@ -48,4 +62,5 @@ void CResult::Update(void)
 //=================================
 void CResult::Draw(void)
 {
+	//勝手にやってくれる
 }

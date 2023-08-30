@@ -24,6 +24,8 @@
 CPlayer* CGame::m_pPlayer = nullptr;
 CSlider* CGame::m_pSlider = nullptr;
 CMeshField* CGame::m_pMeshField = nullptr;
+CTimer* CGame::m_pTimer = nullptr;
+CScore* CGame::m_pScore = nullptr;
 
 //=================================
 //コンストラクタ
@@ -61,8 +63,9 @@ HRESULT CGame::Init(void)
 	CBuilding::LoadParam("data\\CSV\\BuildingParam.csv");
 
 	//オブジェクト生成+初期化
-	CScore::Create(D3DXVECTOR3(SCREEN_WIDTH - 24.0f, 32.0f, 0.0f), VEC3_ZERO, 40.0f, 64.0f);
-	CTimer::Create(D3DXVECTOR3(SCREEN_WIDTH * 0.5f + 24.0f, 32.0f, 0.0f), VEC3_ZERO, 48.0f, 72.0f);
+	m_pTimer = CTimer::Create(D3DXVECTOR3(SCREEN_WIDTH * 0.5f + 24.0f, 32.0f, 0.0f), VEC3_ZERO, 48.0f, 72.0f);
+	m_pTimer->Set(120, CTimer::COUNT_DOWN);
+	m_pScore = CScore::Create(D3DXVECTOR3(SCREEN_WIDTH - 24.0f, 32.0f, 0.0f), VEC3_ZERO, 40.0f, 64.0f);
 	CObjectX* pAgit = CObjectX::Create(D3DXVECTOR3(600.0f,0.0f,0.0f), VEC3_ZERO, CManager::GetAgitModel());
 	CPict::SetAgit(pAgit);
 	CMeshSky::Create(VEC3_ZERO, VEC3_ZERO, 10000.0f, 8, 8);
@@ -100,6 +103,8 @@ void CGame::Uninit(void)
 	m_pPlayer = nullptr;
 	m_pSlider = nullptr;
 	m_pMeshField = nullptr;
+	m_pTimer = nullptr;
+	m_pScore = nullptr;
 }
 
 //=================================
@@ -137,6 +142,12 @@ void CGame::Update(void)
 		//普段の処理
 		CKoban::CommonUpdate();	//交番共通更新処理
 		m_pPlayer->Update();
+
+		//時間管理
+		if (m_pTimer->GetTime() <= 0)
+		{//時間切れ
+			CManager::SetMode(CScene::MODE_RESULT);
+		}
 	}
 }
 

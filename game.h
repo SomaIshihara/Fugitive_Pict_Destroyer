@@ -13,6 +13,8 @@ class CPlayer;
 class CMeshField;
 class CSlider;
 class CPause;
+class CTimer;
+class CScore;
 
 //タイトルクラス
 class CGame : public CScene
@@ -38,6 +40,8 @@ private:
 	static CPlayer* m_pPlayer;			//プレイヤー
 	static CSlider* m_pSlider;			//スライダー
 	static CMeshField* m_pMeshField;	//メッシュフィールド
+	static CTimer* m_pTimer;			//タイマー
+	static CScore* m_pScore;			//スコア
 };
 
 #endif // !_GAME_H_
