@@ -183,6 +183,9 @@
     <ClCompile Include="point.cpp">
       <Filter>ソース ファイル\Core</Filter>
     </ClCompile>
+    <ClCompile Include="havenum.cpp">
+      <Filter>ソース ファイル\Derivation</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="main.h">
@@ -328,6 +331,9 @@
     </ClInclude>
     <ClInclude Include="point.h">
       <Filter>ヘッダー ファイル\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="havenum.h">
+      <Filter>ヘッダー ファイル\Derivation</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

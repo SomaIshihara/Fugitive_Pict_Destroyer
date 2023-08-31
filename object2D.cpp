@@ -158,7 +158,7 @@ void CObject2D::Draw(void)
 		LPDIRECT3DDEVICE9 pDevice = CManager::GetRenderer()->GetDevice();	//デバイス取得
 		CTexture* pTexture = CManager::GetTexture();						//テクスチャオブジェクト取得
 
-																			//頂点バッファをデータストリームに設定
+		//頂点バッファをデータストリームに設定
 		pDevice->SetStreamSource(0, m_pVtxbuff, 0, sizeof(VERTEX_2D));
 
 		//頂点フォーマットの設定

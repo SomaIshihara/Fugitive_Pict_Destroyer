@@ -169,6 +169,7 @@
     <ClCompile Include="explosion.cpp" />
     <ClCompile Include="file.cpp" />
     <ClCompile Include="game.cpp" />
+    <ClCompile Include="havenum.cpp" />
     <ClCompile Include="input.cpp" />
     <ClCompile Include="item.cpp" />
     <ClCompile Include="koban.cpp" />
@@ -223,6 +224,7 @@
     <ClInclude Include="explosion.h" />
     <ClInclude Include="file.h" />
     <ClInclude Include="game.h" />
+    <ClInclude Include="havenum.h" />
     <ClInclude Include="input.h" />
     <ClInclude Include="item.h" />
     <ClInclude Include="koban.h" />

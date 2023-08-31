@@ -15,6 +15,7 @@ class CSlider;
 class CPause;
 class CTimer;
 class CScore;
+class CHaveNum;
 
 //タイトルクラス
 class CGame : public CScene
@@ -42,6 +43,7 @@ private:
 	static CMeshField* m_pMeshField;	//メッシュフィールド
 	static CTimer* m_pTimer;			//タイマー
 	static CScore* m_pScore;			//スコア
+	static CHaveNum* m_pHaveNum[3];		//所持数
 };
 
 #endif // !_GAME_H_

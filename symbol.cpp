@@ -99,7 +99,7 @@ CSymbol* CSymbol::Create(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, const flo
 
 	if (pSymbol == NULL)
 	{
-		//オブジェクトアニメーション2Dの生成
+		//記号オブジェの生成
 		pSymbol = new CSymbol(pos, rot, fWidth, fHeight);
 
 		//初期化
@@ -114,7 +114,7 @@ CSymbol* CSymbol::Create(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, const flo
 }
 
 //=================================
-//数字分割処理（nDigitは0以上で入力すること）
+//数字分割処理（nNumは0以上で入力すること）
 //=================================
 void CSymbol::SetSymbol(const int nNum)
 {

@@ -64,7 +64,7 @@ HRESULT CScore::Init(void)
 	//テクスチャ読み込み
 	CTexture* pTexture = CManager::GetTexture();
 	m_nIdxTextureNumber = pTexture->Regist("data\\TEXTURE\\tex_Score_01.png", 10, 1);
-	m_nIdxtextureSymbol = pTexture->Regist("data\\TEXTURE\\tex_Symbol_01.png", 12, 1);
+	m_nIdxtextureSymbol = pTexture->Regist("data\\TEXTURE\\tex_Symbol_01.png", 14, 1);
 
 	//スコア設定
 	Set(0);
@@ -146,24 +146,7 @@ void CScore::Update(void)
 //=================================
 void CScore::Draw(void)
 {
-	m_pSymbolPic->Draw();
-	for (int cnt = 0; cnt < SCORE_DIGIT; cnt++)
-	{//数字オブジェクト更新
-		if (m_pNumberHMillion[cnt] != NULL)
-		{//大丈夫。中身はある
-			//オブジェクト2Dの更新処理
-			m_pNumberHMillion[cnt]->Draw();
-		}
-	}
-	m_pSymbolHMillion->Draw();
-	for (int cnt = 0; cnt < SCORE_DIGIT; cnt++)
-	{//数字オブジェクト描画
-		if (m_pNumberTenHundred[cnt] != NULL)
-		{//大丈夫。中身はある
-			m_pNumberTenHundred[cnt]->Draw();
-		}
-	}
-	m_pSymbolTenHundred->Draw();
+	//描画は勝手にやってくれます
 }
 
 //=================================
@@ -182,13 +165,15 @@ CScore* CScore::Create(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, const float
 		pScore->Init();
 
 		//生成
+		CSymbol* pSymbol;
 
 		//万
-		pScore->m_pSymbolTenHundred = pScore->m_pSymbolPic->Create(pos, rot, fOneWidth, fOneHeight);	//数字8桁+記号2
-		pScore->m_pSymbolTenHundred->Init();
-		pScore->m_pSymbolTenHundred->BindTexture(pScore->m_nIdxtextureSymbol);
-		pScore->m_pSymbolTenHundred->SetSymbol(CScore::TYPE_TEN_HUNDRED);
+		pSymbol = CSymbol::Create(pos, rot, fOneWidth, fOneHeight);
+		pSymbol->Init();
+		pSymbol->BindTexture(pScore->m_nIdxtextureSymbol);
+		pSymbol->SetSymbol(CScore::TYPE_TEN_HUNDRED);
 
+		//数字8桁+記号2
 		for (int cnt = 0; cnt < SCORE_DIGIT; cnt++)
 		{
 			//生成
@@ -202,10 +187,10 @@ CScore* CScore::Create(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, const float
 		}
 		
 		//億
-		pScore->m_pSymbolHMillion = pScore->m_pSymbolPic->Create(pos + D3DXVECTOR3(-fOneWidth * 5, 0.0f, 0.0f), rot, fOneWidth, fOneHeight);	//数字4桁+記号
-		pScore->m_pSymbolHMillion->Init();
-		pScore->m_pSymbolHMillion->BindTexture(pScore->m_nIdxtextureSymbol);
-		pScore->m_pSymbolHMillion->SetSymbol(CScore::TYPE_HMILLION);
+		pSymbol = CSymbol::Create(pos + D3DXVECTOR3(-fOneWidth * 5, 0.0f, 0.0f), rot, fOneWidth, fOneHeight);	//数字4桁+記号
+		pSymbol->Init();
+		pSymbol->BindTexture(pScore->m_nIdxtextureSymbol);
+		pSymbol->SetSymbol(CScore::TYPE_HMILLION);
 
 		for (int cnt = 0; cnt < SCORE_DIGIT; cnt++)
 		{
@@ -220,10 +205,10 @@ CScore* CScore::Create(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, const float
 		}
 
 		//通貨記号
-		pScore->m_pSymbolPic = CSymbol::Create(pos + D3DXVECTOR3(-fOneWidth * 10, 0.0f, 0.0f), rot, fOneWidth, fOneHeight);
-		pScore->m_pSymbolPic->Init();
-		pScore->m_pSymbolPic->BindTexture(pScore->m_nIdxtextureSymbol);
-		pScore->m_pSymbolPic->SetSymbol(CScore::TYPE_PIC);
+		pSymbol = CSymbol::Create(pos + D3DXVECTOR3(-fOneWidth * 10, 0.0f, 0.0f), rot, fOneWidth, fOneHeight);
+		pSymbol->Init();
+		pSymbol->BindTexture(pScore->m_nIdxtextureSymbol);
+		pSymbol->SetSymbol(CScore::TYPE_PIC);
 
 		return pScore;
 	}

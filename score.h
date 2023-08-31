@@ -22,7 +22,7 @@ public:
 	{
 		TYPE_HMILLION = 0,
 		TYPE_TEN_HUNDRED,
-		TYPE_PIC = 5,
+		TYPE_PIC = 7,
 		TYPE_MAX
 	} SYMBOLTYPE;
 
@@ -57,11 +57,8 @@ private:
 	void CutNumber(void);				//数字分割
 
 	//変数
-	CSymbol* m_pSymbolPic;						//通貨記号
 	CNumber* m_pNumberHMillion[SCORE_DIGIT];	//億の数字
-	CSymbol* m_pSymbolHMillion;					//億
 	CNumber* m_pNumberTenHundred[SCORE_DIGIT];	//万の数字
-	CSymbol* m_pSymbolTenHundred;				//万
 	int m_nIdxTextureNumber;			//テクスチャ番号（数字）
 	int m_nIdxtextureSymbol;			//テクスチャ番号（記号）
 	D3DXVECTOR3 m_pos;					//位置（1桁目の数字の中心を想定）

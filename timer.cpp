@@ -11,6 +11,7 @@
 #include "object.h"
 #include "timer.h"
 #include "number.h"
+#include "symbol.h"
 
 //=================================
 //コンストラクタ（デフォルト）
@@ -61,7 +62,7 @@ HRESULT CTimer::Init(void)
 
 	//テクスチャ読み込み
 	CTexture* pTexture = CManager::GetTexture();
-	m_nIdxTexture = pTexture->Regist("data\\TEXTURE\\Number_Rank_01.png", 10, 1);
+	m_nIdxTexture = pTexture->Regist("data\\TEXTURE\\tex_Score_01.png", 10, 1);
 
 	//タイマーカウンタリセット
 	m_nCounter = 0;
@@ -149,13 +150,7 @@ void CTimer::Update(void)
 //=================================
 void CTimer::Draw(void)
 {
-	for (int cnt = 0; cnt < TIME_DIGIT; cnt++)
-	{//数字オブジェクト描画
-		if (m_pNumber[cnt] != NULL)
-		{//大丈夫。中身はある
-			m_pNumber[cnt]->Draw();
-		}
-	}
+	//勝手にやってくれます
 }
 
 //=================================
@@ -167,17 +162,32 @@ CTimer* CTimer::Create(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, const float
 
 	if (pScore == NULL)
 	{
-		//多重背景管理オブジェクト生成
+		//タイマー管理オブジェクト生成
 		pScore = new CTimer;
 
-		//多重背景管理オブジェクト初期化
+		//タイマー管理オブジェクト初期化
 		pScore->Init();
 
-		//背景用オブジェクト2D生成
-		for (int cnt = 0; cnt < TIME_DIGIT; cnt++)
-		{//1枚分生成～テクスチャ設定
+		//記号オブジェ生成
+		CTexture* pTexture = CManager::GetTexture();
+		int ntexNum = pTexture->Regist("data\\TEXTURE\\tex_Symbol_01.png", 14, 1);
+
+		//記号仮置き
+		CSymbol* pSymbol;
+
+		//数字オブジェ生成
+		int cnt;
+
+		//「秒」
+		pSymbol = CSymbol::Create(pos, rot, fOneWidth, fOneHeight);
+		pSymbol->Init();
+		pSymbol->BindTexture(ntexNum);
+		pSymbol->SetSymbol(TYPE_SEC);
+
+		for (cnt = 0; cnt < TIME_DIGIT; cnt++)
+		{//1枚分生成～テクスチャ設定（右から）
 			//生成
-			pScore->m_pNumber[cnt] = pScore->m_pNumber[cnt]->Create(pos + D3DXVECTOR3(-fOneWidth * cnt,0.0f,0.0f), rot, fOneWidth, fOneHeight);
+			pScore->m_pNumber[cnt] = CNumber::Create(pos + D3DXVECTOR3(-fOneWidth * (cnt + 1),0.0f,0.0f), rot, fOneWidth, fOneHeight);
 
 			//初期化
 			pScore->m_pNumber[cnt]->Init();
@@ -185,6 +195,18 @@ CTimer* CTimer::Create(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, const float
 			//テクスチャ設定
 			pScore->m_pNumber[cnt]->BindTexture(pScore->m_nIdxTexture);
 		}
+
+		//「と」
+		pSymbol = CSymbol::Create(pos + D3DXVECTOR3(-fOneWidth * 3 - 24.0f, -9.0f, 0.0f), VEC3_ZERO, 24.0f, 36.0f);
+		pSymbol->Init();
+		pSymbol->BindTexture(ntexNum);
+		pSymbol->SetSymbol(TYPE_TO);
+
+		//「あ」
+		pSymbol = CSymbol::Create(pos + D3DXVECTOR3(-fOneWidth * 3 - 48.0f, -9.0f, 0.0f), VEC3_ZERO, 24.0f, 36.0f);
+		pSymbol->Init();
+		pSymbol->BindTexture(ntexNum);
+		pSymbol->SetSymbol(TYPE_A);
 
 		return pScore;
 	}

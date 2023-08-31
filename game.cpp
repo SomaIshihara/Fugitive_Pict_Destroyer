@@ -19,6 +19,7 @@
 #include "meshsky.h"
 #include "point.h"
 #include "input.h"
+#include "havenum.h"
 
 //静的メンバ変数
 CPlayer* CGame::m_pPlayer = nullptr;
@@ -26,6 +27,7 @@ CSlider* CGame::m_pSlider = nullptr;
 CMeshField* CGame::m_pMeshField = nullptr;
 CTimer* CGame::m_pTimer = nullptr;
 CScore* CGame::m_pScore = nullptr;
+CHaveNum* CGame::m_pHaveNum[];
 
 //=================================
 //コンストラクタ
@@ -69,6 +71,9 @@ HRESULT CGame::Init(void)
 	CObjectX* pAgit = CObjectX::Create(D3DXVECTOR3(600.0f,0.0f,0.0f), VEC3_ZERO, CManager::GetAgitModel());
 	CPict::SetAgit(pAgit);
 	CMeshSky::Create(VEC3_ZERO, VEC3_ZERO, 10000.0f, 8, 8);
+	m_pHaveNum[0] = CHaveNum::Create(D3DXVECTOR3(SCREEN_WIDTH - 30.0f, 100.0f, 0.0f), VEC3_ZERO, 60.0f, 72.0f, 2, 0);//アイコン番号仮
+	m_pHaveNum[1] = CHaveNum::Create(D3DXVECTOR3(SCREEN_WIDTH - 30.0f, 172.0f, 0.0f), VEC3_ZERO, 60.0f, 72.0f, 2, 0);//アイコン番号仮
+	m_pHaveNum[2] = CHaveNum::Create(D3DXVECTOR3(SCREEN_WIDTH - 30.0f, 244.0f, 0.0f), VEC3_ZERO, 60.0f, 72.0f, 5,0);//アイコン番号仮
 
 	//仮
 	CItemBullet::Create(D3DXVECTOR3(0.0f, 0.0f, 10.0f), VEC3_ZERO);
