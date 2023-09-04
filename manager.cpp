@@ -16,6 +16,7 @@
 #include "objectX.h"
 #include "xmodel.h"
 #include "item.h"
+#include "fade.h"
 
 //シーン
 #include "title.h"
@@ -39,6 +40,7 @@ CCamera* CManager::m_pCamera = nullptr;
 CLight* CManager::m_pLight = nullptr;
 CTexture* CManager::m_pTexture = nullptr;
 CScene* CManager::m_pScene = nullptr;
+CFade* CManager::m_pFade = nullptr;
 //仮
 CXModel* CManager::m_pAgitModel = nullptr;
 CXModel* CManager::m_pFragModel = nullptr;
@@ -82,6 +84,7 @@ HRESULT CManager::Init(HINSTANCE hInstance, HWND hWnd, BOOL bWindow)
 	m_pCamera = new CCamera;
 	m_pLight = new CLight;
 	m_pTexture = new CTexture;
+	m_pFade = CFade::Create();
 
 	//レンダラー初期化
 	if (FAILED(m_pRenderer->Init(hWnd, TRUE)))
@@ -162,68 +165,75 @@ void CManager::Uninit(void)
 	//オブジェクト終了+破棄
 	CObject::ReleaseAll();
 
+	//フェード破棄
+	if (m_pFade != nullptr)
+	{
+		m_pFade->Uninit();
+		m_pFade = nullptr;
+	}
+
 	//テクスチャ破棄
-	if (m_pTexture != NULL)
+	if (m_pTexture != nullptr)
 	{//テクスチャ終了
 		m_pTexture->Unload();
 		delete m_pTexture;
-		m_pTexture = NULL;
+		m_pTexture = nullptr;
 	}
 
 	//ライト破棄
-	if (m_pLight != NULL)
+	if (m_pLight != nullptr)
 	{//ライト終了
 		m_pLight->Uninit();
 		delete m_pLight;
-		m_pLight = NULL;
+		m_pLight = nullptr;
 	}
 
 	//カメラ破棄
-	if (m_pCamera != NULL)
+	if (m_pCamera != nullptr)
 	{//カメラ終了
 		m_pCamera->Uninit();
 		delete m_pCamera;
-		m_pCamera = NULL;
+		m_pCamera = nullptr;
 	}
 
 	//デバッグ破棄
-	if (m_pDebProc != NULL)
+	if (m_pDebProc != nullptr)
 	{//デバッグ終了
 		m_pDebProc->Uninit();
 		delete m_pDebProc;
-		m_pDebProc = NULL;
+		m_pDebProc = nullptr;
 	}
 
 	//サウンド破棄
-	if (m_pSound != NULL)
+	if (m_pSound != nullptr)
 	{//サウンド終了
 		m_pSound->Uninit();
 		delete m_pSound;
-		m_pSound = NULL;
+		m_pSound = nullptr;
 	}
 
 	//マウス破棄
-	if (m_pInputMouse != NULL)
+	if (m_pInputMouse != nullptr)
 	{//マウス終了
 		m_pInputMouse->Uninit();
 		delete m_pInputMouse;
-		m_pInputMouse = NULL;
+		m_pInputMouse = nullptr;
 	}
 
 	//キーボード破棄
-	if (m_pInputKeyboard != NULL)
+	if (m_pInputKeyboard != nullptr)
 	{//キーボード終了
 		m_pInputKeyboard->Uninit();
 		delete m_pInputKeyboard;
-		m_pInputKeyboard = NULL;
+		m_pInputKeyboard = nullptr;
 	}
 
 	//レンダラー破棄
-	if (m_pRenderer != NULL)
+	if (m_pRenderer != nullptr)
 	{//レンダラー終了
 		m_pRenderer->Uninit();
 		delete m_pRenderer;
-		m_pRenderer = NULL;
+		m_pRenderer = nullptr;
 	}
 }
 

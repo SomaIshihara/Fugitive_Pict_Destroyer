@@ -189,6 +189,9 @@
     <ClCompile Include="tutorial.cpp">
       <Filter>ソース ファイル\Scene</Filter>
     </ClCompile>
+    <ClCompile Include="fade.cpp">
+      <Filter>ソース ファイル\Derivation</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="main.h">
@@ -340,6 +343,9 @@
     </ClInclude>
     <ClInclude Include="tutorial.h">
       <Filter>ヘッダー ファイル\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="fade.h">
+      <Filter>ヘッダー ファイル\Derivation</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
