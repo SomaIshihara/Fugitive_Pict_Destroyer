@@ -186,6 +186,9 @@
     <ClCompile Include="havenum.cpp">
       <Filter>ソース ファイル\Derivation</Filter>
     </ClCompile>
+    <ClCompile Include="tutorial.cpp">
+      <Filter>ソース ファイル\Scene</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="main.h">
@@ -334,6 +337,9 @@
     </ClInclude>
     <ClInclude Include="havenum.h">
       <Filter>ヘッダー ファイル\Derivation</Filter>
+    </ClInclude>
+    <ClInclude Include="tutorial.h">
+      <Filter>ヘッダー ファイル\Scene</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -20,7 +20,6 @@
 
 //静的メンバ変数
 CBuilding* CBuilding::m_apBuilding[MAX_OBJ];
-CBuilding::BuildingParam CBuilding::m_aBuildingParam[MAX_OBJ];
 int CBuilding::m_nNumAll = 0;
 
 //=================================
@@ -44,6 +43,15 @@ CBuilding::CBuilding()
 	m_fHeight = FLOAT_ZERO;
 	m_fDepth = FLOAT_ZERO;
 	m_nEndurance = INT_ZERO;
+
+	//パラメータ
+	m_bUnique = false;
+	m_nLv = INT_ZERO;
+	m_fSigValue = FLOAT_ZERO;
+	m_nPowValue = INT_ZERO;
+	m_fSigEndurance = FLOAT_ZERO;
+	m_nPowEndurance = INT_ZERO;
+	m_nExp = INT_ZERO;
 }
 
 //=================================
@@ -68,6 +76,15 @@ CBuilding::CBuilding(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, CXModel* pMod
 	m_fDepth = FLOAT_ZERO;
 	m_pModel = pModel;
 
+	//パラメータ
+	m_bUnique = false;
+	m_nLv = INT_ZERO;
+	m_fSigValue = FLOAT_ZERO;
+	m_nPowValue = INT_ZERO;
+	m_fSigEndurance = FLOAT_ZERO;
+	m_nPowEndurance = INT_ZERO;
+	m_nExp = INT_ZERO;
+
 	int nModelNum = 0;
 	CXModel* pXModel = CXModel::GetTop();
 	while (pXModel != NULL && pXModel != m_pModel)
@@ -75,7 +92,6 @@ CBuilding::CBuilding(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, CXModel* pMod
 		pXModel = pXModel->GetNext();
 		nModelNum++;
 	}
-	m_nEndurance = m_aBuildingParam[nModelNum].nEndurance;
 
 	//サイズ設定
 	D3DXVECTOR3 vtxMin, vtxMax;
@@ -219,6 +235,33 @@ CBuilding* CBuilding::Create(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, CXMod
 }
 
 //========================
+//レベル設定処理（と耐久設定処理）
+//========================
+void CBuilding::SetLv(const int nLv)
+{
+	m_nLv = nLv;
+	m_nEndurance = HAVE_LIFE(nLv);
+}
+
+//========================
+//耐久有効数字設定（と耐久設定処理）
+//========================
+void CBuilding::SetSigEndurance(const float fSignificant)
+{
+	m_fSigEndurance = fSignificant;
+	CulcEndurance();
+}
+
+//========================
+//耐久べき乗設定（と耐久設定処理）
+//========================
+void CBuilding::SetPowEndurance(const int nPower)
+{
+	m_nPowEndurance = nPower;
+	CulcEndurance();
+}
+
+//========================
 //ダメージ付与処理
 //========================
 void CBuilding::AddDamage(int nDamage)
@@ -250,57 +293,9 @@ void CBuilding::AddDamage(int nDamage)
 }
 
 //========================
-//パラメータ読み込み
+//耐久計算処理
 //========================
-void CBuilding::LoadParam(const char* pPath)
+void CBuilding::CulcEndurance(void)
 {
-	FILE* pFile;	//ファイルポインタ
-
-	pFile = fopen(pPath, "r");
-
-	if (pFile != NULL)
-	{//読み込めた
-		int cnt = 0;		//カウンタ
-		char aData[128];	//読み取ったデータ
-		char* pSprit;		//分割したもの
-		int nSignificant;	//有効数字
-		int nPower;			//べき乗
-
-		fgets(&aData[0],128,pFile);	//ごみ読み取り
-
-		//データ読み取り
-		while (1)
-		{
-			fgets(&aData[0], 128, pFile);	//全文読み取り
-
-			if (feof(pFile))
-			{//いや、これはEOFだ
-				break;
-			}
-
-			//建物名
-			pSprit = strtok(&aData[0], ",");
-			strcpy(&m_aBuildingParam[cnt].aName[0], pSprit);
-
-			//価値
-			pSprit = strtok(NULL, ",");
-			nSignificant = atoi(pSprit);
-			pSprit = strtok(NULL, ",");
-			nPower = atoi(pSprit);
-			m_aBuildingParam[cnt].nValue = (long long)nSignificant * pow(10, nPower);
-
-			//耐久
-			pSprit = strtok(NULL, ",");
-			nSignificant = atoi(pSprit);
-			pSprit = strtok(NULL, ",");
-			nPower = atoi(pSprit);
-			m_aBuildingParam[cnt].nEndurance = nSignificant * (int)pow(10, nPower);
-			
-			cnt++;	//カウンタ増やす
-		}
-	}
-	else
-	{
-		assert(false);
-	}
+	m_nEndurance = m_fSigEndurance * pow(10, m_nPowEndurance);
 }

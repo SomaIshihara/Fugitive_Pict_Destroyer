@@ -95,31 +95,6 @@ void CScore::Uninit(void)
 //=================================
 void CScore::Update(void)
 {
-	//建物オブジェクト全検索
-	Set(0);
-	for (int cnt = 0; cnt < MAX_OBJ; cnt++)
-	{
-		CBuilding* pBuilding = CBuilding::GetBuilding(cnt);	//建物オブジェクト取得
-		if (pBuilding != NULL)
-		{//なんかある
-			CXModel* pModel = CXModel::GetTop();
-			int nModelNum = 0;
-			while (pModel != NULL && pModel != pBuilding->GetModel())
-			{
-				pModel = pModel->GetNext();
-				nModelNum++;
-			}
-			CBuilding::BuildingParam buildingParam = CBuilding::GetBuildingParam(nModelNum);		//建物パラメータ取得
-			float fParcent = ((float)pBuilding->GetEndurance() / buildingParam.nEndurance);
-			long long nScore = (1.0f - fParcent) * buildingParam.nValue;	//スコア算出
-			Add(nScore);
-		}
-		else
-		{//もうない
-			break;
-		}
-	}
-
 	for (int cnt = 0; cnt < SCORE_DIGIT; cnt++)
 	{//数字オブジェクト更新
 		if (m_pNumberHMillion[cnt] != NULL)

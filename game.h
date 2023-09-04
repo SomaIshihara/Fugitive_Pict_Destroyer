@@ -13,6 +13,7 @@ class CPlayer;
 class CMeshField;
 class CSlider;
 class CPause;
+class CResult;
 class CTimer;
 class CScore;
 class CHaveNum;
@@ -37,7 +38,9 @@ public:
 	static CMeshField* GetMeshField(void) { return m_pMeshField; }
 
 private:
+	void CulcScore(void);	//スコア計算
 	CPause* m_pPause;					//ポーズ
+	CResult* m_pResult;					//リザルト（背景にゲーム画面を出したいので）
 	static CPlayer* m_pPlayer;			//プレイヤー
 	static CSlider* m_pSlider;			//スライダー
 	static CMeshField* m_pMeshField;	//メッシュフィールド

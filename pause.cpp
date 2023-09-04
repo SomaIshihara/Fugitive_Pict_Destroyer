@@ -49,11 +49,11 @@ HRESULT CPause::Init(void)
 	CTexture* pTexture = CManager::GetTexture();
 	m_pBG->BindTexture(-1);
 	m_pBG->SetCol(D3DXCOLOR(1.0f,1.0f,1.0f,0.5f));
-	m_pPolygon->BindTexture(4);
-	m_pContinue->BindTexture(5);
-	m_pRestart->BindTexture(6);
-	m_pExit->BindTexture(7);
-	m_pScreenShot->BindTexture(8);
+	m_pPolygon->BindTexture(CTexture::PRELOAD_PAUSE);
+	m_pContinue->BindTexture(CTexture::PRELOAD_PAUSEBUTTON_01);
+	m_pRestart->BindTexture(CTexture::PRELOAD_PAUSEBUTTON_02);
+	m_pExit->BindTexture(CTexture::PRELOAD_PAUSEBUTTON_03);
+	m_pScreenShot->BindTexture(CTexture::PRELOAD_PAUSEBUTTON_04);
 
 	return S_OK;
 }

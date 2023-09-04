@@ -33,10 +33,10 @@ public:
 	//モード列挙
 	typedef enum
 	{
-		MODE_TITLE = 0,
-		MODE_GAME,
-		MODE_RESULT,
-		MODE_RANKING,
+		MODE_TITLE = 0,	//タイトル
+		MODE_TUTORIAL,	//チュートリアル
+		MODE_GAME,		//ゲーム（リザルト）
+		MODE_RANKING,	//ランキング
 		MODE_MAX
 	} MODE;
 

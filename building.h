@@ -17,14 +17,6 @@ class CXModel;
 class CBuilding : public CObject
 {
 public:
-	//建物パラメータ構造体
-	typedef struct
-	{
-		char aName[64];
-		int nEndurance;
-		long long nValue;
-	} BuildingParam;
-
 	//コンストラクタ・デストラクタ
 	CBuilding();
 	CBuilding(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, CXModel* pModel);
@@ -35,9 +27,6 @@ public:
 	void Uninit(void);
 	void Update(void);
 	void Draw(void);
-
-	//パラメータ読み込み
-	static void LoadParam(const char* pPath);
 
 	//生成
 	static CBuilding* Create(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, CXModel* pModel);
@@ -51,31 +40,31 @@ public:
 	float GetDepth(void) { return m_fDepth; }
 	CXModel* GetModel(void) { return m_pModel; }
 	int GetEndurance(void) { return m_nEndurance; }
-	static BuildingParam GetBuildingParam(int nIdx) { return m_aBuildingParam[nIdx]; }
 	static int GetNumAll(void) { return m_nNumAll; }
 	bool GetUnique(void) { return m_bUnique; }
 	int GetLv(void) { return m_nLv; }
-	float GetSigValue(void) { return m_nSigValue; }
+	float GetSigValue(void) { return m_fSigValue; }
 	int GetPowValue(void) { return m_nPowValue; }
-	float GetSigEndurance(void) { return m_nSigEndurance; }
+	float GetSigEndurance(void) { return m_fSigEndurance; }
 	int GetPowEndurance(void) { return m_nPowEndurance; }
 	int GetExp(void) { return m_nExp; }
 
 	//設定
 	void SetUnique(const bool bFrag) { m_bUnique = bFrag; }
-	void SetLv(const int nLv) { m_nLv = nLv; }
-	void SetSigValue(const float fSignificant) { m_nSigValue = fSignificant; }
+	void SetLv(const int nLv);
+	void SetSigValue(const float fSignificant) { m_fSigValue = fSignificant; }
 	void SetPowValue(const int nPower) { m_nPowValue = nPower; }
-	void SetSigEndurance(const float fSignificant) { m_nSigEndurance = fSignificant; }
-	void SetPowEndurance(const int nPower) { m_nPowEndurance = nPower; }
+	void SetSigEndurance(const float fSignificant);
+	void SetPowEndurance(const int nPower);
 	void SetExp(const int nExp) { m_nExp = nExp; }
 
 	//ダメージ付与
 	void AddDamage(int nDamage);
 
 private:
+	void CulcEndurance(void);
+
 	static CBuilding* m_apBuilding[MAX_OBJ];
-	static BuildingParam m_aBuildingParam[MAX_OBJ];
 	static int m_nNumAll;			//建物クラス内での個数
 	int m_nID;						//建物クラス内でのID
 	int m_nEndurance;				//耐久値
@@ -90,14 +79,14 @@ private:
 	float m_fDepth;		//奥行(Z)
 
 	//パラメータ(m_bBreakable == true)
-	bool m_bUnique;		//個別設定有無
-	int m_nLv;			//レベル
+	bool m_bUnique;			//個別設定有無
+	int m_nLv;				//レベル
 	//↓m_bUnique == true
-	float m_nSigValue;	//価値有効数字
-	int m_nPowValue;	//価値べき乗
-	float m_nSigEndurance;//耐久有効数字
-	int m_nPowEndurance;//耐久べき乗
-	int m_nExp;			//経験値
+	float m_fSigValue;		//価値有効数字
+	int m_nPowValue;		//価値べき乗
+	float m_fSigEndurance;	//耐久有効数字
+	int m_nPowEndurance;	//耐久べき乗
+	int m_nExp;				//経験値
 
 	//見た目
 	float m_fRedAlpha;	//ダメージを食らった時の赤色具合

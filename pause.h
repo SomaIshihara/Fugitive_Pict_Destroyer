@@ -26,9 +26,6 @@ public:
 	void Update(void);
 	void Draw(void);
 
-	//æ“¾
-	
-
 private:
 	CBG* m_pBG;					//”wŒi
 	CObject2D* m_pPolygon;		//‹@”\‚ğ‚½‚È‚¢ƒ|ƒŠƒSƒ“

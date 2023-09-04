@@ -6,6 +6,7 @@
 //======================================================
 #include "game.h"
 #include "pause.h"
+#include "result.h"
 #include "player.h"
 #include "meshField.h"
 #include "slider.h"
@@ -61,9 +62,6 @@ HRESULT CGame::Init(void)
 	//仮オブジェ生成
 	m_pMeshField = CMeshField::Create(D3DXVECTOR3(-1280.0f, 0.0f, 1280.0f), VEC3_ZERO, 64.0f, 64.0f, 40, 40);
 
-	//建物パラメータ読み込み
-	CBuilding::LoadParam("data\\CSV\\BuildingParam.csv");
-
 	//オブジェクト生成+初期化
 	m_pTimer = CTimer::Create(D3DXVECTOR3(SCREEN_WIDTH * 0.5f + 24.0f, 32.0f, 0.0f), VEC3_ZERO, 48.0f, 72.0f);
 	m_pTimer->Set(120, CTimer::COUNT_DOWN);
@@ -79,7 +77,7 @@ HRESULT CGame::Init(void)
 	CItemBullet::Create(D3DXVECTOR3(0.0f, 0.0f, 10.0f), VEC3_ZERO);
 
 	//マップデータ読み込みと配置
-	CObjectX::LoadData("data\\Fugitive_Pict_MapData_v111.ismd");
+	CObjectX::LoadData("data\\Fugitive_Pict_MapData_v120.ismd");
 
 	//ポイント生成
 	CPoint::Update();
@@ -98,11 +96,25 @@ void CGame::Uninit(void)
 	CObject::ReleaseAll();
 
 	//プレイヤー破棄
-	if (m_pPlayer != NULL)
+	if (m_pPlayer != nullptr)
 	{//プレイヤー終了
 		m_pPlayer->Uninit();
 		delete m_pPlayer;
-		m_pPlayer = NULL;
+		m_pPlayer = nullptr;
+	}
+	//リザルト破棄
+	if (m_pResult != nullptr)
+	{//プレイヤー終了
+		m_pResult->Uninit();
+		delete m_pResult;
+		m_pResult = nullptr;
+	}
+	//ポーズ破棄（一応）
+	if (m_pPause != nullptr)
+	{//プレイヤー終了
+		m_pPause->Uninit();
+		delete m_pPause;
+		m_pPause = nullptr;
 	}
 
 	m_pPlayer = nullptr;
@@ -148,6 +160,9 @@ void CGame::Update(void)
 		CKoban::CommonUpdate();	//交番共通更新処理
 		m_pPlayer->Update();
 
+		//スコア算出
+		CulcScore();
+
 		//時間管理
 		if (m_pTimer->GetTime() <= 0)
 		{//時間切れ
@@ -164,4 +179,50 @@ void CGame::Draw(void)
 	//普段はすべてCObjectクラス継承してるものが動いているので自動描画
 	//ポーズの中身もすべてCObjectクラス継承してるので自動描画
 	//よってここですることはない
+}
+
+//=================================
+//スコア計算
+//=================================
+void CGame::CulcScore(void)
+{
+	//建物オブジェクト全検索
+	m_pScore->Set(0);
+	for (int cnt = 0; cnt < MAX_OBJ; cnt++)
+	{
+		CBuilding* pBuilding = CBuilding::GetBuilding(cnt);	//建物オブジェクト取得
+		if (pBuilding != NULL)
+		{//なんかある
+			CXModel* pModel = CXModel::GetTop();
+			int nModelNum = 0;
+			while (pModel != NULL && pModel != pBuilding->GetModel())
+			{
+				pModel = pModel->GetNext();
+				nModelNum++;
+			}
+
+			//スコア算出
+			float fParcent;
+			long long nScore;
+
+			if (pBuilding->GetUnique() == false)
+			{//計算算出
+				fParcent = ((float)pBuilding->GetEndurance() / HAVE_LIFE(pBuilding->GetLv()));
+				nScore = (1.0f - fParcent) * HAVE_VALUE(pBuilding->GetLv());
+			}
+			else
+			{//個別
+				int nEndurance = pBuilding->GetSigEndurance() * pow(10, pBuilding->GetPowEndurance());
+				fParcent = ((float)pBuilding->GetEndurance() / nEndurance);
+				long long nValue = pBuilding->GetSigValue() * pow(10, pBuilding->GetPowValue());
+				nScore = (1.0f - fParcent) * nValue;
+			}
+
+			m_pScore->Add(nScore);
+		}
+		else
+		{//もうない
+			break;
+		}
+	}
 }
