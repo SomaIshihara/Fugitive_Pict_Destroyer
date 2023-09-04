@@ -53,6 +53,22 @@ public:
 	int GetEndurance(void) { return m_nEndurance; }
 	static BuildingParam GetBuildingParam(int nIdx) { return m_aBuildingParam[nIdx]; }
 	static int GetNumAll(void) { return m_nNumAll; }
+	bool GetUnique(void) { return m_bUnique; }
+	int GetLv(void) { return m_nLv; }
+	float GetSigValue(void) { return m_nSigValue; }
+	int GetPowValue(void) { return m_nPowValue; }
+	float GetSigEndurance(void) { return m_nSigEndurance; }
+	int GetPowEndurance(void) { return m_nPowEndurance; }
+	int GetExp(void) { return m_nExp; }
+
+	//設定
+	void SetUnique(const bool bFrag) { m_bUnique = bFrag; }
+	void SetLv(const int nLv) { m_nLv = nLv; }
+	void SetSigValue(const float fSignificant) { m_nSigValue = fSignificant; }
+	void SetPowValue(const int nPower) { m_nPowValue = nPower; }
+	void SetSigEndurance(const float fSignificant) { m_nSigEndurance = fSignificant; }
+	void SetPowEndurance(const int nPower) { m_nPowEndurance = nPower; }
+	void SetExp(const int nExp) { m_nExp = nExp; }
 
 	//ダメージ付与
 	void AddDamage(int nDamage);
@@ -72,6 +88,16 @@ private:
 	float m_fWidth;		//幅(X)
 	float m_fHeight;	//高さ(Y)
 	float m_fDepth;		//奥行(Z)
+
+	//パラメータ(m_bBreakable == true)
+	bool m_bUnique;		//個別設定有無
+	int m_nLv;			//レベル
+	//↓m_bUnique == true
+	float m_nSigValue;	//価値有効数字
+	int m_nPowValue;	//価値べき乗
+	float m_nSigEndurance;//耐久有効数字
+	int m_nPowEndurance;//耐久べき乗
+	int m_nExp;			//経験値
 
 	//見た目
 	float m_fRedAlpha;	//ダメージを食らった時の赤色具合

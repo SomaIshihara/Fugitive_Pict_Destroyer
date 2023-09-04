@@ -23,7 +23,7 @@
 #define PICT_HAVENPICT(lv)	((int)ceil(pow(1.1f,(lv - 1)) * 500))
 #define DROP_EXP(lv)		((int)ceil(REQUIRE_EXP(lv + 1) / 3))
 #define HAVE_LIFE(lv)		((int)ceil(98 + PICT_HAVENPICT(lv) * PICT_ATK(lv) * 12))
-#define HAVE_VALUE(lv)		((int)ceil(pow(1.2f,(lv - 1)) * lv) * 100000)
+#define HAVE_VALUE(lv)		((long long)ceil(pow(1.2f,(lv - 1)) * lv) * 1000000)
 
 //ëOï˚êÈåæ
 class CModel;

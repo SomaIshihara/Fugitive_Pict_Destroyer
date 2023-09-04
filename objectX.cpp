@@ -291,7 +291,46 @@ CObjectX::LOADRESULT CObjectX::LoadData(const char * pPath)
 					}
 					else if (nState == STATE_BREAKABLE)
 					{//建物
-						CBuilding::Create(pos, rot, pModel);
+						CBuilding* pObject = CBuilding::Create(pos, rot, pModel);
+
+						if (nState == STATE_BREAKABLE)
+						{//破壊可能設定の場合
+						 //個別設定
+							bool bUnique;
+							fread(&bUnique, sizeof(bool), 1, pFile);
+							pObject->SetUnique(bUnique);
+
+							if (bUnique == false)
+							{//個別設定なし
+								int nLv;
+								fread(&nLv, sizeof(int), 1, pFile);
+								pObject->SetLv(nLv);
+							}
+							else
+							{//個別設定あり
+								int nNum;
+
+								//価値有効数字
+								fread(&nNum, sizeof(int), 1, pFile);
+								pObject->SetSigValue(nNum);
+
+								//価値べき乗
+								fread(&nNum, sizeof(int), 1, pFile);
+								pObject->SetPowValue(nNum);
+
+								//耐久有効数字
+								fread(&nNum, sizeof(int), 1, pFile);
+								pObject->SetSigEndurance(nNum);
+
+								//耐久べき乗
+								fread(&nNum, sizeof(int), 1, pFile);
+								pObject->SetPowEndurance(nNum);
+
+								//経験値
+								fread(&nNum, sizeof(int), 1, pFile);
+								pObject->SetExp(nNum);
+							}
+						}
 					}
 					else if (nState == STATE_KOBAN)
 					{//交番
@@ -376,6 +415,44 @@ CObjectX::LOADRESULT CObjectX::SaveData(const char * pPath)
 				nState = STATE_KOBAN;
 			}
 			fwrite(&nState, sizeof(int), 1, pFile);
+#if 0
+			if (nState == STATE_BREAKABLE)
+			{//破壊可能設定の場合
+			 //個別設定
+				bool bUnique = pObject->GetUnique();
+				fwrite(&bUnique, sizeof(bool), 1, pFile);
+
+				if (bUnique == false)
+				{//個別設定なし
+					int nLv = pObject->GetLv();
+					fwrite(&nLv, sizeof(int), 1, pFile);
+				}
+				else
+				{//個別設定あり
+					int nNum;
+
+					//価値有効数字
+					nNum = pObject->GetSigValue();
+					fwrite(&nNum, sizeof(int), 1, pFile);
+
+					//価値べき乗
+					nNum = pObject->GetPowValue();
+					fwrite(&nNum, sizeof(int), 1, pFile);
+
+					//耐久有効数字
+					nNum = pObject->GetSigEndurance();
+					fwrite(&nNum, sizeof(int), 1, pFile);
+
+					//耐久べき乗
+					nNum = pObject->GetPowEndurance();
+					fwrite(&nNum, sizeof(int), 1, pFile);
+
+					//経験値
+					nNum = pObject->GetExp();
+					fwrite(&nNum, sizeof(int), 1, pFile);
+				}
+			}
+#endif
 
 			pObject = pObjectNext;
 		}
