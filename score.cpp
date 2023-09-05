@@ -63,8 +63,8 @@ HRESULT CScore::Init(void)
 
 	//テクスチャ読み込み
 	CTexture* pTexture = CManager::GetTexture();
-	m_nIdxTextureNumber = pTexture->Regist("data\\TEXTURE\\tex_Score_01.png", 10, 1);
-	m_nIdxtextureSymbol = pTexture->Regist("data\\TEXTURE\\tex_Symbol_01.png", 14, 1);
+	m_nIdxTextureNumber = CTexture::PRELOAD_NUMBER;
+	m_nIdxtextureSymbol = CTexture::PRELOAD_SYMBOL;
 
 	//スコア設定
 	Set(0);
@@ -196,7 +196,7 @@ CScore* CScore::Create(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, const float
 //=================================
 //スコア設定処理
 //=================================
-void CScore::Set(const int nScore)
+void CScore::Set(const long long nScore)
 {
 	//数字設定
 	m_nScore = nScore;

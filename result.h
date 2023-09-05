@@ -21,7 +21,7 @@ public:
 	static const int DEST_TIME;		//全壊数表示時間
 	static const int VALUE_TIME;	//被害総額表示時間
 	static const int RANK_TIME;		//ボタン表示時間
-	static const int FADE_ALPHA;	//画面を暗くする具合
+	static const float FADE_ALPHA;	//画面を暗くする具合
 	static const float FADE_SPEED;	//暗くする速度
 
 	//コンストラクタ・デストラクタ

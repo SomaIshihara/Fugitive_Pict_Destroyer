@@ -7,9 +7,11 @@
 #include "precompile.h"
 #include "manager.h"
 #include "result.h"
+#include "game.h"
 #include "texture.h"
 #include "bg.h"
 #include "number.h"
+#include "score.h"
 #include "button.h"
 
 //Ã“Iƒƒ“ƒo•Ï”
@@ -18,7 +20,7 @@ const int CResult::ATK_TIME = HEADLINE_TIME + 40;
 const int CResult::DEST_TIME = ATK_TIME + 40;
 const int CResult::VALUE_TIME = DEST_TIME + 60;
 const int CResult::RANK_TIME = VALUE_TIME + 60;
-const int CResult::FADE_ALPHA = 0.4f;
+const float CResult::FADE_ALPHA = 0.4f;
 const float CResult::FADE_SPEED = 0.03f;
 
 //=================================
@@ -45,7 +47,7 @@ CResult::~CResult()
 HRESULT CResult::Init(void)
 {
 	//”wŒi‚ð¶¬i‚»‚ÌŒã“§–¾‚É‚·‚éj
-	m_pBG = CBG::Create(PRIORITY_PAUSE);	//ƒQ[ƒ€‰æ–ÊUI‚Æ‚©‚Ô‚ç‚È‚¢‚æ‚¤‚É‚·‚é
+	m_pBG = CBG::Create(PRIORITY_UI);	//ƒQ[ƒ€‰æ–ÊUI‚Æ‚©‚Ô‚ç‚È‚¢‚æ‚¤‚É‚·‚é
 	m_pBG->BindTexture(-1);
 	m_pBG->SetCol(D3DXCOLOR((DWORD)0x00000000));
 	
@@ -82,21 +84,56 @@ void CResult::Update(void)
 		}
 		else if (m_nCounter == ATK_TIME)
 		{//UŒ‚”•\Ž¦
+			//•¶Žš
 			CObject2D* pObject = nullptr;
 			pObject = CObject2D::Create(D3DXVECTOR3(300.0f, 272.0f, 0.0f), CManager::VEC3_ZERO, 250.0f, 72.0f, PRIORITY_PAUSE);
 			pObject->BindTexture(CTexture::PRELOAD_RESULT_01);
+
+			//”Žš
+			int nNum = CGame::GetATKNum();
+			//\
+			CNumber* pNumber = nullptr;
+			pNumber = CNumber::Create(D3DXVECTOR3(465.0f, 272.0f, 0.0f), CManager::VEC3_ZERO, 40.0f, 72.0f);
+			pNumber->BindTexture(CTexture::PRELOAD_NUMBER);
+			pNumber->SetNumber(nNum, 1);
+
+			//ˆê
+			pNumber = CNumber::Create(D3DXVECTOR3(505.0f, 272.0f, 0.0f), CManager::VEC3_ZERO, 40.0f, 72.0f);
+			pNumber->BindTexture(CTexture::PRELOAD_NUMBER);
+			pNumber->SetNumber(nNum, 0);
 		}
 		else if (m_nCounter == DEST_TIME)
 		{//‘S‰ó”•\Ž¦
+			//•¶Žš
 			CObject2D* pObject = nullptr;
 			pObject = CObject2D::Create(D3DXVECTOR3(800.0f, 272.0f, 0.0f), CManager::VEC3_ZERO, 250.0f, 72.0f, PRIORITY_PAUSE);
 			pObject->BindTexture(CTexture::PRELOAD_RESULT_02); 
+
+			//”Žš
+			int nNum = CGame::GetDestNum();
+			//\
+			CNumber* pNumber = nullptr;
+			pNumber = CNumber::Create(D3DXVECTOR3(965.0f, 272.0f, 0.0f), CManager::VEC3_ZERO, 40.0f, 72.0f);
+			pNumber->BindTexture(CTexture::PRELOAD_NUMBER);
+			pNumber->SetNumber(nNum, 1);
+
+			//ˆê
+			pNumber = CNumber::Create(D3DXVECTOR3(1005.0f, 272.0f, 0.0f), CManager::VEC3_ZERO, 40.0f, 72.0f);
+			pNumber->BindTexture(CTexture::PRELOAD_NUMBER);
+			pNumber->SetNumber(nNum, 0);
 		}
 		else if (m_nCounter == VALUE_TIME)
 		{//”íŠQ‘Šz•\Ž¦
+			//•¶Žš
 			CObject2D* pObject = nullptr;
 			pObject = CObject2D::Create(D3DXVECTOR3(250.0f, 462.0f, 0.0f), CManager::VEC3_ZERO, 375.0f, 108.0f, PRIORITY_PAUSE);
 			pObject->BindTexture(CTexture::PRELOAD_RESULT_03);
+
+			//”Žš
+			long long nScore = CGame::GetScoreObj()->GetScore();
+			CScore* pScore = nullptr;
+			pScore = CScore::Create(D3DXVECTOR3(1097.5f, 462.0f, 0.0f), CManager::VEC3_ZERO, 60.0f, 108.0f);
+			pScore->Set(nScore);
 		}
 		else if (m_nCounter == RANK_TIME)
 		{//ƒ‰ƒ“ƒLƒ“ƒO‘JˆÚƒ{ƒ^ƒ“•\Ž¦
@@ -107,8 +144,11 @@ void CResult::Update(void)
 		if (m_pButton != nullptr && m_pButton->IsClickTrigger() == true)
 		{//ƒ‰ƒ“ƒLƒ“ƒO‘JˆÚ
 			CManager::SetMode(CScene::MODE_RANKING);
+			return;
 		}
 	}
+
+	m_pBG->SetCol(D3DXCOLOR(0.0f, 0.0f, 0.0f, m_fAlpha));
 }
 
 //=================================

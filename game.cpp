@@ -29,6 +29,8 @@ CMeshField* CGame::m_pMeshField = nullptr;
 CTimer* CGame::m_pTimer = nullptr;
 CScore* CGame::m_pScore = nullptr;
 CHaveNum* CGame::m_pHaveNum[];
+int CGame::m_nATKBuilding = CManager::INT_ZERO;
+int CGame::m_nDestBuilding = CManager::INT_ZERO;
 
 //=================================
 //コンストラクタ
@@ -196,8 +198,12 @@ void CGame::Draw(void)
 //=================================
 void CGame::CulcScore(void)
 {
-	//建物オブジェクト全検索
+	//スコア類リセット
 	m_pScore->Set(0);
+	m_nATKBuilding = 0;
+	m_nDestBuilding = 0;
+
+	//建物オブジェクト全検索
 	for (int cnt = 0; cnt < MAX_OBJ; cnt++)
 	{
 		CBuilding* pBuilding = CBuilding::GetBuilding(cnt);	//建物オブジェクト取得
@@ -217,18 +223,45 @@ void CGame::CulcScore(void)
 
 			if (pBuilding->GetUnique() == false)
 			{//計算算出
-				fParcent = ((float)pBuilding->GetEndurance() / HAVE_LIFE(pBuilding->GetLv()));
-				nScore = (1.0f - fParcent) * HAVE_VALUE(pBuilding->GetLv());
+				int nEndurance = pBuilding->GetEndurance();
+				int nMaxEndurance = HAVE_LIFE(pBuilding->GetLv());
+
+				if (nEndurance < nMaxEndurance)
+				{//減っている
+					m_nATKBuilding++;	//攻撃した
+
+					if (nEndurance <= 0)
+					{//全壊
+						m_nDestBuilding++;
+					}
+
+					//被害額計算
+					fParcent = ((float)nEndurance / nMaxEndurance);
+					nScore = (1.0f - fParcent) * HAVE_VALUE(pBuilding->GetLv());
+					m_pScore->Add(nScore);
+				}
 			}
 			else
 			{//個別
-				int nEndurance = pBuilding->GetSigEndurance() * pow(10, pBuilding->GetPowEndurance());
-				fParcent = ((float)pBuilding->GetEndurance() / nEndurance);
-				long long nValue = pBuilding->GetSigValue() * pow(10, pBuilding->GetPowValue());
-				nScore = (1.0f - fParcent) * nValue;
-			}
+				int nMaxEndurance = pBuilding->GetSigEndurance() * pow(10, pBuilding->GetPowEndurance());
+				int nEndurance = pBuilding->GetEndurance();
 
-			m_pScore->Add(nScore);
+				if (nEndurance < nMaxEndurance)
+				{//減っている
+					m_nATKBuilding++;	//攻撃した
+
+					if (nEndurance <= 0)
+					{//全壊
+						m_nDestBuilding++;
+					}
+
+					//被害額計算
+					fParcent = ((float)nEndurance / nMaxEndurance);
+					long long nValue = pBuilding->GetSigValue() * pow(10, pBuilding->GetPowValue());
+					nScore = (1.0f - fParcent) * nValue;
+					m_pScore->Add(nScore);
+				}
+			}
 		}
 		else
 		{//もうない

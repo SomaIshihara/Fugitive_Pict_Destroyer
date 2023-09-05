@@ -36,6 +36,9 @@ public:
 	static CPlayer* GetPlayer(void) { return m_pPlayer; }
 	static CSlider* GetSlider(void) { return m_pSlider; }
 	static CMeshField* GetMeshField(void) { return m_pMeshField; }
+	static int GetATKNum(void) { return m_nATKBuilding; }
+	static int GetDestNum(void) { return m_nDestBuilding; }
+	static CScore* GetScoreObj(void) { return m_pScore; }
 
 private:
 	void CulcScore(void);	//スコア計算
@@ -47,6 +50,8 @@ private:
 	static CTimer* m_pTimer;			//タイマー
 	static CScore* m_pScore;			//スコア
 	static CHaveNum* m_pHaveNum[3];		//所持数
+	static int m_nATKBuilding;			//攻撃数
+	static int m_nDestBuilding;			//全壊数
 };
 
 #endif // !_GAME_H_

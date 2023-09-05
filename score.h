@@ -47,9 +47,10 @@ public:
 	float GetHeight(void) { return CManager::FLOAT_ZERO; }
 	float GetDepth(void) { return CManager::FLOAT_ZERO; }
 	int GetModelIdx(void) { return -1; }
+	long long GetScore(void) { return m_nScore; }
 
 	//設定
-	void Set(const int nScore);	//スコア設定
+	void Set(const long long nScore);	//スコア設定
 	void Add(const int nAdd);	//スコア加算
 
 private:
