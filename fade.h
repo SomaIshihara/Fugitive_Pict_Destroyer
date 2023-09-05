@@ -8,9 +8,10 @@
 #define _FADE_H_
 
 #include "manager.h"
+#include "bg.h"
 
 //フェードクラス
-class CFade
+class CFade : public CBG
 {
 public:
 	//フェードの状態
@@ -33,7 +34,7 @@ public:
 	void Draw(void);
 
 	//生成
-	static CFade* Create(void);
+	static CFade* Create(CScene::MODE sceneNext);
 
 	//取得
 	FADE Get(void) { return m_fade; }
@@ -41,7 +42,6 @@ public:
 private:
 	void SetNext(CScene::MODE sceneNext);
 
-	LPDIRECT3DVERTEXBUFFER9 m_pVtxbuff;		//頂点バッファ
 	FADE m_fade;							//状態
 	CScene::MODE m_modeNext;				//次のシーン
 	float m_fAlpha;							//不透明度

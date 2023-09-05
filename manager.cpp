@@ -40,7 +40,6 @@ CCamera* CManager::m_pCamera = nullptr;
 CLight* CManager::m_pLight = nullptr;
 CTexture* CManager::m_pTexture = nullptr;
 CScene* CManager::m_pScene = nullptr;
-CFade* CManager::m_pFade = nullptr;
 //仮
 CXModel* CManager::m_pAgitModel = nullptr;
 CXModel* CManager::m_pFragModel = nullptr;
@@ -84,7 +83,6 @@ HRESULT CManager::Init(HINSTANCE hInstance, HWND hWnd, BOOL bWindow)
 	m_pCamera = new CCamera;
 	m_pLight = new CLight;
 	m_pTexture = new CTexture;
-	m_pFade = CFade::Create();
 
 	//レンダラー初期化
 	if (FAILED(m_pRenderer->Init(hWnd, TRUE)))
@@ -164,13 +162,6 @@ void CManager::Uninit(void)
 
 	//オブジェクト終了+破棄
 	CObject::ReleaseAll();
-
-	//フェード破棄
-	if (m_pFade != nullptr)
-	{
-		m_pFade->Uninit();
-		m_pFade = nullptr;
-	}
 
 	//テクスチャ破棄
 	if (m_pTexture != nullptr)

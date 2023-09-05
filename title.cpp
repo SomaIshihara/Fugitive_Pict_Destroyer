@@ -7,6 +7,7 @@
 #include "precompile.h"
 #include "texture.h"
 #include "title.h"
+#include "fade.h"
 #include "input.h"
 #include "camera.h"
 #include "button.h"
@@ -70,7 +71,8 @@ void CTitle::Update(void)
 
 	if (m_pButton->IsClickTrigger() == true)
 	{//ƒ{ƒ^ƒ“‚ª‰Ÿ‚³‚ê‚½
-		CManager::SetMode(CScene::MODE_GAME);
+		CFade::Create(CScene::MODE_GAME);
+		//CManager::SetMode(CScene::MODE_GAME);
 	}
 }
 

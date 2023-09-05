@@ -38,12 +38,12 @@ CPause::~CPause()
 HRESULT CPause::Init(void)
 {
 	//使うやつ生成
-	m_pBG = CBG::Create(PRIORITY_UI);
-	m_pPolygon = CObject2D::Create(D3DXVECTOR3(SCREEN_WIDTH * 0.5f, 90.0f, 0.0f), VEC3_ZERO, 600.0f, 180.0f, PRIORITY_UI);
-	m_pContinue = CButton2D::Create(D3DXVECTOR3(SCREEN_WIDTH * 0.5f, 270.0f, 0.0f), VEC3_ZERO, 600.0f, 180.0f);
-	m_pRestart = CButton2D::Create(D3DXVECTOR3(SCREEN_WIDTH * 0.5f, 450.0f, 0.0f), VEC3_ZERO, 600.0f, 180.0f);
-	m_pExit = CButton2D::Create(D3DXVECTOR3(SCREEN_WIDTH * 0.5f, 630.0f, 0.0f), VEC3_ZERO, 600.0f, 180.0f);
-	m_pScreenShot = CButton2D::Create(D3DXVECTOR3(SCREEN_WIDTH - 80.0f, 80.0f, 0.0f), VEC3_ZERO, 160.0f, 160.0f);
+	m_pBG = CBG::Create(PRIORITY_PAUSE);
+	m_pPolygon = CObject2D::Create(D3DXVECTOR3(SCREEN_WIDTH * 0.5f, 90.0f, 0.0f), VEC3_ZERO, 600.0f, 180.0f, PRIORITY_PAUSE);
+	m_pContinue = CButton2D::Create(D3DXVECTOR3(SCREEN_WIDTH * 0.5f, 270.0f, 0.0f), VEC3_ZERO, 600.0f, 180.0f, PRIORITY_PAUSE);
+	m_pRestart = CButton2D::Create(D3DXVECTOR3(SCREEN_WIDTH * 0.5f, 450.0f, 0.0f), VEC3_ZERO, 600.0f, 180.0f, PRIORITY_PAUSE);
+	m_pExit = CButton2D::Create(D3DXVECTOR3(SCREEN_WIDTH * 0.5f, 630.0f, 0.0f), VEC3_ZERO, 600.0f, 180.0f, PRIORITY_PAUSE);
+	m_pScreenShot = CButton2D::Create(D3DXVECTOR3(SCREEN_WIDTH - 80.0f, 80.0f, 0.0f), VEC3_ZERO, 160.0f, 160.0f, PRIORITY_PAUSE);
 
 	//テクスチャ貼り貼り（なおテクスチャはあらかじめpreloadで読み込んだものとする）
 	CTexture* pTexture = CManager::GetTexture();

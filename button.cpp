@@ -127,7 +127,7 @@ void CButton2D::Draw(void)
 //========================
 //ê∂ê¨
 //========================
-CButton2D * CButton2D::Create(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, const float fWidth, const float fHeight)
+CButton2D * CButton2D::Create(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, const float fWidth, const float fHeight, int nPriority)
 {
 	CButton2D* pButton2D = NULL;
 

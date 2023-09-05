@@ -108,7 +108,6 @@ private:
 	static CLight* m_pLight;					//ライト
 	static CTexture* m_pTexture;				//テクスチャ
 	static CXModel* m_pAgitModel;				//仮：アジトモデルポインタ
-	static CFade* m_pFade;						//フェード
 	static int m_nFPS;							//FPS
 	static DWORD m_dwFrameCount;				//回したフレーム数
 

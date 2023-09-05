@@ -166,7 +166,7 @@ void CGame::Update(void)
 		//ŽžŠÔŠÇ—
 		if (m_pTimer->GetTime() <= 0)
 		{//ŽžŠÔØ‚ê
-			CManager::SetMode(CScene::MODE_RESULT);
+			//CManager::SetMode(CScene::MODE_RESULT);
 		}
 	}
 }

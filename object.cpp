@@ -48,7 +48,7 @@ CObject::~CObject()
 //=================================
 void CObject::ReleaseAll(void)
 {
-	for (int cnt = 0; cnt < PRIORITY_MAX; cnt++)
+	for (int cnt = 0; cnt < PRIORITY_FADE; cnt++)	//フェードの破棄をしないため一つ手前まで行う
 	{
 		CObject* pObject = m_apTop[cnt];	//先頭を入れる
 
