@@ -21,7 +21,7 @@
 CEnemy::CEnemy(int nPriority) : CObjectAnim2D(nPriority)
 {
 	m_nIdxTexture = -1;
-	m_move = VEC3_ZERO;
+	m_move = CManager::VEC3_ZERO;
 	m_nLife = 1;
 }
 
@@ -32,7 +32,7 @@ CEnemy::CEnemy(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, const float fWidth,
 	: CObjectAnim2D(pos, rot, fWidth, fHeight, nAnimSpeed, true, nPriority)
 {
 	m_nIdxTexture = -1;
-	m_move = VEC3_ZERO;
+	m_move = CManager::VEC3_ZERO;
 	m_nLife = nLife;
 }
 

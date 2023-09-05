@@ -23,10 +23,10 @@ CHaveNum::CHaveNum(int nPriority) : CObject(nPriority), m_nHaveNumDigit(1)
 {
 	//値クリア
 	m_nIdxTexture = -1;
-	m_pos = VEC3_ZERO;
-	m_rot = VEC3_ZERO;
-	m_fOneWidth = FLOAT_ZERO;
-	m_fOneHeight = FLOAT_ZERO;
+	m_pos = CManager::VEC3_ZERO;
+	m_rot = CManager::VEC3_ZERO;
+	m_fOneWidth = CManager::FLOAT_ZERO;
+	m_fOneHeight = CManager::FLOAT_ZERO;
 }
 
 //=================================
@@ -36,10 +36,10 @@ CHaveNum::CHaveNum(const int nHaveNumDigit, int nPriority) : CObject(nPriority),
 {
 	//値設定
 	m_nIdxTexture = -1;
-	m_pos = VEC3_ZERO;
-	m_rot = VEC3_ZERO;
-	m_fOneWidth = FLOAT_ZERO;
-	m_fOneHeight = FLOAT_ZERO;
+	m_pos = CManager::VEC3_ZERO;
+	m_rot = CManager::VEC3_ZERO;
+	m_fOneWidth = CManager::FLOAT_ZERO;
+	m_fOneHeight = CManager::FLOAT_ZERO;
 }
 
 //=================================
@@ -161,7 +161,7 @@ CHaveNum* CHaveNum::Create(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, const f
 		cnt++;	//アイコンの配置目安
 
 		//アイコン
-		CObject2D* pIcon = CObject2D::Create(pos + D3DXVECTOR3(-fOneWidth * cnt, 0.0f, 0.0f), VEC3_ZERO, fOneHeight, fOneHeight);
+		CObject2D* pIcon = CObject2D::Create(pos + D3DXVECTOR3(-fOneWidth * cnt, 0.0f, 0.0f), CManager::VEC3_ZERO, fOneHeight, fOneHeight);
 		pIcon->Init();
 		pIcon->BindTexture(nIconTexNum);
 

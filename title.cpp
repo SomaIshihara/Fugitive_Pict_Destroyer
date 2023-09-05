@@ -59,9 +59,9 @@ void CTitle::Update(void)
 {
 	CCamera* pCamera = CManager::GetCamera();
 	CInputMouse* pMouse = CManager::GetInputMouse();
-	D3DXVECTOR3 rot = VEC3_ZERO;
+	D3DXVECTOR3 rot = CManager::VEC3_ZERO;
 
-	D3DXVECTOR3 move = VEC3_ZERO;
+	D3DXVECTOR3 move = CManager::VEC3_ZERO;
 	move.x = pMouse->GetMove().x;
 	move.y = pMouse->GetMove().y;
 

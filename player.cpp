@@ -25,11 +25,11 @@ CPlayer::CPlayer()
 {
 	m_bControllPict = false;
 
-	m_nHaveDestroyer = INT_ZERO;
-	m_nHaveBlocker = INT_ZERO;
-	m_nHaveNormal = INT_ZERO;
+	m_nHaveDestroyer = CManager::INT_ZERO;
+	m_nHaveBlocker = CManager::INT_ZERO;
+	m_nHaveNormal = CManager::INT_ZERO;
 
-	m_cursorPos = VEC3_ZERO;
+	m_cursorPos = CManager::VEC3_ZERO;
 	m_pButtonATK = NULL;
 }
 
@@ -155,7 +155,7 @@ void CPlayer::Move(void)
 {
 	CInputKeyboard* pKeyboard = CManager::GetInputKeyboard();	//キーボード取得
 	CCamera* pCamera = CManager::GetCamera();					//カメラ取得
-	D3DXVECTOR3 move = VEC3_ZERO;
+	D3DXVECTOR3 move = CManager::VEC3_ZERO;
 	D3DXVECTOR3 rot = pCamera->GetRot();
 	//移動
 	if (pKeyboard->GetPress(DIK_A) == true)
@@ -208,9 +208,9 @@ void CPlayer::Rotate(void)
 {
 	CCamera* pCamera = CManager::GetCamera();
 	CInputMouse* pMouse = CManager::GetInputMouse();
-	D3DXVECTOR3 rot = VEC3_ZERO;
+	D3DXVECTOR3 rot = CManager::VEC3_ZERO;
 
-	D3DXVECTOR3 move = VEC3_ZERO;
+	D3DXVECTOR3 move = CManager::VEC3_ZERO;
 	move.x = pMouse->GetMove().x;
 	move.y = pMouse->GetMove().y;
 
@@ -259,7 +259,7 @@ void CPlayer::Select(void)
 				m_pSelectBuilding = pBuilding;
 				
 				//ボタン生成
-				m_pButtonATK = CButton2D::Create(mouse->GetPos(), VEC3_ZERO, 40.0f, 40.0f);
+				m_pButtonATK = CButton2D::Create(mouse->GetPos(), CManager::VEC3_ZERO, 40.0f, 40.0f);
 				return;
 			}
 		}
@@ -278,7 +278,7 @@ void CPlayer::Select(void)
 				m_pSelectPict = pPict;
 
 				//ボタン生成
-				m_pButtonATK = CButton2D::Create(mouse->GetPos(), VEC3_ZERO, 40.0f, 40.0f);
+				m_pButtonATK = CButton2D::Create(mouse->GetPos(), CManager::VEC3_ZERO, 40.0f, 40.0f);
 				return;
 			}
 		}

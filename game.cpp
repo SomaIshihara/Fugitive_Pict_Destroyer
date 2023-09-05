@@ -60,21 +60,21 @@ HRESULT CGame::Init(void)
 	}
 
 	//仮オブジェ生成
-	m_pMeshField = CMeshField::Create(D3DXVECTOR3(-1280.0f, 0.0f, 1280.0f), VEC3_ZERO, 64.0f, 64.0f, 40, 40);
+	m_pMeshField = CMeshField::Create(D3DXVECTOR3(-1280.0f, 0.0f, 1280.0f), CManager::VEC3_ZERO, 64.0f, 64.0f, 40, 40);
 
 	//オブジェクト生成+初期化
-	m_pTimer = CTimer::Create(D3DXVECTOR3(SCREEN_WIDTH * 0.5f + 24.0f, 32.0f, 0.0f), VEC3_ZERO, 48.0f, 72.0f);
-	m_pTimer->Set(120, CTimer::COUNT_DOWN);
-	m_pScore = CScore::Create(D3DXVECTOR3(SCREEN_WIDTH - 24.0f, 32.0f, 0.0f), VEC3_ZERO, 40.0f, 64.0f);
-	CObjectX* pAgit = CObjectX::Create(D3DXVECTOR3(600.0f,0.0f,0.0f), VEC3_ZERO, CManager::GetAgitModel());
+	m_pTimer = CTimer::Create(D3DXVECTOR3(SCREEN_WIDTH * 0.5f + 24.0f, 32.0f, 0.0f), CManager::VEC3_ZERO, 48.0f, 72.0f);
+	m_pTimer->Set(2, CTimer::COUNT_DOWN);
+	m_pScore = CScore::Create(D3DXVECTOR3(SCREEN_WIDTH - 24.0f, 32.0f, 0.0f), CManager::VEC3_ZERO, 40.0f, 64.0f);
+	CObjectX* pAgit = CObjectX::Create(D3DXVECTOR3(600.0f,0.0f,0.0f), CManager::VEC3_ZERO, CManager::GetAgitModel());
 	CPict::SetAgit(pAgit);
-	CMeshSky::Create(VEC3_ZERO, VEC3_ZERO, 10000.0f, 8, 8);
-	m_pHaveNum[0] = CHaveNum::Create(D3DXVECTOR3(SCREEN_WIDTH - 30.0f, 100.0f, 0.0f), VEC3_ZERO, 60.0f, 72.0f, 2, 0);//アイコン番号仮
-	m_pHaveNum[1] = CHaveNum::Create(D3DXVECTOR3(SCREEN_WIDTH - 30.0f, 172.0f, 0.0f), VEC3_ZERO, 60.0f, 72.0f, 2, 0);//アイコン番号仮
-	m_pHaveNum[2] = CHaveNum::Create(D3DXVECTOR3(SCREEN_WIDTH - 30.0f, 244.0f, 0.0f), VEC3_ZERO, 60.0f, 72.0f, 5,0);//アイコン番号仮
+	CMeshSky::Create(CManager::VEC3_ZERO, CManager::VEC3_ZERO, 10000.0f, 8, 8);
+	m_pHaveNum[0] = CHaveNum::Create(D3DXVECTOR3(SCREEN_WIDTH - 30.0f, 100.0f, 0.0f), CManager::VEC3_ZERO, 60.0f, 72.0f, 2, 0);//アイコン番号仮
+	m_pHaveNum[1] = CHaveNum::Create(D3DXVECTOR3(SCREEN_WIDTH - 30.0f, 172.0f, 0.0f), CManager::VEC3_ZERO, 60.0f, 72.0f, 2, 0);//アイコン番号仮
+	m_pHaveNum[2] = CHaveNum::Create(D3DXVECTOR3(SCREEN_WIDTH - 30.0f, 244.0f, 0.0f), CManager::VEC3_ZERO, 60.0f, 72.0f, 5,0);//アイコン番号仮
 
 	//仮
-	CItemBullet::Create(D3DXVECTOR3(0.0f, 0.0f, 10.0f), VEC3_ZERO);
+	CItemBullet::Create(D3DXVECTOR3(0.0f, 0.0f, 10.0f), CManager::VEC3_ZERO);
 
 	//マップデータ読み込みと配置
 	CObjectX::LoadData("data\\Fugitive_Pict_MapData_v120.ismd");
@@ -136,37 +136,47 @@ void CGame::Update(void)
 		CManager::SetPause((CManager::GetPause() == true ? false : true));
 	}
 
-	if (CManager::GetPause() == true)
-	{//ポーズしてる
-		if (m_pPause == nullptr)
-		{//ポーズがぬるぽ
-			m_pPause = new CPause;		//ポーズ生成
-			m_pPause->Init();			//ポーズ初期化
-		}
-
-		//ポーズ時の処理
-		m_pPause->Update();
+	if (m_pResult != nullptr)
+	{//リザルト
+		m_pResult->Update();
 	}
 	else
-	{//ポーズしてない
-		if (m_pPause != nullptr)
-		{//なんか入ってる
-			m_pPause->Uninit();	//終了
-			delete m_pPause;	//破棄
-			m_pPause = nullptr;	//ぬるぽ入れる
+	{//ゲーム
+		if (CManager::GetPause() == true)
+		{//ポーズしてる
+			if (m_pPause == nullptr)
+			{//ポーズがぬるぽ
+				m_pPause = new CPause;		//ポーズ生成
+				m_pPause->Init();			//ポーズ初期化
+			}
+
+			//ポーズ時の処理
+			m_pPause->Update();
 		}
+		else
+		{//ポーズしてない
+			if (m_pPause != nullptr)
+			{//なんか入ってる
+				m_pPause->Uninit();	//終了
+				delete m_pPause;	//破棄
+				m_pPause = nullptr;	//ぬるぽ入れる
+			}
 
-		//普段の処理
-		CKoban::CommonUpdate();	//交番共通更新処理
-		m_pPlayer->Update();
+			//普段の処理
+			CKoban::CommonUpdate();	//交番共通更新処理
+			m_pPlayer->Update();
 
-		//スコア算出
-		CulcScore();
+			//スコア算出
+			CulcScore();
 
-		//時間管理
-		if (m_pTimer->GetTime() <= 0)
-		{//時間切れ
-			//CManager::SetMode(CScene::MODE_RESULT);
+			//時間管理
+			if (m_pTimer->GetTime() <= 0)
+			{//時間切れ
+				if (m_pResult == nullptr)
+				{
+					m_pResult = CResult::Create();
+				}
+			}
 		}
 	}
 }

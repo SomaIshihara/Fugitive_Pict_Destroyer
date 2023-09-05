@@ -34,7 +34,7 @@ CItem::CItem(int nPriority) : CObject2D(nPriority)
 //=================================
 //コンストラクタ（オーバーロード 位置幅高さ）
 //=================================
-CItem::CItem(const D3DXVECTOR3 pos, const float fWidth, const float fHeight, int nPriority) :CObject2D(pos, VEC3_ZERO, fWidth, fHeight, nPriority)
+CItem::CItem(const D3DXVECTOR3 pos, const float fWidth, const float fHeight, int nPriority) :CObject2D(pos, CManager::VEC3_ZERO, fWidth, fHeight, nPriority)
 {
 	//値クリア
 	m_nIdxTexture = -1;
@@ -130,7 +130,7 @@ CItemBullet::CItemBullet()
 		}
 	}
 	//値クリア
-	m_nBulletNum = INT_ZERO;
+	m_nBulletNum = CManager::INT_ZERO;
 }
 
 //=================================
@@ -149,7 +149,7 @@ CItemBullet::CItemBullet(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot) : CObject
 		}
 	}
 	//値クリア
-	m_nBulletNum = INT_ZERO;
+	m_nBulletNum = CManager::INT_ZERO;
 }
 
 //=================================

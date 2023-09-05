@@ -20,10 +20,10 @@ CTimer::CTimer(int nPriority) : CObject(nPriority)
 {
 	//値クリア
 	m_nIdxTexture = -1;
-	m_pos = VEC3_ZERO;
-	m_rot = VEC3_ZERO;
-	m_fOneWidth = FLOAT_ZERO;
-	m_fOneHeight = FLOAT_ZERO;
+	m_pos = CManager::VEC3_ZERO;
+	m_rot = CManager::VEC3_ZERO;
+	m_fOneWidth = CManager::FLOAT_ZERO;
+	m_fOneHeight = CManager::FLOAT_ZERO;
 	m_nCounter = 0;
 	m_count = COUNT_DOWN;
 }
@@ -124,9 +124,9 @@ void CTimer::Update(void)
 
 		case COUNT_DOWN:
 			m_nTime--;	//減算
-			if (m_nTime < INT_ZERO)
+			if (m_nTime < CManager::INT_ZERO)
 			{//0を下回った
-				m_nTime = INT_ZERO;
+				m_nTime = CManager::INT_ZERO;
 			}
 			break;
 		}
@@ -197,13 +197,13 @@ CTimer* CTimer::Create(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, const float
 		}
 
 		//「と」
-		pSymbol = CSymbol::Create(pos + D3DXVECTOR3(-fOneWidth * 3 - 24.0f, -9.0f, 0.0f), VEC3_ZERO, 24.0f, 36.0f);
+		pSymbol = CSymbol::Create(pos + D3DXVECTOR3(-fOneWidth * 3 - 24.0f, -9.0f, 0.0f), CManager::VEC3_ZERO, 24.0f, 36.0f);
 		pSymbol->Init();
 		pSymbol->BindTexture(ntexNum);
 		pSymbol->SetSymbol(TYPE_TO);
 
 		//「あ」
-		pSymbol = CSymbol::Create(pos + D3DXVECTOR3(-fOneWidth * 3 - 48.0f, -9.0f, 0.0f), VEC3_ZERO, 24.0f, 36.0f);
+		pSymbol = CSymbol::Create(pos + D3DXVECTOR3(-fOneWidth * 3 - 48.0f, -9.0f, 0.0f), CManager::VEC3_ZERO, 24.0f, 36.0f);
 		pSymbol->Init();
 		pSymbol->BindTexture(ntexNum);
 		pSymbol->SetSymbol(TYPE_A);

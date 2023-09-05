@@ -14,8 +14,8 @@
 //=================================
 CCollision::CCollision()
 {
-	m_vtxMin = VEC3_ZERO;
-	m_vtxMax = VEC3_ZERO;
+	m_vtxMin = CManager::VEC3_ZERO;
+	m_vtxMax = CManager::VEC3_ZERO;
 }
 
 //=================================

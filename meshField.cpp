@@ -18,12 +18,12 @@ using namespace std;
 CMeshField::CMeshField()
 {
 	//値クリア
-	m_pos = VEC3_ZERO;
-	m_rot = VEC3_ZERO;
-	m_fWidth = FLOAT_ZERO;
-	m_fDepth = FLOAT_ZERO;
-	m_nBlockWidth = INT_ZERO;
-	m_nBlockDepth = INT_ZERO;
+	m_pos = CManager::VEC3_ZERO;
+	m_rot = CManager::VEC3_ZERO;
+	m_fWidth = CManager::FLOAT_ZERO;
+	m_fDepth = CManager::FLOAT_ZERO;
+	m_nBlockWidth = CManager::INT_ZERO;
+	m_nBlockDepth = CManager::INT_ZERO;
 }
 
 //=================================
@@ -137,7 +137,7 @@ HRESULT CMeshField::Init(void)
 
 	for (int nCount = 0; nCount < (m_nBlockWidth + 1) * (m_nBlockDepth + 1); nCount++, pVtx++)
 	{
-		D3DXVECTOR3 nor = VEC3_ZERO;
+		D3DXVECTOR3 nor = CManager::VEC3_ZERO;
 		//全法線を足す
 		for (int cntNor = 0; cntNor < pNor[nCount].size(); cntNor++)
 		{

@@ -8,8 +8,8 @@
 #include "renderer.h"
 #include "fade.h"
 
-//マクロ
-#define FADE_SPEED	(0.032f)	//フェードの速さ
+//静的メンバ変数
+const float CFade::FADE_SPEED = 0.032f;
 
 //========================
 //コンストラクタ

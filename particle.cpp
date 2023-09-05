@@ -25,14 +25,14 @@
 CParticle2D::CParticle2D()
 {
 	//パーティクルのクリア
-	m_particle.pos = VEC3_ZERO;
-	m_particle.nLife = INT_ZERO;
-	m_particle.nEffeceNum = INT_ZERO;
-	m_particle.fSpeedBace = FLOAT_ZERO;
-	m_particle.fSpeedDegree = FLOAT_ZERO;
+	m_particle.pos = CManager::VEC3_ZERO;
+	m_particle.nLife = CManager::INT_ZERO;
+	m_particle.nEffeceNum = CManager::INT_ZERO;
+	m_particle.fSpeedBace = CManager::FLOAT_ZERO;
+	m_particle.fSpeedDegree = CManager::FLOAT_ZERO;
 	m_particle.col = D3DXCOLOR(0.0f, 0.0f, 0.0f, 0.0f);
-	m_particle.fWidth = FLOAT_ZERO;
-	m_particle.fHeight = FLOAT_ZERO;
+	m_particle.fWidth = CManager::FLOAT_ZERO;
+	m_particle.fHeight = CManager::FLOAT_ZERO;
 }
 
 //=================================
@@ -110,7 +110,7 @@ void CParticle2D::Update(void)
 	//エフェクト寿命管理
 	m_particle.nLife--;
 
-	if (m_particle.nLife <= INT_ZERO)
+	if (m_particle.nLife <= CManager::INT_ZERO)
 	{
 		Uninit();
 	}
@@ -149,14 +149,14 @@ CParticle2D* CParticle2D::Create(const D3DXVECTOR3 pos, const int nLife, const i
 CParticleBillboard::CParticleBillboard()
 {
 	//パーティクルのクリア
-	m_particle.pos = VEC3_ZERO;
-	m_particle.nLife = INT_ZERO;
-	m_particle.nEffeceNum = INT_ZERO;
-	m_particle.fSpeedBace = FLOAT_ZERO;
-	m_particle.fSpeedDegree = FLOAT_ZERO;
+	m_particle.pos = CManager::VEC3_ZERO;
+	m_particle.nLife = CManager::INT_ZERO;
+	m_particle.nEffeceNum = CManager::INT_ZERO;
+	m_particle.fSpeedBace = CManager::FLOAT_ZERO;
+	m_particle.fSpeedDegree = CManager::FLOAT_ZERO;
 	m_particle.col = D3DXCOLOR(0.0f, 0.0f, 0.0f, 0.0f);
-	m_particle.fWidth = FLOAT_ZERO;
-	m_particle.fHeight = FLOAT_ZERO;
+	m_particle.fWidth = CManager::FLOAT_ZERO;
+	m_particle.fHeight = CManager::FLOAT_ZERO;
 }
 
 //=================================
@@ -235,7 +235,7 @@ void CParticleBillboard::Update(void)
 	//エフェクト寿命管理
 	m_particle.nLife--;
 
-	if (m_particle.nLife <= INT_ZERO)
+	if (m_particle.nLife <= CManager::INT_ZERO)
 	{
 		Uninit();
 	}

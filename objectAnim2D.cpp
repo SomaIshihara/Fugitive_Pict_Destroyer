@@ -17,9 +17,9 @@
 CObjectAnim2D::CObjectAnim2D(int nPriority) : CObject2D(nPriority)
 {
 	//値クリア
-	m_nCounterAnim = INT_ZERO;
-	m_nPatternAnim = INT_ZERO;
-	m_nAnimSpeed = INT_ZERO;
+	m_nCounterAnim = CManager::INT_ZERO;
+	m_nPatternAnim = CManager::INT_ZERO;
+	m_nAnimSpeed = CManager::INT_ZERO;
 	m_bLoop = true;
 }
 
@@ -31,8 +31,8 @@ CObjectAnim2D::CObjectAnim2D(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot,
 	: CObject2D(pos,rot, fWidth, fHeight, nPriority)
 {
 	//値クリア
-	m_nCounterAnim = INT_ZERO;
-	m_nPatternAnim = INT_ZERO;
+	m_nCounterAnim = CManager::INT_ZERO;
+	m_nPatternAnim = CManager::INT_ZERO;
 
 	//値設定
 	m_nAnimSpeed = nAnimSpeed;
@@ -57,8 +57,8 @@ HRESULT CObjectAnim2D::Init(void)
 		return E_FAIL;
 	}
 	//値初期化
-	m_nCounterAnim = INT_ZERO;
-	m_nPatternAnim = INT_ZERO;
+	m_nCounterAnim = CManager::INT_ZERO;
+	m_nPatternAnim = CManager::INT_ZERO;
 
 	//パターン幅高さ取得
 	CTexture* pTexture = CManager::GetTexture();

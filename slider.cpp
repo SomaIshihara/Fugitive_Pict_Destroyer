@@ -18,11 +18,11 @@ CSlider::CSlider()
 	m_pObjFrame = NULL;
 	m_pObjMove = NULL;
 	m_ppObjIcon = NULL;
-	m_pos = VEC3_ZERO;
-	m_fOneWidth = FLOAT_ZERO;
-	m_fOneHeight = FLOAT_ZERO;
-	m_nIdxNum = INT_ZERO;
-	m_nSelect = INT_ZERO;
+	m_pos = CManager::VEC3_ZERO;
+	m_fOneWidth = CManager::FLOAT_ZERO;
+	m_fOneHeight = CManager::FLOAT_ZERO;
+	m_nIdxNum = CManager::INT_ZERO;
+	m_nSelect = CManager::INT_ZERO;
 	m_bClick = false;
 }
 
@@ -38,7 +38,7 @@ CSlider::CSlider(const D3DXVECTOR3 pos, const float fOneWidth, const float fOneH
 	m_fOneWidth = fOneWidth;
 	m_fOneHeight = fOneHeight;
 	m_nIdxNum = nIdxNum;
-	m_nSelect = INT_ZERO;
+	m_nSelect = CManager::INT_ZERO;
 	m_bClick = false;
 }
 
@@ -55,12 +55,12 @@ CSlider::~CSlider()
 HRESULT CSlider::Init(void)
 {
 	//òg
-	m_pObjFrame = CObject2D::Create(m_pos, VEC3_ZERO, m_fOneWidth * m_nIdxNum, m_fOneHeight, PRIORITY_UI);
+	m_pObjFrame = CObject2D::Create(m_pos, CManager::VEC3_ZERO, m_fOneWidth * m_nIdxNum, m_fOneHeight, PRIORITY_UI);
 	m_pObjFrame->BindTexture(-1);
 	m_pObjFrame->SetCol(D3DXCOLOR(0.0f, 0.7f, 0.0f, 1.0f));
 
 	//à⁄ìÆïî
-	m_pObjMove = CObject2D::Create(m_pos, VEC3_ZERO, m_fOneWidth, m_fOneHeight, PRIORITY_UI);
+	m_pObjMove = CObject2D::Create(m_pos, CManager::VEC3_ZERO, m_fOneWidth, m_fOneHeight, PRIORITY_UI);
 	m_pObjMove->BindTexture(-1);
 
 	//ÉAÉCÉRÉì
@@ -68,7 +68,7 @@ HRESULT CSlider::Init(void)
 	for (int cnt = 0; cnt < m_nIdxNum; cnt++)
 	{
 		float fPosX = (-((float)m_nIdxNum * 0.5f) + (0.5f + (float)cnt)) * m_fOneWidth;
-		m_ppObjIcon[cnt] = CObject2D::Create(m_pos + D3DXVECTOR3(fPosX, 0.0f, 0.0f), VEC3_ZERO, m_fOneWidth, m_fOneHeight, PRIORITY_UI);
+		m_ppObjIcon[cnt] = CObject2D::Create(m_pos + D3DXVECTOR3(fPosX, 0.0f, 0.0f), CManager::VEC3_ZERO, m_fOneWidth, m_fOneHeight, PRIORITY_UI);
 	}
 	m_ppObjIcon[0]->BindTexture(CTexture::PRELOAD_SLIDER_01);
 	m_ppObjIcon[1]->BindTexture(CTexture::PRELOAD_SLIDER_02);

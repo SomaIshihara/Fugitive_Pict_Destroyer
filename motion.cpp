@@ -19,17 +19,17 @@ CMotion::CMotion()
 		{
 			for (int cntKey = 0; cntKey < KEY_NUM; cntKey++)
 			{
-				m_aInfo[cntInfo].m_aKeyInfo[cntKeyInfo].m_aKey[cntKey].m_fPosX = FLOAT_ZERO;
-				m_aInfo[cntInfo].m_aKeyInfo[cntKeyInfo].m_aKey[cntKey].m_fPosY = FLOAT_ZERO;
-				m_aInfo[cntInfo].m_aKeyInfo[cntKeyInfo].m_aKey[cntKey].m_fPosZ = FLOAT_ZERO;
-				m_aInfo[cntInfo].m_aKeyInfo[cntKeyInfo].m_aKey[cntKey].m_fRotX = FLOAT_ZERO;
-				m_aInfo[cntInfo].m_aKeyInfo[cntKeyInfo].m_aKey[cntKey].m_fRotY = FLOAT_ZERO;
-				m_aInfo[cntInfo].m_aKeyInfo[cntKeyInfo].m_aKey[cntKey].m_fRotZ = FLOAT_ZERO;
+				m_aInfo[cntInfo].m_aKeyInfo[cntKeyInfo].m_aKey[cntKey].m_fPosX = CManager::FLOAT_ZERO;
+				m_aInfo[cntInfo].m_aKeyInfo[cntKeyInfo].m_aKey[cntKey].m_fPosY = CManager::FLOAT_ZERO;
+				m_aInfo[cntInfo].m_aKeyInfo[cntKeyInfo].m_aKey[cntKey].m_fPosZ = CManager::FLOAT_ZERO;
+				m_aInfo[cntInfo].m_aKeyInfo[cntKeyInfo].m_aKey[cntKey].m_fRotX = CManager::FLOAT_ZERO;
+				m_aInfo[cntInfo].m_aKeyInfo[cntKeyInfo].m_aKey[cntKey].m_fRotY = CManager::FLOAT_ZERO;
+				m_aInfo[cntInfo].m_aKeyInfo[cntKeyInfo].m_aKey[cntKey].m_fRotZ = CManager::FLOAT_ZERO;
 			}
 			m_aInfo[cntInfo].m_aKeyInfo[cntKeyInfo].m_nFrame = 0;
 		}
 		m_aInfo[cntInfo].m_bLoop = false;
-		m_aInfo[cntInfo].m_nNumKey = INT_ZERO;
+		m_aInfo[cntInfo].m_nNumKey = CManager::INT_ZERO;
 	}
 }
 
@@ -67,8 +67,8 @@ void CMotion::Set(int nType)
 	//‰ŠúÝ’è
 	m_bLoop = m_aInfo[m_nType].m_bLoop;
 	m_nNumKey = m_aInfo[m_nType].m_nNumKey;
-	m_nKey = INT_ZERO;
-	m_nCounter = INT_ZERO;
+	m_nKey = CManager::INT_ZERO;
+	m_nCounter = CManager::INT_ZERO;
 	m_bFinish = false;
 }
 

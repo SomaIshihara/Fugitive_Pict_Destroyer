@@ -35,7 +35,7 @@ public:
 	D3DXVECTOR3 GetPos(void) { return m_pos; }
 	D3DXVECTOR3 GetRot(void) { return m_rot; }
 	float GetWidth(void) { return m_fWidth; }
-	float GetHeight(void) { return FLOAT_ZERO; }
+	float GetHeight(void) { return CManager::FLOAT_ZERO; }
 	float GetDepth(void) { return m_fHeight; }
 
 	//ê›íË

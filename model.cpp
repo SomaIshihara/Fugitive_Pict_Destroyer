@@ -16,10 +16,10 @@
 //=================================
 CModel::CModel()
 {
-	m_pos = VEC3_ZERO;
-	m_rot = VEC3_ZERO;
-	m_posMotioned = VEC3_ZERO;
-	m_rotMotioned = VEC3_ZERO;
+	m_pos = CManager::VEC3_ZERO;
+	m_rot = CManager::VEC3_ZERO;
+	m_posMotioned = CManager::VEC3_ZERO;
+	m_rotMotioned = CManager::VEC3_ZERO;
 	m_pParent = NULL;
 }
 

@@ -51,9 +51,9 @@ public:
 	//取得（純粋仮想関数の関係上実装しているが、こいつにサイズやらはいらないのですべて0を返す）
 	D3DXVECTOR3 GetPos(void) { return m_pos; }
 	D3DXVECTOR3 GetRot(void) { return m_rot; }
-	float GetWidth(void) { return FLOAT_ZERO; }
-	float GetHeight(void) { return FLOAT_ZERO; }
-	float GetDepth(void) { return FLOAT_ZERO; }
+	float GetWidth(void) { return CManager::FLOAT_ZERO; }
+	float GetHeight(void) { return CManager::FLOAT_ZERO; }
+	float GetDepth(void) { return CManager::FLOAT_ZERO; }
 	int GetModelIdx(void) { return -1; }
 	int GetTime(void) { return m_nTime; }
 

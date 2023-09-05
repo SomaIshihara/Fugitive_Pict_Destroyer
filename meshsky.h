@@ -38,9 +38,9 @@ public:
 	//Žæ“¾
 	D3DXVECTOR3 GetPos(void) { return m_pos; }
 	D3DXVECTOR3 GetRot(void) { return m_rot; }
-	float GetWidth(void) { return FLOAT_ZERO; }
+	float GetWidth(void) { return CManager::FLOAT_ZERO; }
 	float GetHeight(void) { return m_fRadius; }
-	float GetDepth(void) { return FLOAT_ZERO; }
+	float GetDepth(void) { return CManager::FLOAT_ZERO; }
 	int GetIdxTexture(void) { return m_nIdxTexture; }
 	int GetModelIdx(void) { return -1; }
 

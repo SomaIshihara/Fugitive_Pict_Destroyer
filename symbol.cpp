@@ -51,10 +51,10 @@ HRESULT CSymbol::Init(void)
 
 	//テクスチャ設定
 	D3DXVECTOR2 tex0, tex3;
-	tex0 = D3DXVECTOR2((float)(INT_ZERO % nPatWidth) / nPatWidth,
-		(float)(INT_ZERO / nPatWidth) / nPatHeight);
-	tex3 = D3DXVECTOR2((float)(INT_ZERO % nPatWidth + 1) / nPatWidth,
-		(float)(INT_ZERO / nPatWidth + 1) / nPatHeight);
+	tex0 = D3DXVECTOR2((float)(CManager::INT_ZERO % nPatWidth) / nPatWidth,
+		(float)(CManager::INT_ZERO / nPatWidth) / nPatHeight);
+	tex3 = D3DXVECTOR2((float)(CManager::INT_ZERO % nPatWidth + 1) / nPatWidth,
+		(float)(CManager::INT_ZERO / nPatWidth + 1) / nPatHeight);
 
 	if (FAILED(SetTex(tex0, tex3)))
 	{

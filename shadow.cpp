@@ -11,7 +11,7 @@
 //=================================
 //コンストラクタ
 //=================================
-CShadow::CShadow() : CObject3D(VEC3_ZERO, VEC3_ZERO, 20.0f, 20.0f)
+CShadow::CShadow() : CObject3D(CManager::VEC3_ZERO, CManager::VEC3_ZERO, 20.0f, 20.0f)
 {
 }
 

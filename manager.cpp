@@ -44,6 +44,12 @@ CScene* CManager::m_pScene = nullptr;
 CXModel* CManager::m_pAgitModel = nullptr;
 CXModel* CManager::m_pFragModel = nullptr;
 
+//ê√ìIconst
+const int CManager::INT_ZERO = 0;
+const float CManager::FLOAT_ZERO = 0.0f;
+const D3DXVECTOR2 CManager::VEC2_ZERO = D3DXVECTOR2(0.0f, 0.0f);
+const D3DXVECTOR3 CManager::VEC3_ZERO = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+
 bool CManager::m_bPause = false;
 
 int CManager::m_nFPS = 0;

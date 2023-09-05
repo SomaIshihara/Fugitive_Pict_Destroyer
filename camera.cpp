@@ -22,10 +22,10 @@
 CCamera::CCamera()
 {
 	//’lƒNƒŠƒA
-	m_posV = VEC3_ZERO;
-	m_posR = VEC3_ZERO;
-	m_vecU = VEC3_ZERO;
-	m_rot = VEC3_ZERO;
+	m_posV = CManager::VEC3_ZERO;
+	m_posR = CManager::VEC3_ZERO;
+	m_vecU = CManager::VEC3_ZERO;
+	m_rot = CManager::VEC3_ZERO;
 	m_fLength = 0.0f;
 }
 

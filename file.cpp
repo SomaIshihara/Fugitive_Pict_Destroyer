@@ -81,11 +81,11 @@ void LoadModelViewerFile(const char *path)
 
 	//読み込みデータ
 	int nType = -1;
-	D3DXVECTOR3 pos = VEC3_ZERO, rot = VEC3_ZERO;
+	D3DXVECTOR3 pos = CManager::VEC3_ZERO, rot = CManager::VEC3_ZERO;
 	int nState = 0;
 	bool bCollision = false, bShadow = false;
 
-	float fWidth = FLOAT_ZERO, fHeight = FLOAT_ZERO;
+	float fWidth = CManager::FLOAT_ZERO, fHeight = CManager::FLOAT_ZERO;
 
 	//読み込みファイル設定
 	pFile = fopen(path, "r");
@@ -552,7 +552,7 @@ void LoadModelViewerFile(const char *path)
 					if (strncmp(&aCode[0], CODE_END_BILLBOARDSET, sizeof CODE_END_BILLBOARDSET / sizeof(char) - 1) == 0)
 					{
 						//ビルボード設定
-						CObjectBillboard::Create(pos, VEC3_ZERO, fWidth, fHeight, nType);
+						CObjectBillboard::Create(pos, CManager::VEC3_ZERO, fWidth, fHeight, nType);
 
 						g_readStat = READSTAT_NONE;
 					}

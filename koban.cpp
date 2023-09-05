@@ -14,10 +14,10 @@
 
 //静的メンバ変数
 CKoban* CKoban::m_apKoban[];
-int CKoban::m_nNumAll = INT_ZERO;
-int CKoban::m_nCounterSpawn = INT_ZERO;
-int CKoban::m_nSpawnSpan = INT_ZERO;
-int CKoban::m_nPoliceMax = INT_ZERO;
+int CKoban::m_nNumAll = CManager::INT_ZERO;
+int CKoban::m_nCounterSpawn = CManager::INT_ZERO;
+int CKoban::m_nSpawnSpan = CManager::INT_ZERO;
+int CKoban::m_nPoliceMax = CManager::INT_ZERO;
 
 //=================================
 //コンストラクタ（デフォルト）
@@ -80,9 +80,9 @@ void CKoban::Uninit(void)
 	//なくなったら静的メンバ変数初期化
 	if (m_nNumAll <= 0)
 	{
-		m_nCounterSpawn = INT_ZERO;
-		m_nSpawnSpan = INT_ZERO;
-		m_nPoliceMax = INT_ZERO;
+		m_nCounterSpawn = CManager::INT_ZERO;
+		m_nSpawnSpan = CManager::INT_ZERO;
+		m_nPoliceMax = CManager::INT_ZERO;
 	}
 
 	CObjectX::Uninit();

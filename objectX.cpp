@@ -31,8 +31,8 @@ using namespace std;
 CObjectX::CObjectX(int nPriority) : CObject(nPriority)
 {
 	//クリア
-	m_pos = VEC3_ZERO;
-	m_rot = VEC3_ZERO;
+	m_pos = CManager::VEC3_ZERO;
+	m_rot = CManager::VEC3_ZERO;
 
 	if (m_pCur == NULL)
 	{//最後尾がいない（すなわち先頭もいない）
@@ -281,7 +281,7 @@ CObjectX::LOADRESULT CObjectX::LoadData(const char * pPath)
 					pModel = CXModel::Load(ppFilePath[nModelNum]);
 
 					//state設定（破壊可能・交番設定）
-					int nState = INT_ZERO;
+					int nState = CManager::INT_ZERO;
 					fread(&nState, sizeof(int), 1, pFile);
 
 					//生成
@@ -405,7 +405,7 @@ CObjectX::LOADRESULT CObjectX::SaveData(const char * pPath)
 			fwrite(&nModelNum, sizeof(int), 1, pFile);
 
 			//state設定（破壊可能・交番設定）
-			int nState = INT_ZERO;
+			int nState = CManager::INT_ZERO;
 			if (pObject->GetBreakable() == true)
 			{//破壊可能設定
 				nState = STATE_BREAKABLE;

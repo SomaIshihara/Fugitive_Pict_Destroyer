@@ -20,8 +20,8 @@ CObject3D::CObject3D(int nPriority) : CObject(nPriority)
 	//ÉNÉäÉA
 	m_pVtxbuff = NULL;
 	m_nIdxTexture = -1;
-	m_pos = VEC3_ZERO;
-	m_rot = VEC3_ZERO;
+	m_pos = CManager::VEC3_ZERO;
+	m_rot = CManager::VEC3_ZERO;
 }
 
 //=================================

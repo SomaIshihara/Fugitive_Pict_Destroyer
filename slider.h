@@ -33,11 +33,11 @@ public:
 
 	//éÊìæ
 	D3DXVECTOR3 GetPos(void) { return m_pos; }
-	D3DXVECTOR3 GetRot(void) { return VEC3_ZERO; }
+	D3DXVECTOR3 GetRot(void) { return CManager::VEC3_ZERO; }
 	float GetWidth(void) { return m_fOneWidth * m_nIdxNum; }
 	float GetHeight(void) { return m_fOneHeight; }
-	float GetDepth(void) { return FLOAT_ZERO; }
-	int GetModelIdx(void) { return INT_ZERO; }
+	float GetDepth(void) { return CManager::FLOAT_ZERO; }
+	int GetModelIdx(void) { return CManager::INT_ZERO; }
 	int GetSelectIdx(void) { return m_nSelect; }
 
 	//ê›íË

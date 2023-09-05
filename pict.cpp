@@ -90,16 +90,16 @@ CPict::CPict()
 		}
 	}
 	//値クリア
-	m_pos = VEC3_ZERO;
-	m_rot = VEC3_ZERO;
+	m_pos = CManager::VEC3_ZERO;
+	m_rot = CManager::VEC3_ZERO;
 	m_pMotion = NULL;
-	m_fWidth = FLOAT_ZERO;
-	m_fHeight = FLOAT_ZERO;
-	m_fDepth = FLOAT_ZERO;
+	m_fWidth = CManager::FLOAT_ZERO;
+	m_fHeight = CManager::FLOAT_ZERO;
+	m_fDepth = CManager::FLOAT_ZERO;
 	m_nCounterJumpTime = 0;
 	m_bJump = false;
 	m_bControll = false;
-	m_fRedAlpha = FLOAT_ZERO;
+	m_fRedAlpha = CManager::FLOAT_ZERO;
 	m_state = STATE_MAX;
 	m_type = TYPE_MAX;
 }
@@ -121,15 +121,15 @@ CPict::CPict(const D3DXVECTOR3 pos, const TYPE type)
 	}
 	//値クリア
 	m_pos = pos;
-	m_rot = VEC3_ZERO;
+	m_rot = CManager::VEC3_ZERO;
 	m_pMotion = NULL;
-	m_fWidth = FLOAT_ZERO;
-	m_fHeight = FLOAT_ZERO;
-	m_fDepth = FLOAT_ZERO;
+	m_fWidth = CManager::FLOAT_ZERO;
+	m_fHeight = CManager::FLOAT_ZERO;
+	m_fDepth = CManager::FLOAT_ZERO;
 	m_nCounterJumpTime = 0;
 	m_bJump = false;
 	m_bControll = false;
-	m_fRedAlpha = FLOAT_ZERO;
+	m_fRedAlpha = CManager::FLOAT_ZERO;
 	m_state = STATE_MAX;
 	m_type = type;
 }
@@ -246,8 +246,8 @@ void CPict::Update(void)
 	CInputKeyboard* pKeyboard = CManager::GetInputKeyboard();	//キーボード取得
 	D3DXVECTOR3 pos = m_pos;
 	CMotion* pMotion = GetMotion();
-	m_move.x = FLOAT_ZERO;
-	m_move.z = FLOAT_ZERO;
+	m_move.x = CManager::FLOAT_ZERO;
+	m_move.z = CManager::FLOAT_ZERO;
 
 	//ピクト共通:ポイント移動処理
 	if (CPict::IsControll() == false && m_state != STATE_ATTACK)
@@ -304,7 +304,7 @@ void CPict::Update(void)
 		}
 
 		//ソーシャルディスタンス処理
-		float fLengthNear = FLOAT_ZERO;
+		float fLengthNear = CManager::FLOAT_ZERO;
 		D3DXVECTOR3 posAfter = pos + m_move;
 		CPict* pPictNear = nullptr;
 
@@ -379,14 +379,14 @@ void CPict::Update(void)
 	pos.z += m_move.z;
 	m_pos = pos;
 
-	if (m_fRedAlpha >= FLOAT_ZERO)
+	if (m_fRedAlpha >= CManager::FLOAT_ZERO)
 	{//まだ赤い
 	 //赤色具合を減らす
 		m_fRedAlpha -= PICT_DAMAGE_ALPHA / PICT_DAMAGE_TIME;
 
-		if (m_fRedAlpha < FLOAT_ZERO)
+		if (m_fRedAlpha < CManager::FLOAT_ZERO)
 		{//赤くなくなった
-			m_fRedAlpha = FLOAT_ZERO;
+			m_fRedAlpha = CManager::FLOAT_ZERO;
 		}
 	}
 
@@ -615,7 +615,7 @@ CPictDestroyer::CPictDestroyer()
 			break;
 		}
 	}
-	m_nCounterDestruction = INT_ZERO;
+	m_nCounterDestruction = CManager::INT_ZERO;
 }
 
 //=================================
@@ -633,7 +633,7 @@ CPictDestroyer::CPictDestroyer(const D3DXVECTOR3 pos, const TYPE type) : CPict(p
 			break;
 		}
 	}
-	m_nCounterDestruction = INT_ZERO;
+	m_nCounterDestruction = CManager::INT_ZERO;
 }
 
 //=================================
@@ -694,7 +694,7 @@ void CPictDestroyer::Update(void)
 			CBulletBillboard::Create(GetPos(), rot + D3DXVECTOR3(-0.3f * D3DX_PI, 0.0f, 0.0f), 10.0f, 10.0f, 3.0f, 1000, TYPE_DESTROYER, this);
 
 			//破壊カウンターリセット
-			m_nCounterDestruction = INT_ZERO;
+			m_nCounterDestruction = CManager::INT_ZERO;
 		}
 
 		if (pMotion->GetType() != MOTIONTYPE_DESTROY)
@@ -705,7 +705,7 @@ void CPictDestroyer::Update(void)
 	else
 	{
 		//破壊カウンターリセット
-		m_nCounterDestruction = INT_ZERO;
+		m_nCounterDestruction = CManager::INT_ZERO;
 	}
 	SetRot(rot);
 
@@ -762,7 +762,7 @@ void CPictDestroyer::AddDamage(int nDamage)
 	m_nLife -= nDamage;	//付与
 
 						//0になったら消す
-	if (m_nLife <= INT_ZERO)
+	if (m_nLife <= CManager::INT_ZERO)
 	{
 		for (int cnt = 0; cnt < MAX_OBJ; cnt++)
 		{//全オブジェクト見る
@@ -820,7 +820,7 @@ CPictBlocker::CPictBlocker()
 			break;
 		}
 	}
-	m_nCounterAttack = INT_ZERO;
+	m_nCounterAttack = CManager::INT_ZERO;
 }
 
 //=================================
@@ -838,7 +838,7 @@ CPictBlocker::CPictBlocker(const D3DXVECTOR3 pos, const TYPE type) : CPict(pos,t
 			break;
 		}
 	}
-	m_nCounterAttack = INT_ZERO;
+	m_nCounterAttack = CManager::INT_ZERO;
 }
 
 //=================================
@@ -898,7 +898,7 @@ void CPictBlocker::Update(void)
 			CBulletBillboard::Create(GetPos() + D3DXVECTOR3(0.0f, 30.0f, 0.0f), GetRot(), 10.0f, 10.0f, 10.0f, 100, TYPE_BLOCKER, this);
 
 			//攻撃カウンターリセット
-			m_nCounterAttack = INT_ZERO;
+			m_nCounterAttack = CManager::INT_ZERO;
 		}
 
 		if (pMotion->GetType() != MOTIONTYPE_ATTACK)
@@ -909,7 +909,7 @@ void CPictBlocker::Update(void)
 	else
 	{
 		//攻撃カウンターリセット
-		m_nCounterAttack = INT_ZERO;
+		m_nCounterAttack = CManager::INT_ZERO;
 	}
 	SetRot(rot);
 
@@ -966,7 +966,7 @@ void CPictBlocker::AddDamage(int nDamage)
 	m_nLife -= nDamage;	//付与
 
 						//0になったら消す
-	if (m_nLife <= INT_ZERO)
+	if (m_nLife <= CManager::INT_ZERO)
 	{
 		for (int cnt = 0; cnt < MAX_OBJ; cnt++)
 		{//全オブジェクト見る
@@ -1023,10 +1023,10 @@ CPictTaxi::CPictTaxi()
 			break;
 		}
 	}
-	m_nTakeDestroyer = INT_ZERO;
-	m_nTakeBlocker = INT_ZERO;
-	m_nTakeNormal = INT_ZERO;
-	m_nHaveBullet = INT_ZERO;
+	m_nTakeDestroyer = CManager::INT_ZERO;
+	m_nTakeBlocker = CManager::INT_ZERO;
+	m_nTakeNormal = CManager::INT_ZERO;
+	m_nHaveBullet = CManager::INT_ZERO;
 }
 
 //=================================
@@ -1044,10 +1044,10 @@ CPictTaxi::CPictTaxi(const D3DXVECTOR3 pos, const TYPE type) : CPict(pos,type)
 			break;
 		}
 	}
-	m_nTakeDestroyer = INT_ZERO;
-	m_nTakeBlocker = INT_ZERO;
-	m_nTakeNormal = INT_ZERO;
-	m_nHaveBullet = INT_ZERO;
+	m_nTakeDestroyer = CManager::INT_ZERO;
+	m_nTakeBlocker = CManager::INT_ZERO;
+	m_nTakeNormal = CManager::INT_ZERO;
+	m_nHaveBullet = CManager::INT_ZERO;
 }
 
 //=================================
@@ -1407,7 +1407,7 @@ void CPictTaxi::AddDamage(int nDamage)
 	m_nLife -= nDamage;	//付与
 
 	//0になったら消す
-	if (m_nLife <= INT_ZERO)
+	if (m_nLife <= CManager::INT_ZERO)
 	{
 		for (int cnt = 0; cnt < MAX_OBJ; cnt++)
 		{//全オブジェクト見る
@@ -1580,7 +1580,7 @@ CPictPolice::CPictPolice()
 			break;
 		}
 	}
-	m_nCounterAttack = INT_ZERO;
+	m_nCounterAttack = CManager::INT_ZERO;
 	m_pTargetPict = NULL;
 }
 
@@ -1599,7 +1599,7 @@ CPictPolice::CPictPolice(const D3DXVECTOR3 pos, const TYPE type) : CPict(pos,typ
 			break;
 		}
 	}
-	m_nCounterAttack = INT_ZERO;
+	m_nCounterAttack = CManager::INT_ZERO;
 	m_pTargetPict = NULL;
 }
 
@@ -1637,16 +1637,16 @@ void CPictPolice::Uninit(void)
 //========================
 void CPictPolice::Update(void)
 {
-	D3DXVECTOR3 targetPos = VEC3_ZERO;
-	float targetWidthHalf = FLOAT_ZERO;
-	float targetDepthHalf = FLOAT_ZERO;
+	D3DXVECTOR3 targetPos = CManager::VEC3_ZERO;
+	float targetWidthHalf = CManager::FLOAT_ZERO;
+	float targetDepthHalf = CManager::FLOAT_ZERO;
 	D3DXVECTOR3 pos = GetPos();
 	D3DXVECTOR3 rot = GetRot();
 	D3DXVECTOR3 move = GetMove();
 	CMotion* pMotion = GetMotion();
 
-	move.x = FLOAT_ZERO;
-	move.z = FLOAT_ZERO;
+	move.x = CManager::FLOAT_ZERO;
+	move.z = CManager::FLOAT_ZERO;
 
 	if (GetState() == STATE_ATTACK)
 	{
@@ -1678,7 +1678,7 @@ void CPictPolice::Update(void)
 				}
 
 				//攻撃カウンターリセット
-				m_nCounterAttack = INT_ZERO;
+				m_nCounterAttack = CManager::INT_ZERO;
 			}
 			else
 			{//ついた
@@ -1697,7 +1697,7 @@ void CPictPolice::Update(void)
 					CBulletBillboard::Create(GetPos() + D3DXVECTOR3(0.0f, 30.0f, 0.0f), GetRot(), 10.0f, 10.0f, 10.0f, 100, TYPE_POLICE, this);
 
 					//攻撃カウンターリセット
-					m_nCounterAttack = INT_ZERO;
+					m_nCounterAttack = CManager::INT_ZERO;
 				}
 
 				if (pMotion->GetType() != MOTIONTYPE_ATTACK)
@@ -1730,7 +1730,7 @@ void CPictPolice::Update(void)
 	else
 	{
 		//攻撃カウンターリセット
-		m_nCounterAttack = INT_ZERO;
+		m_nCounterAttack = CManager::INT_ZERO;
 	}
 	SetRot(rot);
 	SetMove(move);
@@ -1779,7 +1779,7 @@ void CPictPolice::AddDamage(int nDamage)
 	m_nLife -= nDamage;	//付与
 
 	//0になったら消す
-	if (m_nLife <= INT_ZERO)
+	if (m_nLife <= CManager::INT_ZERO)
 	{
 		for (int cnt = 0; cnt < MAX_OBJ; cnt++)
 		{//全オブジェクト見る

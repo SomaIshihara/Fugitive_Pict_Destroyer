@@ -37,21 +37,21 @@ CBuilding::CBuilding()
 			break;
 		}
 	}
-	m_pos = VEC3_ZERO;
-	m_rot = VEC3_ZERO;
-	m_fWidth = FLOAT_ZERO;
-	m_fHeight = FLOAT_ZERO;
-	m_fDepth = FLOAT_ZERO;
-	m_nEndurance = INT_ZERO;
+	m_pos = CManager::VEC3_ZERO;
+	m_rot = CManager::VEC3_ZERO;
+	m_fWidth = CManager::FLOAT_ZERO;
+	m_fHeight = CManager::FLOAT_ZERO;
+	m_fDepth = CManager::FLOAT_ZERO;
+	m_nEndurance = CManager::INT_ZERO;
 
 	//パラメータ
 	m_bUnique = false;
-	m_nLv = INT_ZERO;
-	m_fSigValue = FLOAT_ZERO;
-	m_nPowValue = INT_ZERO;
-	m_fSigEndurance = FLOAT_ZERO;
-	m_nPowEndurance = INT_ZERO;
-	m_nExp = INT_ZERO;
+	m_nLv = CManager::INT_ZERO;
+	m_fSigValue = CManager::FLOAT_ZERO;
+	m_nPowValue = CManager::INT_ZERO;
+	m_fSigEndurance = CManager::FLOAT_ZERO;
+	m_nPowEndurance = CManager::INT_ZERO;
+	m_nExp = CManager::INT_ZERO;
 }
 
 //=================================
@@ -71,19 +71,19 @@ CBuilding::CBuilding(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, CXModel* pMod
 	}
 	m_pos = pos;
 	m_rot = rot;
-	m_fWidth = FLOAT_ZERO;
-	m_fHeight = FLOAT_ZERO;
-	m_fDepth = FLOAT_ZERO;
+	m_fWidth = CManager::FLOAT_ZERO;
+	m_fHeight = CManager::FLOAT_ZERO;
+	m_fDepth = CManager::FLOAT_ZERO;
 	m_pModel = pModel;
 
 	//パラメータ
 	m_bUnique = false;
-	m_nLv = INT_ZERO;
-	m_fSigValue = FLOAT_ZERO;
-	m_nPowValue = INT_ZERO;
-	m_fSigEndurance = FLOAT_ZERO;
-	m_nPowEndurance = INT_ZERO;
-	m_nExp = INT_ZERO;
+	m_nLv = CManager::INT_ZERO;
+	m_fSigValue = CManager::FLOAT_ZERO;
+	m_nPowValue = CManager::INT_ZERO;
+	m_fSigEndurance = CManager::FLOAT_ZERO;
+	m_nPowEndurance = CManager::INT_ZERO;
+	m_nExp = CManager::INT_ZERO;
 
 	int nModelNum = 0;
 	CXModel* pXModel = CXModel::GetTop();
@@ -138,14 +138,14 @@ void CBuilding::Uninit(void)
 //========================
 void CBuilding::Update(void)
 {
-	if (m_fRedAlpha >= FLOAT_ZERO)
+	if (m_fRedAlpha >= CManager::FLOAT_ZERO)
 	{//まだ赤い
 		//赤色具合を減らす
 		m_fRedAlpha -= BUILDING_DAMAGE_ALPHA / BUILDING_DAMAGE_TIME;
 
-		if (m_fRedAlpha < FLOAT_ZERO)
+		if (m_fRedAlpha < CManager::FLOAT_ZERO)
 		{//赤くなくなった
-			m_fRedAlpha = FLOAT_ZERO;
+			m_fRedAlpha = CManager::FLOAT_ZERO;
 		}
 	}
 }
@@ -190,7 +190,7 @@ void CBuilding::Draw(void)
 			D3DMATERIAL9 changeMat = pMat[nCntMat].MatD3D;
 
 			//ダメージ状態なら赤追加
-			if (m_fRedAlpha > FLOAT_ZERO)
+			if (m_fRedAlpha > CManager::FLOAT_ZERO)
 			{
 				changeMat.Diffuse.r = 1.0f * m_fRedAlpha + changeMat.Diffuse.r * (1.0f - m_fRedAlpha);
 				changeMat.Diffuse.g = 0.0f * m_fRedAlpha + changeMat.Diffuse.g * (1.0f - m_fRedAlpha);

@@ -145,7 +145,7 @@ CPoint* CPoint::Create(const D3DXVECTOR3 pos)
 		//‰Šú‰»
 		pPoint->Init();
 		pPoint->m_pos = pos;
-		CObjectX::Create(pos, VEC3_ZERO, CManager::GetFragModel());
+		CObjectX::Create(pos, CManager::VEC3_ZERO, CManager::GetFragModel());
 
 		return pPoint;
 	}

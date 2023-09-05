@@ -14,6 +14,8 @@
 class CFade : public CBG
 {
 public:
+	static const float FADE_SPEED;	//フェードの速さ
+
 	//フェードの状態
 	typedef enum
 	{

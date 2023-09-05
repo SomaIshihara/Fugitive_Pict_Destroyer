@@ -81,7 +81,7 @@ void CBullet2D::Uninit(void)
 void CBullet2D::Update(void)
 {
 	//エフェクト生成
-	CEffect2D::Create(GetPos(), VEC3_ZERO, 30.0f, 30.0f, D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f), 30);
+	CEffect2D::Create(GetPos(), CManager::VEC3_ZERO, 30.0f, 30.0f, D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f), 30);
 
 	//ローカル
 	D3DXVECTOR3 pos = GetPos();
@@ -263,7 +263,7 @@ void CBulletBillboard::Uninit(void)
 void CBulletBillboard::Update(void)
 {
 	//エフェクト生成
-	CEffectBillboard::Create(GetPos(), VEC3_ZERO, 30.0f, 30.0f, D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f), 30);
+	CEffectBillboard::Create(GetPos(), CManager::VEC3_ZERO, 30.0f, 30.0f, D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f), 30);
 
 	//ローカル
 	D3DXVECTOR3 pos = GetPos();

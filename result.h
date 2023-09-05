@@ -8,6 +8,7 @@
 #define _RESULT_H_
 
 //前方宣言
+class CBG;
 class CButton2D;
 
 //リザルトクラス
@@ -20,6 +21,8 @@ public:
 	static const int DEST_TIME;		//全壊数表示時間
 	static const int VALUE_TIME;	//被害総額表示時間
 	static const int RANK_TIME;		//ボタン表示時間
+	static const int FADE_ALPHA;	//画面を暗くする具合
+	static const float FADE_SPEED;	//暗くする速度
 
 	//コンストラクタ・デストラクタ
 	CResult();
@@ -31,9 +34,14 @@ public:
 	void Update(void);
 	void Draw(void);
 
+	//生成
+	static CResult* Create(void);
+
 private:
-	CButton2D* m_pButton;
-	int m_nCounter;
+	CBG* m_pBG;				//背景オブジェ（不透明度いじくるため）
+	float m_fAlpha;			//不透明度
+	CButton2D* m_pButton;	//ボタン
+	int m_nCounter;			//表示タイミングカウンタ
 };
 
 #endif // !_RESULT_H_

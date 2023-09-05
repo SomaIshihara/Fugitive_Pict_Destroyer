@@ -19,7 +19,7 @@ CEffect2D::CEffect2D(int nPriority) : CObject2D(nPriority), m_nDefLife(0)
 {
 	//値クリア
 	m_nIdxTexture = -1;
-	m_effect.move = VEC3_ZERO;
+	m_effect.move = CManager::VEC3_ZERO;
 	m_effect.col = D3DXCOLOR(0.0f, 0.0f, 0.0f, 0.0f);
 	m_effect.nLife = 0;
 }
@@ -28,7 +28,7 @@ CEffect2D::CEffect2D(int nPriority) : CObject2D(nPriority), m_nDefLife(0)
 //コンストラクタ（オーバーロード）
 //=================================
 CEffect2D::CEffect2D(const D3DXVECTOR3 pos, const D3DXVECTOR3 move, const float fWidth, const float fHeight,
-	const D3DXCOLOR col, const int nLife, int nPriority) : CObject2D(pos, VEC3_ZERO, fWidth, fHeight, nPriority), m_nDefLife(nLife)
+	const D3DXCOLOR col, const int nLife, int nPriority) : CObject2D(pos, CManager::VEC3_ZERO, fWidth, fHeight, nPriority), m_nDefLife(nLife)
 {
 	//値設定
 	m_nIdxTexture = -1;
@@ -161,7 +161,7 @@ CEffectBillboard::CEffectBillboard(int nPriority) : CObjectBillboard(nPriority),
 {
 	//値クリア
 	m_nIdxTexture = -1;
-	m_effect.move = VEC3_ZERO;
+	m_effect.move = CManager::VEC3_ZERO;
 	m_effect.col = D3DXCOLOR(0.0f, 0.0f, 0.0f, 0.0f);
 	m_effect.nLife = 0;
 }
@@ -170,7 +170,7 @@ CEffectBillboard::CEffectBillboard(int nPriority) : CObjectBillboard(nPriority),
 //コンストラクタ（オーバーロード）
 //=================================
 CEffectBillboard::CEffectBillboard(const D3DXVECTOR3 pos, const D3DXVECTOR3 move, const float fWidth, const float fHeight,
-	const D3DXCOLOR col, const int nLife, int nPriority) : CObjectBillboard(pos, VEC3_ZERO, fWidth, fHeight, nPriority), m_nDefLife(nLife)
+	const D3DXCOLOR col, const int nLife, int nPriority) : CObjectBillboard(pos, CManager::VEC3_ZERO, fWidth, fHeight, nPriority), m_nDefLife(nLife)
 {
 	//値設定
 	m_nIdxTexture = -1;

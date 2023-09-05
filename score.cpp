@@ -25,10 +25,10 @@ CScore::CScore(int nPriority) : CObject(nPriority)
 {
 	//’lƒNƒŠƒA
 	m_nIdxTextureNumber = -1;
-	m_pos = VEC3_ZERO;
-	m_rot = VEC3_ZERO;
-	m_fOneWidth = FLOAT_ZERO;
-	m_fOneHeight = FLOAT_ZERO;
+	m_pos = CManager::VEC3_ZERO;
+	m_rot = CManager::VEC3_ZERO;
+	m_fOneWidth = CManager::FLOAT_ZERO;
+	m_fOneHeight = CManager::FLOAT_ZERO;
 }
 
 //=================================

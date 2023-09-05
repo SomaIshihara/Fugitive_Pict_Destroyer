@@ -18,11 +18,11 @@ using namespace std;
 CMeshSky::CMeshSky()
 {
 	//’lƒNƒŠƒA
-	m_pos = VEC3_ZERO;
-	m_rot = VEC3_ZERO;
-	m_fRadius = FLOAT_ZERO;
-	m_nBlockVertical = INT_ZERO;
-	m_nBlockHorizontal = INT_ZERO;
+	m_pos = CManager::VEC3_ZERO;
+	m_rot = CManager::VEC3_ZERO;
+	m_fRadius = CManager::FLOAT_ZERO;
+	m_nBlockVertical = CManager::INT_ZERO;
+	m_nBlockHorizontal = CManager::INT_ZERO;
 }
 
 //=================================
