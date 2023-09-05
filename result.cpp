@@ -8,6 +8,7 @@
 #include "manager.h"
 #include "result.h"
 #include "game.h"
+#include "fade.h"
 #include "texture.h"
 #include "bg.h"
 #include "number.h"
@@ -143,7 +144,7 @@ void CResult::Update(void)
 
 		if (m_pButton != nullptr && m_pButton->IsClickTrigger() == true)
 		{//ƒ‰ƒ“ƒLƒ“ƒO‘JˆÚ
-			CManager::SetMode(CScene::MODE_RANKING);
+			CFade::Create(CScene::MODE_RANKING);
 			return;
 		}
 	}
