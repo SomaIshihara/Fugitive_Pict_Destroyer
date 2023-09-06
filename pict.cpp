@@ -559,20 +559,6 @@ void CPict::Search(void)
 							break;	//もう当たったので終了
 						}
 					}
-					//if (TASUKIGAKE(vecPoint.x, vecPoint.z, (posBuild[cntPos].x - m_pos.x), (posBuild[cntPos].z - m_pos.z)) > 0.0f)
-					//{//プラス
-					//	bPlus = true;
-					//}
-					//else if (TASUKIGAKE(vecPoint.x, vecPoint.z, (posBuild[cntPos].x - m_pos.x), (posBuild[cntPos].z - m_pos.z)) < 0.0f)
-					//{//マイナス
-					//	bMinus = true;
-					//}
-					//else
-					//{//ゼロなので当たっている（まぁ両方trueにすれば当たったことになるからいいよね）
-					//	bPlus = true;
-					//	bMinus = true;
-					//	break;	//もう当たったので終了
-					//}
 				}
 
 				if (bPlus == true && bMinus == true)
@@ -599,7 +585,8 @@ void CPict::Search(void)
 					fLenNear = fLength;
 					fRadNear = fRadius;
 				}
-				else if (fLenNear > fLength && fabsf(fRadius - fRadiusBuilding) < 0.5f * D3DX_PI)
+				//else if (fLenNear > fLength && fabsf(fRadius - fRadiusBuilding) < 0.5f * D3DX_PI)
+				else if (fLenNear > fLength && fabsf(fRadius - fRadiusBuilding) < fabsf(fRadNear - fRadiusBuilding))
 				{
 					pPointNear = pPoint;
 					fLenNear = fLength;
