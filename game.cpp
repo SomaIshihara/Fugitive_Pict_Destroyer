@@ -102,7 +102,7 @@ HRESULT CGame::Init(void)
 	CPoint::Update();
 
 	//Œð”Ôƒpƒ‰ƒ[ƒ^Ý’è
-	CKoban::SetKobanParam(300, 0);	//‰¼Ý’è
+	CKoban::SetKobanParam(300, 1);	//‰¼Ý’è
 
 	return S_OK;
 }
@@ -191,7 +191,7 @@ void CGame::Update(void)
 				if (pPict != nullptr)
 				{
 					CPict::TYPE type = pPict->GetType();
-					if (pPict->GetLife() <= CPictTaxi::RESCUE_LIFE)
+					if (pPict->GetLife() <= HAVE_LIFE(pPict->GetLv()) * CPictTaxi::RESCUE_LIFE)
 					{//ŠëŒ¯
 						bWarning = true;
 						break;
@@ -204,7 +204,7 @@ void CGame::Update(void)
 				if (pPict != nullptr)
 				{
 					CPict::TYPE type = pPict->GetType();
-					if (pPict->GetLife() <= CPictTaxi::RESCUE_LIFE)
+					if (pPict->GetLife() <= HAVE_LIFE(pPict->GetLv()) * CPictTaxi::RESCUE_LIFE)
 					{//ŠëŒ¯
 						bWarning = true;
 						break;

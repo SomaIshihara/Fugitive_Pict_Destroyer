@@ -195,6 +195,7 @@ public:
 	static CPictDestroyer* GetPict(int nID) { return m_apPict[nID]; }
 	static int GetNumAll(void) { return m_nNumAll; }
 	int GetLife(void) { return m_nLife; }
+	static int GetLv(void) { return m_nLv; }
 
 	//èÊé‘
 	void TakeTaxi(CPictTaxi* taxi);
@@ -248,6 +249,7 @@ public:
 	static CPictBlocker* GetPict(int nID) { return m_apPict[nID]; }
 	static int GetNumAll(void) { return m_nNumAll; }
 	int GetLife(void) { return m_nLife; }
+	static int GetLv(void) { return m_nLv; }
 
 	//èÊé‘
 	void TakeTaxi(CPictTaxi* taxi);
@@ -424,6 +426,7 @@ public:
 	static CPictPolice* GetPict(int nID) { return m_apPict[nID]; }
 	static int GetNumAll(void) { return m_nNumAll; }
 	int GetLife(void) { return m_nLife; }
+	int GetLv(void) { return m_nLv; }
 
 	//ê›íË
 	void SetTargetPict(CPict* target) { m_pTargetPict = target; }
