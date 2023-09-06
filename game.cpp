@@ -21,6 +21,8 @@
 #include "point.h"
 #include "input.h"
 #include "havenum.h"
+#include "manager.h"
+#include "camera.h"
 
 //静的メンバ変数
 CPlayer* CGame::m_pPlayer = nullptr;
@@ -29,6 +31,7 @@ CMeshField* CGame::m_pMeshField = nullptr;
 CTimer* CGame::m_pTimer = nullptr;
 CScore* CGame::m_pScore = nullptr;
 CHaveNum* CGame::m_pHaveNum[];
+CMeshSky* CGame::m_pSky = nullptr;
 int CGame::m_nATKBuilding = CManager::INT_ZERO;
 int CGame::m_nDestBuilding = CManager::INT_ZERO;
 
@@ -61,6 +64,9 @@ HRESULT CGame::Init(void)
 		return E_FAIL;
 	}
 
+	//カメラ位置リセット
+	CManager::GetCamera()->ResetCameraPos();
+
 	//仮オブジェ生成
 	m_pMeshField = CMeshField::Create(D3DXVECTOR3(-1280.0f, 0.0f, 1280.0f), CManager::VEC3_ZERO, 64.0f, 64.0f, 40, 40);
 
@@ -70,10 +76,10 @@ HRESULT CGame::Init(void)
 	m_pScore = CScore::Create(D3DXVECTOR3(SCREEN_WIDTH - 24.0f, 32.0f, 0.0f), CManager::VEC3_ZERO, 40.0f, 64.0f);
 	CObjectX* pAgit = CObjectX::Create(D3DXVECTOR3(600.0f,0.0f,0.0f), CManager::VEC3_ZERO, CManager::GetAgitModel());
 	CPict::SetAgit(pAgit);
-	CMeshSky::Create(CManager::VEC3_ZERO, CManager::VEC3_ZERO, 10000.0f, 8, 8);
-	m_pHaveNum[0] = CHaveNum::Create(D3DXVECTOR3(SCREEN_WIDTH - 30.0f, 100.0f, 0.0f), CManager::VEC3_ZERO, 60.0f, 72.0f, 2, 0);//アイコン番号仮
-	m_pHaveNum[1] = CHaveNum::Create(D3DXVECTOR3(SCREEN_WIDTH - 30.0f, 172.0f, 0.0f), CManager::VEC3_ZERO, 60.0f, 72.0f, 2, 0);//アイコン番号仮
-	m_pHaveNum[2] = CHaveNum::Create(D3DXVECTOR3(SCREEN_WIDTH - 30.0f, 244.0f, 0.0f), CManager::VEC3_ZERO, 60.0f, 72.0f, 5,0);//アイコン番号仮
+	m_pSky = CMeshSky::Create(CManager::VEC3_ZERO, CManager::VEC3_ZERO, 10000.0f, 8, 8);
+	m_pHaveNum[0] = CHaveNum::Create(D3DXVECTOR3(SCREEN_WIDTH - 30.0f, 100.0f, 0.0f), CManager::VEC3_ZERO, 30.0f, 36.0f, 2, 0);//アイコン番号仮
+	m_pHaveNum[1] = CHaveNum::Create(D3DXVECTOR3(SCREEN_WIDTH - 30.0f, 172.0f, 0.0f), CManager::VEC3_ZERO, 30.0f, 36.0f, 2, 0);//アイコン番号仮
+	m_pHaveNum[2] = CHaveNum::Create(D3DXVECTOR3(SCREEN_WIDTH - 30.0f, 244.0f, 0.0f), CManager::VEC3_ZERO, 30.0f, 36.0f, 5,0);//アイコン番号仮
 
 	//仮
 	CItemBullet::Create(D3DXVECTOR3(0.0f, 0.0f, 10.0f), CManager::VEC3_ZERO);
@@ -124,6 +130,7 @@ void CGame::Uninit(void)
 	m_pMeshField = nullptr;
 	m_pTimer = nullptr;
 	m_pScore = nullptr;
+	m_pSky = nullptr;
 }
 
 //=================================

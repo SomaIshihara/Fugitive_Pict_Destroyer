@@ -435,7 +435,7 @@ private:
 	int m_nCounterAttack;				//攻撃カウンター
 	CPict* m_pTargetPict;				//ターゲットピクト（味方）
 
-	static int m_nLv;					//レベル
+	int m_nLv;					//レベル
 	int m_nLife;						//体力
 	int m_nHaveNormalPict;				//一般人ピクト所持数
 };

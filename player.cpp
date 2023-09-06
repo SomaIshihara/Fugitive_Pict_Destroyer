@@ -8,6 +8,7 @@
 #include "manager.h"
 #include "game.h"
 #include "renderer.h"
+#include "texture.h"
 #include "input.h"
 #include "camera.h"
 #include "objectX.h"
@@ -128,11 +129,23 @@ void CPlayer::Attack(void)
 		//警察調べる
 		for (int cnt = 0; cnt < MAX_OBJ; cnt++)
 		{//全オブジェクト見る
-			CPictPolice* pPict = CPictPolice::GetPict(cnt);	//オブジェクト取得
-
+			CPict* pPict = CPict::GetPict(cnt);	//ピクト全体取得
 			if (m_pSelectPict == pPict)
-			{//選択しているピクトさんと警察リストのポインタが一致
-				CPictBlocker::Create(CPict::GetAgitPos())->SetTargetObj(pPict);
+			{
+				switch (pPict->GetType())
+				{
+				case CPict::TYPE_POLICE:	//警察
+					CPictBlocker::Create(CPict::GetAgitPos())->SetTargetObj(pPict);	//ブロッカーを向かわせる
+					break;
+
+				case CPict::TYPE_DESTROYER:	//デストロイヤー
+					pPict->UnsetTargetObj();
+					break;
+
+				case CPict::TYPE_BLOCKER:	//ブロッカー
+					pPict->UnsetTargetObj();
+					break;
+				}
 			}
 		}
 	}
@@ -260,6 +273,7 @@ void CPlayer::Select(void)
 				
 				//ボタン生成
 				m_pButtonATK = CButton2D::Create(mouse->GetPos(), CManager::VEC3_ZERO, 40.0f, 40.0f);
+				m_pButtonATK->BindTexture(CTexture::PRELOAD_HIRE);
 				return;
 			}
 		}
@@ -272,13 +286,15 @@ void CPlayer::Select(void)
 
 		if (pPict != NULL)	//ヌルチェ
 		{//なんかある
-			if (pPict->GetCollision().CollisionCheck(posNear, posFar, pPict->GetPos(), pPict->GetRot()) == true)
+			if (pPict->GetCollision().CollisionCheck(posNear, posFar, pPict->GetPos(), pPict->GetRot()) == true 
+				&& pPict->GetType() != CPict::TYPE_NORMAL && pPict->GetType() != CPict::TYPE_TAXI)
 			{//ピクト選択
 				m_pSelectBuilding = NULL;
 				m_pSelectPict = pPict;
 
 				//ボタン生成
 				m_pButtonATK = CButton2D::Create(mouse->GetPos(), CManager::VEC3_ZERO, 40.0f, 40.0f);
+				m_pButtonATK->BindTexture(CTexture::PRELOAD_HIRE);
 				return;
 			}
 		}

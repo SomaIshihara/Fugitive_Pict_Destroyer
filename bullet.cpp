@@ -5,9 +5,11 @@
 //
 //======================================================
 #include "manager.h"
+#include "game.h"
 #include "renderer.h"
 #include "texture.h"
 #include "object.h"
+#include "meshsky.h"
 #include "enemy.h"
 #include "bullet.h"
 #include "building.h"
@@ -272,7 +274,7 @@ void CBulletBillboard::Update(void)
 	pos += m_move;
 
 	//”ÍˆÍŠO”»’è
-	if (pos.x > SCREEN_WIDTH || pos.x < -SCREEN_WIDTH || pos.z > SCREEN_HEIGHT || pos.z < -SCREEN_WIDTH)
+	if (D3DXVec3Length(&pos) >= CGame::GetSkyObj()->GetHeight())
 	{
 		Uninit();
 		return;

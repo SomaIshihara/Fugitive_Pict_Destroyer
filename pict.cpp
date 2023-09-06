@@ -691,7 +691,7 @@ void CPictDestroyer::Update(void)
 		if (m_nCounterDestruction > PICT_ATTACK_TIME)
 		{
 			//弾発射
-			CBulletBillboard::Create(GetPos(), rot + D3DXVECTOR3(-0.3f * D3DX_PI, 0.0f, 0.0f), 10.0f, 10.0f, 3.0f, 1000, TYPE_DESTROYER, this);
+			CBulletBillboard::Create(GetPos(), rot + D3DXVECTOR3(-0.3f * D3DX_PI, 0.0f, 0.0f), 10.0f, 10.0f, 3.0f, PICT_POWER(m_nLv,m_nHaveNormalPict), TYPE_DESTROYER, this);
 
 			//破壊カウンターリセット
 			m_nCounterDestruction = CManager::INT_ZERO;
@@ -895,7 +895,7 @@ void CPictBlocker::Update(void)
 		if (m_nCounterAttack > PICT_ATTACK_TIME)
 		{
 			//弾発射
-			CBulletBillboard::Create(GetPos() + D3DXVECTOR3(0.0f, 30.0f, 0.0f), GetRot(), 10.0f, 10.0f, 10.0f, 100, TYPE_BLOCKER, this);
+			CBulletBillboard::Create(GetPos() + D3DXVECTOR3(0.0f, 30.0f, 0.0f), GetRot(), 10.0f, 10.0f, 10.0f, PICT_POWER(m_nLv, m_nHaveNormalPict), TYPE_BLOCKER, this);
 
 			//攻撃カウンターリセット
 			m_nCounterAttack = CManager::INT_ZERO;
@@ -1627,6 +1627,7 @@ HRESULT CPictPolice::Init(void)
 void CPictPolice::Uninit(void)
 {
 	m_apPict[m_nID] = NULL;
+	m_nNumAll--;
 
 	//親処理
 	CPict::Uninit();
@@ -1694,7 +1695,7 @@ void CPictPolice::Update(void)
 				if (m_nCounterAttack > PICT_ATTACK_TIME)
 				{
 					//弾発射
-					CBulletBillboard::Create(GetPos() + D3DXVECTOR3(0.0f, 30.0f, 0.0f), GetRot(), 10.0f, 10.0f, 10.0f, 100, TYPE_POLICE, this);
+					CBulletBillboard::Create(GetPos() + D3DXVECTOR3(0.0f, 30.0f, 0.0f), GetRot(), 10.0f, 10.0f, 10.0f, PICT_POWER(m_nLv, m_nHaveNormalPict), TYPE_POLICE, this);
 
 					//攻撃カウンターリセット
 					m_nCounterAttack = CManager::INT_ZERO;

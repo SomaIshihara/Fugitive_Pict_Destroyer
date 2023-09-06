@@ -6,6 +6,7 @@
 //======================================================
 #include "precompile.h"
 #include "manager.h"
+#include "camera.h"
 #include "ranking.h"
 #include "input.h"
 #include "fade.h"
@@ -29,6 +30,9 @@ CRanking::~CRanking()
 //=================================
 HRESULT CRanking::Init(void)
 {
+	//カメラ位置リセット
+	CManager::GetCamera()->ResetCameraPos();
+
 	//見出し生成
 	CObject2D::Create(D3DXVECTOR3(SCREEN_WIDTH * 0.5f, 100.0f, 0.0f), CManager::VEC3_ZERO, 311.0f, 111.0f);
 

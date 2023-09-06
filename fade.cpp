@@ -6,6 +6,7 @@
 //==========================================
 #include "manager.h"
 #include "renderer.h"
+#include "texture.h"
 #include "fade.h"
 
 //静的メンバ変数
@@ -81,7 +82,7 @@ void CFade::Update(void)
 	}
 
 	//色変える
-	CObject2D::SetCol(D3DXCOLOR(0.0f, 0.0f, 0.0f, m_fAlpha));
+	CObject2D::SetCol(D3DXCOLOR(1.0f, 1.0f, 1.0f, m_fAlpha));
 
 	CBG::Update();
 }
@@ -109,11 +110,11 @@ CFade* CFade::Create(CScene::MODE sceneNext)
 		//初期化
 		pFade->Init();
 
-		//テクスチャいらん
-		pFade->BindTexture(-1);
+		//テクスチャやっぱいる
+		pFade->BindTexture(CTexture::PRELOAD_FADE);
 
 		//ちかちか防止
-		pFade->SetCol(D3DXCOLOR((DWORD)0x00000000));
+		pFade->SetCol(D3DXCOLOR(1.0f,1.0f,1.0f,0.0f));
 
 		//次のシーン設定
 		pFade->SetNext(sceneNext);

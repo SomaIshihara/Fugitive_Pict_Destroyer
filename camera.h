@@ -34,6 +34,9 @@ public:
 	D3DXVECTOR3 GetPosV(void) { return m_posV; }
 	D3DXVECTOR3 GetPosR(void) { return m_posR; }
 	D3DXVECTOR3 GetRot(void) { return m_rot; }
+
+	//リセット
+	void ResetCameraPos(void);
 private:
 	//角度修正
 	void FixPosV(void);

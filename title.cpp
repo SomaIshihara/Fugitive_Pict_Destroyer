@@ -37,6 +37,9 @@ CTitle::~CTitle()
 //=================================
 HRESULT CTitle::Init(void)
 {
+	//カメラ位置リセット
+	CManager::GetCamera()->ResetCameraPos();
+
 	m_pButton = CButton3D::Create(D3DXVECTOR3(300.0f,-20.0f,0.0f), D3DXVECTOR3(-0.5f * D3DX_PI,0.0f,0.0f), 311.0f, 111.0f);
 	m_pButton->BindTexture(CTexture::PRELOAD_TITLE_START);
 

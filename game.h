@@ -17,6 +17,7 @@ class CResult;
 class CTimer;
 class CScore;
 class CHaveNum;
+class CMeshSky;
 
 //タイトルクラス
 class CGame : public CScene
@@ -39,6 +40,7 @@ public:
 	static int GetATKNum(void) { return m_nATKBuilding; }
 	static int GetDestNum(void) { return m_nDestBuilding; }
 	static CScore* GetScoreObj(void) { return m_pScore; }
+	static CMeshSky* GetSkyObj(void) { return m_pSky; }
 
 private:
 	void CulcScore(void);	//スコア計算
@@ -50,6 +52,7 @@ private:
 	static CTimer* m_pTimer;			//タイマー
 	static CScore* m_pScore;			//スコア
 	static CHaveNum* m_pHaveNum[3];		//所持数
+	static CMeshSky* m_pSky;			//空オブジェ
 	static int m_nATKBuilding;			//攻撃数
 	static int m_nDestBuilding;			//全壊数
 };
