@@ -34,15 +34,9 @@
 #define PICT_ATTACK_TIME			(60)		//攻撃を行う間隔
 #define PICT_DAMAGE_TIME			(120)		//赤くする時間
 #define PICT_LIFE					(1000)		//体力
-#define PICT_RESCUE_LIFE			(0.5f)		//救助する体力割合
 #define PICT_SOCIAL_DISTANCE		(15.0f)		//ソーシャルディスタンス範囲
 
 #define PICT_FORCEDRETURN_NUM		(2)			//強制帰宅するまでの人数
-#define PICT_NORMAL_D_PERCENT		(15)		//一般人ピクトがデストロイヤーになる確率
-#define PICT_NORMAL_B_PERCENT		(20)		//一般人ピクトがブロッカーになる確率
-#define PICT_NORMAL_N_PERCENT		(65)		//一般人ピクトでした
-#define PICT_NORMAL_NUM_MIN			(500)		//一般人ピクトの最低人数
-#define PICT_NORMAL_NUM_DEGREE		(2500)		//一般人ピクトの人数振れ幅
 
 //計算
 #define PICT_POWER(lv,hpct)	((int)ceil((50 + (50 * ((float)hpct / PICT_HAVENPICT(lv)) * 1.2f) + hpct) * PICT_ATK(lv)))
@@ -64,9 +58,15 @@ int CPictBlocker::m_nExp = 0;
 
 CPictTaxi* CPictTaxi::m_apPict[MAX_OBJ];
 int CPictTaxi::m_nNumAll = 0;
+const float CPictTaxi::RESCUE_LIFE = 0.5f;
 
 CPictNormal* CPictNormal::m_apPict[MAX_OBJ];
 int CPictNormal::m_nNumAll = 0;
+const int CPictNormal::NORMAL_D_PERCENT = 15;
+const int CPictNormal::NORMAL_B_PERCENT = 20;
+const int CPictNormal::NORMAL_N_PERCENT = 65;
+const int CPictNormal::NORMAL_NUM_MIN = 500;
+const int CPictNormal::NORMAL_NUM_DEGREE = 2500;
 
 CPictPolice* CPictPolice::m_apPict[MAX_OBJ];
 int CPictPolice::m_nNumAll = 0;
@@ -278,7 +278,15 @@ void CPict::Update(void)
 				if (m_PointPos.x - PICT_POINT_RESEARCH_LENGTH < pos.x && m_PointPos.x + PICT_POINT_RESEARCH_LENGTH > pos.x &&
 					m_PointPos.z - PICT_POINT_RESEARCH_LENGTH < pos.z && m_PointPos.z + PICT_POINT_RESEARCH_LENGTH > pos.z)
 				{//ついた
-					Search();	//ポイント検索
+					if (targetPos.x - targetWidthHalf * 2.5f < pos.x && targetPos.x + targetWidthHalf * 2.5f > pos.x &&
+						targetPos.z - targetDepthHalf * 2.5f < pos.z && targetPos.z + targetDepthHalf * 2.5f > pos.z)
+					{//建物が近い
+						m_PointPos = targetPos;
+					}
+					else
+					{//まだ遠い
+						Search();	//ポイント検索
+					}
 				}
 				else
 				{//移動中
@@ -515,7 +523,6 @@ void CPict::Search(void)
 	{//リスト終了までやる
 		D3DXVECTOR3 vecPoint = pPoint->GetPos() - m_pos;
 
-		//float fRadius = fabsf(acosf(D3DXVec3Dot(&vecTarget, &(pPoint->GetPos() - m_pos)) / (D3DXVec3Length(&vecTarget) * D3DXVec3Length(&(pPoint->GetPos() - m_pos)))));
 		bool bCollision = false;
 		for (int cnt = 0; cnt < MAX_OBJ; cnt++)
 		{
@@ -530,28 +537,42 @@ void CPict::Search(void)
 				D3DXVECTOR3 posBuild[4];	
 				posBuild[0] = posBuilding + D3DXVECTOR3(-fWidthHalf, 0.0f, -fDepthHalf);
 				posBuild[1] = posBuilding + D3DXVECTOR3(fWidthHalf, 0.0f, -fDepthHalf);
-				posBuild[2] = posBuilding + D3DXVECTOR3(-fWidthHalf, 0.0f, fDepthHalf);
-				posBuild[3] = posBuilding + D3DXVECTOR3(fWidthHalf, 0.0f, fDepthHalf);
+				posBuild[2] = posBuilding + D3DXVECTOR3(fWidthHalf, 0.0f, fDepthHalf);
+				posBuild[3] = posBuilding + D3DXVECTOR3(-fWidthHalf, 0.0f, fDepthHalf);
 
 				//プラスマイナスがあったかのフラッグ
 				bool bPlus = false;
 				bool bMinus = false;	
 				for (int cntPos = 0; cntPos < 4; cntPos++)
 				{
-					if (TASUKIGAKE(vecPoint.x, vecPoint.z, (posBuild[cntPos].x - m_pos.x), (posBuild[cntPos].z - m_pos.z)) > 0.0f)
-					{//プラス
-						bPlus = true;
+					D3DXVECTOR3 vecLine = (posBuild[(cntPos + 1) % 4] - posBuild[cntPos]);
+					D3DXVECTOR3 vecToPosOld = m_pos - posBuild[cntPos];
+					D3DXVECTOR3 vecToPos = pPoint->GetPos() - posBuild[cntPos];
+					if (TASUKIGAKE(vecLine.x, vecLine.z, vecToPosOld.x, vecToPosOld.z) >= 0.0f && TASUKIGAKE(vecLine.x, vecLine.z, vecToPos.x, vecToPos.z) < 0.0f)
+					{//当たった
+						float fAreaA = (vecToPos.z * vecPoint.x) - (vecToPos.x * vecPoint.z);
+						float fAreaB = (vecLine.z * vecPoint.x) - (vecLine.x * vecPoint.z);
+						if (fAreaA / fAreaB >= 0.0f && fAreaA / fAreaB <= 1.0f)
+						{//ごっつん
+							bPlus = true;
+							bMinus = true;
+							break;	//もう当たったので終了
+						}
 					}
-					else if (TASUKIGAKE(vecPoint.x, vecPoint.z, (posBuild[cntPos].x - m_pos.x), (posBuild[cntPos].z - m_pos.z)) < 0.0f)
-					{//マイナス
-						bMinus = true;
-					}
-					else
-					{//ゼロなので当たっている（まぁ両方trueにすれば当たったことになるからいいよね）
-						bPlus = true;
-						bMinus = true;
-						break;	//もう当たったので終了
-					}
+					//if (TASUKIGAKE(vecPoint.x, vecPoint.z, (posBuild[cntPos].x - m_pos.x), (posBuild[cntPos].z - m_pos.z)) > 0.0f)
+					//{//プラス
+					//	bPlus = true;
+					//}
+					//else if (TASUKIGAKE(vecPoint.x, vecPoint.z, (posBuild[cntPos].x - m_pos.x), (posBuild[cntPos].z - m_pos.z)) < 0.0f)
+					//{//マイナス
+					//	bMinus = true;
+					//}
+					//else
+					//{//ゼロなので当たっている（まぁ両方trueにすれば当たったことになるからいいよね）
+					//	bPlus = true;
+					//	bMinus = true;
+					//	break;	//もう当たったので終了
+					//}
 				}
 
 				if (bPlus == true && bMinus == true)
@@ -570,24 +591,21 @@ void CPict::Search(void)
 			fTargetLenDepth = pPoint->GetPos().z - m_pos.z;
 			float fRadius = atan2f(fTargetLenWidth, fTargetLenDepth);
 
-			if(fLength > PICT_POINT_RESEARCH_LENGTH && (pPointNear == NULL || fabsf(fRadNear - fRadiusBuilding) > fabsf(fRadius - fRadiusBuilding)))
+			if(fLength > PICT_POINT_RESEARCH_LENGTH + 1.0f)
 			{//何も入っていない・角度が小さい
-				pPointNear = pPoint;
-				fLenNear = fLength;
-				fRadNear = fRadius;
+				if (pPointNear == nullptr)
+				{
+					pPointNear = pPoint;
+					fLenNear = fLength;
+					fRadNear = fRadius;
+				}
+				else if (fLenNear > fLength && fabsf(fRadius - fRadiusBuilding) < 0.5f * D3DX_PI)
+				{
+					pPointNear = pPoint;
+					fLenNear = fLength;
+					fRadNear = fRadius;
+				}
 			}
-			//if (pPointNear == NULL && fLength > PICT_POINT_RESEARCH_LENGTH)
-			//{//何も入っていない
-			//	pPointNear = pPoint;
-			//	fLenNear = fLength;
-			//	fRadNear = fRadius;
-			//}
-			//else if (fLength > PICT_POINT_RESEARCH_LENGTH && fabsf(fRadNear - fRadiusBuilding) > fabsf(fRadius - fRadiusBuilding))
-			//{//角度が小さい
-			//	pPointNear = pPoint;
-			//	fLenNear = fLength;
-			//	fRadNear = fRadius;
-			//}
 		}
 		
 		//次のポイントへ
@@ -1347,7 +1365,7 @@ CPict* CPictTaxi::SearchBattler(void)
 		{//なんかある
 			int nLife = pPict->GetLife();
 
-			if ((((float)nLife / PICT_LIFE) <= PICT_RESCUE_LIFE) && (pPictD == NULL || nLifeD > nLife))
+			if ((((float)nLife / PICT_LIFE) <= RESCUE_LIFE) && (pPictD == NULL || nLifeD > nLife))
 			{//救助対象でありなおかつ体力が一番少ない
 				pPictD = pPict;
 				nLifeD = nLife;
@@ -1364,7 +1382,7 @@ CPict* CPictTaxi::SearchBattler(void)
 		{//なんかある
 			int nLife = pPict->GetLife();
 
-			if ((((float)nLife / PICT_LIFE) <= PICT_RESCUE_LIFE) && (pPictB == NULL || nLifeB > nLife))
+			if ((((float)nLife / PICT_LIFE) <= RESCUE_LIFE) && (pPictB == NULL || nLifeB > nLife))
 			{//救助対象でありなおかつ体力が一番少ない
 				pPictB = pPict;
 				nLifeB = nLife;
@@ -1544,20 +1562,20 @@ CPictNormal* CPictNormal::Create(const D3DXVECTOR3 pos)
 void CPictNormal::TakeTaxi(CPictTaxi* taxi)
 {
 	//抽選
-	int nRand = rand() % (PICT_NORMAL_D_PERCENT + PICT_NORMAL_B_PERCENT + PICT_NORMAL_N_PERCENT);
+	int nRand = rand() % (NORMAL_D_PERCENT + NORMAL_B_PERCENT + NORMAL_N_PERCENT);
 
 	//分岐
-	if (nRand < PICT_NORMAL_D_PERCENT)
+	if (nRand < NORMAL_D_PERCENT)
 	{//デストロイヤー
 		taxi->SetTakeTaxi(CPict::TYPE_DESTROYER, 1);
 	}
-	else if (nRand < PICT_NORMAL_D_PERCENT + PICT_NORMAL_B_PERCENT)
+	else if (nRand < NORMAL_D_PERCENT + NORMAL_B_PERCENT)
 	{//ブロッカー
 		taxi->SetTakeTaxi(CPict::TYPE_BLOCKER, 1);
 	}
 	else
 	{//一般人ピクト
-		int nPictNum = rand() % (PICT_NORMAL_NUM_DEGREE + 1) + PICT_NORMAL_NUM_MIN;	//乱数で人数決まる
+		int nPictNum = rand() % (NORMAL_NUM_DEGREE + 1) + NORMAL_NUM_MIN;	//乱数で人数決まる
 		taxi->SetTakeTaxi(CPict::TYPE_NORMAL, nPictNum);
 	}
 }

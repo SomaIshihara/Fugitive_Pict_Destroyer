@@ -63,19 +63,42 @@ HRESULT CPause::Init(void)
 //=================================
 void CPause::Uninit(void)
 {
-	//Žg‚Á‚½‚â‚Â‚¾‚¯”jŠü
-	m_pBG->Uninit();
-	m_pBG = nullptr;
-	m_pPolygon->Uninit();
-	m_pPolygon = nullptr;
-	m_pContinue->Uninit();
-	m_pContinue = nullptr;
-	m_pRestart->Uninit();
-	m_pRestart = nullptr;
-	m_pExit->Uninit();
-	m_pExit = nullptr;
-	m_pScreenShot->Uninit();
-	m_pScreenShot = nullptr;
+	////Žg‚Á‚½‚â‚Â‚¾‚¯”jŠü
+	//if (m_pBG != nullptr)
+	//{
+	//	m_pBG->Uninit();
+	//	m_pBG = nullptr;
+	//}
+	//
+	//if (m_pPolygon != nullptr)
+	//{
+	//	m_pPolygon->Uninit();
+	//	m_pPolygon = nullptr;
+	//}
+	//
+	//if (m_pContinue != nullptr)
+	//{
+	//	m_pContinue->Uninit();
+	//	m_pContinue = nullptr;
+	//}
+	//
+	//if (m_pRestart != nullptr)
+	//{
+	//	m_pRestart->Uninit();
+	//	m_pRestart = nullptr;
+	//}
+	//
+	//if (m_pExit != nullptr)
+	//{
+	//	m_pExit->Uninit();
+	//	m_pExit = nullptr;
+	//}
+	//
+	//if (m_pScreenShot != nullptr)
+	//{
+	//	m_pScreenShot->Uninit();
+	//	m_pScreenShot = nullptr;
+	//}
 }
 
 //=================================

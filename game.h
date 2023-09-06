@@ -18,6 +18,7 @@ class CTimer;
 class CScore;
 class CHaveNum;
 class CMeshSky;
+class CBG;
 
 //タイトルクラス
 class CGame : public CScene
@@ -55,6 +56,7 @@ private:
 	static CMeshSky* m_pSky;			//空オブジェ
 	static int m_nATKBuilding;			//攻撃数
 	static int m_nDestBuilding;			//全壊数
+	CBG* m_pWarning;				//体力警告の背景ではないやつ
 };
 
 #endif // !_GAME_H_

@@ -278,6 +278,9 @@ private:
 class CPictTaxi : public CPict
 {
 public:
+	//静的const
+	static const float RESCUE_LIFE;	//救助する体力
+
 	//ピクタクシーモード列挙
 	typedef enum
 	{
@@ -352,6 +355,13 @@ private:
 class CPictNormal : public CPict
 {
 public:
+	//静的const
+	static const int NORMAL_D_PERCENT;	//一般人ピクトがデストロイヤーになる確率
+	static const int NORMAL_B_PERCENT;	//一般人ピクトがブロッカーになる確率
+	static const int NORMAL_N_PERCENT;	//一般人ピクトでした
+	static const int NORMAL_NUM_MIN;	//一般人ピクトの最低人数
+	static const int NORMAL_NUM_DEGREE;	//一般人ピクトの人数振れ幅
+
 	//モーション種類
 	typedef enum
 	{

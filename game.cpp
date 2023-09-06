@@ -7,6 +7,7 @@
 #include "game.h"
 #include "pause.h"
 #include "result.h"
+#include "texture.h"
 #include "player.h"
 #include "meshField.h"
 #include "slider.h"
@@ -23,6 +24,7 @@
 #include "havenum.h"
 #include "manager.h"
 #include "camera.h"
+#include "bg.h"
 
 //静的メンバ変数
 CPlayer* CGame::m_pPlayer = nullptr;
@@ -41,6 +43,7 @@ int CGame::m_nDestBuilding = CManager::INT_ZERO;
 CGame::CGame()
 {
 	m_pPause = nullptr;
+	m_pWarning = nullptr;
 }
 
 //=================================
@@ -73,13 +76,21 @@ HRESULT CGame::Init(void)
 	//オブジェクト生成+初期化
 	m_pTimer = CTimer::Create(D3DXVECTOR3(SCREEN_WIDTH * 0.5f + 24.0f, 32.0f, 0.0f), CManager::VEC3_ZERO, 48.0f, 72.0f);
 	m_pTimer->Set(2, CTimer::COUNT_DOWN);
+
 	m_pScore = CScore::Create(D3DXVECTOR3(SCREEN_WIDTH - 24.0f, 32.0f, 0.0f), CManager::VEC3_ZERO, 40.0f, 64.0f);
+
 	CObjectX* pAgit = CObjectX::Create(D3DXVECTOR3(600.0f,0.0f,0.0f), CManager::VEC3_ZERO, CManager::GetAgitModel());
 	CPict::SetAgit(pAgit);
+
 	m_pSky = CMeshSky::Create(CManager::VEC3_ZERO, CManager::VEC3_ZERO, 10000.0f, 8, 8);
-	m_pHaveNum[0] = CHaveNum::Create(D3DXVECTOR3(SCREEN_WIDTH - 30.0f, 100.0f, 0.0f), CManager::VEC3_ZERO, 30.0f, 36.0f, 2, 0);//アイコン番号仮
-	m_pHaveNum[1] = CHaveNum::Create(D3DXVECTOR3(SCREEN_WIDTH - 30.0f, 172.0f, 0.0f), CManager::VEC3_ZERO, 30.0f, 36.0f, 2, 0);//アイコン番号仮
-	m_pHaveNum[2] = CHaveNum::Create(D3DXVECTOR3(SCREEN_WIDTH - 30.0f, 244.0f, 0.0f), CManager::VEC3_ZERO, 30.0f, 36.0f, 5,0);//アイコン番号仮
+
+	m_pHaveNum[0] = CHaveNum::Create(D3DXVECTOR3(SCREEN_WIDTH - 30.0f, 100.0f, 0.0f), CManager::VEC3_ZERO, 30.0f, 36.0f, 2, CTexture::PRELOAD_HAVEICON_01);//アイコン番号仮
+	m_pHaveNum[1] = CHaveNum::Create(D3DXVECTOR3(SCREEN_WIDTH - 30.0f, 172.0f, 0.0f), CManager::VEC3_ZERO, 30.0f, 36.0f, 2, CTexture::PRELOAD_HAVEICON_02);//アイコン番号仮
+	m_pHaveNum[2] = CHaveNum::Create(D3DXVECTOR3(SCREEN_WIDTH - 30.0f, 244.0f, 0.0f), CManager::VEC3_ZERO, 30.0f, 36.0f, 5, CTexture::PRELOAD_HAVEICON_03);//アイコン番号仮
+
+	m_pWarning = CBG::Create(PRIORITY_UI);
+	m_pWarning->BindTexture(CTexture::PRELOAD_WARNING_LIFE);
+	m_pWarning->SetEnable(false);	//いったん非表示
 
 	//仮
 	CItemBullet::Create(D3DXVECTOR3(0.0f, 0.0f, 10.0f), CManager::VEC3_ZERO);
@@ -91,7 +102,7 @@ HRESULT CGame::Init(void)
 	CPoint::Update();
 
 	//交番パラメータ設定
-	CKoban::SetKobanParam(300, 10);	//仮設定
+	CKoban::SetKobanParam(300, 0);	//仮設定
 
 	return S_OK;
 }
@@ -131,6 +142,7 @@ void CGame::Uninit(void)
 	m_pTimer = nullptr;
 	m_pScore = nullptr;
 	m_pSky = nullptr;
+	m_pWarning = nullptr;
 }
 
 //=================================
@@ -170,6 +182,37 @@ void CGame::Update(void)
 				delete m_pPause;	//破棄
 				m_pPause = nullptr;	//ぬるぽ入れる
 			}
+
+			//体力
+			bool bWarning = false;
+			for (int cnt = 0; cnt < MAX_OBJ; cnt++)
+			{//デストロイヤー
+				CPictDestroyer* pPict = CPictDestroyer::GetPict(cnt);
+				if (pPict != nullptr)
+				{
+					CPict::TYPE type = pPict->GetType();
+					if (pPict->GetLife() <= CPictTaxi::RESCUE_LIFE)
+					{//危険
+						bWarning = true;
+						break;
+					}
+				}
+			}
+			for (int cnt = 0; cnt < MAX_OBJ; cnt++)
+			{//ブロッカー
+				CPictBlocker* pPict = CPictBlocker::GetPict(cnt);
+				if (pPict != nullptr)
+				{
+					CPict::TYPE type = pPict->GetType();
+					if (pPict->GetLife() <= CPictTaxi::RESCUE_LIFE)
+					{//危険
+						bWarning = true;
+						break;
+					}
+				}
+			}
+			//変更
+			m_pWarning->SetEnable(bWarning);
 
 			//普段の処理
 			CKoban::CommonUpdate();	//交番共通更新処理
