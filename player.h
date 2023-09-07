@@ -10,8 +10,7 @@
 #include "main.h"
 
 //前方宣言
-class CBuilding;
-class CPict;
+class CObject;
 class CButton2D;
 
 //プレイヤークラス
@@ -43,8 +42,7 @@ private:
 	CButton2D* m_pButtonATK;		//攻撃ボタン
 
 	bool m_bControllPict;			//ピクトさんを操縦するかどうか
-	CBuilding* m_pSelectBuilding;	//選択中の建物
-	CPict* m_pSelectPict;			//選択中のピクトさん
+	CObject* m_pObject;				//選択中の建物・ピクト
 
 	int m_nHaveDestroyer;	//デストロイヤー所持数
 	int m_nHaveBlocker;		//ブロッカー所持数

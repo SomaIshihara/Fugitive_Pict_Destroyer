@@ -118,33 +118,38 @@ void CPlayer::Update(void)
 //=================================
 void CPlayer::Attack(void)
 {
-	if (m_pSelectBuilding != NULL)
-	{//建物が選択されている
-		CPictDestroyer* pict = CPictDestroyer::Create(CPict::GetAgitPos());
-		pict->SetTargetObj((CObject*)m_pSelectBuilding);
-		pict->SetState(CPict::STATE_FACE);
-	}
-	else if (m_pSelectPict != NULL)
-	{//ピクト（なんでも）が選択されている
-		//警察調べる
-		for (int cnt = 0; cnt < MAX_OBJ; cnt++)
-		{//全オブジェクト見る
-			CPict* pPict = CPict::GetPict(cnt);	//ピクト全体取得
-			if (m_pSelectPict == pPict)
-			{
-				switch (pPict->GetType())
+	if (m_pObject != nullptr)
+	{//何かしら選択している
+		CObject::TYPE type = m_pObject->GetType();
+
+		if (type == CObject::TYPE_BUILDING)
+		{//建物が選択されている
+			CPictDestroyer* pict = CPictDestroyer::Create(CPict::GetAgitPos());
+			pict->SetTargetObj(m_pObject);
+			pict->SetState(CPict::STATE_FACE);
+		}
+		else if (type == CObject::TYPE_PICT)
+		{//ピクト（なんでも）が選択されている
+		 //警察調べる
+			for (int cnt = 0; cnt < MAX_OBJ; cnt++)
+			{//全オブジェクト見る
+				CPict* pPict = CPict::GetPict(cnt);	//ピクト全体取得
+				if (m_pObject == pPict)
 				{
-				case CPict::TYPE_POLICE:	//警察
-					CPictBlocker::Create(CPict::GetAgitPos())->SetTargetObj(pPict);	//ブロッカーを向かわせる
-					break;
+					switch (pPict->GetType())
+					{
+					case CPict::TYPE_POLICE:	//警察
+						CPictBlocker::Create(CPict::GetAgitPos())->SetTargetObj(pPict);	//ブロッカーを向かわせる
+						break;
 
-				case CPict::TYPE_DESTROYER:	//デストロイヤー
-					pPict->UnsetTargetObj();
-					break;
+					case CPict::TYPE_DESTROYER:	//デストロイヤー
+						pPict->UnsetTargetObj();
+						break;
 
-				case CPict::TYPE_BLOCKER:	//ブロッカー
-					pPict->UnsetTargetObj();
-					break;
+					case CPict::TYPE_BLOCKER:	//ブロッカー
+						pPict->UnsetTargetObj();
+						break;
+					}
 				}
 			}
 		}
@@ -251,6 +256,10 @@ void CPlayer::Select(void)
 	D3DXVECTOR3 posNear = mouse->ConvertClickPosToWorld(0.0f);
 	D3DXVECTOR3 posFar = mouse->ConvertClickPosToWorld(1.0f);
 
+	//近い何か
+	CObject* pObject = nullptr;
+	float fLengthNear = CManager::FLOAT_ZERO;
+
 	//ボタン削除
 	if (m_pButtonATK != NULL)
 	{
@@ -268,13 +277,13 @@ void CPlayer::Select(void)
 			if (pBuilding->GetModel()->GetCollision().CollisionCheck(posNear, posFar, pBuilding->GetPos(), pBuilding->GetRot()) == true &&
 				pBuilding->GetEndurance() > 0)
 			{//建物選択
-				m_pSelectPict = NULL;
-				m_pSelectBuilding = pBuilding;
-				
-				//ボタン生成
-				m_pButtonATK = CButton2D::Create(mouse->GetPos(), CManager::VEC3_ZERO, 40.0f, 40.0f);
-				m_pButtonATK->BindTexture(CTexture::PRELOAD_HIRE);
-				return;
+				float fLength = D3DXVec3Length(&(pBuilding->GetPos() - posNear));
+
+				if (pObject == nullptr || fLengthNear > fLength)
+				{//近い
+					pObject = pBuilding;
+					fLengthNear = fLength;
+				}
 			}
 		}
 	}
@@ -289,18 +298,26 @@ void CPlayer::Select(void)
 			if (pPict->GetCollision().CollisionCheck(posNear, posFar, pPict->GetPos(), pPict->GetRot()) == true 
 				&& pPict->GetType() != CPict::TYPE_NORMAL && pPict->GetType() != CPict::TYPE_TAXI)
 			{//ピクト選択
-				m_pSelectBuilding = NULL;
-				m_pSelectPict = pPict;
+				float fLength = D3DXVec3Length(&(pPict->GetPos() - posNear));
 
-				//ボタン生成
-				m_pButtonATK = CButton2D::Create(mouse->GetPos(), CManager::VEC3_ZERO, 40.0f, 40.0f);
-				m_pButtonATK->BindTexture(CTexture::PRELOAD_HIRE);
-				return;
+				if (pObject == nullptr || fLengthNear > fLength)
+				{//近い
+					pObject = pPict;
+					fLengthNear = fLength;
+				}
 			}
 		}
 	}
 
-	//何も選択していないので選択解除
-	m_pSelectBuilding = NULL;
-	m_pSelectPict = NULL;
+	if (pObject != nullptr)
+	{//何かしら選択できた
+		m_pObject = pObject;	//覚える
+		 //ボタン生成
+		m_pButtonATK = CButton2D::Create(mouse->GetPos(), CManager::VEC3_ZERO, 40.0f, 40.0f);
+		m_pButtonATK->BindTexture(CTexture::PRELOAD_HIRE);
+	}
+	else
+	{//何も選択してない
+		m_pObject = nullptr;
+	}
 }
