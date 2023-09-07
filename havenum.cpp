@@ -64,7 +64,7 @@ HRESULT CHaveNum::Init(void)
 
 	//テクスチャ読み込み
 	CTexture* pTexture = CManager::GetTexture();
-	m_nIdxTexture = pTexture->Regist("data\\TEXTURE\\tex_Score_01.png", 10, 1);
+	m_nIdxTexture = CTexture::PRELOAD_NUMBER;
 
 	//できた
 	return S_OK;
@@ -134,7 +134,7 @@ CHaveNum* CHaveNum::Create(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, const f
 
 		//記号オブジェ生成
 		CTexture* pTexture = CManager::GetTexture();
-		int ntexNum = pTexture->Regist("data\\TEXTURE\\tex_Symbol_01.png", 14, 1);
+		int ntexNum = CTexture::PRELOAD_SYMBOL;
 
 		//記号仮置き
 		CSymbol* pSymbol;

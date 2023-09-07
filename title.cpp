@@ -16,7 +16,8 @@
 #define TITLE_CAMERA_ROT	(CAMERA_MOU_ROT_SPEED * 0.15f)
 
 //静的メンバ変数
-CButton3D* CTitle::m_pButton = NULL;
+CButton3D* CTitle::m_pButtonStart = nullptr;
+CButton3D* CTitle::m_pButtonRank = nullptr;
 
 //=================================
 //コンストラクタ
@@ -40,8 +41,13 @@ HRESULT CTitle::Init(void)
 	//カメラ位置リセット
 	CManager::GetCamera()->ResetCameraPos();
 
-	m_pButton = CButton3D::Create(D3DXVECTOR3(300.0f,-20.0f,0.0f), D3DXVECTOR3(-0.5f * D3DX_PI,0.0f,0.0f), 311.0f, 111.0f);
-	m_pButton->BindTexture(CTexture::PRELOAD_TITLE_START);
+	CObject3D::Create(D3DXVECTOR3(-300.0f, 80.0f, 0.0f), D3DXVECTOR3(-0.5f * D3DX_PI, 0.0f, 0.0f), 365.0f, 171.0f)->BindTexture(CTexture::PRELOAD_TITLELOGO);
+
+	m_pButtonStart = CButton3D::Create(D3DXVECTOR3(300.0f, 80.0f,0.0f), D3DXVECTOR3(-0.5f * D3DX_PI,0.0f,0.0f), 311.0f, 111.0f);
+	m_pButtonStart->BindTexture(CTexture::PRELOAD_TITLE_START);
+
+	m_pButtonRank = CButton3D::Create(D3DXVECTOR3(300.0f, -31.0f, 0.0f), D3DXVECTOR3(-0.5f * D3DX_PI, 0.0f, 0.0f), 311.0f, 111.0f);
+	m_pButtonRank->BindTexture(CTexture::PRELOAD_TITLE_RANK);
 
 	return S_OK;
 }
@@ -52,7 +58,7 @@ HRESULT CTitle::Init(void)
 void CTitle::Uninit(void)
 {
 	CObject::ReleaseAll();
-	m_pButton = nullptr;
+	m_pButtonStart = nullptr;
 }
 
 //=================================
@@ -72,10 +78,13 @@ void CTitle::Update(void)
 
 	pCamera->SetCameraRot(rot);
 
-	if (m_pButton->IsClickTrigger() == true)
-	{//ボタンが押された
+	if (m_pButtonStart->IsClickTrigger() == true)
+	{//スタートボタンが押された
 		CFade::Create(CScene::MODE_GAME);
-		//CManager::SetMode(CScene::MODE_GAME);
+	}
+	else if (m_pButtonRank->IsClickTrigger() == true)
+	{//ランキングボタンが押された
+		CFade::Create(CScene::MODE_RANKING);
 	}
 }
 

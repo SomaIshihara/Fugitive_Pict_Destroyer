@@ -34,7 +34,7 @@ public:
 		MODE_RANKING,	//ランキング
 		MODE_MAX
 	} MODE;
-
+	
 	//コンストラクタ・デストラクタ
 	CScene();
 	~CScene();

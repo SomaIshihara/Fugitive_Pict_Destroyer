@@ -62,7 +62,7 @@ HRESULT CTimer::Init(void)
 
 	//テクスチャ読み込み
 	CTexture* pTexture = CManager::GetTexture();
-	m_nIdxTexture = pTexture->Regist("data\\TEXTURE\\tex_Score_01.png", 10, 1);
+	m_nIdxTexture = CTexture::PRELOAD_NUMBER;
 
 	//タイマーカウンタリセット
 	m_nCounter = 0;
@@ -170,7 +170,7 @@ CTimer* CTimer::Create(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, const float
 
 		//記号オブジェ生成
 		CTexture* pTexture = CManager::GetTexture();
-		int ntexNum = pTexture->Regist("data\\TEXTURE\\tex_Symbol_01.png", 14, 1);
+		int ntexNum = CTexture::PRELOAD_SYMBOL;
 
 		//記号仮置き
 		CSymbol* pSymbol;

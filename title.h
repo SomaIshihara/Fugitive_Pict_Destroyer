@@ -27,7 +27,8 @@ public:
 	void Draw(void);
 
 private:
-	static CButton3D* m_pButton;
+	static CButton3D* m_pButtonStart;
+	static CButton3D* m_pButtonRank;
 };
 
 #endif // !_TITLE_H_

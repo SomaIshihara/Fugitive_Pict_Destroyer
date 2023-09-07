@@ -5,6 +5,7 @@
 //
 //======================================================
 #include "game.h"
+#include "ranking.h"
 #include "pause.h"
 #include "result.h"
 #include "texture.h"
@@ -226,6 +227,7 @@ void CGame::Update(void)
 			{//ŽžŠÔØ‚ê
 				if (m_pResult == nullptr)
 				{
+					CRanking::Set(m_pScore->GetScore());
 					m_pResult = CResult::Create();
 				}
 			}

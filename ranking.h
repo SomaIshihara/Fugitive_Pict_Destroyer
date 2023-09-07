@@ -12,6 +12,18 @@
 class CRanking : public CScene
 {
 public:
+	//静的const
+	static const int MAX_RANK;					//順位総数
+	static const int RANK_DISP_X;				//表示数
+	static const int RANK_DISP_Y;
+	static const D3DXVECTOR3 RANK_START_POS;	//1位のスタート地点
+	static const float RANK_X_DISTANCE;			//Xの描画間隔
+	static const float RANK_Y_DISTANCE;			//Yの描画間隔
+	static const float X_ONE_WIDTH;				//Xの描画サイズ幅
+	static const float Y_ONE_HEIGHT;			//Xの描画サイズ幅
+	static const float X_SCORE_DIST;			//Xのスコアと位の間隔
+	static const int SYMBOL_RANK_NUM;			//「位」の位置
+
 	//コンストラクタ・デストラクタ
 	CRanking();
 	~CRanking();
@@ -22,8 +34,12 @@ public:
 	void Update(void);
 	void Draw(void);
 
-private:
+	//設定
+	static void Set(const long long nScore);
 
+private:
+	static void Load(long long* pRanking);
+	static void Save(long long* pRanking);
 };
 
 #endif // !_RANKING_H_

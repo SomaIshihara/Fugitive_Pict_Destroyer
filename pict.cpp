@@ -573,9 +573,9 @@ void CPict::Search(void)
 		{//当たってない
 			float fLength = D3DXVec3Length(&vecPoint);	//ポイントと現在地の距離
 			//ポイントと現在地の角度
-			fTargetLenWidth = pPoint->GetPos().x - m_pos.x;
-			fTargetLenDepth = pPoint->GetPos().z - m_pos.z;
-			float fRadius = atan2f(fTargetLenWidth, fTargetLenDepth);
+			/*fTargetLenWidth = pPoint->GetPos().x - m_pos.x;
+			fTargetLenDepth = pPoint->GetPos().z - m_pos.z;*/
+			float fRadius = fabsf(acosf(D3DXVec3Dot(&vecPoint, &(posTarget - m_pos)) / (fLength * D3DXVec3Length(&(posTarget - m_pos)))));
 
 			if(fLength > PICT_POINT_RESEARCH_LENGTH + 1.0f)
 			{//何も入っていない・角度が小さい
@@ -585,8 +585,7 @@ void CPict::Search(void)
 					fLenNear = fLength;
 					fRadNear = fRadius;
 				}
-				//else if (fLenNear > fLength && fabsf(fRadius - fRadiusBuilding) < 0.5f * D3DX_PI)
-				else if (fLenNear > fLength && fabsf(fRadius - fRadiusBuilding) < fabsf(fRadNear - fRadiusBuilding))
+				else if (fRadius < 0.5f * D3DX_PI && fRadius < fRadNear)
 				{
 					pPointNear = pPoint;
 					fLenNear = fLength;
