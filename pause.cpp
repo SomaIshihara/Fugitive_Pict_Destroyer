@@ -10,6 +10,7 @@
 #include "bg.h"
 #include "object2D.h"
 #include "button.h"
+#include "fade.h"
 
 //=================================
 //コンストラクタ
@@ -38,7 +39,7 @@ CPause::~CPause()
 HRESULT CPause::Init(void)
 {
 	//使うやつ生成
-	m_pBG = CBG::Create(PRIORITY_PAUSE);
+	m_pBG = CBG::Create(PRIORITY_UI);
 	m_pPolygon = CObject2D::Create(D3DXVECTOR3(SCREEN_WIDTH * 0.5f, 90.0f, 0.0f), CManager::VEC3_ZERO, 600.0f, 180.0f, PRIORITY_PAUSE);
 	m_pContinue = CButton2D::Create(D3DXVECTOR3(SCREEN_WIDTH * 0.5f, 270.0f, 0.0f), CManager::VEC3_ZERO, 600.0f, 180.0f, PRIORITY_PAUSE);
 	m_pRestart = CButton2D::Create(D3DXVECTOR3(SCREEN_WIDTH * 0.5f, 450.0f, 0.0f), CManager::VEC3_ZERO, 600.0f, 180.0f, PRIORITY_PAUSE);
@@ -63,42 +64,7 @@ HRESULT CPause::Init(void)
 //=================================
 void CPause::Uninit(void)
 {
-	////使ったやつだけ破棄
-	//if (m_pBG != nullptr)
-	//{
-	//	m_pBG->Uninit();
-	//	m_pBG = nullptr;
-	//}
-	//
-	//if (m_pPolygon != nullptr)
-	//{
-	//	m_pPolygon->Uninit();
-	//	m_pPolygon = nullptr;
-	//}
-	//
-	//if (m_pContinue != nullptr)
-	//{
-	//	m_pContinue->Uninit();
-	//	m_pContinue = nullptr;
-	//}
-	//
-	//if (m_pRestart != nullptr)
-	//{
-	//	m_pRestart->Uninit();
-	//	m_pRestart = nullptr;
-	//}
-	//
-	//if (m_pExit != nullptr)
-	//{
-	//	m_pExit->Uninit();
-	//	m_pExit = nullptr;
-	//}
-	//
-	//if (m_pScreenShot != nullptr)
-	//{
-	//	m_pScreenShot->Uninit();
-	//	m_pScreenShot = nullptr;
-	//}
+	
 }
 
 //=================================
@@ -118,17 +84,17 @@ void CPause::Update(void)
 		//ボタンに応じた処理
 		if (m_pContinue->IsClickTrigger() == true)
 		{//ゲームに戻る
+			ReleaseSome();
 			CManager::SetPause(false);
 		}
 		else if (m_pRestart->IsClickTrigger() == true)
 		{//リスタート
-			CManager::SetMode(CScene::MODE_GAME);
+			CFade::Create(CScene::MODE_GAME);
 			CManager::SetPause(false);
 		}
 		else if (m_pExit->IsClickTrigger() == true)
 		{//終了
-			CManager::SetMode(CScene::MODE_TITLE);	//ふつうはこれ
-			//CManager::SetMode(CScene::MODE_RESULT);		//いったんリザルト遷移用
+			CFade::Create(CScene::MODE_TITLE);
 			CManager::SetPause(false);
 		}
 		else if (m_pScreenShot->IsClickTrigger() == true)
@@ -169,4 +135,47 @@ void CPause::Update(void)
 void CPause::Draw(void)
 {
 	//CObjectを親にしているから勝手に描画される
+}
+
+//=================================
+//一部破棄
+//=================================
+void CPause::ReleaseSome(void)
+{
+	//使ったやつだけ破棄
+	if (m_pBG != nullptr)
+	{
+		m_pBG->Uninit();
+		m_pBG = nullptr;
+	}
+	
+	if (m_pPolygon != nullptr)
+	{
+		m_pPolygon->Uninit();
+		m_pPolygon = nullptr;
+	}
+	
+	if (m_pContinue != nullptr)
+	{
+		m_pContinue->Uninit();
+		m_pContinue = nullptr;
+	}
+	
+	if (m_pRestart != nullptr)
+	{
+		m_pRestart->Uninit();
+		m_pRestart = nullptr;
+	}
+	
+	if (m_pExit != nullptr)
+	{
+		m_pExit->Uninit();
+		m_pExit = nullptr;
+	}
+	
+	if (m_pScreenShot != nullptr)
+	{
+		m_pScreenShot->Uninit();
+		m_pScreenShot = nullptr;
+	}
 }

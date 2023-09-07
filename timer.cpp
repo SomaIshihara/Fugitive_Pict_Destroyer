@@ -101,7 +101,7 @@ void CTimer::Update(void)
 	//[debug]数字設定
 	if (CManager::GetInputKeyboard()->GetTrigger(DIK_F3) == true)
 	{
-		Set(120,COUNT_DOWN);	//デバッグ用だからこれでいいよね
+		Set(2,COUNT_DOWN);	//デバッグ用だからこれでいいよね
 	}
 #endif // DEBUG
 	//タイマー更新

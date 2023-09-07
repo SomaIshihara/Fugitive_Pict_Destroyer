@@ -76,7 +76,7 @@ HRESULT CGame::Init(void)
 
 	//オブジェクト生成+初期化
 	m_pTimer = CTimer::Create(D3DXVECTOR3(SCREEN_WIDTH * 0.5f + 24.0f, 32.0f, 0.0f), CManager::VEC3_ZERO, 48.0f, 72.0f);
-	m_pTimer->Set(2, CTimer::COUNT_DOWN);
+	m_pTimer->Set(120, CTimer::COUNT_DOWN);
 
 	m_pScore = CScore::Create(D3DXVECTOR3(SCREEN_WIDTH - 24.0f, 32.0f, 0.0f), CManager::VEC3_ZERO, 40.0f, 64.0f);
 
@@ -103,7 +103,7 @@ HRESULT CGame::Init(void)
 	CPoint::Update();
 
 	//交番パラメータ設定
-	CKoban::SetKobanParam(300, 1);	//仮設定
+	CKoban::SetKobanParam(300, 10);	//仮設定
 
 	return S_OK;
 }

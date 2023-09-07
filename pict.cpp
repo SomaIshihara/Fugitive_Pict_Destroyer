@@ -26,7 +26,7 @@
 
 //マクロ
 #define PICT_WALK_SPEED				(6.0f)		//ピクトさんの歩行速度
-#define PICT_POINT_RESEARCH_LENGTH	(5.0f)		//ピクトさんがポイントに到着したことにする距離
+#define PICT_POINT_RESEARCH_LENGTH	(7.0f)		//ピクトさんがポイントに到着したことにする距離
 #define PICT_AGIT_STOP_LENGTH		(20.0f)		//ピクトさんがアジトから離れる距離
 #define PICT_BUIDING_STOP_LENGTH	(120.0f)	//ピクトさんが建物から離れる距離
 #define PICT_POLICE_STOP_LENGTH		(30.0f)		//ピクトさんが警察から離れる距離
@@ -45,6 +45,7 @@
 CPict* CPict::m_apPict[MAX_OBJ];
 int CPict::m_nNumAll = 0;
 CObjectX* CPict::m_pAgitObj = nullptr;
+const float CPict::LOOSE_LENGTH = 100.0f;
 
 CPictDestroyer* CPictDestroyer::m_apPict[MAX_OBJ];
 int CPictDestroyer::m_nNumAll = 0;
@@ -246,8 +247,6 @@ void CPict::Update(void)
 	CInputKeyboard* pKeyboard = CManager::GetInputKeyboard();	//キーボード取得
 	D3DXVECTOR3 pos = m_pos;
 	CMotion* pMotion = GetMotion();
-	m_move.x = CManager::FLOAT_ZERO;
-	m_move.z = CManager::FLOAT_ZERO;
 
 	//ピクト共通:ポイント移動処理
 	if (CPict::IsControll() == false && m_state != STATE_ATTACK)
@@ -261,6 +260,8 @@ void CPict::Update(void)
 			if (targetPos.x - targetWidthHalf * 1.5f < pos.x && targetPos.x + targetWidthHalf * 1.5f > pos.x &&
 				targetPos.z - targetDepthHalf * 1.5f < pos.z && targetPos.z + targetDepthHalf * 1.5f > pos.z)
 			{//ついた
+				m_move.x = CManager::FLOAT_ZERO;
+				m_move.z = CManager::FLOAT_ZERO;
 				switch (m_state)
 				{
 				case STATE_FACE:
@@ -292,6 +293,8 @@ void CPict::Update(void)
 				{//移動中
 					float fTargetLenWidth, fTargetLenDepth;
 					float fTargetRot;
+					m_move.x = CManager::FLOAT_ZERO;
+					m_move.z = CManager::FLOAT_ZERO;
 
 					fTargetLenWidth = m_PointPos.x - pos.x;
 					fTargetLenDepth = m_PointPos.z - pos.z;
@@ -573,11 +576,9 @@ void CPict::Search(void)
 		{//当たってない
 			float fLength = D3DXVec3Length(&vecPoint);	//ポイントと現在地の距離
 			//ポイントと現在地の角度
-			/*fTargetLenWidth = pPoint->GetPos().x - m_pos.x;
-			fTargetLenDepth = pPoint->GetPos().z - m_pos.z;*/
 			float fRadius = fabsf(acosf(D3DXVec3Dot(&vecPoint, &(posTarget - m_pos)) / (fLength * D3DXVec3Length(&(posTarget - m_pos)))));
 
-			if(fLength > PICT_POINT_RESEARCH_LENGTH + 1.0f)
+			if(fLength > PICT_POINT_RESEARCH_LENGTH + 2.0f)
 			{//何も入っていない・角度が小さい
 				if (pPointNear == nullptr)
 				{
@@ -714,6 +715,7 @@ void CPictDestroyer::Update(void)
 		//破壊カウンターリセット
 		m_nCounterDestruction = CManager::INT_ZERO;
 	}
+	SetMove(CManager::VEC3_ZERO);
 	SetRot(rot);
 
 	//親処理
@@ -895,6 +897,16 @@ void CPictBlocker::Update(void)
 		float fTargetLenWidth, fTargetLenDepth;
 		float fTargetRot;
 
+		if (D3DXVec3Length(&(targetPos - pos)) > LOOSE_LENGTH)
+		{//逃がす
+			UnsetTargetObj();
+			if (pMotion->GetType() != MOTIONTYPE_NEUTRAL)
+			{
+				pMotion->Set(MOTIONTYPE_NEUTRAL);
+			}
+			SetState(STATE_LEAVE);
+		}
+
 		fTargetLenWidth = targetPos.x - pos.x;
 		fTargetLenDepth = targetPos.z - pos.z;
 
@@ -921,6 +933,7 @@ void CPictBlocker::Update(void)
 		//攻撃カウンターリセット
 		m_nCounterAttack = CManager::INT_ZERO;
 	}
+	SetMove(CManager::VEC3_ZERO);
 	SetRot(rot);
 
 	//親処理
@@ -1670,7 +1683,16 @@ void CPictPolice::Update(void)
 		targetWidthHalf = m_pTargetPict->GetWidth() * 0.5f;
 		targetDepthHalf = m_pTargetPict->GetDepth() * 0.5f;
 
-		if (targetPos.x - targetWidthHalf - PICT_POLICE_STOP_LENGTH > pos.x || targetPos.x + targetWidthHalf + PICT_POLICE_STOP_LENGTH < pos.x ||
+		if (D3DXVec3Length(&(targetPos - pos)) > LOOSE_LENGTH)
+		{//逃がす
+			UnsetTarget();
+			if (pMotion->GetType() != MOTIONTYPE_NEUTRAL)
+			{
+				pMotion->Set(MOTIONTYPE_NEUTRAL);
+			}
+			SetState(STATE_FACE);
+		}
+		else if (targetPos.x - targetWidthHalf - PICT_POLICE_STOP_LENGTH > pos.x || targetPos.x + targetWidthHalf + PICT_POLICE_STOP_LENGTH < pos.x ||
 			targetPos.z - targetDepthHalf - PICT_POLICE_STOP_LENGTH > pos.z || targetPos.z + targetDepthHalf + PICT_POLICE_STOP_LENGTH < pos.z)
 		{//到着してない
 			float fTargetLenWidth, fTargetLenDepth;
@@ -1726,6 +1748,8 @@ void CPictPolice::Update(void)
 	}
 	else
 	{//見張りなう
+		move.x = CManager::FLOAT_ZERO;
+		move.z = CManager::FLOAT_ZERO;
 		for (int cnt = 0; cnt < MAX_OBJ; cnt++)
 		{//全オブジェクト見る
 			CPict* pPict = CPict::GetPict(cnt);	//オブジェクト取得
@@ -1746,6 +1770,9 @@ void CPictPolice::Update(void)
 		{
 			pMotion->Set(MOTIONTYPE_NEUTRAL);
 		}
+		//位置移動量設定
+		SetRot(rot);
+		SetMove(move);
 	}
 
 	//親処理

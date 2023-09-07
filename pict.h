@@ -39,13 +39,8 @@ class CItemBullet;
 class CPict : public CObject
 {
 public:
-	//ピクト共通パラメータ構造体
-	typedef struct
-	{
-		int nReqExp;		//要求EXP
-		float fATKPow;		//攻撃力倍率
-		int nUsePictNormal;	//一般人ピクトの使用可能人数
-	} PictParam;
+	//静的const
+	static const float LOOSE_LENGTH;	//逃がしたものとする距離
 
 	//ピクトさん種類列挙
 	typedef enum
@@ -100,7 +95,6 @@ public:
 	TYPE GetType(void) { return m_type; }
 	static CObject* GetAgit(void) { return m_pAgitObj; }
 	static D3DXVECTOR3 GetAgitPos(void) { return m_pAgitObj->GetPos(); }
-	static PictParam GetPictParam(int nLv) { return m_pictParam[nLv]; }
 	CObject* GetTargetObj(void) { return m_targetObj; }
 	static int GetNumAll(void) { return m_nNumAll; }
 	
@@ -154,8 +148,6 @@ private:
 
 	bool m_bControll;					//操縦できるか
 	CShadow* m_pShadow;					//影オブジェクトポインタ
-
-	static PictParam m_pictParam[PICT_MAX_LEVEL];	//ピクトのパラメータ
 
 	float m_fRedAlpha;					//赤くする割合
 	STATE m_state;						//状態
