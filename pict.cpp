@@ -699,7 +699,7 @@ void CPictDestroyer::Update(void)
 		if (m_nCounterDestruction > PICT_ATTACK_TIME)
 		{
 			//弾発射
-			CBulletBillboard::Create(GetPos(), rot + D3DXVECTOR3(-0.3f * D3DX_PI, 0.0f, 0.0f), 10.0f, 10.0f, 3.0f, PICT_POWER(m_nLv,m_nHaveNormalPict), TYPE_DESTROYER, this);
+			CBulletBillboard::Create(GetPos() + D3DXVECTOR3(0.0f,30.0f,0.0f), rot + D3DXVECTOR3(-0.0f * D3DX_PI, 0.0f, 0.0f), 10.0f, 10.0f, 3.0f, PICT_POWER(m_nLv,m_nHaveNormalPict), TYPE_DESTROYER, this);
 
 			//破壊カウンターリセット
 			m_nCounterDestruction = CManager::INT_ZERO;
