@@ -8,6 +8,9 @@
 #define _RANKING_H_
 #include "manager.h"
 
+//前方宣言
+class CFade;
+
 //タイトルクラス
 class CRanking : public CScene
 {
@@ -37,9 +40,13 @@ public:
 	//設定
 	static void Set(const long long nScore);
 
+	//取得（ないのでぬるぽ）
+	CSlider* GetSlider(void) { return nullptr; }
+
 private:
 	static void Load(long long* pRanking);
 	static void Save(long long* pRanking);
+	CFade* m_pFade;
 };
 
 #endif // !_RANKING_H_

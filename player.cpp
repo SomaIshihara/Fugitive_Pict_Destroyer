@@ -7,6 +7,7 @@
 #include "player.h"
 #include "manager.h"
 #include "game.h"
+#include "tutorial.h"
 #include "renderer.h"
 #include "texture.h"
 #include "input.h"
@@ -18,6 +19,7 @@
 #include "slider.h"
 #include "building.h"
 #include "xmodel.h"
+#include "havenum.h"
 
 //=================================
 //コンストラクタ
@@ -26,12 +28,8 @@ CPlayer::CPlayer()
 {
 	m_bControllPicto = false;
 
-	m_nHaveDestroyer = CManager::INT_ZERO;
-	m_nHaveBlocker = CManager::INT_ZERO;
-	m_nHaveNormal = CManager::INT_ZERO;
-
 	m_cursorPos = CManager::VEC3_ZERO;
-	m_pButtonATK = NULL;
+	m_pButtonATK = nullptr;
 }
 
 //=================================
@@ -46,14 +44,6 @@ CPlayer::~CPlayer()
 HRESULT CPlayer::Init(void)
 {
 	m_bControllPicto = false;
-
-	//スライダー初期設定
-	CGame::GetSlider()->SetSelectIdx(CPictoTaxi::MODE_SABO);
-
-	//仮：人数設定
-	m_nHaveDestroyer = 1;
-	m_nHaveBlocker = 2;
-	m_nHaveNormal = 1500;
 
 	return S_OK;
 }
@@ -83,31 +73,36 @@ void CPlayer::Update(void)
 		m_cursorPos = pMouse->GetPos();
 	}
 	//ボタンが押されたか検知
-	if (m_pButtonATK != NULL && m_pButtonATK->IsClickTrigger() == true)
+	if (m_pButtonATK != nullptr && m_pButtonATK->IsClickTrigger() == true)
 	{
 		Attack();
 		m_pButtonATK->Uninit();
-		m_pButtonATK = NULL;
+		m_pButtonATK = nullptr;
 	}
 	else if (pMouse->GetTrigger(MOUSE_CLICK_LEFT) == true)
 	{//位置特定
 		Select();
 	}
 
-	CSlider* slider = CGame::GetSlider();
+	//スライダーとタクシー挙動
+	int nIdxSlider = -1;
+	CPictoTaxi* pTaxi = nullptr;
+
+	//スライダー変更
+	CSlider* slider = CManager::GetScene()->GetSlider();
 	slider->SetSelectIdx(slider->GetSelectIdx() - (pMouse->GetWheel() / 120));
 
 	//タクシーモード
-	CPictoTaxi* pTaxi = CPictoTaxi::GetPicto(0);
-	int nIdxSlider = CGame::GetSlider()->GetSelectIdx();
+	pTaxi = CPictoTaxi::GetPicto(0);
+	nIdxSlider = CManager::GetScene()->GetSlider()->GetSelectIdx();
 
 	//動けって言ってんのにタクシーいない
-	if (nIdxSlider != CPictoTaxi::MODE_SABO && pTaxi == NULL)
+	if (nIdxSlider != CPictoTaxi::MODE_SABO && pTaxi == nullptr)
 	{//いったん表出す
 		CPictoTaxi::Create(CPicto::GetAgitPos());
 	}
 
-	if (pTaxi != NULL)
+	if (pTaxi != nullptr)
 	{//タクシーいる
 		pTaxi->SetMode((CPictoTaxi::MODE)nIdxSlider);
 	}
@@ -120,17 +115,30 @@ void CPlayer::Attack(void)
 {
 	if (m_pObject != nullptr)
 	{//何かしら選択している
+		//現在のモードに応じて所持数オブジェクト取得
+		CScene::MODE mode = CManager::GetMode();
+		CHaveNum** ppHaveNumObj = nullptr;
+		if (mode == CScene::MODE_GAME)
+		{//ゲーム
+			ppHaveNumObj = CGame::GetHaveNumObj();
+		}
+		else if (mode == CScene::MODE_TUTORIAL)
+		{//チュートリアル
+			ppHaveNumObj = CTutorial::GetHaveNumObj();
+		}
+
+		//オブジェクト取得
 		CObject::TYPE type = m_pObject->GetType();
 
-		if (type == CObject::TYPE_BUILDING)
-		{//建物が選択されている
+		if (type == CObject::TYPE_BUILDING && ppHaveNumObj[CPicto::TYPE_DESTROYER]->GetHaveNum() > 0)
+		{//建物が選択されているかつ一人以上いる
 			CPictoDestroyer* picto = CPictoDestroyer::Create(CPicto::GetAgitPos());
 			picto->SetTargetObj(m_pObject);
 			picto->SetState(CPicto::STATE_FACE);
 		}
 		else if (type == CObject::TYPE_PICTO)
 		{//ピクト（なんでも）が選択されている
-		 //警察調べる
+			 //調べる
 			for (int cnt = 0; cnt < MAX_OBJ; cnt++)
 			{//全オブジェクト見る
 				CPicto* pPicto = CPicto::GetPicto(cnt);	//ピクト全体取得
@@ -139,7 +147,10 @@ void CPlayer::Attack(void)
 					switch (pPicto->GetType())
 					{
 					case CPicto::TYPE_POLICE:	//警察
-						CPictoBlocker::Create(CPicto::GetAgitPos())->SetTargetObj(pPicto);	//ブロッカーを向かわせる
+						if (ppHaveNumObj[CPicto::TYPE_BLOCKER]->GetHaveNum() > 0)
+						{//一人以上いる
+							CPictoBlocker::Create(CPicto::GetAgitPos())->SetTargetObj(pPicto);	//ブロッカーを向かわせる
+						}
 						break;
 
 					case CPicto::TYPE_DESTROYER:	//デストロイヤー
@@ -161,9 +172,22 @@ void CPlayer::Attack(void)
 //=================================
 void CPlayer::AddPicto(const int nDestroyer, const int nBlocker, const int nNormal)
 {//追加
-	m_nHaveDestroyer += nDestroyer;
-	m_nHaveBlocker += nBlocker;
-	m_nHaveNormal += nNormal;
+	CScene::MODE mode = CManager::GetMode();
+
+	if (mode == CScene::MODE_GAME)
+	{//ゲーム
+		CHaveNum** ppHaveNum = CGame::GetHaveNumObj();
+		ppHaveNum[0]->AddNum(nDestroyer);
+		ppHaveNum[1]->AddNum(nBlocker);
+		ppHaveNum[2]->AddNum(nNormal);
+	}
+	else if (mode == CScene::MODE_TUTORIAL)
+	{//チュートリアル
+		CHaveNum** ppHaveNum = CTutorial::GetHaveNumObj();
+		ppHaveNum[0]->AddNum(nDestroyer);
+		ppHaveNum[1]->AddNum(nBlocker);
+		ppHaveNum[2]->AddNum(nNormal);
+	}
 }
 
 //=================================
@@ -198,14 +222,18 @@ void CPlayer::Move(void)
 		move.z += -cosf(rot.y) * CAMERA_MOVE_SPEED;
 	}
 
+#ifdef _DEBUG
 	if (m_bControllPicto == true)
 	{//操縦設定
 		CPicto::GetPicto(0)->Controll(move);
 	}
 
-	//移動
-	pCamera->SetCameraPos(move);
+#endif // DEBUG
 
+	//移動
+	pCamera->SetPos(move);
+
+#ifdef _DEBUG
 	//ピクトさん操縦設定
 	if (pKeyboard->GetTrigger(DIK_H) == true)
 	{
@@ -217,6 +245,7 @@ void CPlayer::Move(void)
 		CPicto::GetPicto(0)->Uncontroll();
 		m_bControllPicto = false;
 	}
+#endif // DEBUG
 }
 
 //=================================
@@ -235,7 +264,7 @@ void CPlayer::Rotate(void)
 	rot.y -= move.x * CAMERA_MOU_ROT_SPEED;
 	rot.x -= move.y * CAMERA_MOU_ROT_SPEED;
 
-	pCamera->SetCameraRot(rot);
+	pCamera->SetRot(rot);
 
 	//カーソルを元の位置に戻す
 	POINT setCursorpos;
@@ -261,10 +290,10 @@ void CPlayer::Select(void)
 	float fLengthNear = CManager::FLOAT_ZERO;
 
 	//ボタン削除
-	if (m_pButtonATK != NULL)
+	if (m_pButtonATK != nullptr)
 	{
 		m_pButtonATK->Uninit();
-		m_pButtonATK = NULL;
+		m_pButtonATK = nullptr;
 	}
 
 	//建物
@@ -272,7 +301,7 @@ void CPlayer::Select(void)
 	{//全オブジェクト見る
 		CBuilding* pBuilding = CBuilding::GetBuilding(cnt);	//オブジェクト取得
 
-		if (pBuilding != NULL)	//ヌルチェ
+		if (pBuilding != nullptr)	//ヌルチェ
 		{//なんかある
 			if (pBuilding->GetModel()->GetCollision().CollisionCheck(posNear, posFar, pBuilding->GetPos(), pBuilding->GetRot()) == true &&
 				pBuilding->GetEndurance() > 0)
@@ -293,7 +322,7 @@ void CPlayer::Select(void)
 	{//全オブジェクト見る
 		CPicto* pPicto = CPicto::GetPicto(cnt);	//オブジェクト取得
 
-		if (pPicto != NULL)	//ヌルチェ
+		if (pPicto != nullptr)	//ヌルチェ
 		{//なんかある
 			if (pPicto->GetCollision().CollisionCheck(posNear, posFar, pPicto->GetPos(), pPicto->GetRot()) == true 
 				&& pPicto->GetType() != CPicto::TYPE_NORMAL && pPicto->GetType() != CPicto::TYPE_TAXI)

@@ -27,8 +27,11 @@ public:
 	void SetCamera(void);
 
 	//位置移動
-	void SetCameraPos(const D3DXVECTOR3 move);
-	void SetCameraRot(const D3DXVECTOR3 rot);
+	void SetPos(const D3DXVECTOR3 move);
+	void SetRot(const D3DXVECTOR3 rot);
+
+	//設定
+	void SetLength(const float fLength) { m_fLength = fLength; }
 
 	//取得
 	D3DXVECTOR3 GetPosV(void) { return m_posV; }
@@ -36,7 +39,7 @@ public:
 	D3DXVECTOR3 GetRot(void) { return m_rot; }
 
 	//リセット
-	void ResetCameraPos(void);
+	void ResetPos(void);
 private:
 	//角度修正
 	void FixPosV(void);

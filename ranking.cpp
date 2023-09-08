@@ -48,7 +48,7 @@ HRESULT CRanking::Init(void)
 {
 	long long* pRanking = new long long[MAX_RANK];	//一応静的constも変数なので
 	//カメラ位置リセット
-	CManager::GetCamera()->ResetCameraPos();
+	CManager::GetCamera()->ResetPos();
 
 	//背景生成
 	CBG* pBG = CBG::Create();
@@ -112,9 +112,9 @@ void CRanking::Update(void)
 {
 	CInputMouse* pMouse = CManager::GetInputMouse();
 
-	if (pMouse->GetTrigger(MOUSE_CLICK_LEFT) == true)
+	if (m_pFade == nullptr && pMouse->GetTrigger(MOUSE_CLICK_LEFT) == true)
 	{//タイトルに遷移
-		CFade::Create(CScene::MODE_TITLE);
+		m_pFade = CFade::Create(CScene::MODE_TITLE);
 	}
 }
 

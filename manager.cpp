@@ -15,7 +15,6 @@
 #include "object.h"
 #include "objectX.h"
 #include "xmodel.h"
-#include "item.h"
 #include "fade.h"
 
 //シーン
@@ -136,13 +135,8 @@ HRESULT CManager::Init(HINSTANCE hInstance, HWND hWnd, BOOL bWindow)
 	}
 
 	//3Dモデル読み込み
-	//CXModel::Load("data\\MODEL\\jobi.x");
-	//CXModel::Load("data\\MODEL\\zahyoukanban002.x");
-	//CXModel::Load("data\\MODEL\\DoshinBill_01.x");
-	//CXModel::Load("data\\MODEL\\hako.x");
 	m_pFragModel = CXModel::Load("data\\MODEL\\frag.x");
 	m_pAgitModel = CXModel::Load("data\\MODEL\\Agit.x");
-	CItemBullet::SetModel(CXModel::Load("data\\MODEL\\BulletBox.x"));
 
 	//FPS計測器初期化
 	m_nFPS = 0;
@@ -269,6 +263,7 @@ void CManager::Update(void)
 	m_pDebProc->Print("WASD:プレイヤー（カメラ）移動\n");
 	m_pDebProc->Print("[モデル・ピクトに向かって]マウス左クリック:選択\n");
 	m_pDebProc->Print("[Debug]F3:タイマー設定(120秒カウントダウン)\n");
+	m_pDebProc->Print("仮：チュートリアルはPキーで終了できます：仮\n");
 }
 
 //=================================
@@ -297,14 +292,14 @@ void CManager::SetMode(CScene::MODE mode)
 	m_pSound->Stop();
 
 	//現在のモード破棄
-	if (m_pScene != NULL)
+	if (m_pScene != nullptr)
 	{//なんか入ってる
 		m_pScene->Uninit();
 		delete m_pScene;
-		m_pScene = NULL;
+		m_pScene = nullptr;
 	}
 
-	if (m_pScene == NULL)
+	if (m_pScene == nullptr)
 	{//ぬるぬる
 		//新モード生成
 		m_pScene = CScene::Create(mode);
@@ -333,9 +328,9 @@ CScene::~CScene()
 //=================================
 CScene* CScene::Create(MODE mode)
 {
-	CScene* pScene = NULL;
+	CScene* pScene = nullptr;
 
-	if (pScene == NULL)
+	if (pScene == nullptr)
 	{
 		//シーンの生成
 		switch (mode)
@@ -353,7 +348,7 @@ CScene* CScene::Create(MODE mode)
 			pScene = new CRanking;
 			break;
 		default:	//んなもんはない
-			return NULL;
+			return nullptr;
 			break;
 		}
 
@@ -367,6 +362,6 @@ CScene* CScene::Create(MODE mode)
 	}
 	else
 	{
-		return NULL;
+		return nullptr;
 	}
 }

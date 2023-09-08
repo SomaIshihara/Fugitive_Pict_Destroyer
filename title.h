@@ -11,6 +11,8 @@
 //前方宣言
 class CButton3D;
 class CPlayer;
+class CSlider;
+class CFade;
 
 //タイトルクラス
 class CTitle : public CScene
@@ -26,9 +28,13 @@ public:
 	void Update(void);
 	void Draw(void);
 
+	//取得（ないのでぬるぽ）
+	CSlider* GetSlider(void) { return nullptr; }
+
 private:
 	static CButton3D* m_pButtonStart;
 	static CButton3D* m_pButtonRank;
+	CFade* m_pFade;
 };
 
 #endif // !_TITLE_H_

@@ -33,7 +33,7 @@ class CShadow;
 class CPictoPolice;
 class CPictoNormal;
 class CPictoTaxi;
-class CItemBullet;
+class CMeshField;
 
 //ピクトさんクラス
 class CPicto : public CObject
@@ -45,9 +45,9 @@ public:
 	//ピクトさん種類列挙
 	typedef enum
 	{
-		TYPE_NORMAL = 0,
-		TYPE_DESTROYER,
+		TYPE_DESTROYER = 0,
 		TYPE_BLOCKER,
+		TYPE_NORMAL,
 		TYPE_TAXI,
 		TYPE_POLICE,
 		TYPE_MAX
@@ -154,6 +154,7 @@ private:
 	TYPE m_type;						//ピクト種類
 
 	static CObjectX* m_pAgitObj;		//アジトのポインタ
+	static CMeshField* m_pField;		//床
 
 	CObject* m_targetObj;				//目的のオブジェ
 	D3DXVECTOR3 m_PointPos;				//目的ポイントの位置
@@ -322,7 +323,6 @@ public:
 private:
 	//関数
 	bool SearchPick(void);				//アイテム類探す
-	CItemBullet* SearchBullet(void);	//弾探索
 	CPictoNormal* SearchNormal(void);	//一般人ピクト探索
 	CPicto* SearchBattler(void);		//戦闘要員探索
 
@@ -334,7 +334,6 @@ private:
 	MODE m_mode;			//タクシーモード
 
 	//ターゲット
-	CItemBullet* m_pItemBullet;	//アイテム弾
 	CPicto* m_ptargetPicto;		//ピクト（詳細不明）
 
 	int m_nLife;			//体力

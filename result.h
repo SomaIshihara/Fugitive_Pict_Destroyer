@@ -10,6 +10,7 @@
 //前方宣言
 class CBG;
 class CButton2D;
+class CFade;
 
 //リザルトクラス
 class CResult
@@ -42,6 +43,7 @@ private:
 	float m_fAlpha;			//不透明度
 	CButton2D* m_pButton;	//ボタン
 	int m_nCounter;			//表示タイミングカウンタ
+	CFade* m_pFade;
 };
 
 #endif // !_RESULT_H_

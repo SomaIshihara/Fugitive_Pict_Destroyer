@@ -142,9 +142,9 @@ void CResult::Update(void)
 			m_pButton->BindTexture(CTexture::PRELOAD_TITLE_RANK);
 		}
 
-		if (m_pButton != nullptr && m_pButton->IsClickTrigger() == true)
+		if (m_pButton != nullptr && m_pFade == nullptr && m_pButton->IsClickTrigger() == true)
 		{//ƒ‰ƒ“ƒLƒ“ƒO‘JˆÚ
-			CFade::Create(CScene::MODE_RANKING);
+			m_pFade = CFade::Create(CScene::MODE_RANKING);
 			return;
 		}
 	}

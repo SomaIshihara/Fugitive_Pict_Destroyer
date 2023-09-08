@@ -24,6 +24,7 @@ CButton3D* CTitle::m_pButtonRank = nullptr;
 //=================================
 CTitle::CTitle()
 {
+	m_pFade = nullptr;
 }
 
 //=================================
@@ -39,7 +40,8 @@ CTitle::~CTitle()
 HRESULT CTitle::Init(void)
 {
 	//カメラ位置リセット
-	CManager::GetCamera()->ResetCameraPos();
+	CManager::GetCamera()->ResetPos();
+	CManager::GetCamera()->SetLength(700.0f);
 
 	CObject3D::Create(D3DXVECTOR3(-300.0f, 80.0f, 0.0f), D3DXVECTOR3(-0.5f * D3DX_PI, 0.0f, 0.0f), 365.0f, 171.0f)->BindTexture(CTexture::PRELOAD_TITLELOGO);
 
@@ -76,15 +78,18 @@ void CTitle::Update(void)
 
 	rot.y += move.x * TITLE_CAMERA_ROT;
 
-	pCamera->SetCameraRot(rot);
+	pCamera->SetRot(rot);
 
-	if (m_pButtonStart->IsClickTrigger() == true)
-	{//スタートボタンが押された
-		CFade::Create(CScene::MODE_GAME);
-	}
-	else if (m_pButtonRank->IsClickTrigger() == true)
-	{//ランキングボタンが押された
-		CFade::Create(CScene::MODE_RANKING);
+	if (m_pFade == nullptr)
+	{
+		if (m_pButtonStart->IsClickTrigger() == true)
+		{//スタートボタンが押された
+			m_pFade = CFade::Create(CScene::MODE_TUTORIAL);
+		}
+		else if (m_pButtonRank->IsClickTrigger() == true)
+		{//ランキングボタンが押された
+			m_pFade = CFade::Create(CScene::MODE_RANKING);
+		}
 	}
 }
 

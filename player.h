@@ -44,10 +44,6 @@ private:
 	bool m_bControllPicto;			//ピクトさんを操縦するかどうか
 	CObject* m_pObject;				//選択中の建物・ピクト
 
-	int m_nHaveDestroyer;	//デストロイヤー所持数
-	int m_nHaveBlocker;		//ブロッカー所持数
-	int m_nHaveNormal;		//一般人所持数
-
 	D3DXVECTOR3 m_cursorPos;	//クリック前のカーソル位置
 };
 

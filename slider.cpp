@@ -5,6 +5,7 @@
 //
 //======================================================
 #include "slider.h"
+#include "picto.h"
 #include "manager.h"
 #include "object2D.h"
 #include "texture.h"
@@ -73,6 +74,8 @@ HRESULT CSlider::Init(void)
 	m_ppObjIcon[0]->BindTexture(CTexture::PRELOAD_SLIDER_01);
 	m_ppObjIcon[1]->BindTexture(CTexture::PRELOAD_SLIDER_02);
 	m_ppObjIcon[2]->BindTexture(CTexture::PRELOAD_SLIDER_03);
+
+	m_nSelect = CPictoTaxi::MODE_SABO;
 
 	return S_OK;
 }

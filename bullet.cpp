@@ -6,6 +6,7 @@
 //======================================================
 #include "manager.h"
 #include "game.h"
+#include "tutorial.h"
 #include "renderer.h"
 #include "texture.h"
 #include "object.h"
@@ -274,10 +275,22 @@ void CBulletBillboard::Update(void)
 	pos += m_move;
 
 	//範囲外判定
-	if (D3DXVec3Length(&pos) >= CGame::GetSkyObj()->GetHeight())
-	{
-		Uninit();
-		return;
+	CScene::MODE mode = CManager::GetMode();
+	if (mode == CScene::MODE_GAME)
+	{//ゲーム
+		if (D3DXVec3Length(&pos) >= CGame::GetSkyObj()->GetHeight())
+		{
+			Uninit();
+			return;
+		}
+	}
+	else if (mode == CScene::MODE_GAME)
+	{//チュートリアル
+		if (D3DXVec3Length(&pos) >= CTutorial::GetSkyObj()->GetHeight())
+		{
+			Uninit();
+			return;
+		}
 	}
 
 	//位置設定

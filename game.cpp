@@ -18,7 +18,6 @@
 #include "objectX.h"
 #include "picto.h"
 #include "koban.h"
-#include "item.h"
 #include "meshsky.h"
 #include "point.h"
 #include "input.h"
@@ -29,7 +28,6 @@
 
 //静的メンバ変数
 CPlayer* CGame::m_pPlayer = nullptr;
-CSlider* CGame::m_pSlider = nullptr;
 CMeshField* CGame::m_pMeshField = nullptr;
 CTimer* CGame::m_pTimer = nullptr;
 CScore* CGame::m_pScore = nullptr;
@@ -69,7 +67,7 @@ HRESULT CGame::Init(void)
 	}
 
 	//カメラ位置リセット
-	CManager::GetCamera()->ResetCameraPos();
+	CManager::GetCamera()->ResetPos();
 
 	//仮オブジェ生成
 	m_pMeshField = CMeshField::Create(D3DXVECTOR3(-1280.0f, 0.0f, 1280.0f), CManager::VEC3_ZERO, 64.0f, 64.0f, 40, 40);
@@ -85,16 +83,16 @@ HRESULT CGame::Init(void)
 
 	m_pSky = CMeshSky::Create(CManager::VEC3_ZERO, CManager::VEC3_ZERO, 10000.0f, 8, 8);
 
-	m_pHaveNum[0] = CHaveNum::Create(D3DXVECTOR3(SCREEN_WIDTH - 30.0f, 100.0f, 0.0f), CManager::VEC3_ZERO, 30.0f, 36.0f, 2, CTexture::PRELOAD_HAVEICON_01);//アイコン番号仮
-	m_pHaveNum[1] = CHaveNum::Create(D3DXVECTOR3(SCREEN_WIDTH - 30.0f, 172.0f, 0.0f), CManager::VEC3_ZERO, 30.0f, 36.0f, 2, CTexture::PRELOAD_HAVEICON_02);//アイコン番号仮
-	m_pHaveNum[2] = CHaveNum::Create(D3DXVECTOR3(SCREEN_WIDTH - 30.0f, 244.0f, 0.0f), CManager::VEC3_ZERO, 30.0f, 36.0f, 5, CTexture::PRELOAD_HAVEICON_03);//アイコン番号仮
+	m_pHaveNum[CPicto::TYPE_DESTROYER] = CHaveNum::Create(D3DXVECTOR3(SCREEN_WIDTH - 30.0f, 100.0f, 0.0f), CManager::VEC3_ZERO, 30.0f, 36.0f, 2, CTexture::PRELOAD_HAVEICON_01);
+	m_pHaveNum[CPicto::TYPE_BLOCKER] = CHaveNum::Create(D3DXVECTOR3(SCREEN_WIDTH - 30.0f, 172.0f, 0.0f), CManager::VEC3_ZERO, 30.0f, 36.0f, 2, CTexture::PRELOAD_HAVEICON_02);
+	m_pHaveNum[CPicto::TYPE_NORMAL] = CHaveNum::Create(D3DXVECTOR3(SCREEN_WIDTH - 30.0f, 244.0f, 0.0f), CManager::VEC3_ZERO, 30.0f, 36.0f, 5, CTexture::PRELOAD_HAVEICON_03);
+	m_pHaveNum[CPicto::TYPE_DESTROYER]->AddNum(1);
+	m_pHaveNum[CPicto::TYPE_BLOCKER]->AddNum(1);
+	m_pHaveNum[CPicto::TYPE_NORMAL]->AddNum(1000);
 
 	m_pWarning = CBG::Create(PRIORITY_UI);
 	m_pWarning->BindTexture(CTexture::PRELOAD_WARNING_LIFE);
 	m_pWarning->SetEnable(false);	//いったん非表示
-
-	//仮
-	CItemBullet::Create(D3DXVECTOR3(0.0f, 0.0f, 10.0f), CManager::VEC3_ZERO);
 
 	//マップデータ読み込みと配置
 	CObjectX::LoadData("data\\Fugitive_Picto_MapData_v120.ismd");

@@ -43,7 +43,7 @@ CCamera::~CCamera()
 HRESULT CCamera::Init(void)
 {
 	//値設定
-	ResetCameraPos();
+	ResetPos();
 
 	//できた
 	return S_OK;
@@ -95,7 +95,7 @@ void CCamera::SetCamera(void)
 //========================
 //位置設定
 //========================
-void CCamera::SetCameraPos(const D3DXVECTOR3 move)
+void CCamera::SetPos(const D3DXVECTOR3 move)
 {
 	//位置適用
 	m_posV += move;
@@ -105,7 +105,7 @@ void CCamera::SetCameraPos(const D3DXVECTOR3 move)
 //========================
 //向き設定
 //========================
-void CCamera::SetCameraRot(const D3DXVECTOR3 rot)
+void CCamera::SetRot(const D3DXVECTOR3 rot)
 {
 	//回転適用と修正処理
 	m_rot += rot;
@@ -120,14 +120,14 @@ void CCamera::SetCameraRot(const D3DXVECTOR3 rot)
 //========================
 //カメラ位置リセット
 //========================
-void CCamera::ResetCameraPos(void)
+void CCamera::ResetPos(void)
 {
 	//値設定
 	m_posV = D3DXVECTOR3(0.0f, 50.0f, -400.0f);
 	m_posR = D3DXVECTOR3(0.0f, 60.0f, 0.0f);
 	m_vecU = D3DXVECTOR3(0.0f, 1.0f, 0.0f);
 	m_rot = D3DXVECTOR3(-0.5f, 0.0f, 0.0f);
-	m_fLength = 800.0f;
+	m_fLength = 900.0f;
 	FixRot();
 	FixPosV();
 }
@@ -161,7 +161,7 @@ void CCamera::FixRot(void)
 	m_rot.y = FIX_ROT(m_rot.y);
 	m_rot.z = FIX_ROT(m_rot.z);
 
-#if 0
+#if 1
 	//[カメラ制限]x回転の制限
 	if (m_rot.x >= CAMERA_ROT_X_MAX * D3DX_PI)
 	{

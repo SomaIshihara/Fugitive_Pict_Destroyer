@@ -10,6 +10,7 @@
 #include "texture.h"
 #include <vector>
 
+#include <string>
 using namespace std;
 
 //=================================
@@ -24,6 +25,7 @@ CMeshField::CMeshField()
 	m_fDepth = CManager::FLOAT_ZERO;
 	m_nBlockWidth = CManager::INT_ZERO;
 	m_nBlockDepth = CManager::INT_ZERO;
+	SetType(TYPE_FIELD);
 }
 
 //=================================
@@ -39,6 +41,7 @@ CMeshField::CMeshField(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, const float
 	m_fDepth = fDepth;
 	m_nBlockWidth = nBlockWidth;
 	m_nBlockDepth = nBlockDepth;
+	SetType(TYPE_FIELD);
 }
 
 //=================================

@@ -20,6 +20,7 @@ class CLight;
 class CTexture;
 class CXModel;
 class CFade;
+class CSlider;
 
 //シーンクラス
 class CScene
@@ -50,6 +51,7 @@ public:
 
 	//取得
 	MODE GetMode(void) { return m_mode; }
+	virtual CSlider* GetSlider(void) = 0;
 
 private:
 	MODE m_mode;	//モード
@@ -93,6 +95,7 @@ public:
 	//シーン系
 	static void SetMode(CScene::MODE mode);
 	static CScene::MODE GetMode(void) { return m_pScene->GetMode(); }
+	static CScene* GetScene(void) { return m_pScene; }
 
 	//設定
 	static void SetPause(const bool bFrag) { m_bPause = bFrag; }

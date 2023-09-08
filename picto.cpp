@@ -9,6 +9,7 @@
 #include "model.h"
 #include "manager.h"
 #include "game.h"
+#include "tutorial.h"
 #include "renderer.h"
 #include "input.h"	//仮
 #include "camera.h"	//仮
@@ -22,7 +23,7 @@
 #include "file.h"
 #include "Culc.h"
 #include "point.h"
-#include "item.h"
+#include "havenum.h"
 
 //マクロ
 #define PICTO_WALK_SPEED				(6.0f)		//ピクトさんの歩行速度
@@ -178,6 +179,9 @@ HRESULT CPicto::Init(void)
 
 	//操縦しない設定
 	m_bControll = false;
+
+	//ピクトさんである
+	SetType(CObject::TYPE_PICTO);
 
 	//できた
 	return S_OK;
@@ -476,7 +480,17 @@ bool CPicto::CollisionField(D3DXVECTOR3* pPosNew)
 	bool bLand = false;
 
 	//高さ取得
-	float fLandHeight = CGame::GetMeshField()->GetHeight(*pPosNew);
+	float fLandHeight = CManager::FLOAT_ZERO;
+	CScene::MODE mode = CManager::GetMode();
+	if (mode == CScene::MODE_GAME)
+	{//ゲーム
+		fLandHeight = CGame::GetMeshField()->GetHeight(*pPosNew);
+	}
+	else if (mode == CScene::MODE_TUTORIAL)
+	{//チュートリアル
+		fLandHeight = CTutorial::GetMeshField()->GetHeight(*pPosNew);
+	}
+
 	if (pPosNew->y < fLandHeight)
 	{
 		pPosNew->y = fLandHeight;
@@ -655,6 +669,36 @@ HRESULT CPictoDestroyer::Init(void)
 {
 	//親処理
 	CPicto::Init();
+
+	//所持数減算処理
+	CScene::MODE mode = CManager::GetMode();
+	CHaveNum** ppHaveNumObj = nullptr;
+	if (mode == CScene::MODE_GAME)
+	{//ゲーム
+		ppHaveNumObj = CGame::GetHaveNumObj();
+	}
+	else if (mode == CScene::MODE_TUTORIAL)
+	{//チュートリアル
+		ppHaveNumObj = CTutorial::GetHaveNumObj();
+	}
+
+	//リーダー減算
+	ppHaveNumObj[TYPE_DESTROYER]->AddNum(-1);
+
+	//一般人連れてく
+	int nAgitNormal = ppHaveNumObj[TYPE_NORMAL]->GetHaveNum();
+	int nMaxNormal = PICTO_HAVENPICTO(m_nLv);
+
+	if (nAgitNormal >= nMaxNormal)
+	{//現在のレベルで持てる一般人の人数以上
+		ppHaveNumObj[TYPE_NORMAL]->AddNum(-nMaxNormal);
+		m_nHaveNormalPicto = nMaxNormal;
+	}
+	else
+	{//足りないけどとりあえずいるだけ連れてく
+		ppHaveNumObj[TYPE_NORMAL]->AddNum(-nAgitNormal);
+		m_nHaveNormalPicto = nAgitNormal;
+	}
 
 	//体力設定
 	m_nLife = HAVE_LIFE(m_nLv);
@@ -864,6 +908,36 @@ HRESULT CPictoBlocker::Init(void)
 {
 	//親処理
 	CPicto::Init();
+
+	//所持数減算処理
+	CScene::MODE mode = CManager::GetMode();
+	CHaveNum** ppHaveNumObj = nullptr;
+	if (mode == CScene::MODE_GAME)
+	{//ゲーム
+		ppHaveNumObj = CGame::GetHaveNumObj();
+	}
+	else if (mode == CScene::MODE_TUTORIAL)
+	{//チュートリアル
+		ppHaveNumObj = CTutorial::GetHaveNumObj();
+	}
+
+	//リーダー減算
+	ppHaveNumObj[TYPE_BLOCKER]->AddNum(-1);
+
+	//一般人連れてく
+	int nAgitNormal = ppHaveNumObj[TYPE_NORMAL]->GetHaveNum();
+	int nMaxNormal = PICTO_HAVENPICTO(m_nLv);
+
+	if (nAgitNormal >= nMaxNormal)
+	{//現在のレベルで持てる一般人の人数以上
+		ppHaveNumObj[TYPE_NORMAL]->AddNum(-nMaxNormal);
+		m_nHaveNormalPicto = nMaxNormal;
+	}
+	else
+	{//足りないけどとりあえずいるだけ連れてく
+		ppHaveNumObj[TYPE_NORMAL]->AddNum(-nAgitNormal);
+		m_nHaveNormalPicto = nAgitNormal;
+	}
 
 	//体力設定
 	m_nLife = HAVE_LIFE(m_nLv);
@@ -1086,7 +1160,7 @@ CPictoTaxi::~CPictoTaxi()
 HRESULT CPictoTaxi::Init(void)
 {
 	//設定されていたモードを取得
-	m_mode = (MODE)CGame::GetSlider()->GetSelectIdx();
+	m_mode = (MODE)CManager::GetScene()->GetSlider()->GetSelectIdx();
 
 	//モードによって変わるかも
 	switch (m_mode)
@@ -1138,16 +1212,6 @@ void CPictoTaxi::Update(void)
 				m_ptargetPicto->TakeTaxi(this);
 				m_ptargetPicto->Uninit();
 				m_ptargetPicto = NULL;
-
-				//ターゲット解除
-				UnsetTargetObj();
-			}
-			else if (m_pItemBullet != NULL)
-			{
-				//タクシーに乗せる
-				m_pItemBullet->PickBullet(this);
-				m_pItemBullet->Uninit();
-				m_pItemBullet = NULL;
 
 				//ターゲット解除
 				UnsetTargetObj();
@@ -1250,40 +1314,18 @@ void CPictoTaxi::SetTakeTaxi(const CPicto::TYPE type, const int nTakeNum)
 bool CPictoTaxi::SearchPick(void)
 {
 	//ターゲット外れていたら探索
-	if (m_ptargetPicto == NULL && m_pItemBullet == NULL)
+	if (m_ptargetPicto == NULL)
 	{
 		//取得
 		m_ptargetPicto = SearchNormal();
-		m_pItemBullet = SearchBullet();
 
 		//ここに弾とピクトの距離測って比較する処理
 		float fLengthPicto = -1.0f;
 		float fLengthItem = -1.0f;
-
-		if (m_ptargetPicto != NULL && m_pItemBullet != NULL)
-		{//両方取得した
-			fLengthPicto = D3DXVec3Length(&(m_ptargetPicto->GetPos() - this->GetPos()));
-			fLengthItem = D3DXVec3Length(&(m_pItemBullet->GetPos() - this->GetPos()));
-
-			//遠いほうをNULLにする
-			if (fLengthPicto <= fLengthItem)
-			{//ピクトのほうが近い（距離が同じの場合も含む）
-				SetTargetObj(m_ptargetPicto);
-				m_pItemBullet = NULL;
-			}
-			else
-			{//弾のほうが近い
-				SetTargetObj(m_pItemBullet);
-				m_ptargetPicto = NULL;
-			}
-		}
-		else if(m_ptargetPicto != NULL)
-		{//ピクトだけ
+		
+		if(m_ptargetPicto != NULL)
+		{//ピクト取得した
 			SetTargetObj(m_ptargetPicto);
-		}
-		else if (m_pItemBullet != NULL)
-		{//弾だけ
-			SetTargetObj(m_pItemBullet);
 		}
 		else
 		{//無
@@ -1294,34 +1336,6 @@ bool CPictoTaxi::SearchPick(void)
 	}
 
 	return false;
-}
-
-//========================
-//弾探索
-//========================
-CItemBullet* CPictoTaxi::SearchBullet(void)
-{
-	CItemBullet* pItemNear = NULL;
-	float fNearLength;
-
-	for (int cnt = 0; cnt < MAX_OBJ; cnt++)
-	{//全オブジェクト見る
-		CItemBullet* pItem = CItemBullet::GetItemBullet(cnt);	//オブジェクト取得
-
-		if (pItem != NULL)	//ヌルチェ
-		{//なんかある
-			float fLength = D3DXVec3Length(&(pItem->GetPos() - this->GetPos()));
-
-			if (pItemNear == NULL || fLength < fNearLength)
-			{//近いかそもそも1つしか知らん
-				fNearLength = fLength;
-				pItemNear = pItem;
-			}
-		}
-	}
-
-	//近いピクトのポインタ返す
-	return pItemNear;
 }
 
 //========================
