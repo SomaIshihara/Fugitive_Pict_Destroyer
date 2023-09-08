@@ -16,7 +16,7 @@
 #include "score.h"
 #include "timer.h"
 #include "objectX.h"
-#include "pict.h"
+#include "picto.h"
 #include "koban.h"
 #include "item.h"
 #include "meshsky.h"
@@ -81,7 +81,7 @@ HRESULT CGame::Init(void)
 	m_pScore = CScore::Create(D3DXVECTOR3(SCREEN_WIDTH - 24.0f, 32.0f, 0.0f), CManager::VEC3_ZERO, 40.0f, 64.0f);
 
 	CObjectX* pAgit = CObjectX::Create(D3DXVECTOR3(600.0f,0.0f,0.0f), CManager::VEC3_ZERO, CManager::GetAgitModel());
-	CPict::SetAgit(pAgit);
+	CPicto::SetAgit(pAgit);
 
 	m_pSky = CMeshSky::Create(CManager::VEC3_ZERO, CManager::VEC3_ZERO, 10000.0f, 8, 8);
 
@@ -97,7 +97,7 @@ HRESULT CGame::Init(void)
 	CItemBullet::Create(D3DXVECTOR3(0.0f, 0.0f, 10.0f), CManager::VEC3_ZERO);
 
 	//マップデータ読み込みと配置
-	CObjectX::LoadData("data\\Fugitive_Pict_MapData_v120.ismd");
+	CObjectX::LoadData("data\\Fugitive_Picto_MapData_v120.ismd");
 
 	//ポイント生成
 	CPoint::Update();
@@ -188,11 +188,11 @@ void CGame::Update(void)
 			bool bWarning = false;
 			for (int cnt = 0; cnt < MAX_OBJ; cnt++)
 			{//デストロイヤー
-				CPictDestroyer* pPict = CPictDestroyer::GetPict(cnt);
-				if (pPict != nullptr)
+				CPictoDestroyer* pPicto = CPictoDestroyer::GetPicto(cnt);
+				if (pPicto != nullptr)
 				{
-					CPict::TYPE type = pPict->GetType();
-					if (pPict->GetLife() <= HAVE_LIFE(pPict->GetLv()) * CPictTaxi::RESCUE_LIFE)
+					CPicto::TYPE type = pPicto->GetType();
+					if (pPicto->GetLife() <= HAVE_LIFE(pPicto->GetLv()) * CPictoTaxi::RESCUE_LIFE)
 					{//危険
 						bWarning = true;
 						break;
@@ -201,11 +201,11 @@ void CGame::Update(void)
 			}
 			for (int cnt = 0; cnt < MAX_OBJ; cnt++)
 			{//ブロッカー
-				CPictBlocker* pPict = CPictBlocker::GetPict(cnt);
-				if (pPict != nullptr)
+				CPictoBlocker* pPicto = CPictoBlocker::GetPicto(cnt);
+				if (pPicto != nullptr)
 				{
-					CPict::TYPE type = pPict->GetType();
-					if (pPict->GetLife() <= HAVE_LIFE(pPict->GetLv()) * CPictTaxi::RESCUE_LIFE)
+					CPicto::TYPE type = pPicto->GetType();
+					if (pPicto->GetLife() <= HAVE_LIFE(pPicto->GetLv()) * CPictoTaxi::RESCUE_LIFE)
 					{//危険
 						bWarning = true;
 						break;

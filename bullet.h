@@ -10,7 +10,7 @@
 #include "main.h"
 #include "objectAnim2D.h"
 #include "objectBillboard.h"
-#include "pict.h"
+#include "picto.h"
 
 //優先順位
 #define BULLET_PRIORITY	(PRIORITY_DEFAULT)
@@ -52,12 +52,12 @@ public:
 	//コンストラクタ・デストラクタ
 	CBulletBillboard(int nPriority = BULLET_PRIORITY);	//デフォルト
 	CBulletBillboard(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, const float fWidth, const float fHeight, const float fSpeed, const int nPower,
-		CPict* firePict, int nPriority = BULLET_PRIORITY);	//オーバーロード（位置向きandアニメーション）
+		CPicto* firePicto, int nPriority = BULLET_PRIORITY);	//オーバーロード（位置向きandアニメーション）
 	~CBulletBillboard();
 
 	//生成
 	static CBulletBillboard* Create(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, const float fWidth, const float fHeight, const float fSpeed, 
-		const int nPower, const CPict::TYPE type, CPict* firePict);
+		const int nPower, const CPicto::TYPE type, CPicto* firePicto);
 
 	//基本処理
 	HRESULT Init(void);
@@ -67,14 +67,14 @@ public:
 
 	//衝突判定
 	bool CollisionBuilding(void);	//敵
-	bool CollisionPict(void);	//ブロック
+	bool CollisionPicto(void);	//ブロック
 
 private:
 	int m_nIdxTexture;		//テクスチャ番号
 	D3DXVECTOR3 m_move;		//移動量
-	CPict::TYPE m_Type;		//誰の弾か
+	CPicto::TYPE m_Type;		//誰の弾か
 	int m_nPower;			//攻撃力
-	CPict* m_pfirePict;		//発射したピクト
+	CPicto* m_pfirePicto;		//発射したピクト
 };
 
 

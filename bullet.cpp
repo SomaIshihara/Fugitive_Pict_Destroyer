@@ -13,7 +13,7 @@
 #include "enemy.h"
 #include "bullet.h"
 #include "building.h"
-#include "pict.h"
+#include "picto.h"
 #include "input.h"
 #include "explosion.h"
 #include "particle.h"
@@ -216,14 +216,14 @@ CBulletBillboard::CBulletBillboard(int nPriority) : CObjectBillboard(nPriority)
 //コンストラクタ（オーバーロード 位置向きandパターン幅高さ）
 //=================================
 CBulletBillboard::CBulletBillboard(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, const float fWidth, const float fHeight, const float fSpeed, 
-	const int nPower, CPict* firePict, int nPriority) : CObjectBillboard(pos, rot, fWidth, fHeight, nPriority)
+	const int nPower, CPicto* firePicto, int nPriority) : CObjectBillboard(pos, rot, fWidth, fHeight, nPriority)
 {
 	m_nIdxTexture = -1;
 	m_move.x = sinf(FIX_ROT(rot.y + D3DX_PI)) * fSpeed;
 	m_move.y = sinf(FIX_ROT(rot.x + D3DX_PI)) * fSpeed;
 	m_move.z = cosf(FIX_ROT(rot.y + D3DX_PI)) * fSpeed;
 	m_nPower = nPower;
-	m_pfirePict = firePict;
+	m_pfirePicto = firePicto;
 	CObject::SetType(TYPE_BULLET);
 }
 
@@ -246,7 +246,7 @@ HRESULT CBulletBillboard::Init(void)
 	m_nIdxTexture = pTexture->Regist("data\\TEXTURE\\EnergyBullet_01.png");
 
 	//種類設定
-	m_Type = CPict::TYPE_NORMAL;
+	m_Type = CPicto::TYPE_NORMAL;
 
 	return S_OK;
 }
@@ -284,13 +284,13 @@ void CBulletBillboard::Update(void)
 	SetPos(pos);
 
 	//建物との衝突判定
-	if (m_Type == CPict::TYPE_DESTROYER && CollisionBuilding() == true)
+	if (m_Type == CPicto::TYPE_DESTROYER && CollisionBuilding() == true)
 	{
 		return;
 	}
 
 	//ピクトとの判定
-	if ((m_Type == CPict::TYPE_BLOCKER || m_Type == CPict::TYPE_POLICE) && CollisionPict() == true)
+	if ((m_Type == CPicto::TYPE_BLOCKER || m_Type == CPicto::TYPE_POLICE) && CollisionPicto() == true)
 	{
 		return;
 	}
@@ -311,14 +311,14 @@ void CBulletBillboard::Draw(void)
 //生成処理
 //=================================
 CBulletBillboard* CBulletBillboard::Create(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, const float fWidth, const float fHeight, 
-	const float fSpeed, const int nPower, const CPict::TYPE type, CPict* firePict)
+	const float fSpeed, const int nPower, const CPicto::TYPE type, CPicto* firePicto)
 {
 	CBulletBillboard* pBullet = NULL;
 
 	if (pBullet == NULL)
 	{
 		//オブジェクトアニメーション2Dの生成
-		pBullet = new CBulletBillboard(pos, rot, fWidth, fHeight, fSpeed, nPower, firePict);
+		pBullet = new CBulletBillboard(pos, rot, fWidth, fHeight, fSpeed, nPower, firePicto);
 
 		//初期化
 		pBullet->Init();
@@ -382,30 +382,30 @@ bool CBulletBillboard::CollisionBuilding(void)
 //=================================
 //ピクトとの衝突判定
 //=================================
-bool CBulletBillboard::CollisionPict(void)
+bool CBulletBillboard::CollisionPicto(void)
 {
-	if (m_Type == CPict::TYPE_BLOCKER)
+	if (m_Type == CPicto::TYPE_BLOCKER)
 	{//ブロッカー（標的：警察）
 		for (int cnt = 0; cnt < MAX_OBJ; cnt++)
 		{//全オブジェクト見る
-			CPictPolice* pPict = CPictPolice::GetPict(cnt);
+			CPictoPolice* pPicto = CPictoPolice::GetPicto(cnt);
 
-			if (pPict != NULL && pPict != m_pfirePict)	//ヌルチェ
+			if (pPicto != NULL && pPicto != m_pfirePicto)	//ヌルチェ
 			{//なんかある
-				D3DXVECTOR3 pictPos = pPict->GetPos();
-				float pictWidth = pPict->GetWidth();
-				float pictDepth = pPict->GetDepth();
+				D3DXVECTOR3 pictoPos = pPicto->GetPos();
+				float pictoWidth = pPicto->GetWidth();
+				float pictoDepth = pPicto->GetDepth();
 
-				if (GetPos().x > pictPos.x - pictWidth * 0.5f &&
-					GetPos().x < pictPos.x + pictWidth * 0.5f &&
-					GetPos().z > pictPos.z - pictDepth * 0.5f &&
-					GetPos().z < pictPos.z + pictDepth * 0.5f)
+				if (GetPos().x > pictoPos.x - pictoWidth * 0.5f &&
+					GetPos().x < pictoPos.x + pictoWidth * 0.5f &&
+					GetPos().z > pictoPos.z - pictoDepth * 0.5f &&
+					GetPos().z < pictoPos.z + pictoDepth * 0.5f)
 				{
 					//爆発生成
 					CParticleBillboard::Create(GetPos(), 10, 4, 1, 2, D3DXCOLOR(1.0f, 0.0f, 0.0f, 1.0f), 20.0f, 20.0f);
 
 					//ダメージ
-					pPict->AddDamage(m_nPower);
+					pPicto->AddDamage(m_nPower);
 
 					//自分終了
 					Uninit();
@@ -416,29 +416,29 @@ bool CBulletBillboard::CollisionPict(void)
 			}
 		}
 	}
-	else if (m_Type == CPict::TYPE_POLICE)
+	else if (m_Type == CPicto::TYPE_POLICE)
 	{//警察（標的：デストロイヤー・ブロッカー）
 		//デストロイヤー
 		for (int cnt = 0; cnt < MAX_OBJ; cnt++)
 		{//全オブジェクト見る
-			CPictDestroyer* pPict = CPictDestroyer::GetPict(cnt);
+			CPictoDestroyer* pPicto = CPictoDestroyer::GetPicto(cnt);
 
-			if (pPict != NULL && pPict != m_pfirePict)	//ヌルチェ
+			if (pPicto != NULL && pPicto != m_pfirePicto)	//ヌルチェ
 			{//なんかある
-				D3DXVECTOR3 pictPos = pPict->GetPos();
-				float pictWidth = pPict->GetWidth();
-				float pictDepth = pPict->GetDepth();
+				D3DXVECTOR3 pictoPos = pPicto->GetPos();
+				float pictoWidth = pPicto->GetWidth();
+				float pictoDepth = pPicto->GetDepth();
 
-				if (GetPos().x > pictPos.x - pictWidth * 0.5f &&
-					GetPos().x < pictPos.x + pictWidth * 0.5f &&
-					GetPos().z > pictPos.z - pictDepth * 0.5f &&
-					GetPos().z < pictPos.z + pictDepth * 0.5f)
+				if (GetPos().x > pictoPos.x - pictoWidth * 0.5f &&
+					GetPos().x < pictoPos.x + pictoWidth * 0.5f &&
+					GetPos().z > pictoPos.z - pictoDepth * 0.5f &&
+					GetPos().z < pictoPos.z + pictoDepth * 0.5f)
 				{
 					//爆発生成
 					CParticleBillboard::Create(GetPos(), 10, 4, 1, 2, D3DXCOLOR(1.0f, 0.0f, 0.0f, 1.0f), 20.0f, 20.0f);
 
 					//ダメージ
-					pPict->AddDamage(m_nPower);
+					pPicto->AddDamage(m_nPower);
 
 					//自分終了
 					Uninit();
@@ -452,24 +452,24 @@ bool CBulletBillboard::CollisionPict(void)
 		//ブロッカー
 		for (int cnt = 0; cnt < MAX_OBJ; cnt++)
 		{//全オブジェクト見る
-			CPictBlocker* pPict = CPictBlocker::GetPict(cnt);
+			CPictoBlocker* pPicto = CPictoBlocker::GetPicto(cnt);
 
-			if (pPict != NULL && pPict != m_pfirePict)	//ヌルチェ
+			if (pPicto != NULL && pPicto != m_pfirePicto)	//ヌルチェ
 			{//なんかある
-				D3DXVECTOR3 pictPos = pPict->GetPos();
-				float pictWidth = pPict->GetWidth();
-				float pictDepth = pPict->GetDepth();
+				D3DXVECTOR3 pictoPos = pPicto->GetPos();
+				float pictoWidth = pPicto->GetWidth();
+				float pictoDepth = pPicto->GetDepth();
 
-				if (GetPos().x > pictPos.x - pictWidth * 0.5f &&
-					GetPos().x < pictPos.x + pictWidth * 0.5f &&
-					GetPos().z > pictPos.z - pictDepth * 0.5f &&
-					GetPos().z < pictPos.z + pictDepth * 0.5f)
+				if (GetPos().x > pictoPos.x - pictoWidth * 0.5f &&
+					GetPos().x < pictoPos.x + pictoWidth * 0.5f &&
+					GetPos().z > pictoPos.z - pictoDepth * 0.5f &&
+					GetPos().z < pictoPos.z + pictoDepth * 0.5f)
 				{
 					//爆発生成
 					CParticleBillboard::Create(GetPos(), 10, 4, 1, 2, D3DXCOLOR(1.0f, 0.0f, 0.0f, 1.0f), 20.0f, 20.0f);
 
 					//ダメージ
-					pPict->AddDamage(m_nPower);
+					pPicto->AddDamage(m_nPower);
 
 					//自分終了
 					Uninit();

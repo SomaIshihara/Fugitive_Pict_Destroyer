@@ -7,13 +7,13 @@
 SCRIPT_START
 
 START_LOAD		#00
-	TEXTURE_NAME = data\\TEXTURE\\Fugitive_Pict_Destroyer_TitleLogo.png
+	TEXTURE_NAME = data\\TEXTURE\\Fugitive_Picto_Destroyer_TitleLogo.png
 	PATTERN_WIDTH = 1
 	PATTERN_HEIGHT = 1
 END_LOAD
 
 START_LOAD		#01
-	TEXTURE_NAME = data\\TEXTURE\\Fugitive_Pict_Destroyer_Fade.png
+	TEXTURE_NAME = data\\TEXTURE\\Fugitive_Picto_Destroyer_Fade.png
 	PATTERN_WIDTH = 1
 	PATTERN_HEIGHT = 1
 END_LOAD

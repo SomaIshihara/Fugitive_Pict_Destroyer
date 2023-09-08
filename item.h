@@ -11,7 +11,7 @@
 #include "objectX.h"
 
 //‘O•ûéŒ¾
-class CPictTaxi;
+class CPictoTaxi;
 class CXModel;
 
 //—Dæ‡ˆÊ
@@ -64,7 +64,7 @@ public:
 	static CItemBullet* GetItemBullet(const int nIdx) { return m_pItemBullet[nIdx]; }
 
 	//æ‚è‚İ
-	void PickBullet(CPictTaxi* taxi);
+	void PickBullet(CPictoTaxi* taxi);
 
 private:
 	static CItemBullet* m_pItemBullet[MAX_OBJ];

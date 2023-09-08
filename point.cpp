@@ -6,7 +6,7 @@
 //======================================================
 #include "point.h"
 #include "building.h"
-#include "pict.h"
+#include "picto.h"
 #include "objectX.h"
 
 //静的メンバ変数
@@ -115,7 +115,7 @@ void CPoint::Update(void)
 	}
 
 	//アジト
-	CObject* pBuilding = CPict::GetAgit();
+	CObject* pBuilding = CPicto::GetAgit();
 
 	if (pBuilding != NULL)
 	{//建物ある

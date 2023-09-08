@@ -126,9 +126,6 @@
     <ClCompile Include="player.cpp">
       <Filter>ソース ファイル\Core</Filter>
     </ClCompile>
-    <ClCompile Include="pict.cpp">
-      <Filter>ソース ファイル\Derivation</Filter>
-    </ClCompile>
     <ClCompile Include="precompile.cpp">
       <Filter>ソース ファイル\Core</Filter>
     </ClCompile>
@@ -190,6 +187,9 @@
       <Filter>ソース ファイル\Scene</Filter>
     </ClCompile>
     <ClCompile Include="fade.cpp">
+      <Filter>ソース ファイル\Derivation</Filter>
+    </ClCompile>
+    <ClCompile Include="picto.cpp">
       <Filter>ソース ファイル\Derivation</Filter>
     </ClCompile>
   </ItemGroup>
@@ -284,9 +284,6 @@
     <ClInclude Include="player.h">
       <Filter>ヘッダー ファイル\Core</Filter>
     </ClInclude>
-    <ClInclude Include="pict.h">
-      <Filter>ヘッダー ファイル\Derivation</Filter>
-    </ClInclude>
     <ClInclude Include="precompile.h">
       <Filter>ヘッダー ファイル\Core</Filter>
     </ClInclude>
@@ -345,6 +342,9 @@
       <Filter>ヘッダー ファイル\Scene</Filter>
     </ClInclude>
     <ClInclude Include="fade.h">
+      <Filter>ヘッダー ファイル\Derivation</Filter>
+    </ClInclude>
+    <ClInclude Include="picto.h">
       <Filter>ヘッダー ファイル\Derivation</Filter>
     </ClInclude>
   </ItemGroup>

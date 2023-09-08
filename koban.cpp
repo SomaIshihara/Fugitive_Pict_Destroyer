@@ -5,7 +5,7 @@
 //
 //======================================================
 #include "koban.h"
-#include "pict.h"
+#include "picto.h"
 #include "building.h"
 
 //マクロ
@@ -109,7 +109,7 @@ void CKoban::Draw(void)
 //=================================
 void CKoban::CommonUpdate(void)
 {
-	if (CPictPolice::GetNumAll() < m_nPoliceMax)
+	if (CPictoPolice::GetNumAll() < m_nPoliceMax)
 	{//人手不足
 		m_nCounterSpawn++;	//沸きカウンタ増やす
 		if (m_nCounterSpawn >= m_nSpawnSpan)
@@ -122,7 +122,7 @@ void CKoban::CommonUpdate(void)
 				nAssignBuilding = rand() % CBuilding::GetNumAll();
 				if (CBuilding::GetBuilding(nAssignBuilding)->GetEndurance() > 0)
 				{//耐久値が残っている
-					CPictPolice* pPolice = CPictPolice::Create(m_apKoban[nSpawnKoban]->GetPos());	//適当に決めた交番から沸かす
+					CPictoPolice* pPolice = CPictoPolice::Create(m_apKoban[nSpawnKoban]->GetPos());	//適当に決めた交番から沸かす
 					pPolice->SetTargetObj(CBuilding::GetBuilding(nAssignBuilding));					//適当に決めた建物に配属
 					m_nCounterSpawn = 0;	//カウンタリセット
 					break;

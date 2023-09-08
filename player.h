@@ -30,7 +30,7 @@ public:
 	void Attack(void);
 
 	//収容処理
-	void AddPict(const int nDestroyer, const int nBlocker, const int nNormal);
+	void AddPicto(const int nDestroyer, const int nBlocker, const int nNormal);
 
 private:
 	//関数
@@ -41,7 +41,7 @@ private:
 	//変数
 	CButton2D* m_pButtonATK;		//攻撃ボタン
 
-	bool m_bControllPict;			//ピクトさんを操縦するかどうか
+	bool m_bControllPicto;			//ピクトさんを操縦するかどうか
 	CObject* m_pObject;				//選択中の建物・ピクト
 
 	int m_nHaveDestroyer;	//デストロイヤー所持数

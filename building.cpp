@@ -8,7 +8,7 @@
 #include "renderer.h"
 #include "texture.h"
 #include "objectX.h"
-#include "pict.h"
+#include "picto.h"
 #include "score.h"
 #include "xmodel.h"
 #include <stdio.h>
@@ -273,19 +273,19 @@ void CBuilding::AddDamage(int nDamage)
 
 		for (int cnt = 0; cnt < MAX_OBJ; cnt++)
 		{//全オブジェクト見る
-			CPictDestroyer* pPict = CPictDestroyer::GetPict(cnt);	//オブジェクト取得
+			CPictoDestroyer* pPicto = CPictoDestroyer::GetPicto(cnt);	//オブジェクト取得
 
-			if (pPict != NULL)	//ヌルチェ
+			if (pPicto != NULL)	//ヌルチェ
 			{//なんかある
-				if (pPict->GetTargetObj() == this)
+				if (pPicto->GetTargetObj() == this)
 				{//自分がターゲット
-					pPict->UnsetTargetObj();
+					pPicto->UnsetTargetObj();
 				}
 			}
 		}
 
 		//経験値付与
-		CPictDestroyer::AddExp(DROP_EXP(9));	//いったんレベル9として扱う
+		CPictoDestroyer::AddExp(DROP_EXP(9));	//いったんレベル9として扱う
 	}
 
 	//赤くする

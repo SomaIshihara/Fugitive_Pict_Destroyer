@@ -7,7 +7,7 @@
 #include "manager.h"
 #include "renderer.h"
 #include "texture.h"
-#include "pict.h"
+#include "picto.h"
 #include "item.h"
 
 //ƒ}ƒNƒ
@@ -223,7 +223,7 @@ CItemBullet* CItemBullet::Create(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot)
 //=================================
 //ŽûWˆ—
 //=================================
-void CItemBullet::PickBullet(CPictTaxi * taxi)
+void CItemBullet::PickBullet(CPictoTaxi * taxi)
 {
 	taxi->SetBullet(m_nBulletNum);
 }

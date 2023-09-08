@@ -12,7 +12,7 @@
 #include "input.h"
 #include "camera.h"
 #include "objectX.h"
-#include "pict.h"
+#include "picto.h"
 #include "building.h"
 #include "button.h"
 #include "slider.h"
@@ -24,7 +24,7 @@
 //=================================
 CPlayer::CPlayer()
 {
-	m_bControllPict = false;
+	m_bControllPicto = false;
 
 	m_nHaveDestroyer = CManager::INT_ZERO;
 	m_nHaveBlocker = CManager::INT_ZERO;
@@ -45,10 +45,10 @@ CPlayer::~CPlayer()
 //=================================
 HRESULT CPlayer::Init(void)
 {
-	m_bControllPict = false;
+	m_bControllPicto = false;
 
 	//スライダー初期設定
-	CGame::GetSlider()->SetSelectIdx(CPictTaxi::MODE_SABO);
+	CGame::GetSlider()->SetSelectIdx(CPictoTaxi::MODE_SABO);
 
 	//仮：人数設定
 	m_nHaveDestroyer = 1;
@@ -98,18 +98,18 @@ void CPlayer::Update(void)
 	slider->SetSelectIdx(slider->GetSelectIdx() - (pMouse->GetWheel() / 120));
 
 	//タクシーモード
-	CPictTaxi* pTaxi = CPictTaxi::GetPict(0);
+	CPictoTaxi* pTaxi = CPictoTaxi::GetPicto(0);
 	int nIdxSlider = CGame::GetSlider()->GetSelectIdx();
 
 	//動けって言ってんのにタクシーいない
-	if (nIdxSlider != CPictTaxi::MODE_SABO && pTaxi == NULL)
+	if (nIdxSlider != CPictoTaxi::MODE_SABO && pTaxi == NULL)
 	{//いったん表出す
-		CPictTaxi::Create(CPict::GetAgitPos());
+		CPictoTaxi::Create(CPicto::GetAgitPos());
 	}
 
 	if (pTaxi != NULL)
 	{//タクシーいる
-		pTaxi->SetMode((CPictTaxi::MODE)nIdxSlider);
+		pTaxi->SetMode((CPictoTaxi::MODE)nIdxSlider);
 	}
 }
 
@@ -124,30 +124,30 @@ void CPlayer::Attack(void)
 
 		if (type == CObject::TYPE_BUILDING)
 		{//建物が選択されている
-			CPictDestroyer* pict = CPictDestroyer::Create(CPict::GetAgitPos());
-			pict->SetTargetObj(m_pObject);
-			pict->SetState(CPict::STATE_FACE);
+			CPictoDestroyer* picto = CPictoDestroyer::Create(CPicto::GetAgitPos());
+			picto->SetTargetObj(m_pObject);
+			picto->SetState(CPicto::STATE_FACE);
 		}
-		else if (type == CObject::TYPE_PICT)
+		else if (type == CObject::TYPE_PICTO)
 		{//ピクト（なんでも）が選択されている
 		 //警察調べる
 			for (int cnt = 0; cnt < MAX_OBJ; cnt++)
 			{//全オブジェクト見る
-				CPict* pPict = CPict::GetPict(cnt);	//ピクト全体取得
-				if (m_pObject == pPict)
+				CPicto* pPicto = CPicto::GetPicto(cnt);	//ピクト全体取得
+				if (m_pObject == pPicto)
 				{
-					switch (pPict->GetType())
+					switch (pPicto->GetType())
 					{
-					case CPict::TYPE_POLICE:	//警察
-						CPictBlocker::Create(CPict::GetAgitPos())->SetTargetObj(pPict);	//ブロッカーを向かわせる
+					case CPicto::TYPE_POLICE:	//警察
+						CPictoBlocker::Create(CPicto::GetAgitPos())->SetTargetObj(pPicto);	//ブロッカーを向かわせる
 						break;
 
-					case CPict::TYPE_DESTROYER:	//デストロイヤー
-						pPict->UnsetTargetObj();
+					case CPicto::TYPE_DESTROYER:	//デストロイヤー
+						pPicto->UnsetTargetObj();
 						break;
 
-					case CPict::TYPE_BLOCKER:	//ブロッカー
-						pPict->UnsetTargetObj();
+					case CPicto::TYPE_BLOCKER:	//ブロッカー
+						pPicto->UnsetTargetObj();
 						break;
 					}
 				}
@@ -159,7 +159,7 @@ void CPlayer::Attack(void)
 //=================================
 //収容
 //=================================
-void CPlayer::AddPict(const int nDestroyer, const int nBlocker, const int nNormal)
+void CPlayer::AddPicto(const int nDestroyer, const int nBlocker, const int nNormal)
 {//追加
 	m_nHaveDestroyer += nDestroyer;
 	m_nHaveBlocker += nBlocker;
@@ -198,9 +198,9 @@ void CPlayer::Move(void)
 		move.z += -cosf(rot.y) * CAMERA_MOVE_SPEED;
 	}
 
-	if (m_bControllPict == true)
+	if (m_bControllPicto == true)
 	{//操縦設定
-		CPict::GetPict(0)->Controll(move);
+		CPicto::GetPicto(0)->Controll(move);
 	}
 
 	//移動
@@ -209,13 +209,13 @@ void CPlayer::Move(void)
 	//ピクトさん操縦設定
 	if (pKeyboard->GetTrigger(DIK_H) == true)
 	{
-		CPict::GetPict(0)->SetControll();
-		m_bControllPict = true;
+		CPicto::GetPicto(0)->SetControll();
+		m_bControllPicto = true;
 	}
 	else if (pKeyboard->GetTrigger(DIK_J) == true)
 	{
-		CPict::GetPict(0)->Uncontroll();
-		m_bControllPict = false;
+		CPicto::GetPicto(0)->Uncontroll();
+		m_bControllPicto = false;
 	}
 }
 
@@ -291,18 +291,18 @@ void CPlayer::Select(void)
 	//ピクトさん
 	for (int cnt = 0; cnt < MAX_OBJ; cnt++)
 	{//全オブジェクト見る
-		CPict* pPict = CPict::GetPict(cnt);	//オブジェクト取得
+		CPicto* pPicto = CPicto::GetPicto(cnt);	//オブジェクト取得
 
-		if (pPict != NULL)	//ヌルチェ
+		if (pPicto != NULL)	//ヌルチェ
 		{//なんかある
-			if (pPict->GetCollision().CollisionCheck(posNear, posFar, pPict->GetPos(), pPict->GetRot()) == true 
-				&& pPict->GetType() != CPict::TYPE_NORMAL && pPict->GetType() != CPict::TYPE_TAXI)
+			if (pPicto->GetCollision().CollisionCheck(posNear, posFar, pPicto->GetPos(), pPicto->GetRot()) == true 
+				&& pPicto->GetType() != CPicto::TYPE_NORMAL && pPicto->GetType() != CPicto::TYPE_TAXI)
 			{//ピクト選択
-				float fLength = D3DXVec3Length(&(pPict->GetPos() - posNear));
+				float fLength = D3DXVec3Length(&(pPicto->GetPos() - posNear));
 
 				if (pObject == nullptr || fLengthNear > fLength)
 				{//近い
-					pObject = pPict;
+					pObject = pPicto;
 					fLengthNear = fLength;
 				}
 			}
