@@ -173,6 +173,7 @@
     <ClCompile Include="havenum.cpp" />
     <ClCompile Include="input.cpp" />
     <ClCompile Include="koban.cpp" />
+    <ClCompile Include="level.cpp" />
     <ClCompile Include="light.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="manager.cpp" />
@@ -229,6 +230,7 @@
     <ClInclude Include="havenum.h" />
     <ClInclude Include="input.h" />
     <ClInclude Include="koban.h" />
+    <ClInclude Include="level.h" />
     <ClInclude Include="light.h" />
     <ClInclude Include="main.h" />
     <ClInclude Include="manager.h" />

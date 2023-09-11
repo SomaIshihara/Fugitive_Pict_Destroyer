@@ -26,6 +26,7 @@
 #include "camera.h"
 #include "bg.h"
 #include "fade.h"
+#include "button.h"
 
 //静的メンバ変数
 CPlayer* CTutorial::m_pPlayer = nullptr;
@@ -33,6 +34,8 @@ CMeshField* CTutorial::m_pMeshField = nullptr;
 CScore* CTutorial::m_pScore = nullptr;
 CHaveNum* CTutorial::m_pHaveNum[];
 CMeshSky* CTutorial::m_pSky = nullptr;
+const int CTutorial::TUTORIAL_DELETE_TIME = 20;
+const float CTutorial::TUTORIAL_ALPHA_DEF = 0.4f;
 
 //=================================
 //コンストラクタ
@@ -78,11 +81,29 @@ HRESULT CTutorial::Init(void)
 	m_pSky = CMeshSky::Create(CManager::VEC3_ZERO, CManager::VEC3_ZERO, 10000.0f, 8, 8);
 
 	m_pHaveNum[CPicto::TYPE_DESTROYER] = CHaveNum::Create(D3DXVECTOR3(SCREEN_WIDTH - 30.0f, 100.0f, 0.0f), CManager::VEC3_ZERO, 30.0f, 36.0f, 2, CTexture::PRELOAD_HAVEICON_01);
-	m_pHaveNum[CPicto::TYPE_BLOCKER] = CHaveNum::Create(D3DXVECTOR3(SCREEN_WIDTH - 30.0f, 172.0f, 0.0f), CManager::VEC3_ZERO, 30.0f, 36.0f, 2, CTexture::PRELOAD_HAVEICON_02);
-	m_pHaveNum[CPicto::TYPE_NORMAL] = CHaveNum::Create(D3DXVECTOR3(SCREEN_WIDTH - 30.0f, 244.0f, 0.0f), CManager::VEC3_ZERO, 30.0f, 36.0f, 5, CTexture::PRELOAD_HAVEICON_03);
+	m_pHaveNum[CPicto::TYPE_BLOCKER] = CHaveNum::Create(D3DXVECTOR3(SCREEN_WIDTH - 30.0f, 136.0f, 0.0f), CManager::VEC3_ZERO, 30.0f, 36.0f, 2, CTexture::PRELOAD_HAVEICON_02);
+	m_pHaveNum[CPicto::TYPE_NORMAL] = CHaveNum::Create(D3DXVECTOR3(SCREEN_WIDTH - 30.0f, 172.0f, 0.0f), CManager::VEC3_ZERO, 30.0f, 36.0f, 5, CTexture::PRELOAD_HAVEICON_03);
 	m_pHaveNum[CPicto::TYPE_DESTROYER]->AddNum(10);
 	m_pHaveNum[CPicto::TYPE_BLOCKER]->AddNum(10);
 	m_pHaveNum[CPicto::TYPE_NORMAL]->AddNum(0);
+
+	//タイトル
+	CObject2D::Create(D3DXVECTOR3(SCREEN_WIDTH * 0.5f, 61.5f, 0.0f), CManager::VEC3_ZERO, 311.0f, 111.0f, PRIORITY_UI)->BindTexture(CTexture::PRELOAD_TUTORIAL);
+
+	//チュートリアル
+	m_pTutorial[3] = CButton2D::Create(D3DXVECTOR3(146.0f, 91.2f, 0.0f), CManager::VEC3_ZERO, 260.0f, 166.4f, PRIORITY_UI);
+	m_pTutorial[3]->BindTexture(CTexture::PRELOAD_TUTORIAL_04);
+	m_pTutorial[0] = CButton2D::Create(D3DXVECTOR3(102.8f, 262.4f, 0.0f), CManager::VEC3_ZERO, 165.6f, 160.0f, PRIORITY_UI);
+	m_pTutorial[0]->BindTexture(CTexture::PRELOAD_TUTORIAL_01);
+	m_pTutorial[1] = CButton2D::Create(D3DXVECTOR3(78.4f, 426.8f, 0.0f), CManager::VEC3_ZERO, 116.8f, 152.8f, PRIORITY_UI);
+	m_pTutorial[1]->BindTexture(CTexture::PRELOAD_TUTORIAL_02);
+	m_pTutorial[2] = CButton2D::Create(D3DXVECTOR3(135.2f, 596.4f, 0.0f), CManager::VEC3_ZERO, 238.4f, 170.4f, PRIORITY_UI);
+	m_pTutorial[2]->BindTexture(CTexture::PRELOAD_TUTORIAL_03);
+
+	for (int cnt = 0; cnt < TUTORIAL_NUM; cnt++)
+	{
+		m_nTutorialDelCnt[cnt] = CManager::INT_ZERO;
+	}
 
 	m_pWarning = CBG::Create(PRIORITY_UI);
 	m_pWarning->BindTexture(CTexture::PRELOAD_WARNING_LIFE);
@@ -160,6 +181,34 @@ void CTutorial::Update(void)
 	}
 	//変更
 	m_pWarning->SetEnable(bWarning);
+
+	//チュートリアル消す処理
+	for (int cnt = 0; cnt < TUTORIAL_NUM; cnt++)
+	{
+		if (m_pTutorial[cnt] != nullptr)
+		{
+			if (m_pTutorial[cnt]->IsClickPress() == true)
+			{//クリック（削除）
+				m_nTutorialDelCnt[cnt]++;	//カウント増やす
+				m_pTutorial[cnt]->SetCol(D3DXCOLOR(1.0f, 1.0f, 1.0f, TUTORIAL_ALPHA_DEF * (1.0f - (float)m_nTutorialDelCnt[cnt] / TUTORIAL_DELETE_TIME)));
+				if (m_nTutorialDelCnt[cnt] >= TUTORIAL_DELETE_TIME)
+				{//カウント過ぎた
+					m_pTutorial[cnt]->Uninit();
+					m_pTutorial[cnt] = nullptr;
+				}
+			}
+			else if (m_pTutorial[cnt]->IsHold() == true)
+			{//かざす（半透明）
+				m_pTutorial[cnt]->SetCol(D3DXCOLOR(1.0f, 1.0f, 1.0f, TUTORIAL_ALPHA_DEF));
+				m_nTutorialDelCnt[cnt] = 0;	//カウントリセット
+			}
+			else
+			{//色戻す
+				m_pTutorial[cnt]->SetCol(D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));
+				m_nTutorialDelCnt[cnt] = 0;	//カウントリセット
+			}
+		}
+	}
 
 	//普段の処理
 	CKoban::CommonUpdate();	//交番共通更新処理

@@ -189,6 +189,9 @@
     <ClCompile Include="picto.cpp">
       <Filter>ソース ファイル\Derivation</Filter>
     </ClCompile>
+    <ClCompile Include="level.cpp">
+      <Filter>ソース ファイル\Derivation</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="main.h">
@@ -339,6 +342,9 @@
       <Filter>ヘッダー ファイル\Derivation</Filter>
     </ClInclude>
     <ClInclude Include="picto.h">
+      <Filter>ヘッダー ファイル\Derivation</Filter>
+    </ClInclude>
+    <ClInclude Include="level.h">
       <Filter>ヘッダー ファイル\Derivation</Filter>
     </ClInclude>
   </ItemGroup>

@@ -154,11 +154,11 @@ CHaveNum* CHaveNum::Create(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, const f
 		}
 
 		//「×」
-		pSymbol = CSymbol::Create(pos + D3DXVECTOR3(-fOneWidth * cnt, 0.0f, 0.0f), rot, fOneWidth, fOneHeight);
-		pSymbol->Init();
-		pSymbol->BindTexture(ntexNum);
-		pSymbol->SetSymbol(m_nSymbolX);
-		cnt++;	//アイコンの配置目安
+		//pSymbol = CSymbol::Create(pos + D3DXVECTOR3(-fOneWidth * cnt, 0.0f, 0.0f), rot, fOneWidth, fOneHeight);
+		//pSymbol->Init();
+		//pSymbol->BindTexture(ntexNum);
+		//pSymbol->SetSymbol(m_nSymbolX);
+		//cnt++;	//アイコンの配置目安
 
 		//アイコン
 		CObject2D* pIcon = CObject2D::Create(pos + D3DXVECTOR3(-fOneWidth * cnt, 0.0f, 0.0f), CManager::VEC3_ZERO, fOneHeight, fOneHeight,PRIORITY_UI);

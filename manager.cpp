@@ -258,12 +258,9 @@ void CManager::Update(void)
 
 	//デバッグ表示
 	m_pDebProc->Print("FPS:%d\n", m_nFPS);
-	m_pDebProc->Print("[操作方法]\n");
-	m_pDebProc->Print("右クリック+移動:視点移動\n");
-	m_pDebProc->Print("WASD:プレイヤー（カメラ）移動\n");
-	m_pDebProc->Print("[モデル・ピクトに向かって]マウス左クリック:選択\n");
-	m_pDebProc->Print("[Debug]F3:タイマー設定(120秒カウントダウン)\n");
-	m_pDebProc->Print("仮：チュートリアルはPキーで終了できます：仮\n");
+#ifdef _DEBUG
+	m_pDebProc->Print("[Debug]F3:タイマー設定(2秒カウントダウン)\n");
+#endif // _DEBUG
 }
 
 //=================================
