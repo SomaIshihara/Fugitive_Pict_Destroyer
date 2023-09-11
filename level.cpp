@@ -1,6 +1,6 @@
 //======================================================
 //
-//所持数処理[havenum.cpp]
+//レベル処理[level.cpp]
 //Author:石原颯馬
 //
 //======================================================
@@ -9,17 +9,17 @@
 #include "texture.h"
 #include "input.h"
 #include "object.h"
-#include "havenum.h"
+#include "level.h"
 #include "number.h"
 #include "symbol.h"
 
 //静的メンバ変数
-const int CHaveNum::m_nSymbolX = 5;
+const int CLevel::m_nSymbolX = 5;
 
 //=================================
 //コンストラクタ（デフォルト）
 //=================================
-CHaveNum::CHaveNum(int nPriority) : CObject(nPriority), m_nHaveNumDigit(1)
+CLevel::CLevel(int nPriority) : CObject(nPriority), m_nLevelDigit(1)
 {
 	//値クリア
 	m_nIdxTexture = -1;
@@ -27,12 +27,13 @@ CHaveNum::CHaveNum(int nPriority) : CObject(nPriority), m_nHaveNumDigit(1)
 	m_rot = CManager::VEC3_ZERO;
 	m_fOneWidth = CManager::FLOAT_ZERO;
 	m_fOneHeight = CManager::FLOAT_ZERO;
+	m_nLevel = CManager::INT_ZERO;
 }
 
 //=================================
 //コンストラクタ（オーバーロード）
 //=================================
-CHaveNum::CHaveNum(const int nHaveNumDigit, int nPriority) : CObject(nPriority), m_nHaveNumDigit(nHaveNumDigit)
+CLevel::CLevel(const int nLevelDigit, int nPriority) : CObject(nPriority), m_nLevelDigit(nLevelDigit)
 {
 	//値設定
 	m_nIdxTexture = -1;
@@ -40,24 +41,25 @@ CHaveNum::CHaveNum(const int nHaveNumDigit, int nPriority) : CObject(nPriority),
 	m_rot = CManager::VEC3_ZERO;
 	m_fOneWidth = CManager::FLOAT_ZERO;
 	m_fOneHeight = CManager::FLOAT_ZERO;
+	m_nLevel = CManager::INT_ZERO;
 }
 
 //=================================
 //デストラクタ
 //=================================
-CHaveNum::~CHaveNum()
+CLevel::~CLevel()
 {
 }
 
 //=================================
 //初期化
 //=================================
-HRESULT CHaveNum::Init(void)
+HRESULT CLevel::Init(void)
 {
 	//数字オブジェクト動的確保
-	m_ppNumber = new CNumber*[m_nHaveNumDigit];
+	m_ppNumber = new CNumber*[m_nLevelDigit];
 
-	for (int cnt = 0; cnt < m_nHaveNumDigit; cnt++)
+	for (int cnt = 0; cnt < m_nLevelDigit; cnt++)
 	{//数字オブジェクト初期化
 		m_ppNumber[cnt] = NULL;
 	}
@@ -65,6 +67,7 @@ HRESULT CHaveNum::Init(void)
 	//テクスチャ読み込み
 	CTexture* pTexture = CManager::GetTexture();
 	m_nIdxTexture = CTexture::PRELOAD_NUMBER;
+	m_nLevel = 1;
 
 	//できた
 	return S_OK;
@@ -73,9 +76,9 @@ HRESULT CHaveNum::Init(void)
 //=================================
 //終了
 //=================================
-void CHaveNum::Uninit(void)
+void CLevel::Uninit(void)
 {
-	for (int cnt = 0; cnt < m_nHaveNumDigit; cnt++)
+	for (int cnt = 0; cnt < m_nLevelDigit; cnt++)
 	{//数字オブジェクト終了
 		if (m_ppNumber[cnt] != NULL)
 		{//大丈夫。中身はある
@@ -93,9 +96,9 @@ void CHaveNum::Uninit(void)
 //=================================
 //更新
 //=================================
-void CHaveNum::Update(void)
+void CLevel::Update(void)
 {
-	for (int cnt = 0; cnt < m_nHaveNumDigit; cnt++)
+	for (int cnt = 0; cnt < m_nLevelDigit; cnt++)
 	{//数字オブジェクト更新
 		if (m_ppNumber[cnt] != NULL)
 		{//大丈夫。中身はある
@@ -111,7 +114,7 @@ void CHaveNum::Update(void)
 //=================================
 //描画
 //=================================
-void CHaveNum::Draw(void)
+void CLevel::Draw(void)
 {
 	//勝手にやってくれます
 }
@@ -119,18 +122,18 @@ void CHaveNum::Draw(void)
 //=================================
 //生成処理
 //=================================
-CHaveNum* CHaveNum::Create(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, const float fOneWidth, const float fOneHeight, const int nHaveNumDigit,
+CLevel* CLevel::Create(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, const float fOneWidth, const float fOneHeight, const int nLevelDigit,
 	const int nIconTexNum)
 {
-	CHaveNum* pHaveNum = NULL;
+	CLevel* pLevel = NULL;
 
-	if (pHaveNum == NULL)
+	if (pLevel == NULL)
 	{
-		//所持数管理オブジェクト生成
-		pHaveNum = new CHaveNum(nHaveNumDigit,5);
+		//レベル管理オブジェクト生成
+		pLevel = new CLevel(nLevelDigit,5);
 
 		//タイマー管理オブジェクト初期化
-		pHaveNum->Init();
+		pLevel->Init();
 
 		//記号オブジェ生成
 		CTexture* pTexture = CManager::GetTexture();
@@ -141,31 +144,24 @@ CHaveNum* CHaveNum::Create(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, const f
 
 		//数字オブジェ生成
 		int cnt;
-		for (cnt = 0; cnt < nHaveNumDigit; cnt++)
+		for (cnt = 0; cnt < nLevelDigit; cnt++)
 		{//1枚分生成～テクスチャ設定（右から）
 			//生成
-			pHaveNum->m_ppNumber[cnt] = CNumber::Create(pos + D3DXVECTOR3(-fOneWidth * cnt,0.0f,0.0f), rot, fOneWidth, fOneHeight);
+			pLevel->m_ppNumber[cnt] = CNumber::Create(pos + D3DXVECTOR3(-fOneWidth * cnt,0.0f,0.0f), rot, fOneWidth, fOneHeight);
 
 			//初期化
-			pHaveNum->m_ppNumber[cnt]->Init();
+			pLevel->m_ppNumber[cnt]->Init();
 
 			//テクスチャ設定
-			pHaveNum->m_ppNumber[cnt]->BindTexture(pHaveNum->m_nIdxTexture);
+			pLevel->m_ppNumber[cnt]->BindTexture(pLevel->m_nIdxTexture);
 		}
-
-		//「×」
-		//pSymbol = CSymbol::Create(pos + D3DXVECTOR3(-fOneWidth * cnt, 0.0f, 0.0f), rot, fOneWidth, fOneHeight);
-		//pSymbol->Init();
-		//pSymbol->BindTexture(ntexNum);
-		//pSymbol->SetSymbol(m_nSymbolX);
-		//cnt++;	//アイコンの配置目安
 
 		//アイコン
 		CObject2D* pIcon = CObject2D::Create(pos + D3DXVECTOR3(-fOneWidth * cnt, 0.0f, 0.0f), CManager::VEC3_ZERO, fOneHeight, fOneHeight,PRIORITY_UI);
 		pIcon->Init();
 		pIcon->BindTexture(nIconTexNum);
 
-		return pHaveNum;
+		return pLevel;
 	}
 	else
 	{
@@ -176,13 +172,13 @@ CHaveNum* CHaveNum::Create(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, const f
 //=================================
 //数字分割処理
 //=================================
-void CHaveNum::CutNumber(void)
+void CLevel::CutNumber(void)
 {
-	for (int cnt = 0; cnt < m_nHaveNumDigit; cnt++)
+	for (int cnt = 0; cnt < m_nLevelDigit; cnt++)
 	{//数字オブジェクトに渡す
 		if (m_ppNumber[cnt] != NULL)
 		{//大丈夫。中身はある
-			m_ppNumber[cnt]->SetNumber(m_nHaveNum, cnt);
+			m_ppNumber[cnt]->SetNumber(m_nLevel, cnt);
 		}
 	}
 }

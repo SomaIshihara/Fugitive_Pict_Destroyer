@@ -24,6 +24,7 @@
 #include "Culc.h"
 #include "point.h"
 #include "havenum.h"
+#include "level.h"
 
 //マクロ
 #define PICTO_WALK_SPEED				(6.0f)		//ピクトさんの歩行速度
@@ -272,7 +273,7 @@ void CPicto::Update(void)
 					m_state = STATE_ATTACK;
 					break;
 				case STATE_LEAVE:
-					Uninit();
+					Return();
 					return;
 					break;
 				}
@@ -518,6 +519,14 @@ void CPicto::Controll(D3DXVECTOR3 move)
 //=================================
 void CPicto::LoadPictoParam(const char * pPath)
 {
+}
+
+//=================================
+//帰宅
+//=================================
+void CPicto::Return(void)
+{
+	Uninit();
 }
 
 //=================================
@@ -852,7 +861,33 @@ void CPictoDestroyer::AddExp(const int nExp)
 	{//上げきる
 		m_nExp -= REQUIRE_EXP(m_nLv + 1);	//所持経験値減算
 		m_nLv++;							//レベルアップ
+
+		//画面に反映
+		CScene::MODE mode = CManager::GetMode();
+		if (mode == CScene::MODE_GAME)
+		{//ゲーム
+			CGame::GetLevelObj()[TYPE_DESTROYER]->SetNum(m_nLv);
+		}
 	}
+}
+
+//=================================
+//帰宅
+//=================================
+void CPictoDestroyer::Return(void)
+{
+	CScene::MODE mode = CManager::GetMode();
+
+	if (mode == CScene::MODE_GAME)
+	{//ゲーム
+		CGame::GetPlayer()->AddPicto(1, 0, m_nHaveNormalPicto);
+	}
+	else if (mode == CScene::MODE_TUTORIAL)
+	{//チュートリアル
+		CTutorial::GetPlayer()->AddPicto(1, 0, m_nHaveNormalPicto);
+	}
+
+	CPicto::Return();
 }
 
 //******************************************************
@@ -1099,7 +1134,33 @@ void CPictoBlocker::AddExp(const int nExp)
 	{//上げきる
 		m_nExp -= REQUIRE_EXP(m_nLv + 1);	//所持経験値減算
 		m_nLv++;							//レベルアップ
+
+		//画面に反映
+		CScene::MODE mode = CManager::GetMode();
+		if (mode == CScene::MODE_GAME)
+		{//ゲーム
+			CGame::GetLevelObj()[TYPE_BLOCKER]->SetNum(m_nLv);
+		}
 	}
+}
+
+//=================================
+//帰宅
+//=================================
+void CPictoBlocker::Return(void)
+{
+	CScene::MODE mode = CManager::GetMode();
+
+	if (mode == CScene::MODE_GAME)
+	{//ゲーム
+		CGame::GetPlayer()->AddPicto(0, 1, m_nHaveNormalPicto);
+	}
+	else if (mode == CScene::MODE_TUTORIAL)
+	{//チュートリアル
+		CTutorial::GetPlayer()->AddPicto(0, 1, m_nHaveNormalPicto);
+	}
+
+	CPicto::Return();
 }
 
 //******************************************************
@@ -1467,6 +1528,14 @@ void CPictoTaxi::AddDamage(int nDamage)
 	SetRedAlpha();
 }
 
+//=================================
+//帰宅
+//=================================
+void CPictoTaxi::Return(void)
+{
+	CPicto::Return();
+}
+
 
 //******************************************************
 //一般人ピクトクラス
@@ -1599,6 +1668,14 @@ void CPictoNormal::TakeTaxi(CPictoTaxi* taxi)
 	}
 }
 
+//=================================
+//帰宅
+//=================================
+void CPictoNormal::Return(void)
+{
+	CPicto::Return();
+}
+
 //******************************************************
 //ピクト警察クラス
 //******************************************************
@@ -1645,6 +1722,7 @@ CPictoPolice::CPictoPolice(const D3DXVECTOR3 pos, const TYPE type) : CPicto(pos,
 //=================================
 CPictoPolice::~CPictoPolice()
 {
+	
 }
 
 //========================
@@ -1857,4 +1935,12 @@ void CPictoPolice::AddDamage(int nDamage)
 
 	//赤くする
 	SetRedAlpha();
+}
+
+//=================================
+//帰宅
+//=================================
+void CPictoPolice::Return(void)
+{
+	CPicto::Return();
 }

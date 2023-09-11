@@ -22,6 +22,7 @@
 #include "point.h"
 #include "input.h"
 #include "havenum.h"
+#include "level.h"
 #include "manager.h"
 #include "camera.h"
 #include "bg.h"
@@ -32,6 +33,7 @@ CMeshField* CGame::m_pMeshField = nullptr;
 CTimer* CGame::m_pTimer = nullptr;
 CScore* CGame::m_pScore = nullptr;
 CHaveNum* CGame::m_pHaveNum[];
+CLevel* CGame::m_pLevel[];
 CMeshSky* CGame::m_pSky = nullptr;
 int CGame::m_nATKBuilding = CManager::INT_ZERO;
 int CGame::m_nDestBuilding = CManager::INT_ZERO;
@@ -82,6 +84,9 @@ HRESULT CGame::Init(void)
 	CPicto::SetAgit(pAgit);
 
 	m_pSky = CMeshSky::Create(CManager::VEC3_ZERO, CManager::VEC3_ZERO, 10000.0f, 8, 8);
+
+	m_pLevel[CPicto::TYPE_DESTROYER] = CLevel::Create(D3DXVECTOR3(SCREEN_WIDTH - 160.0f, 100.0f, 0.0f), CManager::VEC3_ZERO, 30.0f, 36.0f, 2, CTexture::PRELOAD_LV);
+	m_pLevel[CPicto::TYPE_BLOCKER] = CLevel::Create(D3DXVECTOR3(SCREEN_WIDTH - 160.0f, 136.0f, 0.0f), CManager::VEC3_ZERO, 30.0f, 36.0f, 2, CTexture::PRELOAD_LV);
 
 	m_pHaveNum[CPicto::TYPE_DESTROYER] = CHaveNum::Create(D3DXVECTOR3(SCREEN_WIDTH - 30.0f, 100.0f, 0.0f), CManager::VEC3_ZERO, 30.0f, 36.0f, 2, CTexture::PRELOAD_HAVEICON_01);
 	m_pHaveNum[CPicto::TYPE_BLOCKER] = CHaveNum::Create(D3DXVECTOR3(SCREEN_WIDTH - 30.0f, 136.0f, 0.0f), CManager::VEC3_ZERO, 30.0f, 36.0f, 2, CTexture::PRELOAD_HAVEICON_02);

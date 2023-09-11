@@ -123,6 +123,9 @@ public:
 	//乗車
 	virtual void TakeTaxi(CPictoTaxi* taxi) = 0;
 
+	//帰宅
+	virtual void Return(void);
+
 private:
 	//関数
 	void Search(void);
@@ -202,6 +205,9 @@ public:
 	//レベル・経験値リセット
 	static void ResetLevelExp(void) { m_nLv = 1; m_nExp = 0; }
 
+	//帰宅
+	void Return(void);
+
 private:
 	static CPictoDestroyer* m_apPicto[MAX_OBJ];	//ピクトさんポインタ
 	static int m_nNumAll;				//ピクトさん総数
@@ -255,6 +261,9 @@ public:
 
 	//レベル・経験値リセット
 	static void ResetLevelExp(void) { m_nLv = 1; m_nExp = 0; }
+
+	//帰宅
+	void Return(void);
 
 private:
 	static CPictoBlocker* m_apPicto[MAX_OBJ];	//ピクトさんポインタ
@@ -320,6 +329,9 @@ public:
 	//攻撃
 	void AddDamage(int nDamage);
 
+	//帰宅
+	void Return(void);
+
 private:
 	//関数
 	bool SearchPick(void);				//アイテム類探す
@@ -382,6 +394,9 @@ public:
 	//乗車
 	void TakeTaxi(CPictoTaxi* taxi);
 
+	//帰宅
+	void Return(void);
+
 private:
 	static CPictoNormal* m_apPicto[MAX_OBJ];	//ピクトさんポインタ
 	static int m_nNumAll;					//ピクトさん総数
@@ -431,6 +446,9 @@ public:
 
 	//攻撃
 	void AddDamage(int nDamage);
+
+	//帰宅
+	void Return(void);
 
 private:
 	static CPictoPolice* m_apPicto[MAX_OBJ];	//ピクトさんポインタ
