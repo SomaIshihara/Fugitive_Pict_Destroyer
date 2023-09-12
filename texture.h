@@ -47,6 +47,7 @@ public:
 		PRELOAD_TUTORIAL_04,
 		PRELOAD_TUTORIAL,
 		PRELOAD_LV,
+		PRELOAD_ASPHALT,
 	} PRELOAD;
 
 	//パターンテクスチャ構造体定義

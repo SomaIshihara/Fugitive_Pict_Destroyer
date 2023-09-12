@@ -149,16 +149,6 @@ CPicto::~CPicto()
 //========================
 HRESULT CPicto::Init(void)
 {
-	//モーション生成・初期化
-	m_pMotion = new CMotion;
-	m_pMotion->Init();
-	
-	//モーションビューアのファイルを読み込み
-	LoadMotionViewerFile("data\\motion_exithuman.txt", &m_apModel[0], m_pMotion, &m_nNumModel);
-
-	//モーション設定
-	m_pMotion->Set(0);
-
 	//コリジョン設定
 	D3DXVECTOR3 vtxMax = D3DXVECTOR3(30.0f, 30.0f, 30.0f);
 	m_collision.SetVtx(vtxMax, -vtxMax);
@@ -226,9 +216,12 @@ void CPicto::Uninit(void)
 	m_apPicto[m_nID] = NULL;
 	for (int cnt = 0; cnt < PICTO_MODEL_NUM; cnt++)
 	{//一つずつ消す
-		m_apModel[cnt]->Uninit();
-		delete m_apModel[cnt];
-		m_apModel[cnt] = NULL;
+		if (m_apModel[cnt] != nullptr)
+		{
+			m_apModel[cnt]->Uninit();
+			delete m_apModel[cnt];
+			m_apModel[cnt] = NULL;
+		}
 	}
 
 	//影消す
@@ -366,7 +359,10 @@ void CPicto::Update(void)
 	//モデル設定
 	for (int cnt = 0; cnt < PICTO_MODEL_NUM; cnt++)
 	{
-		m_apModel[cnt]->Update();
+		if (m_apModel[cnt] != nullptr)
+		{
+			m_apModel[cnt]->Update();
+		}
 	}
 	//モーションがある
 	if (m_pMotion != NULL)
@@ -445,9 +441,12 @@ void CPicto::Draw(void)
 	//モデル描画
 	for (int cnt = 0; cnt < PICTO_MODEL_NUM; cnt++)
 	{
-		m_apModel[cnt]->SetMainColor(D3DXCOLOR(0.0f, 0.6f, 0.0f, 1.0f));		//後々可変式に変更
-		m_apModel[cnt]->SetSubColor(D3DXCOLOR(m_fRedAlpha, 0.0f, 0.0f, 0.0f));
-		m_apModel[cnt]->Draw();
+		if (m_apModel[cnt] != nullptr)
+		{
+			m_apModel[cnt]->SetMainColor(D3DXCOLOR(0.0f, 0.6f, 0.0f, 1.0f));		//後々可変式に変更
+			m_apModel[cnt]->SetSubColor(D3DXCOLOR(m_fRedAlpha, 0.0f, 0.0f, 0.0f));
+			m_apModel[cnt]->Draw();
+		}
 	}
 
 	//マテリアルを戻す
@@ -471,6 +470,27 @@ void CPicto::UnsetTargetObj(void)
 	m_targetObj = GetAgit();	//目的地をアジトにする
 	m_state = STATE_LEAVE;		//帰る状態
 	Search();					//経路探索
+}
+
+//=================================
+//モデル設定
+//=================================
+void CPicto::SetModel(const char * pPath)
+{
+	//モーション生成・初期化
+	m_pMotion = new CMotion;
+	m_pMotion->Init();
+
+	//モーションビューアのファイルを読み込み
+	LoadMotionViewerFile(pPath, &m_apModel[0], m_pMotion, &m_nNumModel);
+
+	for (int cnt = 0; cnt < PICTO_MODEL_NUM - 2; cnt++)
+	{//体の部分のみ行う
+		m_apModel[cnt]->SetChangeColor(true);
+	}
+
+	//モーション設定
+	m_pMotion->Set(0);
 }
 
 //=================================
@@ -512,13 +532,6 @@ void CPicto::Controll(D3DXVECTOR3 move)
 	{//操縦可能
 		m_move = move;
 	}
-}
-
-//=================================
-//パラメータ読み込み
-//=================================
-void CPicto::LoadPictoParam(const char * pPath)
-{
 }
 
 //=================================
@@ -678,6 +691,9 @@ HRESULT CPictoDestroyer::Init(void)
 {
 	//親処理
 	CPicto::Init();
+
+	//モデル設定
+	CPicto::SetModel("data\\motion_exithuman_dest.txt");
 
 	//所持数減算処理
 	CScene::MODE mode = CManager::GetMode();
@@ -943,6 +959,9 @@ HRESULT CPictoBlocker::Init(void)
 {
 	//親処理
 	CPicto::Init();
+
+	//モデル設定
+	CPicto::SetModel("data\\motion_exithuman_block.txt");
 
 	//所持数減算処理
 	CScene::MODE mode = CManager::GetMode();
@@ -1236,6 +1255,9 @@ HRESULT CPictoTaxi::Init(void)
 	
 	//親処理
 	CPicto::Init();
+
+	//モデル設定
+	CPicto::SetModel("data\\motion_exithuman_taxi.txt");
 
 	return S_OK;
 }
@@ -1589,6 +1611,9 @@ HRESULT CPictoNormal::Init(void)
 	//親処理
 	CPicto::Init();
 
+	//モデル設定
+	CPicto::SetModel("data\\motion_exithuman_nor.txt");
+
 	return S_OK;
 }
 
@@ -1732,6 +1757,9 @@ HRESULT CPictoPolice::Init(void)
 {
 	//親処理
 	CPicto::Init();
+
+	//モデル設定
+	CPicto::SetModel("data\\motion_exithuman_block.txt");
 
 	//体力設定
 	m_nLife = HAVE_LIFE(m_nLv);

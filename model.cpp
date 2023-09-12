@@ -37,7 +37,8 @@ HRESULT CModel::Init(const char * pPath, const D3DXVECTOR3 posOffset, const D3DX
 {
 	LPDIRECT3DDEVICE9 pDevice = CManager::GetRenderer()->GetDevice();	//デバイス取得
 	CTexture* pTexture = CManager::GetTexture();						//テクスチャオブジェクト取得
-	m_pIdxtexture = NULL;	//テクスチャ番号ポインタをNULLにする
+	m_pIdxtexture = nullptr;											//テクスチャ番号ポインタをNULLにする
+	m_bChangeColor = false;												//色変更フラグをオフ
 
 	if (SUCCEEDED(D3DXLoadMeshFromX(
 		pPath,
@@ -54,65 +55,6 @@ HRESULT CModel::Init(const char * pPath, const D3DXVECTOR3 posOffset, const D3DX
 		{//NULL
 		 //テクスチャ番号配列確保
 			m_pIdxtexture = new int[(int)m_dwNumMatModel];
-
-			//当たり判定設定後回し
-			////当たり判定生成
-			//int nNumVtx;		//頂点数
-			//DWORD dwSizeFVF;	//頂点フォーマットのサイズ
-			//BYTE *pVtxBuff;		//頂点バッファポインタ
-			//
-			////頂点数を取得
-			//nNumVtx = m_pMesh->GetNumVertices();
-			//
-			////頂点フォーマット
-			//dwSizeFVF = D3DXGetFVFVertexSize(m_pMesh->GetFVF());
-			//
-			////頂点バッファロック
-			//m_pMesh->LockVertexBuffer(D3DLOCK_READONLY, (void **)&pVtxBuff);
-			//
-			////最初だけ全部入れる
-			//D3DXVECTOR3 vtx = *(D3DXVECTOR3 *)pVtxBuff;
-			//
-			//D3DXVECTOR3 vtxMax = vtx;
-			//D3DXVECTOR3 vtxMin = vtx;
-			//
-			//pVtxBuff += dwSizeFVF;
-			//
-			//for (int nCntVtx = 1; nCntVtx < nNumVtx; nCntVtx++, pVtxBuff += dwSizeFVF)
-			//{
-			//	D3DXVECTOR3 vtx = *(D3DXVECTOR3 *)pVtxBuff;
-			//
-			//	if (vtxMax.x < vtx.x)
-			//	{
-			//		vtxMax.x = vtx.x;
-			//	}
-			//	if (vtxMax.y < vtx.y)
-			//	{
-			//		vtxMax.y = vtx.y;
-			//	}
-			//	if (vtxMax.z < vtx.z)
-			//	{
-			//		vtxMax.z = vtx.z;
-			//	}
-			//	if (vtxMin.x > vtx.x)
-			//	{
-			//		vtxMin.x = vtx.x;
-			//	}
-			//	if (vtxMin.y > vtx.y)
-			//	{
-			//		vtxMin.y = vtx.y;
-			//	}
-			//	if (vtxMin.z > vtx.z)
-			//	{
-			//		vtxMin.z = vtx.z;
-			//	}
-			//}
-			//
-			////設定
-			//m_collision.SetVtx(vtxMin, vtxMax);
-			//
-			////頂点バッファアンロック
-			//m_pMesh->UnlockVertexBuffer();
 
 			//テクスチャ読み込み
 			D3DXMATERIAL* pMat;	//マテリアルポインタ
@@ -240,13 +182,16 @@ void CModel::Draw(void)
 		//マテリアル変更
 		D3DMATERIAL9 changeMat = pMat[nCntMat].MatD3D;
 
-		//メイン色変更
-		changeMat.Diffuse = m_changeMainColor;
+		if (m_bChangeColor == true)
+		{//色を変更する場合
+			//メイン色変更
+			changeMat.Diffuse = m_changeMainColor;
 
-		//サブ色変更
-		changeMat.Diffuse.r = 1.0f * m_changeSubColor.r + changeMat.Diffuse.r * (1.0f - m_changeSubColor.r);
-		changeMat.Diffuse.g = 1.0f * m_changeSubColor.g + changeMat.Diffuse.g * (1.0f - m_changeSubColor.g);
-		changeMat.Diffuse.b = 1.0f * m_changeSubColor.b + changeMat.Diffuse.b * (1.0f - m_changeSubColor.b);
+			//サブ色変更
+			changeMat.Diffuse.r = 1.0f * m_changeSubColor.r + changeMat.Diffuse.r * (1.0f - m_changeSubColor.r);
+			changeMat.Diffuse.g = 1.0f * m_changeSubColor.g + changeMat.Diffuse.g * (1.0f - m_changeSubColor.g);
+			changeMat.Diffuse.b = 1.0f * m_changeSubColor.b + changeMat.Diffuse.b * (1.0f - m_changeSubColor.b);
+		}
 
 		//マテリアル設定
 		pDevice->SetMaterial(&changeMat);

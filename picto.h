@@ -13,7 +13,7 @@
 #include "objectX.h"
 #include "collision.h"
 
-#define PICTO_MODEL_NUM		(10)	//ピクトさんに使うモデル数
+#define PICTO_MODEL_NUM		(12)	//ピクトさんに使うモデル数
 #define PICTO_MAX_LEVEL		(30)	//ピクトの最大レベル
 #define PICTO_DAMAGE_ALPHA	(0.9f)	//赤くする割合
 
@@ -107,6 +107,7 @@ public:
 	void SetTargetObj(CObject* pObj);
 	void UnsetTargetObj(void);
 	void SetRedAlpha(void) { m_fRedAlpha = PICTO_DAMAGE_ALPHA; }
+	void SetModel(const char* pPath);
 
 	//当たり判定
 	bool CollisionField(D3DXVECTOR3* pPosNew);
@@ -116,9 +117,6 @@ public:
 	void Controll(D3DXVECTOR3 move);
 	void Uncontroll(void) { m_bControll = false; }
 	bool IsControll(void) { return m_bControll; }
-
-	//読み込み
-	void LoadPictoParam(const char* pPath);
 
 	//乗車
 	virtual void TakeTaxi(CPictoTaxi* taxi) = 0;

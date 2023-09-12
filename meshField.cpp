@@ -60,7 +60,7 @@ HRESULT CMeshField::Init(void)
 
 	//テクスチャ読み込み
 	CTexture* pTexture = CManager::GetTexture();
-	m_nIdxTexture = pTexture->Regist("data\\TEXTURE\\Block_R_01.png");
+	m_nIdxTexture = CTexture::PRELOAD_ASPHALT;
 
 	//頂点バッファの生成
 	pDevice->CreateVertexBuffer(sizeof(VERTEX_3D) * 4 * (m_nBlockWidth + 1) * (m_nBlockDepth + 1),
