@@ -25,7 +25,7 @@ MODEL_FILENAME = data/MODEL/exithuman_x/08_Left_Foot.x		# [7]左足
 MODEL_FILENAME = data/MODEL/exithuman_x/09_Right_Leg.x		# [8]右腿
 MODEL_FILENAME = data/MODEL/exithuman_x/10_Right_Foot.x		# [9]右足
 MODEL_FILENAME = data/MODEL/gun000.x						# (10)銃
-MODEL_FILENAME = data/MODEL/picto_hat.x						# (11)ヘルメット
+MODEL_FILENAME = data/MODEL/picto_policehat.x				# (11)帽子
 
 #------------------------------------------------------------------------------
 # キャラクター情報

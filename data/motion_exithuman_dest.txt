@@ -9,7 +9,7 @@ SCRIPT			# この行は絶対消さないこと！
 #------------------------------------------------------------------------------
 # モデル数
 #------------------------------------------------------------------------------
-NUM_MODEL = 11
+NUM_MODEL = 12
 
 #------------------------------------------------------------------------------
 # モデルファイル名
@@ -24,7 +24,8 @@ MODEL_FILENAME = data/MODEL/exithuman_x/07_Left_Leg.x		# [6]左腿
 MODEL_FILENAME = data/MODEL/exithuman_x/08_Left_Foot.x		# [7]左足
 MODEL_FILENAME = data/MODEL/exithuman_x/09_Right_Leg.x		# [8]右腿
 MODEL_FILENAME = data/MODEL/exithuman_x/10_Right_Foot.x		# [9]右足
-MODEL_FILENAME = data/MODEL/RL.x				# (10)バズーカ
+MODEL_FILENAME = data/MODEL/RL.x							# (10)バズーカ
+MODEL_FILENAME = data/MODEL/picto_hat.x						# (11)ヘルメット
 
 #------------------------------------------------------------------------------
 # キャラクター情報
@@ -33,7 +34,7 @@ CHARACTERSET
 	MOVE = 3.2						# 移動量
 	JUMP = 11.25					# ジャンプ量
 	RADIUS = 40.0					# 半径
-	NUM_PARTS = 11					# パーツ数
+	NUM_PARTS = 12					# パーツ数
 
 	PARTSSET						# [0]体
 		INDEX = 0
@@ -111,6 +112,13 @@ CHARACTERSET
 		POS = -8.0 0.0 0.0
 		ROT = 0.0 0.0 0.0
 	END_PARTSSET
+	
+	PARTSSET						# (11)バズーカ
+		INDEX = 11
+		PARENT = 1					# (親)頭
+		POS = 0.0 0.0 0.0
+		ROT = 0.0 0.0 0.0
+	END_PARTSSET
 END_CHARACTERSET
 
 #------------------------------------------------------------------------------
@@ -179,6 +187,11 @@ MOTIONSET
 			POS = 0.00 0.00 0.00
 			ROT = 0.00 0.00 0.00
 		END_KEY
+		
+		KEY	# ----- [ 11 ] -----
+			POS = 0.00 0.00 0.00
+			ROT = 0.00 0.00 0.00
+		END_KEY
 	END_KEYSET
 
 	KEYSET			# --- << KEY : 1 / 2 >> ---
@@ -234,6 +247,11 @@ MOTIONSET
 		END_KEY
 		
 		KEY	# ----- [ 10 ] -----
+			POS = 0.00 0.00 0.00
+			ROT = 0.00 0.00 0.00
+		END_KEY
+		
+		KEY	# ----- [ 11 ] -----
 			POS = 0.00 0.00 0.00
 			ROT = 0.00 0.00 0.00
 		END_KEY
@@ -303,6 +321,11 @@ MOTIONSET
 			POS = 0.00 0.00 -7.00
 			ROT = 0.00 0.00 0.00
 		END_KEY
+		
+		KEY	# ----- [ 11 ] -----
+			POS = 0.00 0.00 0.00
+			ROT = 0.00 0.00 0.00
+		END_KEY
 	END_KEYSET
 
 	KEYSET			# --- << KEY : 1 / 2 >> ---
@@ -359,6 +382,11 @@ MOTIONSET
 		
 		KEY	# ----- [ 10 ] -----
 			POS = 0.00 0.00 -7.00
+			ROT = 0.00 0.00 0.00
+		END_KEY
+		
+		KEY	# ----- [ 11 ] -----
+			POS = 0.00 0.00 0.00
 			ROT = 0.00 0.00 0.00
 		END_KEY
 	END_KEYSET
@@ -427,6 +455,11 @@ MOTIONSET
 			POS = 0.00 2.00 0.00
 			ROT = -0.91 1.41 0.25
 		END_KEY
+		
+		KEY	# ----- [ 11 ] -----
+			POS = 0.00 0.00 0.00
+			ROT = 0.00 0.00 0.00
+		END_KEY
 	END_KEYSET
 
 	KEYSET			# --- << KEY : 1 / 3 >> ---
@@ -485,6 +518,11 @@ MOTIONSET
 			POS = 0.00 2.00 0.00
 			ROT = -0.91 1.41 0.25
 		END_KEY
+		
+		KEY	# ----- [ 11 ] -----
+			POS = 0.00 0.00 0.00
+			ROT = 0.00 0.00 0.00
+		END_KEY
 	END_KEYSET
 
 	KEYSET			# --- << KEY : 2 / 3 >> ---
@@ -542,6 +580,11 @@ MOTIONSET
 		KEY	# ----- [ 10 ] -----
 			POS = 0.00 2.00 0.00
 			ROT = -0.91 1.41 0.25
+		END_KEY
+		
+		KEY	# ----- [ 11 ] -----
+			POS = 0.00 0.00 0.00
+			ROT = 0.00 0.00 0.00
 		END_KEY
 	END_KEYSET
 END_MOTIONSET
@@ -608,6 +651,11 @@ MOTIONSET
 			POS = 0.00 0.00 0.00
 			ROT = 0.00 0.00 0.00
 		END_KEY
+		
+		KEY	# ----- [ 11 ] -----
+			POS = 0.00 0.00 0.00
+			ROT = 0.00 0.00 0.00
+		END_KEY
 	END_KEYSET
 
 	KEYSET			# --- << KEY : 1 / 3 >> ---
@@ -666,6 +714,11 @@ MOTIONSET
 			POS = 0.00 0.00 0.00
 			ROT = 0.00 0.00 0.00
 		END_KEY
+		
+		KEY	# ----- [ 11 ] -----
+			POS = 0.00 0.00 0.00
+			ROT = 0.00 0.00 0.00
+		END_KEY
 	END_KEYSET
 
 	KEYSET			# --- << KEY : 2 / 3 >> ---
@@ -721,6 +774,11 @@ MOTIONSET
 		END_KEY
 		
 		KEY	# ----- [ 10 ] -----
+			POS = 0.00 0.00 0.00
+			ROT = 0.00 0.00 0.00
+		END_KEY
+		
+		KEY	# ----- [ 11 ] -----
 			POS = 0.00 0.00 0.00
 			ROT = 0.00 0.00 0.00
 		END_KEY
@@ -789,6 +847,11 @@ MOTIONSET
 			POS = 0.00 0.00 0.00
 			ROT = 0.00 0.00 0.00
 		END_KEY
+		
+		KEY	# ----- [ 11 ] -----
+			POS = 0.00 0.00 0.00
+			ROT = 0.00 0.00 0.00
+		END_KEY
 	END_KEYSET
 
 	KEYSET			# --- << KEY : 1 / 2 >> ---
@@ -844,6 +907,11 @@ MOTIONSET
 		END_KEY
 		
 		KEY	# ----- [ 10 ] -----
+			POS = 0.00 0.00 0.00
+			ROT = 0.00 0.00 0.00
+		END_KEY
+		
+		KEY	# ----- [ 11 ] -----
 			POS = 0.00 0.00 0.00
 			ROT = 0.00 0.00 0.00
 		END_KEY

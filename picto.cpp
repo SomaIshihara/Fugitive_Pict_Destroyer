@@ -1759,7 +1759,7 @@ HRESULT CPictoPolice::Init(void)
 	CPicto::Init();
 
 	//ƒ‚ƒfƒ‹İ’è
-	CPicto::SetModel("data\\motion_exithuman_block.txt");
+	CPicto::SetModel("data\\motion_exithuman_police.txt");
 
 	//‘Ì—Íİ’è
 	m_nLife = HAVE_LIFE(m_nLv);
