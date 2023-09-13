@@ -13,7 +13,6 @@
 #include "objectX.h"
 #include "collision.h"
 
-#define PICTO_MODEL_NUM		(12)	//ピクトさんに使うモデル数
 #define PICTO_MAX_LEVEL		(30)	//ピクトの最大レベル
 #define PICTO_DAMAGE_ALPHA	(0.9f)	//赤くする割合
 
@@ -135,7 +134,7 @@ private:
 	CMotion* m_pMotion;					//モーションポインタ
 
 	D3DXMATRIX m_mtxWorld;				//ワールドマトリ
-	CModel* m_apModel[PICTO_MODEL_NUM];	//ピクトさんモデル
+	CModel** m_ppModel;					//ピクトさんモデル（動的確保）
 	int m_nNumModel;					//モデル数
 	CCollision m_collision;				//コリジョン
 

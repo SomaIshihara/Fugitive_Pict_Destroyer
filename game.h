@@ -20,11 +20,15 @@ class CHaveNum;
 class CLevel;
 class CMeshSky;
 class CBG;
+class CCountDown;
 
 //タイトルクラス
 class CGame : public CScene
 {
 public:
+	//静的const
+	static const int CDSTART_TIME;	//カウントダウン開始時間
+
 	//コンストラクタ・デストラクタ
 	CGame();
 	~CGame();
@@ -61,6 +65,8 @@ private:
 	static int m_nATKBuilding;			//攻撃数
 	static int m_nDestBuilding;			//全壊数
 	CBG* m_pWarning;					//体力警告の背景ではないやつ
+	CCountDown* m_pCountDown;			//カウントダウン
+	int m_counterCDStart;				//カウントダウン開始遅延時間
 };
 
 #endif // !_GAME_H_

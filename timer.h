@@ -59,6 +59,8 @@ public:
 
 	//設定
 	void Set(const int nScore, COUNT type);	//タイマー設定
+	void Start(void) { m_shouldCount = true; }
+	void Stop(void) { m_shouldCount = false; }
 
 private:
 	void CutNumber(void);				//数字分割
@@ -71,6 +73,7 @@ private:
 	int m_nCounter;						//タイマーカウンタ
 	int m_nTime;						//タイム
 	COUNT m_count;						//カウント種類
+	bool m_shouldCount;					//カウントするかどうか
 };
 
 #endif // !_TIME_H_

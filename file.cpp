@@ -691,7 +691,7 @@ void LoadModelViewerFile(const char *path)
 //引数1:モーションビューワーの設定ファイルのパス
 //引数2:入れたいモデル構造体のポインタ
 //========================
-void LoadMotionViewerFile(const char *path, CModel** ppModel, CMotion* pMotion, int* pNumModel)
+void LoadMotionViewerFile(const char *path, CModel*** pppModel, CMotion* pMotion, int* pNumModel)
 {
 	FILE *pFile;
 	char aCode[CODE_LENGTH];
@@ -793,6 +793,12 @@ void LoadMotionViewerFile(const char *path, CModel** ppModel, CMotion* pMotion, 
 					if (strncmp(&aCode[0], CODE_MOTIONSET, sizeof CODE_MOTIONSET / sizeof(char) - 1) == 0)
 					{
 						g_readStat = READSTAT_MOTIONSET;
+
+						//取り込み用変数の動的確保
+						for (int cnt = 0; cnt < KEYINFO_NUM; cnt++)
+						{
+							info.m_aKeyInfo[cnt].m_pKey = new CMotion::KEY[*pNumModel];
+						}
 					}
 					break;
 				case READSTAT_CHARACTERSET:		//モデル情報取得
@@ -837,20 +843,26 @@ void LoadMotionViewerFile(const char *path, CModel** ppModel, CMotion* pMotion, 
 						//パーツ数取得
 						pSprit = strtok(NULL, " =\n");
 						*pNumModel = atoi(pSprit);
+
+						//パーツ数に応じてモデル配列を動的確保
+						*pppModel = new CModel*[*pNumModel];
+
+						//モーションもキーを動的確保
+						pMotion->SetModel(*pppModel, *pNumModel);
 					}
 					break;
 				case READSTAT_PARTSSET:
 					if (strncmp(&aCode[0], CODE_END_PARTSSET, sizeof CODE_END_PARTSSET / sizeof(char) - 1) == 0)
 					{
 						//生成
-						ppModel[nSetModelNum] = CModel::Create(&aFilePath[nIdx][0], posOffset, rotOffset);
+						(*pppModel)[nSetModelNum] = CModel::Create(&aFilePath[nIdx][0], posOffset, rotOffset);
 						if (nParent != -1)
 						{
-							ppModel[nSetModelNum]->SetParent(ppModel[nParent]);
+							(*pppModel)[nSetModelNum]->SetParent((*pppModel)[nParent]);
 						}
 						else
 						{
-							ppModel[nSetModelNum]->SetParent(NULL);
+							(*pppModel)[nSetModelNum]->SetParent(NULL);
 						}
 
 						nSetModelNum++;
@@ -968,15 +980,15 @@ void LoadMotionViewerFile(const char *path, CModel** ppModel, CMotion* pMotion, 
 
 						//X座標読み取り
 						pSprit = strtok(NULL, " =\n");
-						info.m_aKeyInfo[nKeyInfo].m_aKey[nKey].m_fPosX = fatof(pSprit);
+						info.m_aKeyInfo[nKeyInfo].m_pKey[nKey].m_fPosX = fatof(pSprit);
 
 						//Y座標読み取り
 						pSprit = strtok(NULL, " =\n");
-						info.m_aKeyInfo[nKeyInfo].m_aKey[nKey].m_fPosY = fatof(pSprit);
+						info.m_aKeyInfo[nKeyInfo].m_pKey[nKey].m_fPosY = fatof(pSprit);
 
 						//Z座標読み取り
 						pSprit = strtok(NULL, " =\n");
-						info.m_aKeyInfo[nKeyInfo].m_aKey[nKey].m_fPosZ = fatof(pSprit);
+						info.m_aKeyInfo[nKeyInfo].m_pKey[nKey].m_fPosZ = fatof(pSprit);
 					}
 					else if (strncmp(&aCode[0], CODE_ROT, sizeof CODE_ROT / sizeof(char) - 1) == 0)
 					{
@@ -984,22 +996,20 @@ void LoadMotionViewerFile(const char *path, CModel** ppModel, CMotion* pMotion, 
 
 						//X向き読み取り
 						pSprit = strtok(NULL, " =\n");
-						info.m_aKeyInfo[nKeyInfo].m_aKey[nKey].m_fRotX = fatof(pSprit);
+						info.m_aKeyInfo[nKeyInfo].m_pKey[nKey].m_fRotX = fatof(pSprit);
 
 						//Y向き読み取り
 						pSprit = strtok(NULL, " =\n");
-						info.m_aKeyInfo[nKeyInfo].m_aKey[nKey].m_fRotY = fatof(pSprit);
+						info.m_aKeyInfo[nKeyInfo].m_pKey[nKey].m_fRotY = fatof(pSprit);
 
 						//Z向き読み取り
 						pSprit = strtok(NULL, " =\n");
-						info.m_aKeyInfo[nKeyInfo].m_aKey[nKey].m_fRotZ = fatof(pSprit);
+						info.m_aKeyInfo[nKeyInfo].m_pKey[nKey].m_fRotZ = fatof(pSprit);
 					}
 					break;
 				}
 			}
 		}
-
-		pMotion->SetModel(ppModel, *pNumModel);
 	}
 	else
 	{

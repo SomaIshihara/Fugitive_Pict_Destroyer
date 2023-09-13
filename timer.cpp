@@ -26,6 +26,7 @@ CTimer::CTimer(int nPriority) : CObject(nPriority)
 	m_fOneHeight = CManager::FLOAT_ZERO;
 	m_nCounter = 0;
 	m_count = COUNT_DOWN;
+	m_shouldCount = false;
 }
 
 //=================================
@@ -41,6 +42,7 @@ CTimer::CTimer(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, const float fOneWid
 	m_fOneHeight = fOneHeight;
 	m_nCounter = 0;
 	m_count = COUNT_DOWN;
+	m_shouldCount = false;
 }
 
 //=================================
@@ -67,6 +69,7 @@ HRESULT CTimer::Init(void)
 	//タイマーカウンタリセット
 	m_nCounter = 0;
 	m_count = COUNT_DOWN;
+	m_shouldCount = false;
 
 	//タイム設定
 	Set(0, COUNT_UP);
@@ -104,40 +107,44 @@ void CTimer::Update(void)
 		Set(2,COUNT_DOWN);	//デバッグ用だからこれでいいよね
 	}
 #endif // DEBUG
-	//タイマー更新
-	m_nCounter++;
-
-	if (m_nCounter >= MAX_FPS)
+	//動かすなら回す
+	if (m_shouldCount == true)
 	{
-		//カウンタリセット
-		m_nCounter = 0;
+		//タイマー更新
+		m_nCounter++;
 
-		switch (m_count)
+		if (m_nCounter >= MAX_FPS)
 		{
-		case COUNT_UP:
-			m_nTime++;	//加算
-			if (m_nTime >= (int)pow(10, TIME_DIGIT))
-			{//桁数の限界を超えた
-				m_nTime = (int)pow(10, TIME_DIGIT) - 1;
-			}
-			break;
+			//カウンタリセット
+			m_nCounter = 0;
 
-		case COUNT_DOWN:
-			m_nTime--;	//減算
-			if (m_nTime < CManager::INT_ZERO)
-			{//0を下回った
-				m_nTime = CManager::INT_ZERO;
+			switch (m_count)
+			{
+			case COUNT_UP:
+				m_nTime++;	//加算
+				if (m_nTime >= (int)pow(10, TIME_DIGIT))
+				{//桁数の限界を超えた
+					m_nTime = (int)pow(10, TIME_DIGIT) - 1;
+				}
+				break;
+
+			case COUNT_DOWN:
+				m_nTime--;	//減算
+				if (m_nTime < CManager::INT_ZERO)
+				{//0を下回った
+					m_nTime = CManager::INT_ZERO;
+				}
+				break;
 			}
-			break;
 		}
-	}
 
-	for (int cnt = 0; cnt < TIME_DIGIT; cnt++)
-	{//数字オブジェクト更新
-		if (m_pNumber[cnt] != NULL)
-		{//大丈夫。中身はある
-			//オブジェクト2Dの更新処理
-			m_pNumber[cnt]->Update();
+		for (int cnt = 0; cnt < TIME_DIGIT; cnt++)
+		{//数字オブジェクト更新
+			if (m_pNumber[cnt] != NULL)
+			{//大丈夫。中身はある
+			 //オブジェクト2Dの更新処理
+				m_pNumber[cnt]->Update();
+			}
 		}
 	}
 

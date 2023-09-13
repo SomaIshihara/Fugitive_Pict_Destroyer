@@ -192,6 +192,9 @@
     <ClCompile Include="level.cpp">
       <Filter>ソース ファイル\Derivation</Filter>
     </ClCompile>
+    <ClCompile Include="countdown.cpp">
+      <Filter>ソース ファイル\Derivation</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="main.h">
@@ -346,6 +349,12 @@
     </ClInclude>
     <ClInclude Include="level.h">
       <Filter>ヘッダー ファイル\Derivation</Filter>
+    </ClInclude>
+    <ClInclude Include="countdown.h">
+      <Filter>ヘッダー ファイル\Derivation</Filter>
+    </ClInclude>
+    <ClInclude Include="Utility.h">
+      <Filter>ヘッダー ファイル\Core</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

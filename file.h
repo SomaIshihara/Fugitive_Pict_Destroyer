@@ -114,6 +114,6 @@ class CMotion;
 //ÉvÉçÉg
 void InitFile(void);
 //void LoadModelViewerFile(const char *path);	
-void LoadMotionViewerFile(const char *path, CModel** ppModel, CMotion* pmotion, int* pNumModel);
+void LoadMotionViewerFile(const char *path, CModel*** pppModel, CMotion* pmotion, int* pNumModel);
 
 #endif

@@ -162,6 +162,7 @@
     <ClCompile Include="button.cpp" />
     <ClCompile Include="camera.cpp" />
     <ClCompile Include="collision.cpp" />
+    <ClCompile Include="countdown.cpp" />
     <ClCompile Include="Culc.cpp" />
     <ClCompile Include="debugproc.cpp" />
     <ClCompile Include="effect.cpp" />
@@ -219,6 +220,7 @@
     <ClInclude Include="button.h" />
     <ClInclude Include="camera.h" />
     <ClInclude Include="collision.h" />
+    <ClInclude Include="countdown.h" />
     <ClInclude Include="Culc.h" />
     <ClInclude Include="debugproc.h" />
     <ClInclude Include="effect.h" />
@@ -263,6 +265,7 @@
     <ClInclude Include="timer.h" />
     <ClInclude Include="title.h" />
     <ClInclude Include="tutorial.h" />
+    <ClInclude Include="Utility.h" />
     <ClInclude Include="xmodel.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

@@ -17,15 +17,7 @@ CMotion::CMotion()
 	{
 		for (int cntKeyInfo = 0; cntKeyInfo < KEYINFO_NUM; cntKeyInfo++)
 		{
-			for (int cntKey = 0; cntKey < KEY_NUM; cntKey++)
-			{
-				m_aInfo[cntInfo].m_aKeyInfo[cntKeyInfo].m_aKey[cntKey].m_fPosX = CManager::FLOAT_ZERO;
-				m_aInfo[cntInfo].m_aKeyInfo[cntKeyInfo].m_aKey[cntKey].m_fPosY = CManager::FLOAT_ZERO;
-				m_aInfo[cntInfo].m_aKeyInfo[cntKeyInfo].m_aKey[cntKey].m_fPosZ = CManager::FLOAT_ZERO;
-				m_aInfo[cntInfo].m_aKeyInfo[cntKeyInfo].m_aKey[cntKey].m_fRotX = CManager::FLOAT_ZERO;
-				m_aInfo[cntInfo].m_aKeyInfo[cntKeyInfo].m_aKey[cntKey].m_fRotY = CManager::FLOAT_ZERO;
-				m_aInfo[cntInfo].m_aKeyInfo[cntKeyInfo].m_aKey[cntKey].m_fRotZ = CManager::FLOAT_ZERO;
-			}
+			m_aInfo[cntInfo].m_aKeyInfo[cntKeyInfo].m_pKey = nullptr;
 			m_aInfo[cntInfo].m_aKeyInfo[cntKeyInfo].m_nFrame = 0;
 		}
 		m_aInfo[cntInfo].m_bLoop = false;
@@ -53,7 +45,17 @@ HRESULT CMotion::Init(void)
 //========================
 void CMotion::Uninit(void)
 {
-
+	for (int cntInfo = 0; cntInfo < INFO_NUM; cntInfo++)
+	{
+		for (int cntKeyInfo = 0; cntKeyInfo < KEYINFO_NUM; cntKeyInfo++)
+		{
+			if (m_aInfo[cntInfo].m_aKeyInfo[cntKeyInfo].m_pKey != nullptr)
+			{
+				delete m_aInfo[cntInfo].m_aKeyInfo[cntKeyInfo].m_pKey;
+				m_aInfo[cntInfo].m_aKeyInfo[cntKeyInfo].m_pKey = nullptr;
+			}
+		}
+	}
 }
 
 //========================
@@ -88,31 +90,31 @@ void CMotion::Update(void)
 		D3DXVECTOR3 rotMotioned = m_ppModel[CntModel]->GetRotOffset();
 
 		//差分算出
-		float posDiffX = m_aInfo[m_nType].m_aKeyInfo[nNextKey].m_aKey[CntModel].m_fPosX -
-			m_aInfo[m_nType].m_aKeyInfo[nNowKey].m_aKey[CntModel].m_fPosX;
-		float posDiffY = m_aInfo[m_nType].m_aKeyInfo[nNextKey].m_aKey[CntModel].m_fPosY -
-			m_aInfo[m_nType].m_aKeyInfo[nNowKey].m_aKey[CntModel].m_fPosY;
-		float posDiffZ = m_aInfo[m_nType].m_aKeyInfo[nNextKey].m_aKey[CntModel].m_fPosZ -
-			m_aInfo[m_nType].m_aKeyInfo[nNowKey].m_aKey[CntModel].m_fPosZ;
-		float rotDiffX = m_aInfo[m_nType].m_aKeyInfo[nNextKey].m_aKey[CntModel].m_fRotX -
-			m_aInfo[m_nType].m_aKeyInfo[nNowKey].m_aKey[CntModel].m_fRotX;
-		float rotDiffY = m_aInfo[m_nType].m_aKeyInfo[nNextKey].m_aKey[CntModel].m_fRotY -
-			m_aInfo[m_nType].m_aKeyInfo[nNowKey].m_aKey[CntModel].m_fRotY;
-		float rotDiffZ = m_aInfo[m_nType].m_aKeyInfo[nNextKey].m_aKey[CntModel].m_fRotZ -
-			m_aInfo[m_nType].m_aKeyInfo[nNowKey].m_aKey[CntModel].m_fRotZ;
+		float posDiffX = m_aInfo[m_nType].m_aKeyInfo[nNextKey].m_pKey[CntModel].m_fPosX -
+			m_aInfo[m_nType].m_aKeyInfo[nNowKey].m_pKey[CntModel].m_fPosX;
+		float posDiffY = m_aInfo[m_nType].m_aKeyInfo[nNextKey].m_pKey[CntModel].m_fPosY -
+			m_aInfo[m_nType].m_aKeyInfo[nNowKey].m_pKey[CntModel].m_fPosY;
+		float posDiffZ = m_aInfo[m_nType].m_aKeyInfo[nNextKey].m_pKey[CntModel].m_fPosZ -
+			m_aInfo[m_nType].m_aKeyInfo[nNowKey].m_pKey[CntModel].m_fPosZ;
+		float rotDiffX = m_aInfo[m_nType].m_aKeyInfo[nNextKey].m_pKey[CntModel].m_fRotX -
+			m_aInfo[m_nType].m_aKeyInfo[nNowKey].m_pKey[CntModel].m_fRotX;
+		float rotDiffY = m_aInfo[m_nType].m_aKeyInfo[nNextKey].m_pKey[CntModel].m_fRotY -
+			m_aInfo[m_nType].m_aKeyInfo[nNowKey].m_pKey[CntModel].m_fRotY;
+		float rotDiffZ = m_aInfo[m_nType].m_aKeyInfo[nNextKey].m_pKey[CntModel].m_fRotZ -
+			m_aInfo[m_nType].m_aKeyInfo[nNowKey].m_pKey[CntModel].m_fRotZ;
 
 		//位置向き算出
-		float posDemandX = m_aInfo[m_nType].m_aKeyInfo[nNowKey].m_aKey[CntModel].m_fPosX +
+		float posDemandX = m_aInfo[m_nType].m_aKeyInfo[nNowKey].m_pKey[CntModel].m_fPosX +
 			posDiffX * ((float)m_nCounter / m_aInfo[m_nType].m_aKeyInfo[nNowKey].m_nFrame);
-		float posDemandY = m_aInfo[m_nType].m_aKeyInfo[nNowKey].m_aKey[CntModel].m_fPosY +
+		float posDemandY = m_aInfo[m_nType].m_aKeyInfo[nNowKey].m_pKey[CntModel].m_fPosY +
 			posDiffY * ((float)m_nCounter / m_aInfo[m_nType].m_aKeyInfo[nNowKey].m_nFrame);
-		float posDemandZ = m_aInfo[m_nType].m_aKeyInfo[nNowKey].m_aKey[CntModel].m_fPosZ +
+		float posDemandZ = m_aInfo[m_nType].m_aKeyInfo[nNowKey].m_pKey[CntModel].m_fPosZ +
 			posDiffZ * ((float)m_nCounter / m_aInfo[m_nType].m_aKeyInfo[nNowKey].m_nFrame);
-		float rotDemandX = m_aInfo[m_nType].m_aKeyInfo[nNowKey].m_aKey[CntModel].m_fRotX +
+		float rotDemandX = m_aInfo[m_nType].m_aKeyInfo[nNowKey].m_pKey[CntModel].m_fRotX +
 			rotDiffX * ((float)m_nCounter / m_aInfo[m_nType].m_aKeyInfo[nNowKey].m_nFrame);
-		float rotDemandY = m_aInfo[m_nType].m_aKeyInfo[nNowKey].m_aKey[CntModel].m_fRotY +
+		float rotDemandY = m_aInfo[m_nType].m_aKeyInfo[nNowKey].m_pKey[CntModel].m_fRotY +
 			rotDiffY * ((float)m_nCounter / m_aInfo[m_nType].m_aKeyInfo[nNowKey].m_nFrame);
-		float rotDemandZ = m_aInfo[m_nType].m_aKeyInfo[nNowKey].m_aKey[CntModel].m_fRotZ +
+		float rotDemandZ = m_aInfo[m_nType].m_aKeyInfo[nNowKey].m_pKey[CntModel].m_fRotZ +
 			rotDiffZ * ((float)m_nCounter / m_aInfo[m_nType].m_aKeyInfo[nNowKey].m_nFrame);
 
 		//パーツの位置向き設定
@@ -163,4 +165,25 @@ void CMotion::SetModel(CModel** ppModel, int nNumModel)
 	//モデル入れて総数も入れる
 	m_ppModel = ppModel;
 	m_nNumModel = nNumModel;
+
+	//動的確保
+	for (int cntInfo = 0; cntInfo < INFO_NUM; cntInfo++)
+	{
+		for (int cntKeyInfo = 0; cntKeyInfo < KEYINFO_NUM; cntKeyInfo++)
+		{
+			m_aInfo[cntInfo].m_aKeyInfo[cntKeyInfo].m_pKey = new KEY[m_nNumModel];
+			for (int cntKey = 0; cntKey < m_nNumModel; cntKey++)
+			{
+				m_aInfo[cntInfo].m_aKeyInfo[cntKeyInfo].m_pKey[cntKey].m_fPosX = CManager::FLOAT_ZERO;
+				m_aInfo[cntInfo].m_aKeyInfo[cntKeyInfo].m_pKey[cntKey].m_fPosY = CManager::FLOAT_ZERO;
+				m_aInfo[cntInfo].m_aKeyInfo[cntKeyInfo].m_pKey[cntKey].m_fPosZ = CManager::FLOAT_ZERO;
+				m_aInfo[cntInfo].m_aKeyInfo[cntKeyInfo].m_pKey[cntKey].m_fRotX = CManager::FLOAT_ZERO;
+				m_aInfo[cntInfo].m_aKeyInfo[cntKeyInfo].m_pKey[cntKey].m_fRotY = CManager::FLOAT_ZERO;
+				m_aInfo[cntInfo].m_aKeyInfo[cntKeyInfo].m_pKey[cntKey].m_fRotZ = CManager::FLOAT_ZERO;
+			}
+			m_aInfo[cntInfo].m_aKeyInfo[cntKeyInfo].m_nFrame = 0;
+		}
+		m_aInfo[cntInfo].m_bLoop = false;
+		m_aInfo[cntInfo].m_nNumKey = CManager::INT_ZERO;
+	}
 }

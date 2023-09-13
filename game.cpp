@@ -26,6 +26,7 @@
 #include "manager.h"
 #include "camera.h"
 #include "bg.h"
+#include "countdown.h"
 
 //静的メンバ変数
 CPlayer* CGame::m_pPlayer = nullptr;
@@ -37,6 +38,7 @@ CLevel* CGame::m_pLevel[];
 CMeshSky* CGame::m_pSky = nullptr;
 int CGame::m_nATKBuilding = CManager::INT_ZERO;
 int CGame::m_nDestBuilding = CManager::INT_ZERO;
+const int CGame::CDSTART_TIME = MAX_FPS;
 
 //=================================
 //コンストラクタ
@@ -77,6 +79,7 @@ HRESULT CGame::Init(void)
 	//オブジェクト生成+初期化
 	m_pTimer = CTimer::Create(D3DXVECTOR3(SCREEN_WIDTH * 0.5f + 24.0f, 32.0f, 0.0f), CManager::VEC3_ZERO, 48.0f, 72.0f);
 	m_pTimer->Set(120, CTimer::COUNT_DOWN);
+	m_pTimer->Stop();
 
 	m_pScore = CScore::Create(D3DXVECTOR3(SCREEN_WIDTH - 24.0f, 32.0f, 0.0f), CManager::VEC3_ZERO, 40.0f, 64.0f);
 
@@ -91,13 +94,15 @@ HRESULT CGame::Init(void)
 	m_pHaveNum[CPicto::TYPE_DESTROYER] = CHaveNum::Create(D3DXVECTOR3(SCREEN_WIDTH - 30.0f, 100.0f, 0.0f), CManager::VEC3_ZERO, 30.0f, 36.0f, 2, CTexture::PRELOAD_HAVEICON_01);
 	m_pHaveNum[CPicto::TYPE_BLOCKER] = CHaveNum::Create(D3DXVECTOR3(SCREEN_WIDTH - 30.0f, 136.0f, 0.0f), CManager::VEC3_ZERO, 30.0f, 36.0f, 2, CTexture::PRELOAD_HAVEICON_02);
 	m_pHaveNum[CPicto::TYPE_NORMAL] = CHaveNum::Create(D3DXVECTOR3(SCREEN_WIDTH - 30.0f, 172.0f, 0.0f), CManager::VEC3_ZERO, 30.0f, 36.0f, 5, CTexture::PRELOAD_HAVEICON_03);
-	m_pHaveNum[CPicto::TYPE_DESTROYER]->AddNum(1);
-	m_pHaveNum[CPicto::TYPE_BLOCKER]->AddNum(1);
+	m_pHaveNum[CPicto::TYPE_DESTROYER]->AddNum(2);
+	m_pHaveNum[CPicto::TYPE_BLOCKER]->AddNum(2);
 	m_pHaveNum[CPicto::TYPE_NORMAL]->AddNum(1000);
 
 	m_pWarning = CBG::Create(PRIORITY_UI);
 	m_pWarning->BindTexture(CTexture::PRELOAD_WARNING_LIFE);
 	m_pWarning->SetEnable(false);	//いったん非表示
+
+	m_pCountDown = CCountDown::Create(D3DXVECTOR3(SCREEN_WIDTH * 0.5f, SCREEN_HEIGHT * 0.5f, 0.0f), 150.0f, 180.0f, 3);
 
 	//マップデータ読み込みと配置
 	CObjectX::LoadData("data\\Fugitive_Picto_MapData_v120.ismd");
@@ -140,6 +145,14 @@ void CGame::Uninit(void)
 		m_pPause = nullptr;
 	}
 
+	//カウントダウン破棄（一応）
+	if (m_pCountDown != nullptr)
+	{
+		m_pCountDown->Uninit();
+		delete m_pCountDown;
+		m_pCountDown = nullptr;
+	}
+
 	m_pPlayer = nullptr;
 	m_pSlider = nullptr;
 	m_pMeshField = nullptr;
@@ -156,82 +169,108 @@ void CGame::Update(void)
 {
 	CInputKeyboard* pKeyboard = CManager::GetInputKeyboard();	//キーボード取得
 
-	if (pKeyboard->GetTrigger(DIK_P) == true)
-	{//ポーズ切り替え
-		CManager::SetPause((CManager::GetPause() == true ? false : true));
-	}
+	//カウントダウンの更新
+	if (m_pCountDown != nullptr)
+	{
+		m_pCountDown->Update();
+		//カウントダウン前
+		if (m_counterCDStart == CDSTART_TIME)
+		{
+			m_pCountDown->Start();	//カウントダウン開始
+		}
+		else if (m_counterCDStart < CDSTART_TIME)
+		{
+			m_counterCDStart++;		//開始時間までカウント
+		}
 
-	if (m_pResult != nullptr)
-	{//リザルト
-		m_pResult->Update();
+		//カウントダウン後
+		if (m_pCountDown->GetCount() <= -1)
+		{
+			m_pCountDown->Uninit();
+			delete m_pCountDown;
+			m_pCountDown = nullptr;
+			m_pTimer->Start();
+		}
 	}
 	else
-	{//ゲーム
-		if (CManager::GetPause() == true)
-		{//ポーズしてる
-			if (m_pPause == nullptr)
-			{//ポーズがぬるぽ
-				m_pPause = new CPause;		//ポーズ生成
-				m_pPause->Init();			//ポーズ初期化
-			}
+	{//カウントダウンオブジェクトが消えた
+		if (pKeyboard->GetTrigger(DIK_P) == true)
+		{//ポーズ切り替え
+			CManager::SetPause((CManager::GetPause() == true ? false : true));
+		}
 
-			//ポーズ時の処理
-			m_pPause->Update();
+		if (m_pResult != nullptr)
+		{//リザルト
+			m_pResult->Update();
 		}
 		else
-		{//ポーズしてない
-			if (m_pPause != nullptr)
-			{//なんか入ってる
-				m_pPause->Uninit();	//終了
-				delete m_pPause;	//破棄
-				m_pPause = nullptr;	//ぬるぽ入れる
-			}
+		{//ゲーム
+			if (CManager::GetPause() == true)
+			{//ポーズしてる
+				if (m_pPause == nullptr)
+				{//ポーズがぬるぽ
+					m_pPause = new CPause;		//ポーズ生成
+					m_pPause->Init();			//ポーズ初期化
+				}
 
-			//体力
-			bool bWarning = false;
-			for (int cnt = 0; cnt < MAX_OBJ; cnt++)
-			{//デストロイヤー
-				CPictoDestroyer* pPicto = CPictoDestroyer::GetPicto(cnt);
-				if (pPicto != nullptr)
-				{
-					CPicto::TYPE type = pPicto->GetType();
-					if (pPicto->GetLife() <= HAVE_LIFE(pPicto->GetLv()) * CPictoTaxi::RESCUE_LIFE)
-					{//危険
-						bWarning = true;
-						break;
+				//ポーズ時の処理
+				m_pPause->Update();
+			}
+			else
+			{//ポーズしてない
+				if (m_pPause != nullptr)
+				{//なんか入ってる
+					m_pPause->Uninit();	//終了
+					delete m_pPause;	//破棄
+					m_pPause = nullptr;	//ぬるぽ入れる
+				}
+
+				//体力
+				bool bWarning = false;
+				for (int cnt = 0; cnt < MAX_OBJ; cnt++)
+				{//デストロイヤー
+					CPictoDestroyer* pPicto = CPictoDestroyer::GetPicto(cnt);
+					if (pPicto != nullptr)
+					{
+						CPicto::TYPE type = pPicto->GetType();
+						if (pPicto->GetLife() <= HAVE_LIFE(pPicto->GetLv()) * CPictoTaxi::RESCUE_LIFE)
+						{//危険
+							bWarning = true;
+							break;
+						}
 					}
 				}
-			}
-			for (int cnt = 0; cnt < MAX_OBJ; cnt++)
-			{//ブロッカー
-				CPictoBlocker* pPicto = CPictoBlocker::GetPicto(cnt);
-				if (pPicto != nullptr)
-				{
-					CPicto::TYPE type = pPicto->GetType();
-					if (pPicto->GetLife() <= HAVE_LIFE(pPicto->GetLv()) * CPictoTaxi::RESCUE_LIFE)
-					{//危険
-						bWarning = true;
-						break;
+				for (int cnt = 0; cnt < MAX_OBJ; cnt++)
+				{//ブロッカー
+					CPictoBlocker* pPicto = CPictoBlocker::GetPicto(cnt);
+					if (pPicto != nullptr)
+					{
+						CPicto::TYPE type = pPicto->GetType();
+						if (pPicto->GetLife() <= HAVE_LIFE(pPicto->GetLv()) * CPictoTaxi::RESCUE_LIFE)
+						{//危険
+							bWarning = true;
+							break;
+						}
 					}
 				}
-			}
-			//変更
-			m_pWarning->SetEnable(bWarning);
+				//変更
+				m_pWarning->SetEnable(bWarning);
 
-			//普段の処理
-			CKoban::CommonUpdate();	//交番共通更新処理
-			m_pPlayer->Update();
+				//普段の処理
+				CKoban::CommonUpdate();	//交番共通更新処理
+				m_pPlayer->Update();
 
-			//スコア算出
-			CulcScore();
+				//スコア算出
+				CulcScore();
 
-			//時間管理
-			if (m_pTimer->GetTime() <= 0)
-			{//時間切れ
-				if (m_pResult == nullptr)
-				{
-					CRanking::Set(m_pScore->GetScore());
-					m_pResult = CResult::Create();
+				//時間管理
+				if (m_pTimer->GetTime() <= 0)
+				{//時間切れ
+					if (m_pResult == nullptr)
+					{
+						CRanking::Set(m_pScore->GetScore());
+						m_pResult = CResult::Create();
+					}
 				}
 			}
 		}

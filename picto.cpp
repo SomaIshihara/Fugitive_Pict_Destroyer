@@ -214,14 +214,18 @@ void CPicto::Uninit(void)
 	}
 
 	m_apPicto[m_nID] = NULL;
-	for (int cnt = 0; cnt < PICTO_MODEL_NUM; cnt++)
-	{//一つずつ消す
-		if (m_apModel[cnt] != nullptr)
-		{
-			m_apModel[cnt]->Uninit();
-			delete m_apModel[cnt];
-			m_apModel[cnt] = NULL;
+	if (m_ppModel != nullptr)
+	{
+		for (int cnt = 0; cnt < m_nNumModel; cnt++)
+		{//一つずつ消す
+			if (m_ppModel[cnt] != nullptr)
+			{
+				m_ppModel[cnt]->Uninit();
+				delete m_ppModel[cnt];
+				m_ppModel[cnt] = NULL;
+			}
 		}
+		delete[] m_ppModel;	//配列そのものを破棄
 	}
 
 	//影消す
@@ -357,13 +361,17 @@ void CPicto::Update(void)
 	m_nCounterJumpTime++;
 
 	//モデル設定
-	for (int cnt = 0; cnt < PICTO_MODEL_NUM; cnt++)
+	if (m_ppModel != nullptr)
 	{
-		if (m_apModel[cnt] != nullptr)
+		for (int cnt = 0; cnt < m_nNumModel; cnt++)
 		{
-			m_apModel[cnt]->Update();
+			if (m_ppModel[cnt] != nullptr)
+			{
+				m_ppModel[cnt]->Update();
+			}
 		}
 	}
+
 	//モーションがある
 	if (m_pMotion != NULL)
 	{
@@ -439,13 +447,16 @@ void CPicto::Draw(void)
 	pDevice->SetTransform(D3DTS_WORLD, &m_mtxWorld);
 
 	//モデル描画
-	for (int cnt = 0; cnt < PICTO_MODEL_NUM; cnt++)
+	if (m_ppModel != nullptr)
 	{
-		if (m_apModel[cnt] != nullptr)
+		for (int cnt = 0; cnt < m_nNumModel; cnt++)
 		{
-			m_apModel[cnt]->SetMainColor(D3DXCOLOR(0.0f, 0.6f, 0.0f, 1.0f));		//後々可変式に変更
-			m_apModel[cnt]->SetSubColor(D3DXCOLOR(m_fRedAlpha, 0.0f, 0.0f, 0.0f));
-			m_apModel[cnt]->Draw();
+			if (m_ppModel[cnt] != nullptr)
+			{
+				m_ppModel[cnt]->SetMainColor(D3DXCOLOR(0.0f, 0.6f, 0.0f, 1.0f));		//後々可変式に変更
+				m_ppModel[cnt]->SetSubColor(D3DXCOLOR(m_fRedAlpha, 0.0f, 0.0f, 0.0f));
+				m_ppModel[cnt]->Draw();
+			}
 		}
 	}
 
@@ -482,11 +493,14 @@ void CPicto::SetModel(const char * pPath)
 	m_pMotion->Init();
 
 	//モーションビューアのファイルを読み込み
-	LoadMotionViewerFile(pPath, &m_apModel[0], m_pMotion, &m_nNumModel);
+	LoadMotionViewerFile(pPath, &m_ppModel, m_pMotion, &m_nNumModel);
 
-	for (int cnt = 0; cnt < PICTO_MODEL_NUM - 2; cnt++)
-	{//体の部分のみ行う
-		m_apModel[cnt]->SetChangeColor(true);
+	if (m_ppModel != nullptr)
+	{
+		for (int cnt = 0; cnt < m_nNumModel - 2; cnt++)
+		{//体の部分のみ行う
+			m_ppModel[cnt]->SetChangeColor(true);
+		}
 	}
 
 	//モーション設定
@@ -767,8 +781,11 @@ void CPictoDestroyer::Update(void)
 
 		if (m_nCounterDestruction > PICTO_ATTACK_TIME)
 		{
+			//建物への角度計算
+			float fBuildingAngle = atan2f(GetTargetObj()->GetHeight(), D3DXVec3Length(&(targetPos - pos)));
+
 			//弾発射
-			CBulletBillboard::Create(GetPos() + D3DXVECTOR3(0.0f,30.0f,0.0f), rot + D3DXVECTOR3(-0.0f * D3DX_PI, 0.0f, 0.0f), 10.0f, 10.0f, 3.0f, PICTO_POWER(m_nLv,m_nHaveNormalPicto), TYPE_DESTROYER, this);
+			CBulletBillboard::Create(GetPos() + D3DXVECTOR3(0.0f,30.0f,0.0f), rot + D3DXVECTOR3(-fBuildingAngle, 0.0f, 0.0f), 10.0f, 10.0f, 3.0f, PICTO_POWER(m_nLv,m_nHaveNormalPicto), TYPE_DESTROYER, this);
 
 			//破壊カウンターリセット
 			m_nCounterDestruction = CManager::INT_ZERO;

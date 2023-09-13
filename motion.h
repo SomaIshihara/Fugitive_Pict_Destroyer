@@ -8,9 +8,8 @@
 #define _MOTION_H_
 
 //マクロ
-#define KEY_NUM			(12)	//キー最大数
 #define KEYINFO_NUM		(16)	//キー情報最大数（モデル数に依存）
-#define INFO_NUM	(8)		//モーション情報最大数
+#define INFO_NUM		(8)		//モーション情報最大数
 
 //前方宣言
 class CModel;
@@ -34,7 +33,7 @@ public:
 	typedef struct
 	{
 		int m_nFrame;			//再生フレーム
-		KEY m_aKey[KEY_NUM];	//モデルのキー要素
+		KEY* m_pKey;			//モデルのキー要素（動的確保）
 	} KEY_INFO;
 
 	//モーション状態構造体
