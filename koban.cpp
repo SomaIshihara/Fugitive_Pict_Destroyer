@@ -26,7 +26,7 @@ CKoban::CKoban()
 {
 	for (int cnt = 0; cnt < MAX_OBJ; cnt++)
 	{//すべて確認
-		if (m_apKoban[cnt] == NULL)
+		if (m_apKoban[cnt] == nullptr)
 		{//空っぽ
 			m_apKoban[cnt] = this;	//自分自身のポインタを登録
 			m_nID = cnt;
@@ -43,7 +43,7 @@ CKoban::CKoban(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, CXModel* pModel) : 
 {
 	for (int cnt = 0; cnt < MAX_OBJ; cnt++)
 	{//すべて確認
-		if (m_apKoban[cnt] == NULL)
+		if (m_apKoban[cnt] == nullptr)
 		{//空っぽ
 			m_apKoban[cnt] = this;	//自分自身のポインタを登録
 			m_nID = cnt;
@@ -140,9 +140,9 @@ void CKoban::CommonUpdate(void)
 //=================================
 CKoban* CKoban::Create(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, CXModel* pModel)
 {
-	CKoban* pKoban = NULL;
+	CKoban* pKoban = nullptr;
 
-	if (pKoban == NULL)
+	if (pKoban == nullptr)
 	{
 		//交番の生成
 		pKoban = new CKoban(pos, rot, pModel);
@@ -154,7 +154,7 @@ CKoban* CKoban::Create(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, CXModel* pM
 	}
 	else
 	{
-		return NULL;
+		return nullptr;
 	}
 }
 

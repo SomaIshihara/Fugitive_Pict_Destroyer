@@ -61,7 +61,7 @@ HRESULT CLevel::Init(void)
 
 	for (int cnt = 0; cnt < m_nLevelDigit; cnt++)
 	{//数字オブジェクト初期化
-		m_ppNumber[cnt] = NULL;
+		m_ppNumber[cnt] = nullptr;
 	}
 
 	//テクスチャ読み込み
@@ -80,7 +80,7 @@ void CLevel::Uninit(void)
 {
 	for (int cnt = 0; cnt < m_nLevelDigit; cnt++)
 	{//数字オブジェクト終了
-		if (m_ppNumber[cnt] != NULL)
+		if (m_ppNumber[cnt] != nullptr)
 		{//大丈夫。中身はある
 			m_ppNumber[cnt]->Uninit();
 		}
@@ -100,7 +100,7 @@ void CLevel::Update(void)
 {
 	for (int cnt = 0; cnt < m_nLevelDigit; cnt++)
 	{//数字オブジェクト更新
-		if (m_ppNumber[cnt] != NULL)
+		if (m_ppNumber[cnt] != nullptr)
 		{//大丈夫。中身はある
 			//数字の更新処理
 			m_ppNumber[cnt]->Update();
@@ -125,9 +125,9 @@ void CLevel::Draw(void)
 CLevel* CLevel::Create(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, const float fOneWidth, const float fOneHeight, const int nLevelDigit,
 	const int nIconTexNum)
 {
-	CLevel* pLevel = NULL;
+	CLevel* pLevel = nullptr;
 
-	if (pLevel == NULL)
+	if (pLevel == nullptr)
 	{
 		//レベル管理オブジェクト生成
 		pLevel = new CLevel(nLevelDigit,5);
@@ -165,7 +165,7 @@ CLevel* CLevel::Create(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, const float
 	}
 	else
 	{
-		return NULL;
+		return nullptr;
 	}
 }
 
@@ -176,7 +176,7 @@ void CLevel::CutNumber(void)
 {
 	for (int cnt = 0; cnt < m_nLevelDigit; cnt++)
 	{//数字オブジェクトに渡す
-		if (m_ppNumber[cnt] != NULL)
+		if (m_ppNumber[cnt] != nullptr)
 		{//大丈夫。中身はある
 			m_ppNumber[cnt]->SetNumber(m_nLevel, cnt);
 		}

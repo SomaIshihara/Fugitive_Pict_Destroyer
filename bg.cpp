@@ -76,9 +76,9 @@ void CBG::Draw(void)
 //=================================
 CBG* CBG::Create(const int nPriority)
 {
-	CBG* pObjBG = NULL;
+	CBG* pObjBG = nullptr;
 
-	if (pObjBG == NULL)
+	if (pObjBG == nullptr)
 	{
 		//îwåiÇÃê∂ê¨
 		pObjBG = new CBG(nPriority);
@@ -90,6 +90,6 @@ CBG* CBG::Create(const int nPriority)
 	}
 	else
 	{
-		return NULL;
+		return nullptr;
 	}
 }

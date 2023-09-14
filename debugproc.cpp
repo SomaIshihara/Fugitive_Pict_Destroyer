@@ -16,7 +16,7 @@
 //========================
 CDebugProc::CDebugProc()
 {
-	m_pFont = NULL;
+	m_pFont = nullptr;
 	ZeroMemory(&m_aStrPrint[0], DEBPRO_MAX_STR);
 }
 
@@ -50,10 +50,10 @@ void CDebugProc::Init(void)
 void CDebugProc::Uninit(void)
 {
 	//フォント破棄
-	if (this->m_pFont != NULL)
+	if (this->m_pFont != nullptr)
 	{
 		this->m_pFont->Release();
-		this->m_pFont = NULL;
+		this->m_pFont = nullptr;
 	}
 }
 
@@ -66,7 +66,7 @@ void CDebugProc::Draw(void)
 	RECT rect = { 0,0,SCREEN_WIDTH,SCREEN_HEIGHT };
 	
 	//テキスト描画
-	this->m_pFont->DrawText(NULL, &this->m_aStrPrint[0], -1, &rect, DT_LEFT,
+	this->m_pFont->DrawText(nullptr, &this->m_aStrPrint[0], -1, &rect, DT_LEFT,
 		D3DCOLOR_RGBA(255, 255, 255, 255));
 
 	//バッファクリア

@@ -95,9 +95,9 @@ void CSymbol::Draw(void)
 //=================================
 CSymbol* CSymbol::Create(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, const float fWidth, const float fHeight)
 {
-	CSymbol* pSymbol = NULL;
+	CSymbol* pSymbol = nullptr;
 
-	if (pSymbol == NULL)
+	if (pSymbol == nullptr)
 	{
 		//記号オブジェの生成
 		pSymbol = new CSymbol(pos, rot, fWidth, fHeight);
@@ -109,7 +109,7 @@ CSymbol* CSymbol::Create(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, const flo
 	}
 	else
 	{
-		return NULL;
+		return nullptr;
 	}
 }
 

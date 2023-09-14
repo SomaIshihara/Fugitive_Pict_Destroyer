@@ -75,7 +75,7 @@ void CButton2D::Update(void)
 	CInputMouse* mouse = CManager::GetInputMouse();	//マウス取得
 
 	//マウス取得
-	if (mouse != NULL)
+	if (mouse != nullptr)
 	{
 		D3DXVECTOR3 buttonPos = GetPos();			//ボタン位置取得
 		float fWidth = GetWidth();					//ボタン幅取得
@@ -129,9 +129,9 @@ void CButton2D::Draw(void)
 //========================
 CButton2D * CButton2D::Create(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, const float fWidth, const float fHeight, int nPriority)
 {
-	CButton2D* pButton2D = NULL;
+	CButton2D* pButton2D = nullptr;
 
-	if (pButton2D == NULL)
+	if (pButton2D == nullptr)
 	{
 		//オブジェクト2Dの生成
 		pButton2D = new CButton2D(pos, rot, fWidth, fHeight);
@@ -143,7 +143,7 @@ CButton2D * CButton2D::Create(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, cons
 	}
 	else
 	{
-		return NULL;
+		return nullptr;
 	}
 }
 
@@ -213,7 +213,7 @@ void CButton3D::Update(void)
 	CInputMouse* mouse = CManager::GetInputMouse();	//マウス取得
 
 	//マウス取得
-	if (mouse != NULL)
+	if (mouse != nullptr)
 	{
 		D3DXVECTOR3 buttonPos = GetPos();			//ボタン位置取得
 		D3DXVECTOR3 buttonRot = GetRot();			//ボタン角度取得
@@ -283,9 +283,9 @@ void CButton3D::Draw(void)
 //========================
 CButton3D * CButton3D::Create(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, const float fWidth, const float fHeight)
 {
-	CButton3D* pButton3D = NULL;
+	CButton3D* pButton3D = nullptr;
 
-	if (pButton3D == NULL)
+	if (pButton3D == nullptr)
 	{
 		//オブジェクト2Dの生成
 		pButton3D = new CButton3D(pos, rot, fWidth, fHeight);
@@ -297,6 +297,6 @@ CButton3D * CButton3D::Create(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, cons
 	}
 	else
 	{
-		return NULL;
+		return nullptr;
 	}
 }

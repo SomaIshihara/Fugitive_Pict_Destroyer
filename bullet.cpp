@@ -135,9 +135,9 @@ void CBullet2D::Draw(void)
 //=================================
 CBullet2D* CBullet2D::Create(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, const float fWidth, const float fHeight, const float fSpeed, const TYPE type)
 {
-	CBullet2D* pBullet = NULL;
+	CBullet2D* pBullet = nullptr;
 
-	if (pBullet == NULL)
+	if (pBullet == nullptr)
 	{
 		//オブジェクトアニメーション2Dの生成
 		pBullet = new CBullet2D(pos, rot, fWidth, fHeight, fSpeed);
@@ -158,7 +158,7 @@ CBullet2D* CBullet2D::Create(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, const
 	}
 	else
 	{
-		return NULL;
+		return nullptr;
 	}
 }
 
@@ -172,7 +172,7 @@ bool CBullet2D::CollisionBlock(void)
 	{//全オブジェクト見る
 		CObject* pObj = GetObject(BLOCK_PRIORITY, cnt);	//オブジェクト取得
 
-		if (pObj != NULL)	//ヌルチェ
+		if (pObj != nullptr)	//ヌルチェ
 		{//なんかある
 			TYPE type = pObj->GetType();	//種類取得
 
@@ -326,9 +326,9 @@ void CBulletBillboard::Draw(void)
 CBulletBillboard* CBulletBillboard::Create(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, const float fWidth, const float fHeight, 
 	const float fSpeed, const int nPower, const CPicto::TYPE type, CPicto* firePicto)
 {
-	CBulletBillboard* pBullet = NULL;
+	CBulletBillboard* pBullet = nullptr;
 
-	if (pBullet == NULL)
+	if (pBullet == nullptr)
 	{
 		//オブジェクトアニメーション2Dの生成
 		pBullet = new CBulletBillboard(pos, rot, fWidth, fHeight, fSpeed, nPower, firePicto);
@@ -349,7 +349,7 @@ CBulletBillboard* CBulletBillboard::Create(const D3DXVECTOR3 pos, const D3DXVECT
 	}
 	else
 	{
-		return NULL;
+		return nullptr;
 	}
 }
 
@@ -362,7 +362,7 @@ bool CBulletBillboard::CollisionBuilding(void)
 	{//全オブジェクト見る
 		CBuilding* pBuilding = CBuilding::GetBuilding(cnt);
 
-		if (pBuilding != NULL)	//ヌルチェ
+		if (pBuilding != nullptr)	//ヌルチェ
 		{//なんかある
 			D3DXVECTOR3 buildPos = pBuilding->GetPos();
 			float buildWidth = pBuilding->GetWidth();
@@ -403,7 +403,7 @@ bool CBulletBillboard::CollisionPicto(void)
 		{//全オブジェクト見る
 			CPictoPolice* pPicto = CPictoPolice::GetPicto(cnt);
 
-			if (pPicto != NULL && pPicto != m_pfirePicto)	//ヌルチェ
+			if (pPicto != nullptr && pPicto != m_pfirePicto)	//ヌルチェ
 			{//なんかある
 				D3DXVECTOR3 pictoPos = pPicto->GetPos();
 				float pictoWidth = pPicto->GetWidth();
@@ -436,7 +436,7 @@ bool CBulletBillboard::CollisionPicto(void)
 		{//全オブジェクト見る
 			CPictoDestroyer* pPicto = CPictoDestroyer::GetPicto(cnt);
 
-			if (pPicto != NULL && pPicto != m_pfirePicto)	//ヌルチェ
+			if (pPicto != nullptr && pPicto != m_pfirePicto)	//ヌルチェ
 			{//なんかある
 				D3DXVECTOR3 pictoPos = pPicto->GetPos();
 				float pictoWidth = pPicto->GetWidth();
@@ -467,7 +467,7 @@ bool CBulletBillboard::CollisionPicto(void)
 		{//全オブジェクト見る
 			CPictoBlocker* pPicto = CPictoBlocker::GetPicto(cnt);
 
-			if (pPicto != NULL && pPicto != m_pfirePicto)	//ヌルチェ
+			if (pPicto != nullptr && pPicto != m_pfirePicto)	//ヌルチェ
 			{//なんかある
 				D3DXVECTOR3 pictoPos = pPicto->GetPos();
 				float pictoWidth = pPicto->GetWidth();

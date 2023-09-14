@@ -63,7 +63,7 @@ HRESULT CMeshSky::Init(void)
 		FVF_VERTEX_3D,
 		D3DPOOL_MANAGED,
 		&m_pVtxbuff,
-		NULL);
+		nullptr);
 
 	//インデックスバッファの生成
 	pDevice->CreateIndexBuffer(sizeof(WORD) * (m_nBlockHorizontal + 2),
@@ -71,7 +71,7 @@ HRESULT CMeshSky::Init(void)
 		D3DFMT_INDEX16,
 		D3DPOOL_MANAGED,
 		&m_pIdxBuffTop,
-		NULL);
+		nullptr);
 
 	int nIdxNum = (((m_nBlockVertical + 1) * m_nBlockHorizontal * 2) + (2 * (m_nBlockHorizontal - 1)));
 	pDevice->CreateIndexBuffer(sizeof(WORD) * nIdxNum,
@@ -79,7 +79,7 @@ HRESULT CMeshSky::Init(void)
 		D3DFMT_INDEX16,
 		D3DPOOL_MANAGED,
 		&m_pIdxBuffMiddle,
-		NULL);
+		nullptr);
 
 	//インデックスバッファの生成
 	pDevice->CreateIndexBuffer(sizeof(WORD) * (m_nBlockHorizontal + 2),
@@ -87,7 +87,7 @@ HRESULT CMeshSky::Init(void)
 		D3DFMT_INDEX16,
 		D3DPOOL_MANAGED,
 		&m_pIdxBuffBottom,
-		NULL);
+		nullptr);
 
 	VERTEX_3D *pVtx;
 
@@ -193,17 +193,17 @@ HRESULT CMeshSky::Init(void)
 void CMeshSky::Uninit(void)
 {
 	//頂点バッファの破棄
-	if (m_pVtxbuff != NULL)
+	if (m_pVtxbuff != nullptr)
 	{
 		m_pVtxbuff->Release();
-		m_pVtxbuff = NULL;
+		m_pVtxbuff = nullptr;
 	}
 
 	//インデックスバッファ破棄
-	if (m_pIdxBuffMiddle != NULL)
+	if (m_pIdxBuffMiddle != nullptr)
 	{
 		m_pIdxBuffMiddle->Release();
-		m_pIdxBuffMiddle = NULL;
+		m_pIdxBuffMiddle = nullptr;
 	}
 
 	//自分自身破棄
@@ -283,9 +283,9 @@ void CMeshSky::Draw(void)
 //=================================
 CMeshSky* CMeshSky::Create(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, const float fRadius, const int nBlockWidth, const int nBlockDepth)
 {
-	CMeshSky* pMeshField = NULL;
+	CMeshSky* pMeshField = nullptr;
 
-	if (pMeshField == NULL)
+	if (pMeshField == nullptr)
 	{
 		//オブジェクト2Dの生成
 		pMeshField = new CMeshSky(pos, rot, fRadius, nBlockWidth, nBlockDepth);
@@ -299,7 +299,7 @@ CMeshSky* CMeshSky::Create(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, const f
 	}
 	else
 	{
-		return NULL;
+		return nullptr;
 	}
 }
 

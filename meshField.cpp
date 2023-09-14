@@ -68,7 +68,7 @@ HRESULT CMeshField::Init(void)
 		FVF_VERTEX_3D,
 		D3DPOOL_MANAGED,
 		&m_pVtxbuff,
-		NULL);
+		nullptr);
 
 	//インデックスバッファの生成
 	int nIdxNum = (((m_nBlockWidth + 1) * m_nBlockDepth * 2) + (2 * (m_nBlockDepth - 1)));
@@ -77,7 +77,7 @@ HRESULT CMeshField::Init(void)
 		D3DFMT_INDEX16,
 		D3DPOOL_MANAGED,
 		&m_pIdxBuff,
-		NULL);
+		nullptr);
 
 	VERTEX_3D *pVtx;
 
@@ -193,17 +193,17 @@ HRESULT CMeshField::Init(void)
 void CMeshField::Uninit(void)
 {
 	//頂点バッファの破棄
-	if (m_pVtxbuff != NULL)
+	if (m_pVtxbuff != nullptr)
 	{
 		m_pVtxbuff->Release();
-		m_pVtxbuff = NULL;
+		m_pVtxbuff = nullptr;
 	}
 
 	//インデックスバッファ破棄
-	if (m_pIdxBuff != NULL)
+	if (m_pIdxBuff != nullptr)
 	{
 		m_pIdxBuff->Release();
-		m_pIdxBuff = NULL;
+		m_pIdxBuff = nullptr;
 	}
 
 	//自分自身破棄
@@ -263,9 +263,9 @@ void CMeshField::Draw(void)
 CMeshField* CMeshField::Create(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, const float fWidth, const float fDepth,
 	const int nBlockWidth, const int nBlockDepth)
 {
-	CMeshField* pMeshField = NULL;
+	CMeshField* pMeshField = nullptr;
 
-	if (pMeshField == NULL)
+	if (pMeshField == nullptr)
 	{
 		//オブジェクト2Dの生成
 		pMeshField = new CMeshField(pos, rot, fWidth, fDepth, nBlockWidth, nBlockDepth);
@@ -277,7 +277,7 @@ CMeshField* CMeshField::Create(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, con
 	}
 	else
 	{
-		return NULL;
+		return nullptr;
 	}
 }
 

@@ -150,9 +150,9 @@ void CObjectAnim2D::Draw(void)
 //=================================
 CObjectAnim2D* CObjectAnim2D::Create(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, const float fWidth, const float fHeight, const int nAnimSpeed, const bool bLoop)
 {
-	CObjectAnim2D* pObjAnim2D = NULL;
+	CObjectAnim2D* pObjAnim2D = nullptr;
 
-	if (pObjAnim2D == NULL)
+	if (pObjAnim2D == nullptr)
 	{
 		//オブジェクトアニメーション2Dの生成
 		pObjAnim2D = new CObjectAnim2D(pos, rot, fWidth, fHeight, nAnimSpeed, bLoop);
@@ -167,7 +167,7 @@ CObjectAnim2D* CObjectAnim2D::Create(const D3DXVECTOR3 pos, const D3DXVECTOR3 ro
 	}
 	else
 	{
-		return NULL;
+		return nullptr;
 	}
 }
 

@@ -29,7 +29,7 @@ CTexture::CTexture()
 {
 	for (int cnt = 0; cnt < MAX_TEXTURE; cnt++)
 	{//全部空っぽにする
-		m_apTexture[cnt].pTexture = NULL;
+		m_apTexture[cnt].pTexture = nullptr;
 		m_apTexture[cnt].nPatternWidth = 0;
 		m_apTexture[cnt].nPatternHeight = 0;
 	}
@@ -61,7 +61,7 @@ HRESULT CTexture::Load(const char* pPath)
 	pFile = fopen(pPath, "r");
 
 	//敵配置情報を取得
-	if (pFile != NULL)
+	if (pFile != nullptr)
 	{
 		while (1)
 		{
@@ -125,7 +125,7 @@ HRESULT CTexture::Load(const char* pPath)
 						char* pSprit = strtok(&aCode[0], " =\n");	//処理内容の部分消す
 
 						//パス取得
-						pSprit = strtok(NULL, " =\n");
+						pSprit = strtok(nullptr, " =\n");
 
 						//タブ文字が入っているところを消す
 						char *pCharPos = strchr(pSprit, '\t');
@@ -142,7 +142,7 @@ HRESULT CTexture::Load(const char* pPath)
 						char* pSprit = strtok(&aCode[0], " =\n");	//処理内容の部分消す
 
 						//データ
-						pSprit = strtok(NULL, " =\n");
+						pSprit = strtok(nullptr, " =\n");
 						nPatWidth = atoi(pSprit);
 						
 					}
@@ -151,7 +151,7 @@ HRESULT CTexture::Load(const char* pPath)
 						char* pSprit = strtok(&aCode[0], " =\n");	//処理内容の部分消す
 
 						//データ
-						pSprit = strtok(NULL, " =\n");
+						pSprit = strtok(nullptr, " =\n");
 						nPatHeight = atoi(pSprit);
 					}
 				}
@@ -180,10 +180,10 @@ void CTexture::Unload(void)
 {
 	for (int cnt = 0; cnt < m_nNumAll; cnt++)
 	{//全部破棄
-		if (m_apTexture[cnt].pTexture != NULL)
+		if (m_apTexture[cnt].pTexture != nullptr)
 		{
 			m_apTexture[cnt].pTexture->Release();
-			m_apTexture[cnt].pTexture = NULL;
+			m_apTexture[cnt].pTexture = nullptr;
 		}
 	}
 	m_nNumAll = 0;	//個数リセット
@@ -242,7 +242,7 @@ LPDIRECT3DTEXTURE9 CTexture::GetAddress(int nIdx)
 	}
 	else
 	{//そんなものはない
-		return NULL;	//返すものなんてない
+		return nullptr;	//返すものなんてない
 	}
 }
 

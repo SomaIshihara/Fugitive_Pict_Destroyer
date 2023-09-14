@@ -95,9 +95,9 @@ void CNumber::Draw(void)
 //=================================
 CNumber* CNumber::Create(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, const float fWidth, const float fHeight)
 {
-	CNumber* pNumber = NULL;
+	CNumber* pNumber = nullptr;
 
-	if (pNumber == NULL)
+	if (pNumber == nullptr)
 	{
 		//オブジェクトアニメーション2Dの生成
 		pNumber = new CNumber(pos, rot, fWidth, fHeight);
@@ -109,7 +109,7 @@ CNumber* CNumber::Create(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, const flo
 	}
 	else
 	{
-		return NULL;
+		return nullptr;
 	}
 }
 

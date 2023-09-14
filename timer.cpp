@@ -59,7 +59,7 @@ HRESULT CTimer::Init(void)
 {
 	for (int cnt = 0; cnt < TIME_DIGIT; cnt++)
 	{//数字オブジェクト初期化
-		m_pNumber[cnt] = NULL;
+		m_pNumber[cnt] = nullptr;
 	}
 
 	//テクスチャ読み込み
@@ -85,7 +85,7 @@ void CTimer::Uninit(void)
 {
 	for (int cnt = 0; cnt < TIME_DIGIT; cnt++)
 	{//数字オブジェクト終了
-		if (m_pNumber[cnt] != NULL)
+		if (m_pNumber[cnt] != nullptr)
 		{//大丈夫。中身はある
 			m_pNumber[cnt]->Uninit();
 		}
@@ -140,7 +140,7 @@ void CTimer::Update(void)
 
 		for (int cnt = 0; cnt < TIME_DIGIT; cnt++)
 		{//数字オブジェクト更新
-			if (m_pNumber[cnt] != NULL)
+			if (m_pNumber[cnt] != nullptr)
 			{//大丈夫。中身はある
 			 //オブジェクト2Dの更新処理
 				m_pNumber[cnt]->Update();
@@ -165,9 +165,9 @@ void CTimer::Draw(void)
 //=================================
 CTimer* CTimer::Create(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, const float fOneWidth, const float fOneHeight)
 {
-	CTimer* pScore = NULL;
+	CTimer* pScore = nullptr;
 
-	if (pScore == NULL)
+	if (pScore == nullptr)
 	{
 		//タイマー管理オブジェクト生成
 		pScore = new CTimer;
@@ -219,7 +219,7 @@ CTimer* CTimer::Create(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, const float
 	}
 	else
 	{
-		return NULL;
+		return nullptr;
 	}
 }
 
@@ -242,7 +242,7 @@ void CTimer::CutNumber(void)
 {
 	for (int cnt = 0; cnt < TIME_DIGIT; cnt++)
 	{//数字オブジェクトに渡す
-		if (m_pNumber[cnt] != NULL)
+		if (m_pNumber[cnt] != nullptr)
 		{//大丈夫。中身はある
 			m_pNumber[cnt]->SetNumber(m_nTime, cnt);
 		}

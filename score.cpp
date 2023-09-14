@@ -58,7 +58,7 @@ HRESULT CScore::Init(void)
 {
 	for (int cnt = 0; cnt < SCORE_DIGIT; cnt++)
 	{//数字オブジェクト初期化
-		m_pNumberTenHundred[cnt] = NULL;
+		m_pNumberTenHundred[cnt] = nullptr;
 	}
 
 	//テクスチャ読み込み
@@ -80,7 +80,7 @@ void CScore::Uninit(void)
 {
 	for (int cnt = 0; cnt < SCORE_DIGIT; cnt++)
 	{//数字オブジェクト終了
-		if (m_pNumberTenHundred[cnt] != NULL)
+		if (m_pNumberTenHundred[cnt] != nullptr)
 		{//大丈夫。中身はある
 			m_pNumberTenHundred[cnt]->Uninit();
 		}
@@ -97,7 +97,7 @@ void CScore::Update(void)
 {
 	for (int cnt = 0; cnt < SCORE_DIGIT; cnt++)
 	{//数字オブジェクト更新
-		if (m_pNumberHMillion[cnt] != NULL)
+		if (m_pNumberHMillion[cnt] != nullptr)
 		{//大丈夫。中身はある
 			//オブジェクト2Dの更新処理
 			m_pNumberHMillion[cnt]->Update();
@@ -105,7 +105,7 @@ void CScore::Update(void)
 	}
 	for (int cnt = 0; cnt < SCORE_DIGIT; cnt++)
 	{//数字オブジェクト更新
-		if (m_pNumberTenHundred[cnt] != NULL)
+		if (m_pNumberTenHundred[cnt] != nullptr)
 		{//大丈夫。中身はある
 			//オブジェクト2Dの更新処理
 			m_pNumberTenHundred[cnt]->Update();
@@ -129,9 +129,9 @@ void CScore::Draw(void)
 //=================================
 CScore* CScore::Create(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, const float fOneWidth, const float fOneHeight)
 {
-	CScore* pScore = NULL;
+	CScore* pScore = nullptr;
 
-	if (pScore == NULL)
+	if (pScore == nullptr)
 	{
 		//スコア管理オブジェクト生成
 		pScore = new CScore;
@@ -189,7 +189,7 @@ CScore* CScore::Create(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, const float
 	}
 	else
 	{
-		return NULL;
+		return nullptr;
 	}
 }
 
@@ -218,14 +218,14 @@ void CScore::CutNumber(void)
 {
 	for (int cnt = 0; cnt < SCORE_DIGIT; cnt++)
 	{//数字オブジェクトに渡す
-		if (m_pNumberTenHundred[cnt] != NULL)
+		if (m_pNumberTenHundred[cnt] != nullptr)
 		{//大丈夫。中身はある
 			m_pNumberHMillion[cnt]->SetNumber(m_nScore, cnt + SCORE_INVISIBLE + 4);
 		}
 	}
 	for (int cnt = 0; cnt < SCORE_DIGIT; cnt++)
 	{//数字オブジェクトに渡す
-		if (m_pNumberTenHundred[cnt] != NULL)
+		if (m_pNumberTenHundred[cnt] != nullptr)
 		{//大丈夫。中身はある
 			m_pNumberTenHundred[cnt]->SetNumber(m_nScore, cnt + SCORE_INVISIBLE);
 		}

@@ -318,7 +318,7 @@ public:
 
 	//ê›íË
 	void SetMode(const MODE mode) { m_mode = mode; }
-	void UnsetTargetPicto(void) { m_ptargetPicto = NULL; }
+	void UnsetTargetPicto(void) { m_ptargetPicto = nullptr; }
 
 	//èÊé‘
 	void TakeTaxi(CPictoTaxi* taxi) {};
@@ -433,7 +433,7 @@ public:
 
 	//ê›íË
 	void SetTargetPicto(CPicto* target) { m_pTargetPicto = target; }
-	void UnsetTarget(void) { m_pTargetPicto = NULL; }
+	void UnsetTarget(void) { m_pTargetPicto = nullptr; }
 
 	//åöï®ê›íË
 	void SetBuilding(CBuilding* pBuilding) { SetTargetObj((CObject*)pBuilding); }

@@ -246,11 +246,11 @@ void CTutorial::CulcScore(void)
 	for (int cnt = 0; cnt < MAX_OBJ; cnt++)
 	{
 		CBuilding* pBuilding = CBuilding::GetBuilding(cnt);	//建物オブジェクト取得
-		if (pBuilding != NULL)
+		if (pBuilding != nullptr)
 		{//なんかある
 			CXModel* pModel = CXModel::GetTop();
 			int nModelNum = 0;
-			while (pModel != NULL && pModel != pBuilding->GetModel())
+			while (pModel != nullptr && pModel != pBuilding->GetModel())
 			{
 				pModel = pModel->GetNext();
 				nModelNum++;

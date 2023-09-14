@@ -10,8 +10,8 @@
 #include "texture.h"
 
 //静的メンバ変数
-CXModel* CXModel::m_pTop = NULL;
-CXModel* CXModel::m_pCur = NULL;
+CXModel* CXModel::m_pTop = nullptr;
+CXModel* CXModel::m_pCur = nullptr;
 int CXModel::m_nNumAll = 0;
 
 //=================================
@@ -19,17 +19,17 @@ int CXModel::m_nNumAll = 0;
 //=================================
 CXModel::CXModel()
 {
-	if (m_pCur == NULL)
+	if (m_pCur == nullptr)
 	{//最後尾がいない（すなわち先頭もいない）
 		m_pTop = this;		//俺が先頭
-		m_pPrev = NULL;		//前後誰もいない
-		m_pNext = NULL;
+		m_pPrev = nullptr;		//前後誰もいない
+		m_pNext = nullptr;
 	}
 	else
 	{//最後尾がいる
 		m_pPrev = m_pCur;		//最後尾が自分の前のオブジェ
 		m_pCur->m_pNext = this;	//最後尾の次のオブジェが自分
-		m_pNext = NULL;			//自分の次のオブジェはいない
+		m_pNext = nullptr;			//自分の次のオブジェはいない
 	}
 	m_pCur = this;				//俺が最後尾
 	m_bExclusion = false;		//生きてる
@@ -53,11 +53,11 @@ CXModel* CXModel::Load(const char* pPath)
 
 	CXModel* pObject = m_pTop;	//先頭を入れる
 
-	while (pObject != NULL)
+	while (pObject != nullptr)
 	{//事前検知
 		CXModel* pObjectNext = pObject->m_pNext;	//次のオブジェ保存
 
-		if (pObject->m_pFilePath != NULL && strcmp(pObject->m_pFilePath, pPath) == 0)
+		if (pObject->m_pFilePath != nullptr && strcmp(pObject->m_pFilePath, pPath) == 0)
 		{
 			return pObject;
 		}
@@ -66,21 +66,21 @@ CXModel* CXModel::Load(const char* pPath)
 	}
 
 	pObject = new CXModel;
-	pObject->m_pIdxtexture = NULL;	//テクスチャ番号ポインタをNULLにする
+	pObject->m_pIdxtexture = nullptr;	//テクスチャ番号ポインタをnullptrにする
 
 	if (SUCCEEDED(D3DXLoadMeshFromX(
 		pPath,
 		D3DXMESH_SYSTEMMEM,
 		pDevice,
-		NULL,
+		nullptr,
 		&pObject->m_pBuffMat,
-		NULL,
+		nullptr,
 		&pObject->m_dwNumMatModel,
 		&pObject->m_pMesh)))
 	{
 		//テクスチャポインタ確保
-		if (pObject->m_pIdxtexture == NULL)
-		{//NULL
+		if (pObject->m_pIdxtexture == nullptr)
+		{//nullptr
 		 //テクスチャ番号配列確保
 			pObject->m_pIdxtexture = new int[(int)pObject->m_dwNumMatModel];
 
@@ -151,15 +151,15 @@ CXModel* CXModel::Load(const char* pPath)
 			//テクスチャ読み込み
 			for (int nCntTex = 0; nCntTex < (int)pObject->m_dwNumMatModel; nCntTex++)
 			{
-				pObject->m_pIdxtexture[nCntTex] = NULL;
-				if (pMat[nCntTex].pTextureFilename != NULL)
+				pObject->m_pIdxtexture[nCntTex] = nullptr;
+				if (pMat[nCntTex].pTextureFilename != nullptr)
 				{//テクスチャあるよ
 				 //テクスチャ読み込み
 					pObject->m_pIdxtexture[nCntTex] = pTexture->Regist(pMat[nCntTex].pTextureFilename);
 				}
 				else
 				{//ないよ
-					pObject->m_pIdxtexture[nCntTex] = -1;	//テクスチャ取得時にNULLになるようにする
+					pObject->m_pIdxtexture[nCntTex] = -1;	//テクスチャ取得時にnullptrになるようにする
 				}
 			}
 		}
@@ -179,10 +179,10 @@ CXModel* CXModel::Load(const char* pPath)
 	{
 		delete pObject;
 		m_nNumAll--;
-		return NULL;
+		return nullptr;
 	}
 
-	return NULL;
+	return nullptr;
 }
 
 //=================================
@@ -190,11 +190,11 @@ CXModel* CXModel::Load(const char* pPath)
 //=================================
 void CXModel::Unload(void)
 {
-	if (m_pPrev != NULL)
+	if (m_pPrev != nullptr)
 	{//前にオブジェがいる
 		m_pPrev->m_pNext = m_pNext;	//前のオブジェの次のオブジェは自分の次のオブジェ
 	}
-	if (m_pNext != NULL)
+	if (m_pNext != nullptr)
 	{
 		m_pNext->m_pPrev = m_pPrev;	//次のオブジェの前のオブジェは自分の前のオブジェ
 	}
@@ -209,31 +209,31 @@ void CXModel::Unload(void)
 	}
 
 	//メッシュの破棄
-	if (m_pMesh != NULL)
+	if (m_pMesh != nullptr)
 	{
 		m_pMesh->Release();
-		m_pMesh = NULL;
+		m_pMesh = nullptr;
 	}
 
 	//マテリアルの破棄
-	if (m_pBuffMat != NULL)
+	if (m_pBuffMat != nullptr)
 	{
 		m_pBuffMat->Release();
-		m_pBuffMat = NULL;
+		m_pBuffMat = nullptr;
 	}
 
 	//テクスチャ番号破棄
-	if (m_pIdxtexture != NULL)
+	if (m_pIdxtexture != nullptr)
 	{
 		delete[] m_pIdxtexture;
-		m_pIdxtexture = NULL;
+		m_pIdxtexture = nullptr;
 	}
 
 	//ファイルパス破棄
-	if (m_pFilePath != NULL)
+	if (m_pFilePath != nullptr)
 	{
 		delete[] m_pFilePath;
-		m_pFilePath = NULL;
+		m_pFilePath = nullptr;
 	}
 
 	//成仏	
@@ -248,7 +248,7 @@ void CXModel::UnloadAll(void)
 {
 	CXModel* pObject = m_pTop;	//先頭を入れる
 
-	while (pObject != NULL)
+	while (pObject != nullptr)
 	{//最後尾まで回し続ける
 		CXModel* pObjectNext = pObject->m_pNext;	//次のオブジェ保存
 
@@ -267,7 +267,7 @@ CXModel::LOADRESULT CXModel::LoadList(const char * pPath)
 
 	pFile = fopen(pPath, "rb");
 
-	if (pFile != NULL)
+	if (pFile != nullptr)
 	{//開けた
 		int nNumAll = 0;
 		fread(&nNumAll, sizeof(int), 1, pFile);	//個数書き込み
@@ -298,13 +298,13 @@ CXModel::LOADRESULT CXModel::SaveList(const char * pPath)
 
 	pFile = fopen(pPath, "wb");
 
-	if (pFile != NULL)
+	if (pFile != nullptr)
 	{//普通に開けた
 		int nNumAll = CXModel::GetNumAll();
 		fwrite(&nNumAll, sizeof(int), 1, pFile);	//個数書き込み
 
 		CXModel* pObject = m_pTop;	//リスト書き込み体制
-		while (pObject != NULL)
+		while (pObject != nullptr)
 		{
 			CXModel* pObjectNext = pObject->m_pNext;
 

@@ -24,7 +24,7 @@ public:
 	static CPoint* Create(const D3DXVECTOR3 pos);
 
 	//íTçı
-	static CPoint* Search(const D3DXVECTOR3 pos, const CPoint* pNowPoint = NULL);
+	static CPoint* Search(const D3DXVECTOR3 pos, const CPoint* pNowPoint = nullptr);
 
 	//ÉäÉXÉg
 	static CPoint* GetTop(void) { return m_pTop; }

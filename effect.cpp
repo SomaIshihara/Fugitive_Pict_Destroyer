@@ -130,9 +130,9 @@ void CEffect2D::Draw(void)
 CEffect2D* CEffect2D::Create(const D3DXVECTOR3 pos, const D3DXVECTOR3 move, const float fWidth, const float fHeight,
 	const D3DXCOLOR col, const int nLife)
 {
-	CEffect2D* pObjEffect = NULL;
+	CEffect2D* pObjEffect = nullptr;
 
-	if (pObjEffect == NULL)
+	if (pObjEffect == nullptr)
 	{
 		//îwåiÇÃê∂ê¨
 		pObjEffect = new CEffect2D(pos, move, fWidth, fHeight, col, nLife);
@@ -147,7 +147,7 @@ CEffect2D* CEffect2D::Create(const D3DXVECTOR3 pos, const D3DXVECTOR3 move, cons
 	}
 	else
 	{
-		return NULL;
+		return nullptr;
 	}
 }
 
@@ -272,9 +272,9 @@ void CEffectBillboard::Draw(void)
 CEffectBillboard* CEffectBillboard::Create(const D3DXVECTOR3 pos, const D3DXVECTOR3 move, const float fWidth, const float fHeight,
 	const D3DXCOLOR col, const int nLife)
 {
-	CEffectBillboard* pObjEffect = NULL;
+	CEffectBillboard* pObjEffect = nullptr;
 
-	if (pObjEffect == NULL)
+	if (pObjEffect == nullptr)
 	{
 		//îwåiÇÃê∂ê¨
 		pObjEffect = new CEffectBillboard(pos, move, fWidth, fHeight, col, nLife);
@@ -289,6 +289,6 @@ CEffectBillboard* CEffectBillboard::Create(const D3DXVECTOR3 pos, const D3DXVECT
 	}
 	else
 	{
-		return NULL;
+		return nullptr;
 	}
 }

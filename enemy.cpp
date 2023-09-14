@@ -94,9 +94,9 @@ void CEnemy::Draw(void)
 //=================================
 CEnemy* CEnemy::Create(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, const float fWidth, const float fHeight, const int nAnimSpeed, const int nLife)
 {
-	CEnemy* pEnemy = NULL;
+	CEnemy* pEnemy = nullptr;
 
-	if (pEnemy == NULL)
+	if (pEnemy == nullptr)
 	{
 		//ìGÇÃê∂ê¨
 		pEnemy = new CEnemy(pos, rot, fWidth, fHeight, nAnimSpeed, nLife);
@@ -111,7 +111,7 @@ CEnemy* CEnemy::Create(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, const float
 	}
 	else
 	{
-		return NULL;
+		return nullptr;
 	}
 }
 

@@ -17,8 +17,8 @@
 CRenderer::CRenderer()
 {
 	//クリア
-	m_pD3D = NULL;
-	m_pD3DDevice = NULL;
+	m_pD3D = nullptr;
+	m_pD3DDevice = nullptr;
 }
 
 //=================================
@@ -39,7 +39,7 @@ HRESULT CRenderer::Init(HWND hWnd, BOOL bWindow)
 	//Direct3Dオブジェクトの生成
 	m_pD3D = Direct3DCreate9(D3D_SDK_VERSION);
 
-	if (m_pD3D == NULL)
+	if (m_pD3D == nullptr)
 	{
 		return E_FAIL;
 	}
@@ -117,15 +117,15 @@ HRESULT CRenderer::Init(HWND hWnd, BOOL bWindow)
 void CRenderer::Uninit(void)
 {
 	//終了処理（自分が作ったものを捨てる）
-	if (m_pD3DDevice != NULL)
+	if (m_pD3DDevice != nullptr)
 	{
 		m_pD3DDevice->Release();
-		m_pD3DDevice = NULL;
+		m_pD3DDevice = nullptr;
 	}
-	if (m_pD3D != NULL)
+	if (m_pD3D != nullptr)
 	{
 		m_pD3D->Release();
-		m_pD3D = NULL;
+		m_pD3D = nullptr;
 	}
 }
 
@@ -143,7 +143,7 @@ void CRenderer::Update(void)
 void CRenderer::Draw(void)
 {
 	//画面クリア（バックバッファとZバッファのクリア
-	m_pD3DDevice->Clear(0, NULL,
+	m_pD3DDevice->Clear(0, nullptr,
 		(D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER),
 		D3DCOLOR_RGBA(0, 0, 0, 0), 1.0f, 0);//マクロにしたら？
 
@@ -159,7 +159,7 @@ void CRenderer::Draw(void)
 	}
 
 	//バックバッファとフロントバッファの入れ替え
-	m_pD3DDevice->Present(NULL, NULL, NULL, NULL);
+	m_pD3DDevice->Present(nullptr, nullptr, nullptr, nullptr);
 }
 
 //=================================

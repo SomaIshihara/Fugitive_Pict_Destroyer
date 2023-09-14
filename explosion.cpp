@@ -84,9 +84,9 @@ void CExplosion::Draw(void)
 //=================================
 CExplosion* CExplosion::Create(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, const float fWidth, const float fHeight, const int nAnimSpeed)
 {
-	CExplosion* pExplosion = NULL;
+	CExplosion* pExplosion = nullptr;
 
-	if (pExplosion == NULL)
+	if (pExplosion == nullptr)
 	{
 		//オブジェクトアニメーション2Dの生成
 		pExplosion = new CExplosion(pos, rot, fWidth, fHeight, nAnimSpeed);
@@ -101,6 +101,6 @@ CExplosion* CExplosion::Create(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, con
 	}
 	else
 	{
-		return NULL;
+		return nullptr;
 	}
 }

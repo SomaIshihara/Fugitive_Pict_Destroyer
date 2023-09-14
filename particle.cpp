@@ -122,9 +122,9 @@ void CParticle2D::Update(void)
 CParticle2D* CParticle2D::Create(const D3DXVECTOR3 pos, const int nLife, const int nEffeceNum, const float fSpeedBace, const float fSpeedDegree,
 	const D3DXCOLOR col, const float fWidth, const float fHeight)
 {
-	CParticle2D* pParticle = NULL;
+	CParticle2D* pParticle = nullptr;
 
-	if (pParticle == NULL)
+	if (pParticle == nullptr)
 	{
 		//パーティクル管理オブジェクト生成
 		pParticle = new CParticle2D(pos, nLife, nEffeceNum, fSpeedBace, fSpeedDegree, col, fWidth, fHeight);
@@ -136,7 +136,7 @@ CParticle2D* CParticle2D::Create(const D3DXVECTOR3 pos, const int nLife, const i
 	}
 	else
 	{
-		return NULL;
+		return nullptr;
 	}
 }
 
@@ -247,9 +247,9 @@ void CParticleBillboard::Update(void)
 CParticleBillboard* CParticleBillboard::Create(const D3DXVECTOR3 pos, const int nLife, const int nEffeceNum, const float fSpeedBace, const float fSpeedDegree,
 	const D3DXCOLOR col, const float fWidth, const float fHeight)
 {
-	CParticleBillboard* pParticle = NULL;
+	CParticleBillboard* pParticle = nullptr;
 
-	if (pParticle == NULL)
+	if (pParticle == nullptr)
 	{
 		//パーティクル管理オブジェクト生成
 		pParticle = new CParticleBillboard(pos, nLife, nEffeceNum, fSpeedBace, fSpeedDegree, col, fWidth, fHeight);
@@ -261,6 +261,6 @@ CParticleBillboard* CParticleBillboard::Create(const D3DXVECTOR3 pos, const int 
 	}
 	else
 	{
-		return NULL;
+		return nullptr;
 	}
 }

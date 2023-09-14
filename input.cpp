@@ -20,7 +20,7 @@
 #define PAD_VIBE_FADE		(200)	//振動の減少量
 
 //静的メンバ変数
-LPDIRECTINPUT8 CInput::m_pInput = NULL;
+LPDIRECTINPUT8 CInput::m_pInput = nullptr;
 int CInput::m_nNumAll = 0;
 int CInputGamePad::m_nNumAll = 0;
 
@@ -46,10 +46,10 @@ CInput::~CInput()
 //========================
 HRESULT CInput::Init(HINSTANCE hInstance, HWND hWnd)
 {
-	if (m_pInput == NULL)
+	if (m_pInput == nullptr)
 	{
 		//DireceInputオブジェクトの生成
-		if (FAILED(DirectInput8Create(hInstance, DIRECTINPUT_VERSION, IID_IDirectInput8, (void **)&m_pInput, NULL)))
+		if (FAILED(DirectInput8Create(hInstance, DIRECTINPUT_VERSION, IID_IDirectInput8, (void **)&m_pInput, nullptr)))
 		{
 			return E_FAIL;
 		}
@@ -67,18 +67,18 @@ HRESULT CInput::Init(HINSTANCE hInstance, HWND hWnd)
 void CInput::Uninit(void)
 {
 	//入力デバイスの破棄
-	if (m_pDevice != NULL)
+	if (m_pDevice != nullptr)
 	{
 		m_pDevice->Unacquire();
 		m_pDevice->Release();
-		m_pDevice = NULL;
+		m_pDevice = nullptr;
 	}
 
 	//DirectInputオブジェクトの破棄
-	if (m_nNumAll <= 1 && m_pInput != NULL)
+	if (m_nNumAll <= 1 && m_pInput != nullptr)
 	{
 		m_pInput->Release();
-		m_pInput = NULL;
+		m_pInput = nullptr;
 	}
 
 	//使用コントローラ数減らす
@@ -122,7 +122,7 @@ HRESULT CInputKeyboard::Init(HINSTANCE hInstance, HWND hWnd)
 	CInput::Init(hInstance, hWnd);
 	
 	//デバイス取得
-	if (FAILED(m_pInput->CreateDevice(GUID_SysKeyboard, &m_pDevice, NULL)))
+	if (FAILED(m_pInput->CreateDevice(GUID_SysKeyboard, &m_pDevice, nullptr)))
 	{
 		return E_FAIL;
 	}
@@ -264,7 +264,7 @@ HRESULT CInputMouse::Init(HINSTANCE hInstance, HWND hWnd)
 	CInput::Init(hInstance, hWnd);
 
 	//デバイス取得
-	if (FAILED(m_pInput->CreateDevice(GUID_SysMouse, &m_pDevice, NULL)))
+	if (FAILED(m_pInput->CreateDevice(GUID_SysMouse, &m_pDevice, nullptr)))
 	{
 		return E_FAIL;
 	}
@@ -367,11 +367,11 @@ D3DXVECTOR3 CInputMouse::ConvertClickPosToWorld(float fZ)
 
 	//ビューマトリ取得・逆行列化
 	pDevice->GetTransform(D3DTS_VIEW, &mtxView);
-	D3DXMatrixInverse(&mtxView, NULL, &mtxView);
+	D3DXMatrixInverse(&mtxView, nullptr, &mtxView);
 
 	//プロジェクションマトリ取得・逆行列化
 	pDevice->GetTransform(D3DTS_PROJECTION, &mtxProj);
-	D3DXMatrixInverse(&mtxProj, NULL, &mtxProj);
+	D3DXMatrixInverse(&mtxProj, nullptr, &mtxProj);
 
 	//ビューポートマトリ設定・逆行列化
 	D3DXMatrixIdentity(&mtxViewPort);
@@ -379,7 +379,7 @@ D3DXVECTOR3 CInputMouse::ConvertClickPosToWorld(float fZ)
 	mtxViewPort._22 = -SCREEN_HEIGHT * 0.5;
 	mtxViewPort._41 = SCREEN_WIDTH * 0.5;
 	mtxViewPort._42 = SCREEN_HEIGHT * 0.5;
-	D3DXMatrixInverse(&mtxViewPort, NULL, &mtxViewPort);
+	D3DXMatrixInverse(&mtxViewPort, nullptr, &mtxViewPort);
 
 	//全部掛ける
 	mtx = mtxViewPort * mtxProj * mtxView;	//内部でD3DXMatrixMultiplyやってるみたい

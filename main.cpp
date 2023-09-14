@@ -21,7 +21,7 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 //========================
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hInstancePrev, LPSTR lpCmdLine, int CmdShow)
 {
-	CManager* pManager = NULL;
+	CManager* pManager = nullptr;
 	RECT rect = { 0,0,SCREEN_WIDTH,SCREEN_HEIGHT };	//ウィンドウの領域（書き換え不可の定数）
 
 	WNDCLASSEX wcex =
@@ -32,12 +32,12 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hInstancePrev, LPSTR lpCmdLine
 		0,									//使用しない
 		0,									//使用しない
 		hInstance,							//インスタンスハンドル
-		LoadIcon(NULL,IDI_APPLICATION),		//タスクバーのアイコン
-		LoadCursor(NULL,IDC_ARROW),			//マウスカーソル
+		LoadIcon(nullptr,IDI_APPLICATION),		//タスクバーのアイコン
+		LoadCursor(nullptr,IDC_ARROW),			//マウスカーソル
 		(HBRUSH)(COLOR_WINDOW + 1),			//クライアント領域の背景色
-		NULL,								//メニューバー
+		nullptr,								//メニューバー
 		CLASS_NAME,							//クラスの名前
-		LoadIcon(NULL,IDI_APPLICATION)		//アプリケーションのアイコン
+		LoadIcon(nullptr,IDI_APPLICATION)		//アプリケーションのアイコン
 	};
 
 	HWND hWnd;	//ウィンドウハンドル
@@ -64,10 +64,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hInstancePrev, LPSTR lpCmdLine
 		CW_USEDEFAULT,						//ウィンドウの左上Y座標
 		(rect.right - rect.left),			//ウィンドウの幅
 		(rect.bottom - rect.top),			//ウィンドウの高さ
-		NULL,								//親ウィンドウのハンドル
-		NULL,								//メニューハンドルまたは子ウィンドウID
+		nullptr,								//親ウィンドウのハンドル
+		nullptr,								//メニューハンドルまたは子ウィンドウID
 		hInstance,							//インスタンスハンドル
-		NULL								//ウィンドウ作成データ
+		nullptr								//ウィンドウ作成データ
 	);
 
 	//マネージャ生成
@@ -93,7 +93,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hInstancePrev, LPSTR lpCmdLine
 	//メッセージループ
 	while (1)
 	{
-		if (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE) != 0)
+		if (PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE) != 0)
 		{//windowsの処理
 			if (msg.message == WM_QUIT)
 			{
@@ -127,12 +127,12 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hInstancePrev, LPSTR lpCmdLine
 	}
 
 	//マネージャ破棄
-	if (pManager != NULL)
+	if (pManager != nullptr)
 	{
 		//終了
 		pManager->Uninit();
 		delete pManager;
-		pManager = NULL;
+		pManager = nullptr;
 	}
 
 	//クラスの登録を解除

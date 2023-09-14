@@ -77,7 +77,7 @@ CManager::~CManager()
 HRESULT CManager::Init(HINSTANCE hInstance, HWND hWnd, BOOL bWindow)
 {
 	//—”‚ğ—”‚É‚·‚é
-	srand((unsigned int)time(NULL));
+	srand((unsigned int)time(nullptr));
 
 	//¶¬
 	m_pInputKeyboard = new CInputKeyboard;

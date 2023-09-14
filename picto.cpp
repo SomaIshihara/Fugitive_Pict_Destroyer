@@ -84,7 +84,7 @@ CPicto::CPicto()
 {
 	for (int cnt = 0; cnt < MAX_OBJ; cnt++)
 	{//すべて確認
-		if (m_apPicto[cnt] == NULL)
+		if (m_apPicto[cnt] == nullptr)
 		{//空っぽ
 			m_apPicto[cnt] = this;	//自分自身のポインタを登録
 			m_nID = cnt;	//ID覚える
@@ -95,7 +95,7 @@ CPicto::CPicto()
 	//値クリア
 	m_pos = CManager::VEC3_ZERO;
 	m_rot = CManager::VEC3_ZERO;
-	m_pMotion = NULL;
+	m_pMotion = nullptr;
 	m_fWidth = CManager::FLOAT_ZERO;
 	m_fHeight = CManager::FLOAT_ZERO;
 	m_fDepth = CManager::FLOAT_ZERO;
@@ -114,7 +114,7 @@ CPicto::CPicto(const D3DXVECTOR3 pos, const TYPE type)
 {
 	for (int cnt = 0; cnt < MAX_OBJ; cnt++)
 	{//すべて確認
-		if (m_apPicto[cnt] == NULL)
+		if (m_apPicto[cnt] == nullptr)
 		{//空っぽ
 			m_apPicto[cnt] = this;	//自分自身のポインタを登録
 			m_nID = cnt;	//ID覚える
@@ -125,7 +125,7 @@ CPicto::CPicto(const D3DXVECTOR3 pos, const TYPE type)
 	//値クリア
 	m_pos = pos;
 	m_rot = CManager::VEC3_ZERO;
-	m_pMotion = NULL;
+	m_pMotion = nullptr;
 	m_fWidth = CManager::FLOAT_ZERO;
 	m_fHeight = CManager::FLOAT_ZERO;
 	m_fDepth = CManager::FLOAT_ZERO;
@@ -188,7 +188,7 @@ void CPicto::Uninit(void)
 	{//全オブジェクト見る
 		CPictoPolice* pPicto = CPictoPolice::GetPicto(cnt);	//オブジェクト取得
 
-		if (pPicto != NULL)	//ヌルチェ
+		if (pPicto != nullptr)	//ヌルチェ
 		{//なんかある
 			pPicto->UnsetTarget();	//ターゲット解除
 		}
@@ -199,21 +199,21 @@ void CPicto::Uninit(void)
 	{//全オブジェクト見る
 		CPictoTaxi* pPicto = CPictoTaxi::GetPicto(cnt);	//オブジェクト取得
 
-		if (pPicto != NULL)	//ヌルチェ
+		if (pPicto != nullptr)	//ヌルチェ
 		{//なんかある
 			pPicto->UnsetTargetPicto();	//ターゲット解除
 		}
 	}
 
 	//モーション破棄
-	if (m_pMotion != NULL)
+	if (m_pMotion != nullptr)
 	{
 		m_pMotion->Uninit();
 		delete m_pMotion;
-		m_pMotion = NULL;
+		m_pMotion = nullptr;
 	}
 
-	m_apPicto[m_nID] = NULL;
+	m_apPicto[m_nID] = nullptr;
 	if (m_ppModel != nullptr)
 	{
 		for (int cnt = 0; cnt < m_nNumModel; cnt++)
@@ -222,14 +222,14 @@ void CPicto::Uninit(void)
 			{
 				m_ppModel[cnt]->Uninit();
 				delete m_ppModel[cnt];
-				m_ppModel[cnt] = NULL;
+				m_ppModel[cnt] = nullptr;
 			}
 		}
 		delete[] m_ppModel;	//配列そのものを破棄
 	}
 
 	//影消す
-	if (m_pShadow != NULL)
+	if (m_pShadow != nullptr)
 	{
 		m_pShadow->Uninit();
 	}
@@ -253,7 +253,7 @@ void CPicto::Update(void)
 	//ピクト共通:ポイント移動処理
 	if (CPicto::IsControll() == false && m_state != STATE_ATTACK)
 	{
-		if (m_targetObj != NULL)
+		if (m_targetObj != nullptr)
 		{//目的地がある
 			D3DXVECTOR3 targetPos = m_targetObj->GetPos();
 			float targetWidthHalf = m_targetObj->GetWidth() * 0.5f;
@@ -373,7 +373,7 @@ void CPicto::Update(void)
 	}
 
 	//モーションがある
-	if (m_pMotion != NULL)
+	if (m_pMotion != nullptr)
 	{
 		//モーション更新
 		m_pMotion->Update();
@@ -562,7 +562,7 @@ void CPicto::Return(void)
 void CPicto::Search(void)
 {
 	D3DXVECTOR3 posTarget = m_targetObj->GetPos();
-	CPoint* pPointNear = NULL;
+	CPoint* pPointNear = nullptr;
 	float fLenNear = 0.0f;
 	float fRadNear = 0.0f;
 	CPoint* pPoint = CPoint::GetTop();
@@ -572,7 +572,7 @@ void CPicto::Search(void)
 	float fTargetLenDepth = posTarget.z - m_pos.z;
 	float fRadiusBuilding = atan2f(fTargetLenWidth, fTargetLenDepth);
 
-	while (pPoint != NULL)
+	while (pPoint != nullptr)
 	{//リスト終了までやる
 		D3DXVECTOR3 vecPoint = pPoint->GetPos() - m_pos;
 
@@ -580,7 +580,7 @@ void CPicto::Search(void)
 		for (int cnt = 0; cnt < MAX_OBJ; cnt++)
 		{
 			CBuilding* pBuilding = CBuilding::GetBuilding(cnt);
-			if (pBuilding != NULL)
+			if (pBuilding != nullptr)
 			{
 				D3DXVECTOR3 posBuilding = pBuilding->GetPos();
 				float fWidthHalf = pBuilding->GetWidth() * 0.5f;
@@ -662,7 +662,7 @@ CPictoDestroyer::CPictoDestroyer()
 {
 	for (int cnt = 0; cnt < MAX_OBJ; cnt++)
 	{//すべて確認
-		if (m_apPicto[cnt] == NULL)
+		if (m_apPicto[cnt] == nullptr)
 		{//空っぽ
 			m_apPicto[cnt] = this;	//自分自身のポインタを登録
 			m_nID = cnt;	//ID覚える
@@ -680,7 +680,7 @@ CPictoDestroyer::CPictoDestroyer(const D3DXVECTOR3 pos, const TYPE type) : CPict
 {
 	for (int cnt = 0; cnt < MAX_OBJ; cnt++)
 	{//すべて確認
-		if (m_apPicto[cnt] == NULL)
+		if (m_apPicto[cnt] == nullptr)
 		{//空っぽ
 			m_apPicto[cnt] = this;	//自分自身のポインタを登録
 			m_nID = cnt;	//ID覚える
@@ -750,7 +750,7 @@ HRESULT CPictoDestroyer::Init(void)
 //========================
 void CPictoDestroyer::Uninit(void)
 {
-	m_apPicto[m_nID] = NULL;
+	m_apPicto[m_nID] = nullptr;
 
 	//親処理
 	CPicto::Uninit();
@@ -822,9 +822,9 @@ void CPictoDestroyer::Draw(void)
 //========================
 CPictoDestroyer* CPictoDestroyer::Create(const D3DXVECTOR3 pos)
 {
-	CPictoDestroyer* pPicto = NULL;
+	CPictoDestroyer* pPicto = nullptr;
 
-	if (pPicto == NULL)
+	if (pPicto == nullptr)
 	{
 		//ピクトの生成
 		pPicto = new CPictoDestroyer(pos);
@@ -836,7 +836,7 @@ CPictoDestroyer* CPictoDestroyer::Create(const D3DXVECTOR3 pos)
 	}
 	else
 	{
-		return NULL;
+		return nullptr;
 	}
 }
 
@@ -863,7 +863,7 @@ void CPictoDestroyer::AddDamage(int nDamage)
 		{//全オブジェクト見る
 			CPictoBlocker* pPicto = CPictoBlocker::GetPicto(cnt);	//オブジェクト取得
 
-			if (pPicto != NULL)	//ヌルチェ
+			if (pPicto != nullptr)	//ヌルチェ
 			{//なんかある
 				if (pPicto->GetTargetObj() == this)
 				{//自分がターゲット
@@ -933,7 +933,7 @@ CPictoBlocker::CPictoBlocker()
 {
 	for (int cnt = 0; cnt < MAX_OBJ; cnt++)
 	{//すべて確認
-		if (m_apPicto[cnt] == NULL)
+		if (m_apPicto[cnt] == nullptr)
 		{//空っぽ
 			m_apPicto[cnt] = this;	//自分自身のポインタを登録
 			m_nID = cnt;	//ID覚える
@@ -951,7 +951,7 @@ CPictoBlocker::CPictoBlocker(const D3DXVECTOR3 pos, const TYPE type) : CPicto(po
 {
 	for (int cnt = 0; cnt < MAX_OBJ; cnt++)
 	{//すべて確認
-		if (m_apPicto[cnt] == NULL)
+		if (m_apPicto[cnt] == nullptr)
 		{//空っぽ
 			m_apPicto[cnt] = this;	//自分自身のポインタを登録
 			m_nID = cnt;	//ID覚える
@@ -1021,7 +1021,7 @@ HRESULT CPictoBlocker::Init(void)
 //========================
 void CPictoBlocker::Uninit(void)
 {
-	m_apPicto[m_nID] = NULL;
+	m_apPicto[m_nID] = nullptr;
 
 	//親処理
 	CPicto::Uninit();
@@ -1099,9 +1099,9 @@ void CPictoBlocker::Draw(void)
 //========================
 CPictoBlocker* CPictoBlocker::Create(const D3DXVECTOR3 pos)
 {
-	CPictoBlocker* pPicto = NULL;
+	CPictoBlocker* pPicto = nullptr;
 
-	if (pPicto == NULL)
+	if (pPicto == nullptr)
 	{
 		//ピクトの生成
 		pPicto = new CPictoBlocker(pos);
@@ -1113,7 +1113,7 @@ CPictoBlocker* CPictoBlocker::Create(const D3DXVECTOR3 pos)
 	}
 	else
 	{
-		return NULL;
+		return nullptr;
 	}
 }
 
@@ -1140,7 +1140,7 @@ void CPictoBlocker::AddDamage(int nDamage)
 		{//全オブジェクト見る
 			CPictoBlocker* pPicto = CPictoBlocker::GetPicto(cnt);	//オブジェクト取得
 
-			if (pPicto != NULL)	//ヌルチェ
+			if (pPicto != nullptr)	//ヌルチェ
 			{//なんかある
 				if (pPicto->GetTargetObj() == this)
 				{//自分がターゲット
@@ -1209,7 +1209,7 @@ CPictoTaxi::CPictoTaxi()
 {
 	for (int cnt = 0; cnt < MAX_OBJ; cnt++)
 	{//すべて確認
-		if (m_apPicto[cnt] == NULL)
+		if (m_apPicto[cnt] == nullptr)
 		{//空っぽ
 			m_apPicto[cnt] = this;	//自分自身のポインタを登録
 			m_nID = cnt;	//ID覚える
@@ -1230,7 +1230,7 @@ CPictoTaxi::CPictoTaxi(const D3DXVECTOR3 pos, const TYPE type) : CPicto(pos,type
 {
 	for (int cnt = 0; cnt < MAX_OBJ; cnt++)
 	{//すべて確認
-		if (m_apPicto[cnt] == NULL)
+		if (m_apPicto[cnt] == nullptr)
 		{//空っぽ
 			m_apPicto[cnt] = this;	//自分自身のポインタを登録
 			m_nID = cnt;	//ID覚える
@@ -1284,7 +1284,7 @@ HRESULT CPictoTaxi::Init(void)
 //========================
 void CPictoTaxi::Uninit(void)
 {
-	m_apPicto[m_nID] = NULL;
+	m_apPicto[m_nID] = nullptr;
 
 	//親処理
 	CPicto::Uninit();
@@ -1306,12 +1306,12 @@ void CPictoTaxi::Update(void)
 		switch (m_mode)
 		{
 		case MODE_PICK:
-			if (m_ptargetPicto != NULL)
+			if (m_ptargetPicto != nullptr)
 			{
 				//タクシーに乗せる
 				m_ptargetPicto->TakeTaxi(this);
 				m_ptargetPicto->Uninit();
-				m_ptargetPicto = NULL;
+				m_ptargetPicto = nullptr;
 
 				//ターゲット解除
 				UnsetTargetObj();
@@ -1329,17 +1329,17 @@ void CPictoTaxi::Update(void)
 			break;
 		case MODE_RESCUE:
 			//ターゲット外れていたら探索
-			if (m_ptargetPicto == NULL)
+			if (m_ptargetPicto == nullptr)
 			{
 				m_ptargetPicto = SearchBattler();
 			}
 
-			if (m_ptargetPicto != NULL)
+			if (m_ptargetPicto != nullptr)
 			{
 				//タクシーに乗せる
 				m_ptargetPicto->TakeTaxi(this);
 				m_ptargetPicto->Uninit();
-				m_ptargetPicto = NULL;
+				m_ptargetPicto = nullptr;
 
 				//ターゲット解除
 				UnsetTargetObj();
@@ -1366,9 +1366,9 @@ void CPictoTaxi::Draw(void)
 //========================
 CPictoTaxi* CPictoTaxi::Create(const D3DXVECTOR3 pos)
 {
-	CPictoTaxi* pPicto = NULL;
+	CPictoTaxi* pPicto = nullptr;
 
-	if (pPicto == NULL)
+	if (pPicto == nullptr)
 	{
 		//ピクトの生成
 		pPicto = new CPictoTaxi(pos);
@@ -1380,7 +1380,7 @@ CPictoTaxi* CPictoTaxi::Create(const D3DXVECTOR3 pos)
 	}
 	else
 	{
-		return NULL;
+		return nullptr;
 	}
 }
 
@@ -1414,7 +1414,7 @@ void CPictoTaxi::SetTakeTaxi(const CPicto::TYPE type, const int nTakeNum)
 bool CPictoTaxi::SearchPick(void)
 {
 	//ターゲット外れていたら探索
-	if (m_ptargetPicto == NULL)
+	if (m_ptargetPicto == nullptr)
 	{
 		//取得
 		m_ptargetPicto = SearchNormal();
@@ -1423,7 +1423,7 @@ bool CPictoTaxi::SearchPick(void)
 		float fLengthPicto = -1.0f;
 		float fLengthItem = -1.0f;
 		
-		if(m_ptargetPicto != NULL)
+		if(m_ptargetPicto != nullptr)
 		{//ピクト取得した
 			SetTargetObj(m_ptargetPicto);
 		}
@@ -1443,18 +1443,18 @@ bool CPictoTaxi::SearchPick(void)
 //========================
 CPictoNormal* CPictoTaxi::SearchNormal(void)
 {
-	CPictoNormal* pPictoNear = NULL;
+	CPictoNormal* pPictoNear = nullptr;
 	float fNearLength;
 
 	for (int cnt = 0; cnt < MAX_OBJ; cnt++)
 	{//全オブジェクト見る
 		CPictoNormal* pPicto = CPictoNormal::GetPicto(cnt);	//オブジェクト取得
 
-		if (pPicto != NULL)	//ヌルチェ
+		if (pPicto != nullptr)	//ヌルチェ
 		{//なんかある
 			float fLength = D3DXVec3Length(&(pPicto->GetPos() - this->GetPos()));
 
-			if (pPictoNear == NULL || fLength < fNearLength)
+			if (pPictoNear == nullptr || fLength < fNearLength)
 			{//近いかそもそも1体しか知らん
 				fNearLength = fLength;
 				pPictoNear = pPicto;
@@ -1471,8 +1471,8 @@ CPictoNormal* CPictoTaxi::SearchNormal(void)
 //========================
 CPicto* CPictoTaxi::SearchBattler(void)
 {
-	CPictoDestroyer* pPictoD = NULL;
-	CPictoBlocker* pPictoB = NULL;
+	CPictoDestroyer* pPictoD = nullptr;
+	CPictoBlocker* pPictoB = nullptr;
 	int nLifeD,nLifeB;
 
 	//デストロイヤー探索
@@ -1480,11 +1480,11 @@ CPicto* CPictoTaxi::SearchBattler(void)
 	{//全オブジェクト見る
 		CPictoDestroyer* pPicto = CPictoDestroyer::GetPicto(cnt);	//オブジェクト取得
 
-		if (pPicto != NULL)	//ヌルチェ
+		if (pPicto != nullptr)	//ヌルチェ
 		{//なんかある
 			int nLife = pPicto->GetLife();
 
-			if ((((float)nLife / PICTO_LIFE) <= RESCUE_LIFE) && (pPictoD == NULL || nLifeD > nLife))
+			if ((((float)nLife / PICTO_LIFE) <= RESCUE_LIFE) && (pPictoD == nullptr || nLifeD > nLife))
 			{//救助対象でありなおかつ体力が一番少ない
 				pPictoD = pPicto;
 				nLifeD = nLife;
@@ -1497,11 +1497,11 @@ CPicto* CPictoTaxi::SearchBattler(void)
 	{//全オブジェクト見る
 		CPictoBlocker* pPicto = CPictoBlocker::GetPicto(cnt);	//オブジェクト取得
 
-		if (pPicto != NULL)	//ヌルチェ
+		if (pPicto != nullptr)	//ヌルチェ
 		{//なんかある
 			int nLife = pPicto->GetLife();
 
-			if ((((float)nLife / PICTO_LIFE) <= RESCUE_LIFE) && (pPictoB == NULL || nLifeB > nLife))
+			if ((((float)nLife / PICTO_LIFE) <= RESCUE_LIFE) && (pPictoB == nullptr || nLifeB > nLife))
 			{//救助対象でありなおかつ体力が一番少ない
 				pPictoB = pPicto;
 				nLifeB = nLife;
@@ -1510,7 +1510,7 @@ CPicto* CPictoTaxi::SearchBattler(void)
 	}
 
 	//そもそもいるかどうか
-	if (pPictoD != NULL && pPictoB != NULL)
+	if (pPictoD != nullptr && pPictoB != nullptr)
 	{//両方いる
 		//体力少ないほうを返す
 		if (nLifeD <= nLifeB)
@@ -1522,17 +1522,17 @@ CPicto* CPictoTaxi::SearchBattler(void)
 			return pPictoB;
 		}
 	}
-	else if(pPictoD == NULL && pPictoB != NULL)
+	else if(pPictoD == nullptr && pPictoB != nullptr)
 	{//ブロッカーしかいない
 		return pPictoB;
 	}
-	else if (pPictoD != NULL && pPictoB == NULL)
+	else if (pPictoD != nullptr && pPictoB == nullptr)
 	{//デストロイヤーしかいない
 		return pPictoD;
 	}
 	else
 	{//いない
-		return NULL;
+		return nullptr;
 	}
 }
 
@@ -1550,7 +1550,7 @@ void CPictoTaxi::AddDamage(int nDamage)
 		{//全オブジェクト見る
 			CPictoBlocker* pPicto = CPictoBlocker::GetPicto(cnt);	//オブジェクト取得
 
-			if (pPicto != NULL)	//ヌルチェ
+			if (pPicto != nullptr)	//ヌルチェ
 			{//なんかある
 				if (pPicto->GetTargetObj() == this)
 				{//自分がターゲット
@@ -1586,7 +1586,7 @@ CPictoNormal::CPictoNormal()
 {
 	for (int cnt = 0; cnt < MAX_OBJ; cnt++)
 	{//すべて確認
-		if (m_apPicto[cnt] == NULL)
+		if (m_apPicto[cnt] == nullptr)
 		{//空っぽ
 			m_apPicto[cnt] = this;	//自分自身のポインタを登録
 			m_nID = cnt;	//ID覚える
@@ -1603,7 +1603,7 @@ CPictoNormal::CPictoNormal(const D3DXVECTOR3 pos, const TYPE type) : CPicto(pos,
 {
 	for (int cnt = 0; cnt < MAX_OBJ; cnt++)
 	{//すべて確認
-		if (m_apPicto[cnt] == NULL)
+		if (m_apPicto[cnt] == nullptr)
 		{//空っぽ
 			m_apPicto[cnt] = this;	//自分自身のポインタを登録
 			m_nID = cnt;	//ID覚える
@@ -1639,7 +1639,7 @@ HRESULT CPictoNormal::Init(void)
 //========================
 void CPictoNormal::Uninit(void)
 {
-	m_apPicto[m_nID] = NULL;
+	m_apPicto[m_nID] = nullptr;
 
 	//親処理
 	CPicto::Uninit();
@@ -1668,9 +1668,9 @@ void CPictoNormal::Draw(void)
 //========================
 CPictoNormal* CPictoNormal::Create(const D3DXVECTOR3 pos)
 {
-	CPictoNormal* pPicto = NULL;
+	CPictoNormal* pPicto = nullptr;
 
-	if (pPicto == NULL)
+	if (pPicto == nullptr)
 	{
 		//ピクトの生成
 		pPicto = new CPictoNormal(pos);
@@ -1682,7 +1682,7 @@ CPictoNormal* CPictoNormal::Create(const D3DXVECTOR3 pos)
 	}
 	else
 	{
-		return NULL;
+		return nullptr;
 	}
 }
 
@@ -1728,7 +1728,7 @@ CPictoPolice::CPictoPolice()
 {
 	for (int cnt = 0; cnt < MAX_OBJ; cnt++)
 	{//すべて確認
-		if (m_apPicto[cnt] == NULL)
+		if (m_apPicto[cnt] == nullptr)
 		{//空っぽ
 			m_apPicto[cnt] = this;	//自分自身のポインタを登録
 			m_nID = cnt;	//ID覚える
@@ -1737,7 +1737,7 @@ CPictoPolice::CPictoPolice()
 		}
 	}
 	m_nCounterAttack = CManager::INT_ZERO;
-	m_pTargetPicto = NULL;
+	m_pTargetPicto = nullptr;
 }
 
 //=================================
@@ -1747,7 +1747,7 @@ CPictoPolice::CPictoPolice(const D3DXVECTOR3 pos, const TYPE type) : CPicto(pos,
 {
 	for (int cnt = 0; cnt < MAX_OBJ; cnt++)
 	{//すべて確認
-		if (m_apPicto[cnt] == NULL)
+		if (m_apPicto[cnt] == nullptr)
 		{//空っぽ
 			m_apPicto[cnt] = this;	//自分自身のポインタを登録
 			m_nID = cnt;	//ID覚える
@@ -1756,7 +1756,7 @@ CPictoPolice::CPictoPolice(const D3DXVECTOR3 pos, const TYPE type) : CPicto(pos,
 		}
 	}
 	m_nCounterAttack = CManager::INT_ZERO;
-	m_pTargetPicto = NULL;
+	m_pTargetPicto = nullptr;
 }
 
 //=================================
@@ -1789,7 +1789,7 @@ HRESULT CPictoPolice::Init(void)
 //========================
 void CPictoPolice::Uninit(void)
 {
-	m_apPicto[m_nID] = NULL;
+	m_apPicto[m_nID] = nullptr;
 	m_nNumAll--;
 
 	//親処理
@@ -1930,9 +1930,9 @@ void CPictoPolice::Draw(void)
 //========================
 CPictoPolice* CPictoPolice::Create(const D3DXVECTOR3 pos)
 {
-	CPictoPolice* pPicto = NULL;
+	CPictoPolice* pPicto = nullptr;
 
-	if (pPicto == NULL)
+	if (pPicto == nullptr)
 	{
 		//ピクトの生成
 		pPicto = new CPictoPolice(pos);
@@ -1944,7 +1944,7 @@ CPictoPolice* CPictoPolice::Create(const D3DXVECTOR3 pos)
 	}
 	else
 	{
-		return NULL;
+		return nullptr;
 	}
 }
 
@@ -1962,7 +1962,7 @@ void CPictoPolice::AddDamage(int nDamage)
 		{//全オブジェクト見る
 			CPictoBlocker* pPicto = CPictoBlocker::GetPicto(cnt);	//オブジェクト取得
 
-			if (pPicto != NULL)	//ヌルチェ
+			if (pPicto != nullptr)	//ヌルチェ
 			{//なんかある
 				if (pPicto->GetTargetObj() == this)
 				{//自分がターゲット

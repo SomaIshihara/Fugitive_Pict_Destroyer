@@ -76,9 +76,9 @@ void CShadow::Draw(void)
 //========================
 CShadow* CShadow::Create(void)
 {
-	CShadow* pShadow = NULL;
+	CShadow* pShadow = nullptr;
 
-	if (pShadow == NULL)
+	if (pShadow == nullptr)
 	{
 		//オブジェクト2Dの生成
 		pShadow = new CShadow();
@@ -93,7 +93,7 @@ CShadow* CShadow::Create(void)
 	}
 	else
 	{
-		return NULL;
+		return nullptr;
 	}
 }
 

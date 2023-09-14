@@ -29,7 +29,7 @@ CBuilding::CBuilding()
 {
 	for (int cnt = 0; cnt < MAX_OBJ; cnt++)
 	{//すべて確認
-		if (m_apBuilding[cnt] == NULL)
+		if (m_apBuilding[cnt] == nullptr)
 		{//空っぽ
 			m_apBuilding[cnt] = this;	//自分自身のポインタを登録
 			m_nID = cnt;	//ID覚える
@@ -61,7 +61,7 @@ CBuilding::CBuilding(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, CXModel* pMod
 {
 	for (int cnt = 0; cnt < MAX_OBJ; cnt++)
 	{//すべて確認
-		if (m_apBuilding[cnt] == NULL)
+		if (m_apBuilding[cnt] == nullptr)
 		{//空っぽ
 			m_apBuilding[cnt] = this;	//自分自身のポインタを登録
 			m_nID = cnt;	//ID覚える
@@ -87,7 +87,7 @@ CBuilding::CBuilding(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, CXModel* pMod
 
 	int nModelNum = 0;
 	CXModel* pXModel = CXModel::GetTop();
-	while (pXModel != NULL && pXModel != m_pModel)
+	while (pXModel != nullptr && pXModel != m_pModel)
 	{
 		pXModel = pXModel->GetNext();
 		nModelNum++;
@@ -124,7 +124,7 @@ HRESULT CBuilding::Init(void)
 void CBuilding::Uninit(void)
 {
 	//建物クラス内での処理
-	m_apBuilding[m_nID] = NULL;
+	m_apBuilding[m_nID] = nullptr;
 
 	//建物個数減らす
 	m_nNumAll--;
@@ -216,9 +216,9 @@ void CBuilding::Draw(void)
 //========================
 CBuilding* CBuilding::Create(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, CXModel* pModel)
 {
-	CBuilding* pBuilding = NULL;
+	CBuilding* pBuilding = nullptr;
 
-	if (pBuilding == NULL)
+	if (pBuilding == nullptr)
 	{
 		//オブジェクト2Dの生成
 		pBuilding = new CBuilding(pos, rot, pModel);
@@ -230,7 +230,7 @@ CBuilding* CBuilding::Create(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, CXMod
 	}
 	else
 	{
-		return NULL;
+		return nullptr;
 	}
 }
 
@@ -275,7 +275,7 @@ void CBuilding::AddDamage(int nDamage)
 		{//全オブジェクト見る
 			CPictoDestroyer* pPicto = CPictoDestroyer::GetPicto(cnt);	//オブジェクト取得
 
-			if (pPicto != NULL)	//ヌルチェ
+			if (pPicto != nullptr)	//ヌルチェ
 			{//なんかある
 				if (pPicto->GetTargetObj() == this)
 				{//自分がターゲット

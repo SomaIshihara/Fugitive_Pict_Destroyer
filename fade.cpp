@@ -100,9 +100,9 @@ void CFade::Draw(void)
 //========================
 CFade* CFade::Create(CScene::MODE sceneNext)
 {
-	CFade* pFade = NULL;
+	CFade* pFade = nullptr;
 
-	if (pFade == NULL)
+	if (pFade == nullptr)
 	{
 		//フェードの生成
 		pFade = new CFade;
@@ -123,7 +123,7 @@ CFade* CFade::Create(CScene::MODE sceneNext)
 	}
 	else
 	{
-		return NULL;
+		return nullptr;
 	}
 }
 

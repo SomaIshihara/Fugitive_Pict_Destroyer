@@ -19,8 +19,8 @@
 #define PATH_LENGTH	(256)
 
 //静的メンバ変数
-CObjectX* CObjectX::m_pTop = NULL;
-CObjectX* CObjectX::m_pCur = NULL;
+CObjectX* CObjectX::m_pTop = nullptr;
+CObjectX* CObjectX::m_pCur = nullptr;
 int CObjectX::m_nNumAll = 0;
 
 using namespace std;
@@ -34,21 +34,21 @@ CObjectX::CObjectX(int nPriority) : CObject(nPriority)
 	m_pos = CManager::VEC3_ZERO;
 	m_rot = CManager::VEC3_ZERO;
 
-	if (m_pCur == NULL)
+	if (m_pCur == nullptr)
 	{//最後尾がいない（すなわち先頭もいない）
 		m_pTop = this;		//俺が先頭
-		m_pPrev = NULL;		//前後誰もいない
-		m_pNext = NULL;
+		m_pPrev = nullptr;		//前後誰もいない
+		m_pNext = nullptr;
 	}
 	else
 	{//最後尾がいる
 		m_pPrev = m_pCur;		//最後尾が自分の前のオブジェ
 		m_pCur->m_pNext = this;	//最後尾の次のオブジェが自分
-		m_pNext = NULL;			//自分の次のオブジェはいない
+		m_pNext = nullptr;			//自分の次のオブジェはいない
 	}
 	m_pCur = this;				//俺が最後尾
 	m_bExclusion = false;		//生きてる
-	m_pModel = NULL;
+	m_pModel = nullptr;
 	m_nNumAll++;
 }
 
@@ -61,17 +61,17 @@ CObjectX::CObjectX(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, CXModel* pModel
 	m_pos = pos;
 	m_rot = rot;
 
-	if (m_pCur == NULL)
+	if (m_pCur == nullptr)
 	{//最後尾がいない（すなわち先頭もいない）
 		m_pTop = this;		//俺が先頭
-		m_pPrev = NULL;		//前後誰もいない
-		m_pNext = NULL;
+		m_pPrev = nullptr;		//前後誰もいない
+		m_pNext = nullptr;
 	}
 	else
 	{//最後尾がいる
 		m_pPrev = m_pCur;		//最後尾が自分の前のオブジェ
 		m_pCur->m_pNext = this;	//最後尾の次のオブジェが自分
-		m_pNext = NULL;			//自分の次のオブジェはいない
+		m_pNext = nullptr;			//自分の次のオブジェはいない
 	}
 	m_pCur = this;				//俺が最後尾
 	m_bExclusion = false;		//生きてる
@@ -178,9 +178,9 @@ void CObjectX::Draw(void)
 //========================
 CObjectX* CObjectX::Create(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, CXModel* pModel)
 {
-	CObjectX* pObjX = NULL;
+	CObjectX* pObjX = nullptr;
 
-	if (pObjX == NULL)
+	if (pObjX == nullptr)
 	{
 		//オブジェクト2Dの生成
 		pObjX = new CObjectX(pos, rot, pModel);
@@ -192,7 +192,7 @@ CObjectX* CObjectX::Create(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, CXModel
 	}
 	else
 	{
-		return NULL;
+		return nullptr;
 	}
 }
 
@@ -203,7 +203,7 @@ void CObjectX::Delete(CXModel * pTarget)
 {
 	CObjectX* pObject = m_pTop;	//先頭を入れる
 
-	while (pObject != NULL)
+	while (pObject != nullptr)
 	{//最後尾まで回し続ける
 		CObjectX* pObjectNext = pObject->m_pNext;	//次のオブジェ保存
 
@@ -224,12 +224,12 @@ CObjectX::LOADRESULT CObjectX::LoadData(const char * pPath)
 	FILE* pFile;
 	BINCODE code;
 	bool bRead = false;
-	char** ppFilePath = NULL;
+	char** ppFilePath = nullptr;
 	int nReadedModel = 0;
 
 	pFile = fopen(pPath, "rb");
 
-	if (pFile != NULL)
+	if (pFile != nullptr)
 	{//開けた
 		while (1)
 		{
@@ -274,7 +274,7 @@ CObjectX::LOADRESULT CObjectX::LoadData(const char * pPath)
 				{
 					D3DXVECTOR3 pos, rot;
 					int nModelNum = -1;
-					CXModel* pModel = NULL;
+					CXModel* pModel = nullptr;
 					fread(&pos, sizeof(D3DXVECTOR3), 1, pFile);
 					fread(&rot, sizeof(D3DXVECTOR3), 1, pFile);
 					fread(&nModelNum, sizeof(int), 1, pFile);
@@ -358,7 +358,7 @@ CObjectX::LOADRESULT CObjectX::SaveData(const char * pPath)
 
 	pFile = fopen(pPath, "wb");
 
-	if (pFile != NULL)
+	if (pFile != nullptr)
 	{//普通に開けた
 		//開始コード書き込み
 		BINCODE code = BIN_CODE_SCRIPT;
@@ -373,7 +373,7 @@ CObjectX::LOADRESULT CObjectX::SaveData(const char * pPath)
 		//モデルファイルパス書き込み
 		code = BIN_CODE_MODEL_FILENAME;
 		CXModel* pModel = CXModel::GetTop();	//リスト書き込み体制
-		while (pModel != NULL)
+		while (pModel != nullptr)
 		{
 			CXModel* pObjectNext = pModel->GetNext();
 
@@ -386,7 +386,7 @@ CObjectX::LOADRESULT CObjectX::SaveData(const char * pPath)
 		//モデル配置情報書き込み
 		code = BIN_CODE_MODELSET;
 		CObjectX* pObject = CObjectX::GetTop();
-		while (pObject != NULL)
+		while (pObject != nullptr)
 		{
 			CObjectX* pObjectNext = pObject->GetNext();
 
@@ -397,7 +397,7 @@ CObjectX::LOADRESULT CObjectX::SaveData(const char * pPath)
 			//モデル種類番号化
 			int nModelNum = 0;
 			CXModel* pModel = CXModel::GetTop();
-			while (pModel != NULL && pModel != pObject->GetModel())
+			while (pModel != nullptr && pModel != pObject->GetModel())
 			{
 				pModel = pModel->GetNext();
 				nModelNum++;
@@ -477,17 +477,17 @@ void CObjectX::Exclusion(void)
 {
 	CObjectX* pObject = m_pTop;	//先頭を入れる
 
-	while (pObject != NULL)
+	while (pObject != nullptr)
 	{//最後尾まで回し続ける
 		CObjectX* pObjectNext = pObject->m_pNext;	//次のオブジェ保存
 
 		if (pObject->m_bExclusion == true)
 		{//死亡フラグが立ってる
-			if (pObject->m_pPrev != NULL)
+			if (pObject->m_pPrev != nullptr)
 			{//前にオブジェがいる
 				pObject->m_pPrev->m_pNext = pObject->m_pNext;	//前のオブジェの次のオブジェは自分の次のオブジェ
 			}
-			if (pObject->m_pNext != NULL)
+			if (pObject->m_pNext != nullptr)
 			{
 				pObject->m_pNext->m_pPrev = pObject->m_pPrev;	//次のオブジェの前のオブジェは自分の前のオブジェ
 			}

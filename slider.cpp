@@ -16,9 +16,9 @@
 //=================================
 CSlider::CSlider()
 {
-	m_pObjFrame = NULL;
-	m_pObjMove = NULL;
-	m_ppObjIcon = NULL;
+	m_pObjFrame = nullptr;
+	m_pObjMove = nullptr;
+	m_ppObjIcon = nullptr;
 	m_pos = CManager::VEC3_ZERO;
 	m_fOneWidth = CManager::FLOAT_ZERO;
 	m_fOneHeight = CManager::FLOAT_ZERO;
@@ -32,9 +32,9 @@ CSlider::CSlider()
 //=================================
 CSlider::CSlider(const D3DXVECTOR3 pos, const float fOneWidth, const float fOneHeight, const int nIdxNum)
 {
-	m_pObjFrame = NULL;
-	m_pObjMove = NULL;
-	m_ppObjIcon = NULL;
+	m_pObjFrame = nullptr;
+	m_pObjMove = nullptr;
+	m_ppObjIcon = nullptr;
 	m_pos = pos;
 	m_fOneWidth = fOneWidth;
 	m_fOneHeight = fOneHeight;
@@ -85,10 +85,10 @@ HRESULT CSlider::Init(void)
 //========================
 void CSlider::Uninit(void)
 {
-	if (m_ppObjIcon != NULL)
+	if (m_ppObjIcon != nullptr)
 	{
 		delete[] m_ppObjIcon;
-		m_ppObjIcon = NULL;
+		m_ppObjIcon = nullptr;
 	}
 
 	//自分自身破棄
@@ -162,9 +162,9 @@ void CSlider::Draw(void)
 //========================
 CSlider* CSlider::Create(const D3DXVECTOR3 pos, const float fOneWidth, const float fOneHeight, const int nIdxNum)
 {
-	CSlider* pSlider = NULL;
+	CSlider* pSlider = nullptr;
 
-	if (pSlider == NULL)
+	if (pSlider == nullptr)
 	{
 		//ピクトの生成
 		pSlider = new CSlider(pos, fOneWidth, fOneHeight, nIdxNum);
@@ -176,6 +176,6 @@ CSlider* CSlider::Create(const D3DXVECTOR3 pos, const float fOneWidth, const flo
 	}
 	else
 	{
-		return NULL;
+		return nullptr;
 	}
 }

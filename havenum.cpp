@@ -59,7 +59,7 @@ HRESULT CHaveNum::Init(void)
 
 	for (int cnt = 0; cnt < m_nHaveNumDigit; cnt++)
 	{//数字オブジェクト初期化
-		m_ppNumber[cnt] = NULL;
+		m_ppNumber[cnt] = nullptr;
 	}
 
 	//テクスチャ読み込み
@@ -77,7 +77,7 @@ void CHaveNum::Uninit(void)
 {
 	for (int cnt = 0; cnt < m_nHaveNumDigit; cnt++)
 	{//数字オブジェクト終了
-		if (m_ppNumber[cnt] != NULL)
+		if (m_ppNumber[cnt] != nullptr)
 		{//大丈夫。中身はある
 			m_ppNumber[cnt]->Uninit();
 		}
@@ -97,7 +97,7 @@ void CHaveNum::Update(void)
 {
 	for (int cnt = 0; cnt < m_nHaveNumDigit; cnt++)
 	{//数字オブジェクト更新
-		if (m_ppNumber[cnt] != NULL)
+		if (m_ppNumber[cnt] != nullptr)
 		{//大丈夫。中身はある
 			//数字の更新処理
 			m_ppNumber[cnt]->Update();
@@ -122,9 +122,9 @@ void CHaveNum::Draw(void)
 CHaveNum* CHaveNum::Create(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, const float fOneWidth, const float fOneHeight, const int nHaveNumDigit,
 	const int nIconTexNum)
 {
-	CHaveNum* pHaveNum = NULL;
+	CHaveNum* pHaveNum = nullptr;
 
-	if (pHaveNum == NULL)
+	if (pHaveNum == nullptr)
 	{
 		//所持数管理オブジェクト生成
 		pHaveNum = new CHaveNum(nHaveNumDigit,5);
@@ -169,7 +169,7 @@ CHaveNum* CHaveNum::Create(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, const f
 	}
 	else
 	{
-		return NULL;
+		return nullptr;
 	}
 }
 
@@ -180,7 +180,7 @@ void CHaveNum::CutNumber(void)
 {
 	for (int cnt = 0; cnt < m_nHaveNumDigit; cnt++)
 	{//数字オブジェクトに渡す
-		if (m_ppNumber[cnt] != NULL)
+		if (m_ppNumber[cnt] != nullptr)
 		{//大丈夫。中身はある
 			m_ppNumber[cnt]->SetNumber(m_nHaveNum, cnt);
 		}

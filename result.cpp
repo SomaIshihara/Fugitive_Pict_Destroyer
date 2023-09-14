@@ -165,9 +165,9 @@ void CResult::Draw(void)
 //=================================
 CResult* CResult::Create(void)
 {
-	CResult* pResult = NULL;
+	CResult* pResult = nullptr;
 
-	if (pResult == NULL)
+	if (pResult == nullptr)
 	{
 		//オブジェクト2Dの生成
 		pResult = new CResult;
@@ -179,6 +179,6 @@ CResult* CResult::Create(void)
 	}
 	else
 	{
-		return NULL;
+		return nullptr;
 	}
 }

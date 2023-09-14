@@ -20,17 +20,17 @@ int CObject::m_nNumAll = 0;
 //=================================
 CObject::CObject(int nPriority)
 {
-	if (m_apCur[nPriority] == NULL)
+	if (m_apCur[nPriority] == nullptr)
 	{//最後尾がいない（すなわち先頭もいない）
 		m_apTop[nPriority] = this;	//俺が先頭
-		m_pPrev = NULL;				//前後誰もいない
-		m_pNext = NULL;
+		m_pPrev = nullptr;				//前後誰もいない
+		m_pNext = nullptr;
 	}
 	else
 	{//最後尾がいる
 		m_pPrev = m_apCur[nPriority];		//最後尾が自分の前のオブジェ
 		m_apCur[nPriority]->m_pNext = this;	//最後尾の次のオブジェが自分
-		m_pNext = NULL;						//自分の次のオブジェはいない
+		m_pNext = nullptr;						//自分の次のオブジェはいない
 	}
 	m_nPriority = nPriority;	//優先順位入れる
 	m_apCur[nPriority] = this;	//俺が最後尾
@@ -52,7 +52,7 @@ void CObject::ReleaseAll(void)
 	{
 		CObject* pObject = m_apTop[cnt];	//先頭を入れる
 
-		while (pObject != NULL)
+		while (pObject != nullptr)
 		{//最後尾まで回し続ける
 			CObject* pObjectNext = pObject->m_pNext;	//次のオブジェ保存
 			pObject->Uninit();		//破棄
@@ -73,7 +73,7 @@ void CObject::UpdateAll(void)
 	{
 		CObject* pObject = m_apTop[cnt];	//先頭を入れる
 
-		while (pObject != NULL)
+		while (pObject != nullptr)
 		{//最後尾まで回し続ける
 			CObject* pObjectNext = pObject->m_pNext;	//次のオブジェ保存
 			
@@ -102,7 +102,7 @@ void CObject::DrawAll(void)
 	{
 		CObject* pObject = m_apTop[cnt];	//先頭を入れる
 
-		while (pObject != NULL)
+		while (pObject != nullptr)
 		{//最後尾まで回し続ける
 			CObject* pObjectNext = pObject->m_pNext;	//次のオブジェ保存
 			pObject->Draw();		//描画
@@ -128,17 +128,17 @@ void CObject::Death(void)
 	{
 		CObject* pObject = m_apTop[cnt];	//先頭を入れる
 
-		while (pObject != NULL)
+		while (pObject != nullptr)
 		{//最後尾まで回し続ける
 			CObject* pObjectNext = pObject->m_pNext;	//次のオブジェ保存
 
 			if (pObject->m_bDeath == true)
 			{//死亡フラグが立ってる
-				if (pObject->m_pPrev != NULL)
+				if (pObject->m_pPrev != nullptr)
 				{//前にオブジェがいる
 					pObject->m_pPrev->m_pNext = pObject->m_pNext;	//前のオブジェの次のオブジェは自分の次のオブジェ
 				}
-				if (pObject->m_pNext != NULL)
+				if (pObject->m_pNext != nullptr)
 				{
 					pObject->m_pNext->m_pPrev = pObject->m_pPrev;	//次のオブジェの前のオブジェは自分の前のオブジェ
 				}

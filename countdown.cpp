@@ -110,9 +110,9 @@ void CCountDown::Draw(void)
 //=================================
 CCountDown* CCountDown::Create(const D3DXVECTOR3 pos, const float fOneWidth, const float fHeight, const int nCount)
 {
-	CCountDown* pObjCountDown = NULL;
+	CCountDown* pObjCountDown = nullptr;
 
-	if (pObjCountDown == NULL)
+	if (pObjCountDown == nullptr)
 	{
 		//îwåiÇÃê∂ê¨
 		pObjCountDown = new CCountDown(nCount);
@@ -158,6 +158,6 @@ CCountDown* CCountDown::Create(const D3DXVECTOR3 pos, const float fOneWidth, con
 	}
 	else
 	{
-		return NULL;
+		return nullptr;
 	}
 }

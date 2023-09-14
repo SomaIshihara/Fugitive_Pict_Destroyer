@@ -10,8 +10,8 @@
 #include "objectX.h"
 
 //静的メンバ変数
-CPoint* CPoint::m_pTop = NULL;
-CPoint* CPoint::m_pCur = NULL;
+CPoint* CPoint::m_pTop = nullptr;
+CPoint* CPoint::m_pCur = nullptr;
 int CPoint::m_nNumAll = 0;
 
 #define POINT_INTERVAL	(1.2f)	//間隔
@@ -21,17 +21,17 @@ int CPoint::m_nNumAll = 0;
 //=================================
 CPoint::CPoint()
 {
-	if (m_pCur == NULL)
+	if (m_pCur == nullptr)
 	{//最後尾がいない（すなわち先頭もいない）
 		m_pTop = this;		//俺が先頭
-		m_pPrev = NULL;		//前後誰もいない
-		m_pNext = NULL;
+		m_pPrev = nullptr;		//前後誰もいない
+		m_pNext = nullptr;
 	}
 	else
 	{//最後尾がいる
 		m_pPrev = m_pCur;		//最後尾が自分の前のオブジェ
 		m_pCur->m_pNext = this;	//最後尾の次のオブジェが自分
-		m_pNext = NULL;			//自分の次のオブジェはいない
+		m_pNext = nullptr;			//自分の次のオブジェはいない
 	}
 	m_pCur = this;	//俺が最後尾
 	m_nNumAll++;
@@ -59,15 +59,15 @@ void CPoint::ReleaseAll(void)
 {
 	CPoint* pPoint = m_pTop;	//先頭を入れる
 
-	while (pPoint != NULL)
+	while (pPoint != nullptr)
 	{//最後尾まで回し続ける
 		CPoint* pPointNext = pPoint->m_pNext;	//次のオブジェ保存
 
-		if (pPoint->m_pPrev != NULL)
+		if (pPoint->m_pPrev != nullptr)
 		{//前にオブジェがいる
 			pPoint->m_pPrev->m_pNext = pPoint->m_pNext;	//前のオブジェの次のオブジェは自分の次のオブジェ
 		}
-		if (pPoint->m_pNext != NULL)
+		if (pPoint->m_pNext != nullptr)
 		{
 			pPoint->m_pNext->m_pPrev = pPoint->m_pPrev;	//次のオブジェの前のオブジェは自分の前のオブジェ
 		}
@@ -101,7 +101,7 @@ void CPoint::Update(void)
 	{
 		CBuilding* pBuilding = CBuilding::GetBuilding(cnt);
 
-		if (pBuilding != NULL)
+		if (pBuilding != nullptr)
 		{//建物ある
 			D3DXVECTOR3 pos = pBuilding->GetPos();				//位置取得
 			float fWidthHalf = pBuilding->GetWidth() * 0.5f;	//幅取得
@@ -117,7 +117,7 @@ void CPoint::Update(void)
 	//アジト
 	CObject* pBuilding = CPicto::GetAgit();
 
-	if (pBuilding != NULL)
+	if (pBuilding != nullptr)
 	{//建物ある
 		D3DXVECTOR3 pos = pBuilding->GetPos();				//位置取得
 		float fWidthHalf = pBuilding->GetWidth() * 0.5f;	//幅取得
@@ -135,9 +135,9 @@ void CPoint::Update(void)
 //=================================
 CPoint* CPoint::Create(const D3DXVECTOR3 pos)
 {
-	CPoint* pPoint = NULL;
+	CPoint* pPoint = nullptr;
 
-	if (pPoint == NULL)
+	if (pPoint == nullptr)
 	{
 		//ポイントの生成
 		pPoint = new CPoint;
@@ -151,7 +151,7 @@ CPoint* CPoint::Create(const D3DXVECTOR3 pos)
 	}
 	else
 	{
-		return NULL;
+		return nullptr;
 	}
 }
 
@@ -161,16 +161,16 @@ CPoint* CPoint::Create(const D3DXVECTOR3 pos)
 CPoint* CPoint::Search(const D3DXVECTOR3 pos, const CPoint* pNowPoint)
 {
 	CPoint* pPoint = m_pTop;	//先頭を入れる
-	CPoint* pPointNear = NULL;
+	CPoint* pPointNear = nullptr;
 	float fLength = 0.0f;
 
-	while (pPoint != NULL)
+	while (pPoint != nullptr)
 	{//最後尾まで回し続ける
 		CPoint* pPointNext = pPoint->m_pNext;	//次のオブジェ保存
 		
 		//距離測る
 		float fLengthNow = D3DXVec3Length(&(pPoint->m_pos - pos));
-		if (pPointNear == NULL || fLength > fLengthNow)
+		if (pPointNear == nullptr || fLength > fLengthNow)
 		{//まっさら
 			pPointNear = pPoint;
 			fLength = fLengthNow;

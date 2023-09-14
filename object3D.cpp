@@ -18,7 +18,7 @@
 CObject3D::CObject3D(int nPriority) : CObject(nPriority)
 {
 	//クリア
-	m_pVtxbuff = NULL;
+	m_pVtxbuff = nullptr;
 	m_nIdxTexture = -1;
 	m_pos = CManager::VEC3_ZERO;
 	m_rot = CManager::VEC3_ZERO;
@@ -30,7 +30,7 @@ CObject3D::CObject3D(int nPriority) : CObject(nPriority)
 CObject3D::CObject3D(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, const float fWidth, const float fDepth, int nPriority) : CObject(nPriority)
 {
 	//クリア
-	m_pVtxbuff = NULL;
+	m_pVtxbuff = nullptr;
 	m_nIdxTexture = -1;
 	m_pos = pos;
 	m_rot = rot;
@@ -58,7 +58,7 @@ HRESULT CObject3D::Init(void)
 		FVF_VERTEX_3D,
 		D3DPOOL_MANAGED,
 		&m_pVtxbuff,
-		NULL)))
+		nullptr)))
 	{
 		return E_FAIL;
 	}
@@ -139,10 +139,10 @@ HRESULT CObject3D::Init(void)
 void CObject3D::Uninit(void)
 {
 	//頂点バッファの破棄
-	if (m_pVtxbuff != NULL)
+	if (m_pVtxbuff != nullptr)
 	{
 		m_pVtxbuff->Release();
-		m_pVtxbuff = NULL;
+		m_pVtxbuff = nullptr;
 	}
 
 	//自分自身破棄
@@ -198,9 +198,9 @@ void CObject3D::Draw(void)
 //========================
 CObject3D* CObject3D::Create(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, const float fWidth, const float fDepth)
 {
-	CObject3D* pObj3D = NULL;
+	CObject3D* pObj3D = nullptr;
 
-	if (pObj3D == NULL)
+	if (pObj3D == nullptr)
 	{
 		//オブジェクト2Dの生成
 		pObj3D = new CObject3D(pos, rot, fWidth, fDepth);
@@ -212,7 +212,7 @@ CObject3D* CObject3D::Create(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, const
 	}
 	else
 	{
-		return NULL;
+		return nullptr;
 	}
 }
 

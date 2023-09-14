@@ -20,7 +20,7 @@ CModel::CModel()
 	m_rot = CManager::VEC3_ZERO;
 	m_posMotioned = CManager::VEC3_ZERO;
 	m_rotMotioned = CManager::VEC3_ZERO;
-	m_pParent = NULL;
+	m_pParent = nullptr;
 }
 
 //=================================
@@ -37,22 +37,22 @@ HRESULT CModel::Init(const char * pPath, const D3DXVECTOR3 posOffset, const D3DX
 {
 	LPDIRECT3DDEVICE9 pDevice = CManager::GetRenderer()->GetDevice();	//デバイス取得
 	CTexture* pTexture = CManager::GetTexture();						//テクスチャオブジェクト取得
-	m_pIdxtexture = nullptr;											//テクスチャ番号ポインタをNULLにする
+	m_pIdxtexture = nullptr;											//テクスチャ番号ポインタをnullptrにする
 	m_bChangeColor = false;												//色変更フラグをオフ
 
 	if (SUCCEEDED(D3DXLoadMeshFromX(
 		pPath,
 		D3DXMESH_SYSTEMMEM,
 		pDevice,
-		NULL,
+		nullptr,
 		&m_pBuffMat,
-		NULL,
+		nullptr,
 		&m_dwNumMatModel,
 		&m_pMesh)))
 	{
 		//テクスチャポインタ確保
-		if (m_pIdxtexture == NULL)
-		{//NULL
+		if (m_pIdxtexture == nullptr)
+		{//nullptr
 		 //テクスチャ番号配列確保
 			m_pIdxtexture = new int[(int)m_dwNumMatModel];
 
@@ -65,15 +65,15 @@ HRESULT CModel::Init(const char * pPath, const D3DXVECTOR3 posOffset, const D3DX
 			//テクスチャ読み込み
 			for (int nCntTex = 0; nCntTex < (int)m_dwNumMatModel; nCntTex++)
 			{
-				m_pIdxtexture[nCntTex] = NULL;
-				if (pMat[nCntTex].pTextureFilename != NULL)
+				m_pIdxtexture[nCntTex] = nullptr;
+				if (pMat[nCntTex].pTextureFilename != nullptr)
 				{//テクスチャあるよ
 				 //テクスチャ読み込み
 					m_pIdxtexture[nCntTex] = pTexture->Regist(pMat[nCntTex].pTextureFilename);
 				}
 				else
 				{//ないよ
-					m_pIdxtexture[nCntTex] = -1;	//テクスチャ取得時にNULLになるようにする
+					m_pIdxtexture[nCntTex] = -1;	//テクスチャ取得時にnullptrになるようにする
 				}
 			}
 		}
@@ -96,24 +96,24 @@ HRESULT CModel::Init(const char * pPath, const D3DXVECTOR3 posOffset, const D3DX
 void CModel::Uninit(void)
 {
 	//メッシュの破棄
-	if (m_pMesh != NULL)
+	if (m_pMesh != nullptr)
 	{
 		m_pMesh->Release();
-		m_pMesh = NULL;
+		m_pMesh = nullptr;
 	}
 
 	//マテリアルの破棄
-	if (m_pBuffMat != NULL)
+	if (m_pBuffMat != nullptr)
 	{
 		m_pBuffMat->Release();
-		m_pBuffMat = NULL;
+		m_pBuffMat = nullptr;
 	}
 
 	//テクスチャ番号破棄
-	if (m_pIdxtexture != NULL)
+	if (m_pIdxtexture != nullptr)
 	{
 		delete[] m_pIdxtexture;
-		m_pIdxtexture = NULL;
+		m_pIdxtexture = nullptr;
 	}
 }
 
@@ -159,7 +159,7 @@ void CModel::Draw(void)
 	D3DXMatrixMultiply(&m_mtxWorld, &m_mtxWorld, &mtxTrans);
 
 	//パーツの親マトリ設定
-	if (m_pParent != NULL)
+	if (m_pParent != nullptr)
 	{
 		mtxParent = m_pParent->GetMtxWorld();
 	}
@@ -212,9 +212,9 @@ void CModel::Draw(void)
 //========================
 CModel* CModel::Create(const char * pPath, const D3DXVECTOR3 posOffset, const D3DXVECTOR3 rotOffset)
 {
-	CModel* pModel = NULL;
+	CModel* pModel = nullptr;
 
-	if (pModel == NULL)
+	if (pModel == nullptr)
 	{
 		//オブジェクト2Dの生成
 		pModel = new CModel();
@@ -226,6 +226,6 @@ CModel* CModel::Create(const char * pPath, const D3DXVECTOR3 posOffset, const D3
 	}
 	else
 	{
-		return NULL;
+		return nullptr;
 	}
 }

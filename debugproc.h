@@ -21,7 +21,7 @@ public:
 	void Draw(void);
 	void Print(const char* fmt, ...);
 private:
-	LPD3DXFONT m_pFont = NULL;				//フォントへのポインタ
+	LPD3DXFONT m_pFont = nullptr;				//フォントへのポインタ
 	char m_aStrPrint[DEBPRO_MAX_STR];		//表示文字バッファ
 };
 
