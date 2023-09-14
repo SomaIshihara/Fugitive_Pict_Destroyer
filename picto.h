@@ -318,7 +318,7 @@ public:
 
 	//設定
 	void SetMode(const MODE mode) { m_mode = mode; }
-	void UnsetTargetPicto(void) { m_ptargetPicto = nullptr; }
+	void UnsetTargetPicto(void) { m_pTargetPicto = nullptr; }
 
 	//乗車
 	void TakeTaxi(CPictoTaxi* taxi) {};
@@ -343,7 +343,7 @@ private:
 	MODE m_mode;			//タクシーモード
 
 	//ターゲット
-	CPicto* m_ptargetPicto;		//ピクト（詳細不明）
+	CPicto* m_pTargetPicto;		//ピクト（詳細不明）
 
 	int m_nLife;			//体力
 

@@ -112,7 +112,7 @@ HRESULT CGame::Init(void)
 	CPoint::Update();
 
 	//交番パラメータ設定
-	CKoban::SetKobanParam(300, 10);	//仮設定
+	CKoban::SetKobanParam(300, 15, 7);	//仮設定
 
 	//一般人マネージャ
 	CNorManager* pNorManager = CNorManager::Create();

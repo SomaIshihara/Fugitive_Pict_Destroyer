@@ -1306,12 +1306,12 @@ void CPictoTaxi::Update(void)
 		switch (m_mode)
 		{
 		case MODE_PICK:
-			if (m_ptargetPicto != nullptr)
+			if (m_pTargetPicto != nullptr)
 			{
 				//タクシーに乗せる
-				m_ptargetPicto->TakeTaxi(this);
-				m_ptargetPicto->Uninit();
-				m_ptargetPicto = nullptr;
+				m_pTargetPicto->TakeTaxi(this);
+				m_pTargetPicto->Uninit();
+				m_pTargetPicto = nullptr;
 
 				//ターゲット解除
 				UnsetTargetObj();
@@ -1329,17 +1329,17 @@ void CPictoTaxi::Update(void)
 			break;
 		case MODE_RESCUE:
 			//ターゲット外れていたら探索
-			if (m_ptargetPicto == nullptr)
+			if (m_pTargetPicto == nullptr)
 			{
-				m_ptargetPicto = SearchBattler();
+				m_pTargetPicto = SearchBattler();
 			}
 
-			if (m_ptargetPicto != nullptr)
+			if (m_pTargetPicto != nullptr)
 			{
 				//タクシーに乗せる
-				m_ptargetPicto->TakeTaxi(this);
-				m_ptargetPicto->Uninit();
-				m_ptargetPicto = nullptr;
+				m_pTargetPicto->TakeTaxi(this);
+				m_pTargetPicto->Uninit();
+				m_pTargetPicto = nullptr;
 
 				//ターゲット解除
 				UnsetTargetObj();
@@ -1414,18 +1414,18 @@ void CPictoTaxi::SetTakeTaxi(const CPicto::TYPE type, const int nTakeNum)
 bool CPictoTaxi::SearchPick(void)
 {
 	//ターゲット外れていたら探索
-	if (m_ptargetPicto == nullptr)
+	if (m_pTargetPicto == nullptr)
 	{
 		//取得
-		m_ptargetPicto = SearchNormal();
+		m_pTargetPicto = SearchNormal();
 
 		//ここに弾とピクトの距離測って比較する処理
 		float fLengthPicto = -1.0f;
 		float fLengthItem = -1.0f;
 		
-		if(m_ptargetPicto != nullptr)
+		if(m_pTargetPicto != nullptr)
 		{//ピクト取得した
-			SetTargetObj(m_ptargetPicto);
+			SetTargetObj(m_pTargetPicto);
 		}
 		else
 		{//無

@@ -11,6 +11,7 @@
 #include "picto.h"
 #include "score.h"
 #include "xmodel.h"
+#include "koban.h"
 #include <stdio.h>
 #include <assert.h>
 
@@ -287,9 +288,14 @@ void CBuilding::AddDamage(int nDamage)
 		//経験値付与
 		CPictoDestroyer::AddExp(DROP_EXP(9));	//いったんレベル9として扱う
 	}
+	else
+	{
+		//ダメージ報告
+		CKoban::ReportDamage(m_nID);
 
-	//赤くする
-	m_fRedAlpha = BUILDING_DAMAGE_ALPHA;
+		//赤くする
+		m_fRedAlpha = BUILDING_DAMAGE_ALPHA;
+	}
 }
 
 //========================
