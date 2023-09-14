@@ -151,7 +151,7 @@ CXModel* CXModel::Load(const char* pPath)
 			//テクスチャ読み込み
 			for (int nCntTex = 0; nCntTex < (int)pObject->m_dwNumMatModel; nCntTex++)
 			{
-				pObject->m_pIdxtexture[nCntTex] = nullptr;
+				pObject->m_pIdxtexture[nCntTex] = -1;
 				if (pMat[nCntTex].pTextureFilename != nullptr)
 				{//テクスチャあるよ
 				 //テクスチャ読み込み

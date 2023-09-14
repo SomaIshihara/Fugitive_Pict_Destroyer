@@ -32,6 +32,7 @@ public:
 
 	//取得
 	D3DXVECTOR3 GetPos(void) { return m_pos; }
+	static int GetNumAll(void) { return m_nNumAll; }
 
 private:
 	static CPoint* m_pTop;	//先頭オブジェクト

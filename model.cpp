@@ -65,7 +65,7 @@ HRESULT CModel::Init(const char * pPath, const D3DXVECTOR3 posOffset, const D3DX
 			//テクスチャ読み込み
 			for (int nCntTex = 0; nCntTex < (int)m_dwNumMatModel; nCntTex++)
 			{
-				m_pIdxtexture[nCntTex] = nullptr;
+				m_pIdxtexture[nCntTex] = -1;
 				if (pMat[nCntTex].pTextureFilename != nullptr)
 				{//テクスチャあるよ
 				 //テクスチャ読み込み

@@ -166,8 +166,6 @@
     <ClCompile Include="Culc.cpp" />
     <ClCompile Include="debugproc.cpp" />
     <ClCompile Include="effect.cpp" />
-    <ClCompile Include="enemy.cpp" />
-    <ClCompile Include="explosion.cpp" />
     <ClCompile Include="fade.cpp" />
     <ClCompile Include="file.cpp" />
     <ClCompile Include="game.cpp" />
@@ -182,6 +180,7 @@
     <ClCompile Include="meshsky.cpp" />
     <ClCompile Include="model.cpp" />
     <ClCompile Include="motion.cpp" />
+    <ClCompile Include="normanager.cpp" />
     <ClCompile Include="number.cpp" />
     <ClCompile Include="object.cpp" />
     <ClCompile Include="object2D.cpp" />
@@ -224,8 +223,6 @@
     <ClInclude Include="Culc.h" />
     <ClInclude Include="debugproc.h" />
     <ClInclude Include="effect.h" />
-    <ClInclude Include="enemy.h" />
-    <ClInclude Include="explosion.h" />
     <ClInclude Include="fade.h" />
     <ClInclude Include="file.h" />
     <ClInclude Include="game.h" />
@@ -240,6 +237,7 @@
     <ClInclude Include="meshsky.h" />
     <ClInclude Include="model.h" />
     <ClInclude Include="motion.h" />
+    <ClInclude Include="normanager.h" />
     <ClInclude Include="number.h" />
     <ClInclude Include="object.h" />
     <ClInclude Include="object2D.h" />

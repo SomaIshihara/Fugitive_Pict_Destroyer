@@ -27,6 +27,7 @@
 #include "camera.h"
 #include "bg.h"
 #include "countdown.h"
+#include "normanager.h"
 
 //静的メンバ変数
 CPlayer* CGame::m_pPlayer = nullptr;
@@ -112,6 +113,11 @@ HRESULT CGame::Init(void)
 
 	//交番パラメータ設定
 	CKoban::SetKobanParam(300, 10);	//仮設定
+
+	//一般人マネージャ
+	CNorManager* pNorManager = CNorManager::Create();
+	pNorManager->SetNum(15);
+	pNorManager->SetTime(180);
 
 	return S_OK;
 }
