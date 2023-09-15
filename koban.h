@@ -11,7 +11,7 @@
 #include <vector>
 
 //交番クラス
-class CKoban : CObjectX
+class CKoban : public CObjectX
 {
 public:
 	//コンストラクタ・デストラクタ
@@ -35,6 +35,10 @@ public:
 
 	//ダメージ報告
 	static void ReportDamage(const int nID) { m_AttackList.emplace_back(nID); }
+
+	//取得
+	static CKoban* GetKoban(const int nID) { return m_apKoban[nID]; }
+	static int GetNumAll(void) { return m_nNumAll; }
 
 private:
 	static CKoban* m_apKoban[MAX_OBJ];	//交番情報

@@ -122,6 +122,12 @@ void CKoban::CommonUpdate(void)
 		}
 	}
 
+	//建物のCT減らす
+	for (int cnt = 0; cnt < MAX_OBJ; cnt++)
+	{
+		m_disPatchCT[cnt]--;
+	}
+
 	if (m_waitingPolice > 0)
 	{//待機中の警察が1人以上いる
 		if (CPictoPolice::GetNumAll() < m_nPatrollNum)
@@ -151,21 +157,41 @@ void CKoban::CommonUpdate(void)
 		{
 			if (m_disPatchCT[m_AttackList[cnt]] <= 0)
 			{//CT終了している
+				CBuilding* pBuilding = CBuilding::GetBuilding(m_AttackList[cnt]);
+
 				//被害を受けている建物に近い交番を探す
 				int nNearKoban = -1;
 				float fLengthNear = -1.0f;
 				for (int cnt = 0; cnt < m_nNumAll; cnt++) 
 				{
 					float fLength = D3DXVec3Length(&(m_apKoban[cnt]->GetPos() - CBuilding::GetBuilding(m_AttackList[cnt])->GetPos()));
-					if (fLengthNear == -1.0f || fLengthNear > fLength)
+					if (nNearKoban == -1 || fLengthNear > fLength)
 					{
 						nNearKoban = cnt;		//一番近い交番番号とする
 						fLengthNear = fLength;	//近い値を入れる
 					}
 				}
+
+				//攻撃している最寄りのピクトを取得
+				int nNearPicto = -1;
+				float fLenNearPicto = -1.0f;
+				for (int cnt = 0; cnt < MAX_OBJ; cnt++)
+				{
+					CPictoDestroyer* pPicto = CPictoDestroyer::GetPicto(cnt);
+					if (pPicto != nullptr)
+					{
+						float fLenPicto = D3DXVec3Length(&(pPicto->GetPos() - pBuilding->GetPos()));
+						if (nNearPicto == -1 || fLenNearPicto > fLenPicto)
+						{
+							nNearPicto = cnt;			//一番近いピクトとする
+							fLenNearPicto = fLenPicto;	//距離入れる
+						}
+					}
+				}
 				
 				CPictoPolice* pPolice = CPictoPolice::Create(m_apKoban[nNearKoban]->GetPos());	//近い交番から沸かす
-				pPolice->SetTargetObj(CBuilding::GetBuilding(m_AttackList[cnt]));				//攻撃を受けている建物に出動
+				pPolice->SetTargetObj(pBuilding);												//攻撃を受けている建物に出動
+				pPolice->SetTargetPicto(CPictoDestroyer::GetPicto(nNearPicto));					//建物の近くで攻撃しているピクトをターゲットにする
 				m_waitingPolice--;																//待機中警察を減らす
 				m_disPatchCT[m_AttackList[cnt]] = m_nSpawnSpan;									//雇う間隔と同じ間隔でCTを設定
 			}

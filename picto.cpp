@@ -27,11 +27,11 @@
 #include "level.h"
 
 //マクロ
-#define PICTO_WALK_SPEED				(6.0f)		//ピクトさんの歩行速度
-#define PICTO_POINT_RESEARCH_LENGTH	(7.0f)		//ピクトさんがポイントに到着したことにする距離
+#define PICTO_WALK_SPEED			(6.0f)		//ピクトさんの歩行速度
+#define PICTO_POINT_RESEARCH_LENGTH	(15.0f)		//ピクトさんがポイントに到着したことにする距離
 #define PICTO_AGIT_STOP_LENGTH		(20.0f)		//ピクトさんがアジトから離れる距離
 #define PICTO_BUIDING_STOP_LENGTH	(120.0f)	//ピクトさんが建物から離れる距離
-#define PICTO_POLICE_STOP_LENGTH		(30.0f)		//ピクトさんが警察から離れる距離
+#define PICTO_POLICE_STOP_LENGTH	(30.0f)		//ピクトさんが警察から離れる距離
 #define PICTO_POLICE_SEARCH_LENGTH	(60.0f)		//ピクト警察のサーチ範囲
 #define PICTO_ATTACK_TIME			(60)		//攻撃を行う間隔
 #define PICTO_DAMAGE_TIME			(120)		//赤くする時間
@@ -383,18 +383,7 @@ void CPicto::Update(void)
 	pos.x += m_move.x;
 	pos.y += m_move.y - (ACCELERATION_GRAVITY * m_nCounterJumpTime / MAX_FPS);
 
-	if (CollisionField(&pos) == true)
-	{
-		m_bJump = false;
-
-		//ジャンプ
-		if (pKeyboard->GetRepeate(DIK_J))
-		{//ジャンプ処理
-			m_bJump = true;
-			m_nCounterJumpTime = 0;
-			m_move.y = 5.0f;
-		}
-	}
+	CollisionField(&pos);
 
 	pos.z += m_move.z;
 	m_pos = pos;
@@ -412,6 +401,9 @@ void CPicto::Update(void)
 
 	//影設定
 	m_pShadow->Set(m_pos, m_rot);
+
+	m_move.x = CManager::FLOAT_ZERO;
+	m_move.z = CManager::FLOAT_ZERO;
 }
 
 //========================
@@ -1572,6 +1564,19 @@ void CPictoTaxi::AddDamage(int nDamage)
 //=================================
 void CPictoTaxi::Return(void)
 {
+	//戦闘要員追加処理
+	CScene::MODE mode = CManager::GetMode();
+	CPlayer* pPlayer = nullptr;
+	if (mode == CScene::MODE_GAME)
+	{//ゲーム
+		pPlayer = CGame::GetPlayer();
+	}
+	else if (mode == CScene::MODE_TUTORIAL)
+	{//チュートリアル
+		pPlayer = CTutorial::GetPlayer();
+	}
+	pPlayer->AddPicto(m_nTakeDestroyer, m_nTakeBlocker, m_nTakeNormal);
+
 	CPicto::Return();
 }
 
@@ -1820,16 +1825,17 @@ void CPictoPolice::Update(void)
 		targetWidthHalf = m_pTargetPicto->GetWidth() * 0.5f;
 		targetDepthHalf = m_pTargetPicto->GetDepth() * 0.5f;
 
-		if (D3DXVec3Length(&(targetPos - pos)) > LOOSE_LENGTH)
-		{//逃がす
-			UnsetTarget();
-			if (pMotion->GetType() != MOTIONTYPE_NEUTRAL)
-			{
-				pMotion->Set(MOTIONTYPE_NEUTRAL);
-			}
-			SetState(STATE_FACE);
-		}
-		else if (targetPos.x - targetWidthHalf - PICTO_POLICE_STOP_LENGTH > pos.x || targetPos.x + targetWidthHalf + PICTO_POLICE_STOP_LENGTH < pos.x ||
+		//if (D3DXVec3Length(&(targetPos - pos)) > LOOSE_LENGTH)
+		//{//逃がす
+		//	UnsetTarget();
+		//	if (pMotion->GetType() != MOTIONTYPE_NEUTRAL)
+		//	{
+		//		pMotion->Set(MOTIONTYPE_NEUTRAL);
+		//	}
+		//	SetState(STATE_FACE);
+		//}
+		//else 
+			if (targetPos.x - targetWidthHalf - PICTO_POLICE_STOP_LENGTH > pos.x || targetPos.x + targetWidthHalf + PICTO_POLICE_STOP_LENGTH < pos.x ||
 			targetPos.z - targetDepthHalf - PICTO_POLICE_STOP_LENGTH > pos.z || targetPos.z + targetDepthHalf + PICTO_POLICE_STOP_LENGTH < pos.z)
 		{//到着してない
 			float fTargetLenWidth, fTargetLenDepth;

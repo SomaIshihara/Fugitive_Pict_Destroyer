@@ -8,13 +8,16 @@
 #include "building.h"
 #include "picto.h"
 #include "objectX.h"
+#include "koban.h"
+#include <vector>
 
 //静的メンバ変数
 CPoint* CPoint::m_pTop = nullptr;
 CPoint* CPoint::m_pCur = nullptr;
 int CPoint::m_nNumAll = 0;
+const float CPoint::MERGE_LENGTH = 40.0f;
 
-#define POINT_INTERVAL	(1.2f)	//間隔
+#define POINT_INTERVAL	(20.0f)	//間隔
 
 //=================================
 //コンストラクタ
@@ -33,6 +36,7 @@ CPoint::CPoint()
 		m_pCur->m_pNext = this;	//最後尾の次のオブジェが自分
 		m_pNext = nullptr;			//自分の次のオブジェはいない
 	}
+	m_bDeath = false;
 	m_pCur = this;	//俺が最後尾
 	m_nNumAll++;
 }
@@ -63,30 +67,20 @@ void CPoint::ReleaseAll(void)
 	{//最後尾まで回し続ける
 		CPoint* pPointNext = pPoint->m_pNext;	//次のオブジェ保存
 
-		if (pPoint->m_pPrev != nullptr)
-		{//前にオブジェがいる
-			pPoint->m_pPrev->m_pNext = pPoint->m_pNext;	//前のオブジェの次のオブジェは自分の次のオブジェ
-		}
-		if (pPoint->m_pNext != nullptr)
-		{
-			pPoint->m_pNext->m_pPrev = pPoint->m_pPrev;	//次のオブジェの前のオブジェは自分の前のオブジェ
-		}
-
-		if (m_pCur == pPoint)
-		{//最後尾でした
-			m_pCur = pPoint->m_pPrev;	//最後尾を自分の前のオブジェにする
-		}
-		if (m_pTop == pPoint)
-		{
-			m_pTop = pPoint->m_pNext;	//先頭を自分の次のオブジェにする
-		}
-
-		//成仏	
-		delete pPoint;	//自分自身破棄
-		m_nNumAll--;	//総数減らす
+		pPoint->Release();		//破棄
 
 		pPoint = pPointNext;	//次を入れる
 	}
+
+	Death();	//全部へし折る
+}
+
+//=================================
+//終了
+//=================================
+void CPoint::Release(void)
+{
+	m_bDeath = true;	//死亡フラグにする
 }
 
 //=================================
@@ -97,7 +91,7 @@ void CPoint::Update(void)
 	ReleaseAll();	//いったん消す
 
 	//建物に応じて生成
-	for (int cnt = 0; cnt < MAX_OBJ; cnt++)
+	for (int cnt = 0; cnt < CBuilding::GetNumAll(); cnt++)
 	{
 		CBuilding* pBuilding = CBuilding::GetBuilding(cnt);
 
@@ -107,10 +101,10 @@ void CPoint::Update(void)
 			float fWidthHalf = pBuilding->GetWidth() * 0.5f;	//幅取得
 			float fDepthHalf = pBuilding->GetDepth() * 0.5f;	//奥行取得
 
-			CPoint::Create(pos + D3DXVECTOR3(-fWidthHalf * POINT_INTERVAL, 0.0f, -fDepthHalf * POINT_INTERVAL));
-			CPoint::Create(pos + D3DXVECTOR3(fWidthHalf * POINT_INTERVAL, 0.0f, -fDepthHalf * POINT_INTERVAL));
-			CPoint::Create(pos + D3DXVECTOR3(-fWidthHalf * POINT_INTERVAL, 0.0f, fDepthHalf * POINT_INTERVAL));
-			CPoint::Create(pos + D3DXVECTOR3(fWidthHalf * POINT_INTERVAL, 0.0f, fDepthHalf * POINT_INTERVAL));
+			CPoint::Create(pos + D3DXVECTOR3(-(fWidthHalf + POINT_INTERVAL), 0.0f, -(fDepthHalf + POINT_INTERVAL)));
+			CPoint::Create(pos + D3DXVECTOR3((fWidthHalf + POINT_INTERVAL), 0.0f, -(fDepthHalf + POINT_INTERVAL)));
+			CPoint::Create(pos + D3DXVECTOR3(-(fWidthHalf + POINT_INTERVAL), 0.0f, (fDepthHalf + POINT_INTERVAL)));
+			CPoint::Create(pos + D3DXVECTOR3((fWidthHalf + POINT_INTERVAL), 0.0f, (fDepthHalf + POINT_INTERVAL)));
 		}
 	}
 
@@ -123,11 +117,111 @@ void CPoint::Update(void)
 		float fWidthHalf = pBuilding->GetWidth() * 0.5f;	//幅取得
 		float fDepthHalf = pBuilding->GetDepth() * 0.5f;	//奥行取得
 
-		CPoint::Create(pos + D3DXVECTOR3(-fWidthHalf * POINT_INTERVAL, 0.0f, -fDepthHalf * POINT_INTERVAL));
-		CPoint::Create(pos + D3DXVECTOR3(fWidthHalf * POINT_INTERVAL, 0.0f, -fDepthHalf * POINT_INTERVAL));
-		CPoint::Create(pos + D3DXVECTOR3(-fWidthHalf * POINT_INTERVAL, 0.0f, fDepthHalf * POINT_INTERVAL));
-		CPoint::Create(pos + D3DXVECTOR3(fWidthHalf * POINT_INTERVAL, 0.0f, fDepthHalf * POINT_INTERVAL));
+		CPoint::Create(pos + D3DXVECTOR3(-(fWidthHalf + POINT_INTERVAL), 0.0f, -(fDepthHalf + POINT_INTERVAL)));
+		CPoint::Create(pos + D3DXVECTOR3((fWidthHalf + POINT_INTERVAL), 0.0f, -(fDepthHalf + POINT_INTERVAL)));
+		CPoint::Create(pos + D3DXVECTOR3(-(fWidthHalf + POINT_INTERVAL), 0.0f, (fDepthHalf + POINT_INTERVAL)));
+		CPoint::Create(pos + D3DXVECTOR3((fWidthHalf + POINT_INTERVAL), 0.0f, (fDepthHalf + POINT_INTERVAL)));
 	}
+
+	//交番
+	for (int cnt = 0; cnt < CKoban::GetNumAll(); cnt++)
+	{
+		CKoban* pKoban = CKoban::GetKoban(cnt);
+
+		if (pKoban != nullptr)
+		{//建物ある
+			D3DXVECTOR3 pos = pKoban->GetPos();				//位置取得
+			float fWidthHalf = pKoban->GetWidth() * 0.5f;	//幅取得
+			float fDepthHalf = pKoban->GetDepth() * 0.5f;	//奥行取得
+
+			CPoint::Create(pos + D3DXVECTOR3(-(fWidthHalf + POINT_INTERVAL), 0.0f, -(fDepthHalf + POINT_INTERVAL)));
+			CPoint::Create(pos + D3DXVECTOR3((fWidthHalf + POINT_INTERVAL), 0.0f, -(fDepthHalf + POINT_INTERVAL)));
+			CPoint::Create(pos + D3DXVECTOR3(-(fWidthHalf + POINT_INTERVAL), 0.0f, (fDepthHalf + POINT_INTERVAL)));
+			CPoint::Create(pos + D3DXVECTOR3((fWidthHalf + POINT_INTERVAL), 0.0f, (fDepthHalf + POINT_INTERVAL)));
+		}
+	}
+
+	//すべてのポイントに対して、建物に埋もれていないか確認
+	CPoint* pPoint = CPoint::GetTop();	//先頭取得
+	while (pPoint != nullptr)
+	{
+		CPoint* pPointNext = pPoint->GetNext();	//次取得
+
+		//建物の分だけ確認
+		for (int cnt = 0; cnt < CBuilding::GetNumAll(); cnt++)
+		{
+			CBuilding* pBuilding = CBuilding::GetBuilding(cnt);
+
+			if (pBuilding != nullptr)
+			{//ある
+				D3DXVECTOR3 posBuild = pBuilding->GetPos();			//建物位置取得
+				D3DXVECTOR3 posPoint = pPoint->m_pos;				//ポイント位置取得
+				float fWidthHalf = pBuilding->GetWidth() * 0.5f;	//サイズ取得
+				float fDepthHalf = pBuilding->GetDepth() * 0.5f;
+
+				if (posPoint.x > posBuild.x - fWidthHalf &&
+					posPoint.x < posBuild.x + fWidthHalf &&
+					posPoint.z > posBuild.z - fDepthHalf &&
+					posPoint.z < posBuild.z + fDepthHalf)
+				{//オボボボボ（埋もれてる）
+					pPoint->m_pFrag->Uninit();	//旗をへし折る
+					pPoint->Release();			//死
+					break;						//for文終了
+				}
+			}
+		}
+
+		pPoint = pPointNext;	//次入れる
+	}
+
+	//まとめてへし折る
+	Death();
+
+	//近すぎるポイントをマージ（その際、死亡フラグと化したポイントは無視すること）
+	pPoint = CPoint::GetTop();	//先頭取得
+	while (pPoint != nullptr)
+	{
+		CPoint* pPointNext = pPoint->GetNext();	//次取得
+
+		if (pPoint->m_bDeath == false)
+		{//普通の旗
+			//2つ目のポイント
+			std::vector<CPoint*> vector;
+			CPoint* pPointSecond = CPoint::GetTop();	//先頭取得
+			while (pPointSecond != nullptr)
+			{
+				CPoint* pPointSecondNext = pPointSecond->GetNext();	//次取得
+
+				if (pPointSecond != pPoint && pPointSecond->m_bDeath == false && D3DXVec3Length(&(pPoint->GetPos() - pPointSecond->GetPos())) < MERGE_LENGTH)
+				{//範囲内で普通の旗
+					vector.emplace_back(pPointSecond);	//マージリストに入れる
+				}
+
+				pPointSecond = pPointSecondNext;	//次入れる
+			}
+
+			if (vector.size() > 0)
+			{//近いのが1つでもある
+				//マージ処理（近いポイント同士すべて死亡フラグにしてその間に新しくポイントを置く）
+				D3DXVECTOR3 posAverage = pPoint->GetPos();	//位置もらう
+				pPoint->m_pFrag->Uninit();					//旗をへし折る
+				pPoint->Release();							//死亡フラグにする
+				for (int cnt = 0; cnt < vector.size(); cnt++)
+				{
+					posAverage += vector[cnt]->GetPos();	//頂点を入れる
+					vector[cnt]->m_pFrag->Uninit();			//旗をへし折る
+					vector[cnt]->Release();					//死亡フラグにする
+				}
+				posAverage /= (vector.size() + 1);	//平均取る
+				CPoint::Create(posAverage);			//新しく置く
+			}
+		}
+
+		pPoint = pPointNext;	//次入れる
+	}
+
+	//まとめてへし折る
+	Death();
 }
 
 //=================================
@@ -145,7 +239,7 @@ CPoint* CPoint::Create(const D3DXVECTOR3 pos)
 		//初期化
 		pPoint->Init();
 		pPoint->m_pos = pos;
-		CObjectX::Create(pos, CManager::VEC3_ZERO, CManager::GetFragModel());
+		pPoint->m_pFrag = CObjectX::Create(pos, CManager::VEC3_ZERO, CManager::GetFragModel());
 
 		return pPoint;
 	}
@@ -179,4 +273,43 @@ CPoint* CPoint::Search(const D3DXVECTOR3 pos, const CPoint* pNowPoint)
 		pPoint = pPointNext;	//次を入れる
 	}
 	return pPointNear;
+}
+
+//=================================
+//死亡フラグと化した旗をへし折る
+//=================================
+void CPoint::Death(void)
+{
+	CPoint* pPoint = m_pTop;	//先頭を入れる
+	while (pPoint != nullptr)
+	{//最後尾まで回し続ける
+		CPoint* pPointNext = pPoint->m_pNext;	//次のオブジェ保存
+
+		if (pPoint->m_bDeath == true)
+		{//これは死亡フラグです
+			if (pPoint->m_pPrev != nullptr)
+			{//前にオブジェがいる
+				pPoint->m_pPrev->m_pNext = pPoint->m_pNext;	//前のオブジェの次のオブジェは自分の次のオブジェ
+			}
+			if (pPoint->m_pNext != nullptr)
+			{
+				pPoint->m_pNext->m_pPrev = pPoint->m_pPrev;	//次のオブジェの前のオブジェは自分の前のオブジェ
+			}
+
+			if (m_pCur == pPoint)
+			{//最後尾でした
+				m_pCur = pPoint->m_pPrev;	//最後尾を自分の前のオブジェにする
+			}
+			if (m_pTop == pPoint)
+			{
+				m_pTop = pPoint->m_pNext;	//先頭を自分の次のオブジェにする
+			}
+
+			//成仏	
+			delete pPoint;	//自分自身破棄
+			m_nNumAll--;	//総数減らす
+		}
+
+		pPoint = pPointNext;	//次を入れる
+	}
 }
