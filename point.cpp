@@ -9,6 +9,7 @@
 #include "picto.h"
 #include "objectX.h"
 #include "koban.h"
+#include "Culc.h"
 #include <vector>
 
 //静的メンバ変数
@@ -222,6 +223,73 @@ void CPoint::Update(void)
 
 	//まとめてへし折る
 	Death();
+
+	//ポイント接続
+	pPoint = CPoint::GetTop();	//先頭取得
+	while (pPoint != nullptr)
+	{//設定
+		CPoint* pPointSecond = CPoint::GetTop();
+
+		while (pPointSecond != nullptr)
+		{
+			if (pPoint != pPointSecond)
+			{//今格納している奴じゃない
+				D3DXVECTOR3 pos = pPoint->GetPos();
+				D3DXVECTOR3 posSecond = pPointSecond->GetPos();
+				D3DXVECTOR3 vecPoint = posSecond - pos;
+
+				bool bCollision = false;
+				for (int cnt = 0; cnt < CBuilding::GetNumAll(); cnt++)
+				{
+					CBuilding* pBuilding = CBuilding::GetBuilding(cnt);
+					if (pBuilding != nullptr)
+					{
+						D3DXVECTOR3 posBuilding = pBuilding->GetPos();
+						float fWidthHalf = pBuilding->GetWidth() * 0.5f;
+						float fDepthHalf = pBuilding->GetDepth() * 0.5f;
+
+						//4頂点作る
+						D3DXVECTOR3 posBuild[4];
+						posBuild[0] = posBuilding + D3DXVECTOR3(-fWidthHalf, 0.0f, -fDepthHalf);
+						posBuild[1] = posBuilding + D3DXVECTOR3(fWidthHalf, 0.0f, -fDepthHalf);
+						posBuild[2] = posBuilding + D3DXVECTOR3(fWidthHalf, 0.0f, fDepthHalf);
+						posBuild[3] = posBuilding + D3DXVECTOR3(-fWidthHalf, 0.0f, fDepthHalf);
+
+						//プラスマイナスがあったかのフラッグ
+						for (int cntPos = 0; cntPos < 4; cntPos++)
+						{
+							D3DXVECTOR3 vecLine = (posBuild[(cntPos + 1) % 4] - posBuild[cntPos]);
+							D3DXVECTOR3 vecToPosOld = pos - posBuild[cntPos];
+							D3DXVECTOR3 vecToPos = posSecond - posBuild[cntPos];
+							if (TASUKIGAKE(vecLine.x, vecLine.z, vecToPosOld.x, vecToPosOld.z) >= 0.0f && TASUKIGAKE(vecLine.x, vecLine.z, vecToPos.x, vecToPos.z) < 0.0f)
+							{//当たった
+								float fAreaA = (vecToPos.z * vecPoint.x) - (vecToPos.x * vecPoint.z);
+								float fAreaB = (vecLine.z * vecPoint.x) - (vecLine.x * vecPoint.z);
+								if (fAreaA / fAreaB >= 0.0f && fAreaA / fAreaB <= 1.0f)
+								{//ごっつん
+									bCollision = true;	//衝突した
+									break;	//もう当たったので終了
+								}
+							}
+						}
+
+						if (bCollision == true)
+						{
+							break;
+						}
+					}
+				}
+
+				if (bCollision == false)
+				{//当たってない
+					pPoint->m_connectPoint.emplace_back(pPointSecond);
+				}
+			}
+			pPointSecond = pPointSecond->GetNext();	//次入れる
+		}
+
+		pPoint = pPoint->GetNext();	//次入れる
+	}
 }
 
 //=================================

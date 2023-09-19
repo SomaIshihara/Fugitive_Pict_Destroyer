@@ -7,6 +7,8 @@
 #ifndef _POINT_H_
 #define _POINT_H_
 
+#include <vector>
+
 //前方宣言
 class CObjectX;
 
@@ -40,6 +42,7 @@ public:
 	//取得
 	D3DXVECTOR3 GetPos(void) { return m_pos; }
 	static int GetNumAll(void) { return m_nNumAll; }
+	std::vector<CPoint*> GetConnect(void) { return m_connectPoint; }
 
 private:
 	static void Death(void);	//死亡フラグと化した旗をへし折る
@@ -52,6 +55,8 @@ private:
 	static int m_nNumAll;	//総数
 	D3DXVECTOR3 m_pos;		//位置
 	CObjectX* m_pFrag;		//デバッグ用旗
+
+	std::vector<CPoint*> m_connectPoint;	//接続しているポイント
 };
 
 #endif // !_POINT_H_

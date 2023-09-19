@@ -12,6 +12,7 @@
 #include "object.h"
 #include "objectX.h"
 #include "collision.h"
+#include <stack>
 
 #define PICTO_MAX_LEVEL		(30)	//ピクトの最大レベル
 #define PICTO_DAMAGE_ALPHA	(0.9f)	//赤くする割合
@@ -41,6 +42,15 @@ class CPicto : public CObject
 public:
 	//静的const
 	static const float LOOSE_LENGTH;	//逃がしたものとする距離
+
+	//経路探索用ノード構造体
+	struct Node
+	{
+		bool bDesition;		//確定かどうか
+		float fLengthMin;	//最短距離
+		CPoint* pPoint;		//そのノードが属すポイント
+		int nFromNum;		//来たノードの番号
+	};
 
 	//ピクトさん種類列挙
 	typedef enum
@@ -120,7 +130,7 @@ public:
 
 private:
 	//関数
-	void Search(void);
+	void Search(CObject* pTarget);
 
 	//変数
 	static CPicto* m_apPicto[MAX_OBJ];	//ピクトさんポインタ
@@ -152,6 +162,8 @@ private:
 
 	CObject* m_targetObj;				//目的のオブジェ
 	CPoint* m_pPoint;					//目的のポイント
+
+	std::stack<CPoint*> m_stack;		//経路スタック
 };
 
 //デストロイヤーピクトクラス

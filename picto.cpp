@@ -25,6 +25,7 @@
 #include "point.h"
 #include "havenum.h"
 #include "level.h"
+#include <vector>
 
 //マクロ
 #define PICTO_WALK_SPEED			(6.0f)		//ピクトさんの歩行速度
@@ -284,7 +285,6 @@ void CPicto::Update(void)
 					}
 					else
 					{//まだ遠い
-						Search();	//ポイント検索
 						pointPos = m_pPoint->GetPos();	//新しいポイントの位置取得
 					}
 				}
@@ -457,7 +457,7 @@ void CPicto::Draw(void)
 void CPicto::SetTargetObj(CObject * pObj)
 {
 	m_targetObj = pObj;		//目的地設定
-	Search();				//経路探索
+	Search(m_targetObj);	//経路探索
 }
 
 //=================================
@@ -467,7 +467,7 @@ void CPicto::UnsetTargetObj(void)
 {
 	m_targetObj = GetAgit();	//目的地をアジトにする
 	m_state = STATE_LEAVE;		//帰る状態
-	Search();					//経路探索
+	Search(m_targetObj);		//経路探索
 }
 
 //=================================
@@ -535,98 +535,171 @@ void CPicto::Return(void)
 //=================================
 //ポイント検索処理
 //=================================
-void CPicto::Search(void)
+void CPicto::Search(CObject* pTarget)
 {
-	D3DXVECTOR3 posTarget = m_targetObj->GetPos();
-	CPoint* pPointNear = nullptr;
-	float fLenNear = 0.0f;
-	float fRadNear = 0.0f;
+	int nPointNum = CPoint::GetNumAll();	//ポイント数
+	Node* pNode = new Node[nPointNum];		//探索に使うノードをポイントの数だけ生成
+
+	//ノード初期化
 	CPoint* pPoint = CPoint::GetTop();
+	for (int cnt = 0; cnt < nPointNum; cnt++)
+	{
+		pNode[cnt].bDesition = false;		//未確定
+		pNode[cnt].fLengthMin = FLT_MAX;	//これを距離無限大とする
+		pNode[cnt].pPoint = pPoint;			//ポイントを入れる
+		pNode[cnt].nFromNum = -1;			//どこから来たかわからん
+		pPoint = pPoint->GetNext();			//次入れる
+	}
 
-	//現在地と建物までの角度を計算
-	float fTargetLenWidth = posTarget.x - m_pos.x;
-	float fTargetLenDepth = posTarget.z - m_pos.z;
-	float fRadiusBuilding = atan2f(fTargetLenWidth, fTargetLenDepth);
+	//始点のノードを建物から探す（プレイヤーの最寄り）
+	int nNodeStart = -1;
+	float fLengthNear = FLT_MAX;
+	for (int cnt = 0; cnt < nPointNum; cnt++)
+	{
+		float fLength = D3DXVec3Length(&(m_pos - pNode[cnt].pPoint->GetPos()));
+		if (fLengthNear > fLength)
+		{//短い
+			nNodeStart = cnt;
+			fLengthNear = fLength;
+		}
+	}
 
-	while (pPoint != nullptr)
-	{//リスト終了までやる
-		if (pPoint != m_pPoint)
-		{//現在設定しているポイントではない
-			D3DXVECTOR3 vecPoint = pPoint->GetPos() - m_pos;
+	//終点のノードを建物から探す（プレイヤーの最寄りかつ建物の最寄り）
+	Node nodeGoal;
+	float fLengthNearTarget = FLT_MAX;
+	float fLengthNearThis = FLT_MAX;
+	std::vector<Node> vecNearNode;
+	for (int cnt = 0; cnt < nPointNum; cnt++)
+	{//全ノードを見て近いノードを候補にする
+		float fLength = D3DXVec3Length(&(pNode[cnt].pPoint->GetPos() - pTarget->GetPos()));
+		if (fLength < fLengthNearTarget)
+		{//近いの見つけた
+			vecNearNode.clear();					//候補全部消す
+			fLengthNearTarget = fLength;			//距離入れる
+			vecNearNode.emplace_back(pNode[cnt]);	//リストに加える
+		}
+		else if (fLength == fLengthNearTarget)
+		{//同じの見つけた
+			vecNearNode.emplace_back(pNode[cnt]);	//リストに加える
+		}
+	}
+	//候補から一番近いのを終点にする
+	for (int cnt = 0; cnt < vecNearNode.size(); cnt++)
+	{
+		float fLength = D3DXVec3Length(&(vecNearNode[cnt].pPoint->GetPos() - this->GetPos()));
+		if (fLength < fLengthNearThis)
+		{//近いの見つけた
+			nodeGoal = vecNearNode[cnt];	//ノード入れる
+			fLengthNearTarget = fLength;	//距離入れる
+		}
+	}
+	
+	//そのノードの距離を0にする
+	pNode[nNodeStart].fLengthMin = 0.0f;
+	//確定とルート記録（メモ：ヨビノリ2）
+	pNode[nNodeStart].bDesition = true;
+	pNode[nNodeStart].nFromNum = -1;
 
-			bool bCollision = false;
-			for (int cnt = 0; cnt < MAX_OBJ; cnt++)
-			{
-				CBuilding* pBuilding = CBuilding::GetBuilding(cnt);
-				if (pBuilding != nullptr)
-				{
-					D3DXVECTOR3 posBuilding = pBuilding->GetPos();
-					float fWidthHalf = pBuilding->GetWidth() * 0.5f;
-					float fDepthHalf = pBuilding->GetDepth() * 0.5f;
+	//つながっているノードとの距離を計算し、小さければ更新（メモ：ヨビノリ3）
+	std::vector<CPoint*> vec = pNode[nNodeStart].pPoint->GetConnect();
+	pPoint = pNode[nNodeStart].pPoint;
+	for (int cntA = 0; cntA < vec.size(); cntA++)
+	{
+		//距離計算
+		float fLength = D3DXVec3Length(&(pPoint->GetPos() - vec[cntA]->GetPos()));
 
-					//4頂点作る
-					D3DXVECTOR3 posBuild[4];
-					posBuild[0] = posBuilding + D3DXVECTOR3(-fWidthHalf, 0.0f, -fDepthHalf);
-					posBuild[1] = posBuilding + D3DXVECTOR3(fWidthHalf, 0.0f, -fDepthHalf);
-					posBuild[2] = posBuilding + D3DXVECTOR3(fWidthHalf, 0.0f, fDepthHalf);
-					posBuild[3] = posBuilding + D3DXVECTOR3(-fWidthHalf, 0.0f, fDepthHalf);
-
-					//プラスマイナスがあったかのフラッグ
-					bool bPlus = false;
-					bool bMinus = false;
-					for (int cntPos = 0; cntPos < 4; cntPos++)
-					{
-						D3DXVECTOR3 vecLine = (posBuild[(cntPos + 1) % 4] - posBuild[cntPos]);
-						D3DXVECTOR3 vecToPosOld = m_pos - posBuild[cntPos];
-						D3DXVECTOR3 vecToPos = pPoint->GetPos() - posBuild[cntPos];
-						if (TASUKIGAKE(vecLine.x, vecLine.z, vecToPosOld.x, vecToPosOld.z) >= 0.0f && TASUKIGAKE(vecLine.x, vecLine.z, vecToPos.x, vecToPos.z) < 0.0f)
-						{//当たった
-							float fAreaA = (vecToPos.z * vecPoint.x) - (vecToPos.x * vecPoint.z);
-							float fAreaB = (vecLine.z * vecPoint.x) - (vecLine.x * vecPoint.z);
-							if (fAreaA / fAreaB >= 0.0f && fAreaA / fAreaB <= 1.0f)
-							{//ごっつん
-								bCollision = true;	//衝突した
-								break;	//もう当たったので終了
-							}
-						}
-					}
-
-					if (bCollision == true)
-					{
-						break;
-					}
-				}
+		//探す
+		for (int cntB = 0; cntB < nPointNum; cntB++)
+		{
+			if (pNode[cntB].pPoint == vec[cntA])
+			{//探しているポイントが入っているノードを見つけた
+				pNode[cntB].fLengthMin = fLength;
+				break;
 			}
+		}
+	}
 
-			if (bCollision == false)
-			{//当たってない
-				float fLength = D3DXVec3Length(&vecPoint);	//ポイントと現在地の距離
-															//ポイントと現在地の角度
-				float fRadius = fabsf(acosf(D3DXVec3Dot(&vecPoint, &(posTarget - m_pos)) / (fLength * D3DXVec3Length(&(posTarget - m_pos)))));
-
-				if (fLength > PICTO_POINT_RESEARCH_LENGTH + 2.0f)
-				{//何も入っていない・角度が小さい
-					if (pPointNear == nullptr)
-					{
-						pPointNear = pPoint;
-						fLenNear = fLength;
-						fRadNear = fRadius;
-					}
-					else if (fRadius < 0.5f * D3DX_PI && fRadius < fRadNear)
-					{
-						pPointNear = pPoint;
-						fLenNear = fLength;
-						fRadNear = fRadius;
-					}
-				}
+	//探索
+	while (1)	//条件式仮
+	{
+		//距離が最も小さいノードを確定（メモ：ヨビノリ2）
+		int nNodeNear = -1;
+		float fLengthNear = FLT_MAX;
+		for (int cnt = 0; cnt < nPointNum; cnt++)
+		{
+			if (pNode[cnt].bDesition == false && pNode[cnt].fLengthMin < fLengthNear)
+			{
+				nNodeNear = cnt;
+				fLengthNear = pNode[cnt].fLengthMin;
 			}
 		}
 		
-		//次のポイントへ
-		pPoint = pPoint->GetNext();
+		//すべて確定済み（メモ：ヨビノリ4）
+		if (nNodeNear == -1)
+		{//nNodeNearが変化なし
+			break;
+		}
+
+		//確定とルート記録（メモ：ヨビノリ2）
+		pNode[nNodeNear].bDesition = true;
+		vec = pNode[nNodeNear].pPoint->GetConnect();
+		for (int cntA = 0; cntA < nPointNum; cntA++)
+		{
+			for (int cntB = 0; cntB < vec.size(); cntB++)
+			{
+				if (pNode[cntA].pPoint == vec[cntB])
+				{//同じやつ見つけた
+					if (pNode[nNodeNear].fLengthMin - D3DXVec3Length(&(pNode[nNodeNear].pPoint->GetPos() - pNode[cntA].pPoint->GetPos())) == pNode[cntA].fLengthMin)
+					{//どこから来たかわかった
+						pNode[nNodeStart].nFromNum = cntA;
+						break;
+					}
+				}
+				if (pNode[nNodeStart].nFromNum != -1)
+				{
+					break;
+				}
+			}
+		}
+
+		//つながっているノードとの距離を計算し、小さければ更新（メモ：ヨビノリ3）
+		vec = pNode[nNodeNear].pPoint->GetConnect();
+		CPoint* pPoint = pNode[nNodeNear].pPoint;
+		for (int cntA = 0; cntA < vec.size(); cntA++)
+		{
+			//距離計算
+			float fLength = D3DXVec3Length(&(pPoint->GetPos() - vec[cntA]->GetPos()));
+
+			//探す
+			for (int cntB = 0; cntB < nPointNum; cntB++)
+			{
+				if (pNode[cntB].pPoint == vec[cntA])
+				{//探しているポイントが入っているノードを見つけた
+					pNode[cntB].fLengthMin = fLength + pNode[nNodeNear].fLengthMin;
+					break;
+				}
+			}
+		}
+	}
+	//ここで探索完了
+	//経路を入れる
+	while (1)
+	{
+		m_stack.emplace(nodeGoal.pPoint);
+
+		if (nodeGoal.nFromNum == -1)
+		{
+			break;
+		}
+
+		nodeGoal = pNode[nodeGoal.nFromNum];
 	}
 
-	m_pPoint = pPointNear;	//新しいポイントを設定
+	//早速最初のポイントを取り出す
+	m_pPoint = m_stack.top();
+	m_stack.pop();
+	
+	delete[] pNode;		//ノード消す
 }
 
 //******************************************************
