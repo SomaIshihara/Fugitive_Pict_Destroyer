@@ -222,30 +222,8 @@ void CPlayer::Move(void)
 		move.z += -cosf(rot.y) * CAMERA_MOVE_SPEED;
 	}
 
-#ifdef _DEBUG
-	if (m_bControllPicto == true)
-	{//‘€cÝ’è
-		CPicto::GetPicto(0)->Controll(move);
-	}
-
-#endif // DEBUG
-
 	//ˆÚ“®
 	pCamera->SetPos(move);
-
-#ifdef _DEBUG
-	//ƒsƒNƒg‚³‚ñ‘€cÝ’è
-	if (pKeyboard->GetTrigger(DIK_H) == true)
-	{
-		CPicto::GetPicto(0)->SetControll();
-		m_bControllPicto = true;
-	}
-	else if (pKeyboard->GetTrigger(DIK_J) == true)
-	{
-		CPicto::GetPicto(0)->Uncontroll();
-		m_bControllPicto = false;
-	}
-#endif // DEBUG
 }
 
 //=================================

@@ -28,15 +28,15 @@
 
 //マクロ
 #define PICTO_WALK_SPEED			(6.0f)		//ピクトさんの歩行速度
-#define PICTO_POINT_RESEARCH_LENGTH	(15.0f)		//ピクトさんがポイントに到着したことにする距離
+#define PICTO_POINT_RESEARCH_LENGTH	(35.0f)		//ピクトさんがポイントに到着したことにする距離
 #define PICTO_AGIT_STOP_LENGTH		(20.0f)		//ピクトさんがアジトから離れる距離
 #define PICTO_BUIDING_STOP_LENGTH	(120.0f)	//ピクトさんが建物から離れる距離
-#define PICTO_POLICE_STOP_LENGTH	(30.0f)		//ピクトさんが警察から離れる距離
+#define PICTO_POLICE_STOP_LENGTH	(55.0f)		//ピクトさんが警察から離れる距離
 #define PICTO_POLICE_SEARCH_LENGTH	(60.0f)		//ピクト警察のサーチ範囲
 #define PICTO_ATTACK_TIME			(60)		//攻撃を行う間隔
 #define PICTO_DAMAGE_TIME			(120)		//赤くする時間
 #define PICTO_LIFE					(1000)		//体力
-#define PICTO_SOCIAL_DISTANCE		(15.0f)		//ソーシャルディスタンス範囲
+#define PICTO_SOCIAL_DISTANCE		(30.0f)		//ソーシャルディスタンス範囲
 
 #define PICTO_FORCEDRETURN_NUM		(2)			//強制帰宅するまでの人数
 
@@ -101,7 +101,6 @@ CPicto::CPicto()
 	m_fDepth = CManager::FLOAT_ZERO;
 	m_nCounterJumpTime = 0;
 	m_bJump = false;
-	m_bControll = false;
 	m_fRedAlpha = CManager::FLOAT_ZERO;
 	m_state = STATE_MAX;
 	m_type = TYPE_MAX;
@@ -131,7 +130,6 @@ CPicto::CPicto(const D3DXVECTOR3 pos, const TYPE type)
 	m_fDepth = CManager::FLOAT_ZERO;
 	m_nCounterJumpTime = 0;
 	m_bJump = false;
-	m_bControll = false;
 	m_fRedAlpha = CManager::FLOAT_ZERO;
 	m_state = STATE_MAX;
 	m_type = type;
@@ -167,9 +165,6 @@ HRESULT CPicto::Init(void)
 
 	//状態設定
 	m_state = STATE_FACE;
-
-	//操縦しない設定
-	m_bControll = false;
 
 	//ピクトさんである
 	SetType(CObject::TYPE_PICTO);
@@ -251,7 +246,7 @@ void CPicto::Update(void)
 	CMotion* pMotion = GetMotion();
 
 	//ピクト共通:ポイント移動処理
-	if (CPicto::IsControll() == false && m_state != STATE_ATTACK)
+	if (m_state != STATE_ATTACK)
 	{
 		if (m_targetObj != nullptr)
 		{//目的地がある
@@ -259,8 +254,8 @@ void CPicto::Update(void)
 			float targetWidthHalf = m_targetObj->GetWidth() * 0.5f;
 			float targetDepthHalf = m_targetObj->GetDepth() * 0.5f;
 
-			if (targetPos.x - targetWidthHalf * 1.5f < pos.x && targetPos.x + targetWidthHalf * 1.5f > pos.x &&
-				targetPos.z - targetDepthHalf * 1.5f < pos.z && targetPos.z + targetDepthHalf * 1.5f > pos.z)
+			if (targetPos.x - (targetWidthHalf + 50.0f) < pos.x && targetPos.x + (targetWidthHalf + 50.0f) > pos.x &&
+				targetPos.z - (targetDepthHalf + 50.0f) < pos.z && targetPos.z + (targetDepthHalf + 50.0f) > pos.z)
 			{//ついた
 				m_move.x = CManager::FLOAT_ZERO;
 				m_move.z = CManager::FLOAT_ZERO;
@@ -278,40 +273,40 @@ void CPicto::Update(void)
 			else
 			{//目的地ではない
 				//ポイント移動
-				if (m_PointPos.x - PICTO_POINT_RESEARCH_LENGTH < pos.x && m_PointPos.x + PICTO_POINT_RESEARCH_LENGTH > pos.x &&
-					m_PointPos.z - PICTO_POINT_RESEARCH_LENGTH < pos.z && m_PointPos.z + PICTO_POINT_RESEARCH_LENGTH > pos.z)
+				D3DXVECTOR3 pointPos = m_pPoint->GetPos();
+				if (pointPos.x - PICTO_POINT_RESEARCH_LENGTH < pos.x && pointPos.x + PICTO_POINT_RESEARCH_LENGTH > pos.x &&
+					pointPos.z - PICTO_POINT_RESEARCH_LENGTH < pos.z && pointPos.z + PICTO_POINT_RESEARCH_LENGTH > pos.z)
 				{//ついた
-					if (targetPos.x - targetWidthHalf * 2.5f < pos.x && targetPos.x + targetWidthHalf * 2.5f > pos.x &&
-						targetPos.z - targetDepthHalf * 2.5f < pos.z && targetPos.z + targetDepthHalf * 2.5f > pos.z)
+					if (targetPos.x - (targetWidthHalf + 150.0f) < pos.x && targetPos.x + (targetWidthHalf + 150.0f) > pos.x &&
+						targetPos.z - (targetDepthHalf + 150.0f) < pos.z && targetPos.z + (targetDepthHalf + 150.0f) > pos.z)
 					{//建物が近い
-						m_PointPos = targetPos;
+						pointPos = targetPos;
 					}
 					else
 					{//まだ遠い
 						Search();	//ポイント検索
+						pointPos = m_pPoint->GetPos();	//新しいポイントの位置取得
 					}
 				}
-				else
-				{//移動中
-					float fTargetLenWidth, fTargetLenDepth;
-					float fTargetRot;
-					m_move.x = CManager::FLOAT_ZERO;
-					m_move.z = CManager::FLOAT_ZERO;
 
-					fTargetLenWidth = m_PointPos.x - pos.x;
-					fTargetLenDepth = m_PointPos.z - pos.z;
+				float fTargetLenWidth, fTargetLenDepth;
+				float fTargetRot;
+				m_move.x = CManager::FLOAT_ZERO;
+				m_move.z = CManager::FLOAT_ZERO;
 
-					fTargetRot = atan2f(fTargetLenWidth, fTargetLenDepth);
+				fTargetLenWidth = pointPos.x - pos.x;
+				fTargetLenDepth = pointPos.z - pos.z;
 
-					m_move.x = sinf(fTargetRot) * PICTO_WALK_SPEED;
-					m_move.z = cosf(fTargetRot) * PICTO_WALK_SPEED;
+				fTargetRot = atan2f(fTargetLenWidth, fTargetLenDepth);
 
-					m_rot.y = FIX_ROT(fTargetRot + D3DX_PI);
+				m_move.x = sinf(fTargetRot) * PICTO_WALK_SPEED;
+				m_move.z = cosf(fTargetRot) * PICTO_WALK_SPEED;
 
-					if (pMotion->GetType() != MOTIONTYPE_MOVE)
-					{
-						pMotion->Set(MOTIONTYPE_MOVE);
-					}
+				m_rot.y = FIX_ROT(fTargetRot + D3DX_PI);
+
+				if (pMotion->GetType() != MOTIONTYPE_MOVE)
+				{
+					pMotion->Set(MOTIONTYPE_MOVE);
 				}
 			}
 		}
@@ -530,17 +525,6 @@ bool CPicto::CollisionField(D3DXVECTOR3* pPosNew)
 }
 
 //=================================
-//ピクトさんの操縦
-//=================================
-void CPicto::Controll(D3DXVECTOR3 move)
-{
-	if (m_bControll == true)
-	{//操縦可能
-		m_move = move;
-	}
-}
-
-//=================================
 //帰宅
 //=================================
 void CPicto::Return(void)
@@ -566,73 +550,74 @@ void CPicto::Search(void)
 
 	while (pPoint != nullptr)
 	{//リスト終了までやる
-		D3DXVECTOR3 vecPoint = pPoint->GetPos() - m_pos;
+		if (pPoint != m_pPoint)
+		{//現在設定しているポイントではない
+			D3DXVECTOR3 vecPoint = pPoint->GetPos() - m_pos;
 
-		bool bCollision = false;
-		for (int cnt = 0; cnt < MAX_OBJ; cnt++)
-		{
-			CBuilding* pBuilding = CBuilding::GetBuilding(cnt);
-			if (pBuilding != nullptr)
+			bool bCollision = false;
+			for (int cnt = 0; cnt < MAX_OBJ; cnt++)
 			{
-				D3DXVECTOR3 posBuilding = pBuilding->GetPos();
-				float fWidthHalf = pBuilding->GetWidth() * 0.5f;
-				float fDepthHalf = pBuilding->GetDepth() * 0.5f;
-
-				//4頂点作る
-				D3DXVECTOR3 posBuild[4];	
-				posBuild[0] = posBuilding + D3DXVECTOR3(-fWidthHalf, 0.0f, -fDepthHalf);
-				posBuild[1] = posBuilding + D3DXVECTOR3(fWidthHalf, 0.0f, -fDepthHalf);
-				posBuild[2] = posBuilding + D3DXVECTOR3(fWidthHalf, 0.0f, fDepthHalf);
-				posBuild[3] = posBuilding + D3DXVECTOR3(-fWidthHalf, 0.0f, fDepthHalf);
-
-				//プラスマイナスがあったかのフラッグ
-				bool bPlus = false;
-				bool bMinus = false;	
-				for (int cntPos = 0; cntPos < 4; cntPos++)
+				CBuilding* pBuilding = CBuilding::GetBuilding(cnt);
+				if (pBuilding != nullptr)
 				{
-					D3DXVECTOR3 vecLine = (posBuild[(cntPos + 1) % 4] - posBuild[cntPos]);
-					D3DXVECTOR3 vecToPosOld = m_pos - posBuild[cntPos];
-					D3DXVECTOR3 vecToPos = pPoint->GetPos() - posBuild[cntPos];
-					if (TASUKIGAKE(vecLine.x, vecLine.z, vecToPosOld.x, vecToPosOld.z) >= 0.0f && TASUKIGAKE(vecLine.x, vecLine.z, vecToPos.x, vecToPos.z) < 0.0f)
-					{//当たった
-						float fAreaA = (vecToPos.z * vecPoint.x) - (vecToPos.x * vecPoint.z);
-						float fAreaB = (vecLine.z * vecPoint.x) - (vecLine.x * vecPoint.z);
-						if (fAreaA / fAreaB >= 0.0f && fAreaA / fAreaB <= 1.0f)
-						{//ごっつん
-							bPlus = true;
-							bMinus = true;
-							break;	//もう当たったので終了
+					D3DXVECTOR3 posBuilding = pBuilding->GetPos();
+					float fWidthHalf = pBuilding->GetWidth() * 0.5f;
+					float fDepthHalf = pBuilding->GetDepth() * 0.5f;
+
+					//4頂点作る
+					D3DXVECTOR3 posBuild[4];
+					posBuild[0] = posBuilding + D3DXVECTOR3(-fWidthHalf, 0.0f, -fDepthHalf);
+					posBuild[1] = posBuilding + D3DXVECTOR3(fWidthHalf, 0.0f, -fDepthHalf);
+					posBuild[2] = posBuilding + D3DXVECTOR3(fWidthHalf, 0.0f, fDepthHalf);
+					posBuild[3] = posBuilding + D3DXVECTOR3(-fWidthHalf, 0.0f, fDepthHalf);
+
+					//プラスマイナスがあったかのフラッグ
+					bool bPlus = false;
+					bool bMinus = false;
+					for (int cntPos = 0; cntPos < 4; cntPos++)
+					{
+						D3DXVECTOR3 vecLine = (posBuild[(cntPos + 1) % 4] - posBuild[cntPos]);
+						D3DXVECTOR3 vecToPosOld = m_pos - posBuild[cntPos];
+						D3DXVECTOR3 vecToPos = pPoint->GetPos() - posBuild[cntPos];
+						if (TASUKIGAKE(vecLine.x, vecLine.z, vecToPosOld.x, vecToPosOld.z) >= 0.0f && TASUKIGAKE(vecLine.x, vecLine.z, vecToPos.x, vecToPos.z) < 0.0f)
+						{//当たった
+							float fAreaA = (vecToPos.z * vecPoint.x) - (vecToPos.x * vecPoint.z);
+							float fAreaB = (vecLine.z * vecPoint.x) - (vecLine.x * vecPoint.z);
+							if (fAreaA / fAreaB >= 0.0f && fAreaA / fAreaB <= 1.0f)
+							{//ごっつん
+								bCollision = true;	//衝突した
+								break;	//もう当たったので終了
+							}
 						}
 					}
-				}
 
-				if (bPlus == true && bMinus == true)
-				{
-					bCollision = true;	//衝突した
-					break;
+					if (bCollision == true)
+					{
+						break;
+					}
 				}
 			}
-		}
 
-		if (bCollision == false)
-		{//当たってない
-			float fLength = D3DXVec3Length(&vecPoint);	//ポイントと現在地の距離
-			//ポイントと現在地の角度
-			float fRadius = fabsf(acosf(D3DXVec3Dot(&vecPoint, &(posTarget - m_pos)) / (fLength * D3DXVec3Length(&(posTarget - m_pos)))));
+			if (bCollision == false)
+			{//当たってない
+				float fLength = D3DXVec3Length(&vecPoint);	//ポイントと現在地の距離
+															//ポイントと現在地の角度
+				float fRadius = fabsf(acosf(D3DXVec3Dot(&vecPoint, &(posTarget - m_pos)) / (fLength * D3DXVec3Length(&(posTarget - m_pos)))));
 
-			if(fLength > PICTO_POINT_RESEARCH_LENGTH + 2.0f)
-			{//何も入っていない・角度が小さい
-				if (pPointNear == nullptr)
-				{
-					pPointNear = pPoint;
-					fLenNear = fLength;
-					fRadNear = fRadius;
-				}
-				else if (fRadius < 0.5f * D3DX_PI && fRadius < fRadNear)
-				{
-					pPointNear = pPoint;
-					fLenNear = fLength;
-					fRadNear = fRadius;
+				if (fLength > PICTO_POINT_RESEARCH_LENGTH + 2.0f)
+				{//何も入っていない・角度が小さい
+					if (pPointNear == nullptr)
+					{
+						pPointNear = pPoint;
+						fLenNear = fLength;
+						fRadNear = fRadius;
+					}
+					else if (fRadius < 0.5f * D3DX_PI && fRadius < fRadNear)
+					{
+						pPointNear = pPoint;
+						fLenNear = fLength;
+						fRadNear = fRadius;
+					}
 				}
 			}
 		}
@@ -641,7 +626,7 @@ void CPicto::Search(void)
 		pPoint = pPoint->GetNext();
 	}
 
-	m_PointPos = pPointNear->GetPos();	//新しい位置を入れる
+	m_pPoint = pPointNear;	//新しいポイントを設定
 }
 
 //******************************************************
@@ -1825,17 +1810,7 @@ void CPictoPolice::Update(void)
 		targetWidthHalf = m_pTargetPicto->GetWidth() * 0.5f;
 		targetDepthHalf = m_pTargetPicto->GetDepth() * 0.5f;
 
-		//if (D3DXVec3Length(&(targetPos - pos)) > LOOSE_LENGTH)
-		//{//逃がす
-		//	UnsetTarget();
-		//	if (pMotion->GetType() != MOTIONTYPE_NEUTRAL)
-		//	{
-		//		pMotion->Set(MOTIONTYPE_NEUTRAL);
-		//	}
-		//	SetState(STATE_FACE);
-		//}
-		//else 
-			if (targetPos.x - targetWidthHalf - PICTO_POLICE_STOP_LENGTH > pos.x || targetPos.x + targetWidthHalf + PICTO_POLICE_STOP_LENGTH < pos.x ||
+		if (targetPos.x - targetWidthHalf - PICTO_POLICE_STOP_LENGTH > pos.x || targetPos.x + targetWidthHalf + PICTO_POLICE_STOP_LENGTH < pos.x ||
 			targetPos.z - targetDepthHalf - PICTO_POLICE_STOP_LENGTH > pos.z || targetPos.z + targetDepthHalf + PICTO_POLICE_STOP_LENGTH < pos.z)
 		{//到着してない
 			float fTargetLenWidth, fTargetLenDepth;

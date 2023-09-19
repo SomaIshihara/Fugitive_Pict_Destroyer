@@ -33,6 +33,7 @@ class CPictoPolice;
 class CPictoNormal;
 class CPictoTaxi;
 class CMeshField;
+class CPoint;
 
 //ピクトさんクラス
 class CPicto : public CObject
@@ -111,12 +112,6 @@ public:
 	//当たり判定
 	bool CollisionField(D3DXVECTOR3* pPosNew);
 
-	//ピクト操縦
-	void SetControll(void) { m_bControll = true; }
-	void Controll(D3DXVECTOR3 move);
-	void Uncontroll(void) { m_bControll = false; }
-	bool IsControll(void) { return m_bControll; }
-
 	//乗車
 	virtual void TakeTaxi(CPictoTaxi* taxi) = 0;
 
@@ -146,7 +141,6 @@ private:
 	bool m_bJump;						//ジャンプ中か
 	int m_nCounterJumpTime;				//ジャンプ時間
 
-	bool m_bControll;					//操縦できるか
 	CShadow* m_pShadow;					//影オブジェクトポインタ
 
 	float m_fRedAlpha;					//赤くする割合
@@ -157,7 +151,7 @@ private:
 	static CMeshField* m_pField;		//床
 
 	CObject* m_targetObj;				//目的のオブジェ
-	D3DXVECTOR3 m_PointPos;				//目的ポイントの位置
+	CPoint* m_pPoint;					//目的のポイント
 };
 
 //デストロイヤーピクトクラス
