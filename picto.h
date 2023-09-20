@@ -42,6 +42,7 @@ class CPicto : public CObject
 public:
 	//静的const
 	static const float LOOSE_LENGTH;	//逃がしたものとする距離
+	static const int BASE_MODEL_NUM;	//体部分のモデル数
 
 	//経路探索用ノード構造体
 	struct Node
@@ -105,7 +106,7 @@ public:
 	TYPE GetType(void) { return m_type; }
 	static CObject* GetAgit(void) { return m_pAgitObj; }
 	static D3DXVECTOR3 GetAgitPos(void) { return m_pAgitObj->GetPos(); }
-	CObject* GetTargetObj(void) { return m_targetObj; }
+	CObject* GetTargetObj(void) { return m_pTargetObj; }
 	static int GetNumAll(void) { return m_nNumAll; }
 	
 	//設定
@@ -128,10 +129,10 @@ public:
 	//帰宅
 	virtual void Return(void);
 
-private:
-	//関数
+	//探索
 	void Search(CObject* pTarget);
 
+private:
 	//変数
 	static CPicto* m_apPicto[MAX_OBJ];	//ピクトさんポインタ
 	static int m_nNumAll;				//ピクトさん総数
@@ -160,10 +161,11 @@ private:
 	static CObjectX* m_pAgitObj;		//アジトのポインタ
 	static CMeshField* m_pField;		//床
 
-	CObject* m_targetObj;				//目的のオブジェ
+	CObject* m_pTargetObj;				//目的のオブジェ
 	CPoint* m_pPoint;					//目的のポイント
 
 	std::stack<CPoint*> m_stack;		//経路スタック
+	bool m_bNear;						//目標に近い
 };
 
 //デストロイヤーピクトクラス

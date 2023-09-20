@@ -11,8 +11,6 @@
 #include "game.h"
 #include "tutorial.h"
 #include "renderer.h"
-#include "input.h"	//仮
-#include "camera.h"	//仮
 #include "player.h"
 #include "bullet.h"
 #include "motion.h"
@@ -29,7 +27,7 @@
 
 //マクロ
 #define PICTO_WALK_SPEED			(6.0f)		//ピクトさんの歩行速度
-#define PICTO_POINT_RESEARCH_LENGTH	(35.0f)		//ピクトさんがポイントに到着したことにする距離
+#define PICTO_POINT_RESEARCH_LENGTH	(30.0f)		//ピクトさんがポイントに到着したことにする距離
 #define PICTO_AGIT_STOP_LENGTH		(20.0f)		//ピクトさんがアジトから離れる距離
 #define PICTO_BUIDING_STOP_LENGTH	(120.0f)	//ピクトさんが建物から離れる距離
 #define PICTO_POLICE_STOP_LENGTH	(55.0f)		//ピクトさんが警察から離れる距離
@@ -37,7 +35,7 @@
 #define PICTO_ATTACK_TIME			(60)		//攻撃を行う間隔
 #define PICTO_DAMAGE_TIME			(120)		//赤くする時間
 #define PICTO_LIFE					(1000)		//体力
-#define PICTO_SOCIAL_DISTANCE		(30.0f)		//ソーシャルディスタンス範囲
+#define PICTO_SOCIAL_DISTANCE		(10.0f)		//ソーシャルディスタンス範囲
 
 #define PICTO_FORCEDRETURN_NUM		(2)			//強制帰宅するまでの人数
 
@@ -49,6 +47,7 @@ CPicto* CPicto::m_apPicto[MAX_OBJ];
 int CPicto::m_nNumAll = 0;
 CObjectX* CPicto::m_pAgitObj = nullptr;
 const float CPicto::LOOSE_LENGTH = 100.0f;
+const int CPicto::BASE_MODEL_NUM = 10;
 
 CPictoDestroyer* CPictoDestroyer::m_apPicto[MAX_OBJ];
 int CPictoDestroyer::m_nNumAll = 0;
@@ -105,6 +104,7 @@ CPicto::CPicto()
 	m_fRedAlpha = CManager::FLOAT_ZERO;
 	m_state = STATE_MAX;
 	m_type = TYPE_MAX;
+	m_bNear = false;
 }
 
 //=================================
@@ -134,6 +134,7 @@ CPicto::CPicto(const D3DXVECTOR3 pos, const TYPE type)
 	m_fRedAlpha = CManager::FLOAT_ZERO;
 	m_state = STATE_MAX;
 	m_type = type;
+	m_bNear = false;
 }
 
 //=================================
@@ -249,11 +250,11 @@ void CPicto::Update(void)
 	//ピクト共通:ポイント移動処理
 	if (m_state != STATE_ATTACK)
 	{
-		if (m_targetObj != nullptr)
+		if (m_pTargetObj != nullptr)
 		{//目的地がある
-			D3DXVECTOR3 targetPos = m_targetObj->GetPos();
-			float targetWidthHalf = m_targetObj->GetWidth() * 0.5f;
-			float targetDepthHalf = m_targetObj->GetDepth() * 0.5f;
+			D3DXVECTOR3 targetPos = m_pTargetObj->GetPos();
+			float targetWidthHalf = m_pTargetObj->GetWidth() * 0.5f;
+			float targetDepthHalf = m_pTargetObj->GetDepth() * 0.5f;
 
 			if (targetPos.x - (targetWidthHalf + 50.0f) < pos.x && targetPos.x + (targetWidthHalf + 50.0f) > pos.x &&
 				targetPos.z - (targetDepthHalf + 50.0f) < pos.z && targetPos.z + (targetDepthHalf + 50.0f) > pos.z)
@@ -273,23 +274,44 @@ void CPicto::Update(void)
 			}
 			else
 			{//目的地ではない
-				//ポイント移動
-				D3DXVECTOR3 pointPos = m_pPoint->GetPos();
-				if (pointPos.x - PICTO_POINT_RESEARCH_LENGTH < pos.x && pointPos.x + PICTO_POINT_RESEARCH_LENGTH > pos.x &&
-					pointPos.z - PICTO_POINT_RESEARCH_LENGTH < pos.z && pointPos.z + PICTO_POINT_RESEARCH_LENGTH > pos.z)
-				{//ついた
-					if (targetPos.x - (targetWidthHalf + 150.0f) < pos.x && targetPos.x + (targetWidthHalf + 150.0f) > pos.x &&
-						targetPos.z - (targetDepthHalf + 150.0f) < pos.z && targetPos.z + (targetDepthHalf + 150.0f) > pos.z)
-					{//建物が近い
-						pointPos = targetPos;
+				D3DXVECTOR3 pointPos;
+				if (m_bNear == false)
+				{
+					//ポイント移動
+					pointPos = m_pPoint->GetPos();
+					if (pointPos.x - PICTO_POINT_RESEARCH_LENGTH < pos.x && pointPos.x + PICTO_POINT_RESEARCH_LENGTH > pos.x &&
+						pointPos.z - PICTO_POINT_RESEARCH_LENGTH < pos.z && pointPos.z + PICTO_POINT_RESEARCH_LENGTH > pos.z)
+					{//ついた
+						if (targetPos.x - (targetWidthHalf + 150.0f) < pos.x && targetPos.x + (targetWidthHalf + 150.0f) > pos.x &&
+							targetPos.z - (targetDepthHalf + 150.0f) < pos.z && targetPos.z + (targetDepthHalf + 150.0f) > pos.z)
+						{//近い
+							pointPos = targetPos;
+							m_bNear = true;
+						}
+						else
+						{//まだ遠い
+							if (m_stack.empty() == true)
+							{//スタックが空
+								Search(m_pTargetObj);
+
+								if (m_stack.empty() == true)
+								{//探索してなおスタックが空（とりあえず建物に近いこととする）
+									pointPos = targetPos;
+									m_bNear = true;
+								}
+							}
+							else
+							{//ポイントを取り出す
+								m_pPoint = m_stack.top();
+								m_stack.pop();
+								pointPos = m_pPoint->GetPos();	//新しいポイントの位置取得
+							}
+						}
 					}
-					else
-					{//まだ遠い
-						//ポイントを取り出す
-						m_pPoint = m_stack.top();
-						m_stack.pop();
-						pointPos = m_pPoint->GetPos();	//新しいポイントの位置取得
-					}
+				}
+				else
+				{
+					pointPos = targetPos;
 				}
 
 				float fTargetLenWidth, fTargetLenDepth;
@@ -314,44 +336,48 @@ void CPicto::Update(void)
 			}
 		}
 
-		//ソーシャルディスタンス処理
-		float fLengthNear = CManager::FLOAT_ZERO;
-		D3DXVECTOR3 posAfter = pos + m_move;
-		CPicto* pPictoNear = nullptr;
-
-		//近いの調べる
-		for (int cnt = 0; cnt < MAX_OBJ; cnt++)
+		//動いていない場合ソーシャルディスタンス処理
+		if (D3DXVec3Length(&m_move) == 0.0f)
 		{
-			if (m_apPicto[cnt] != nullptr && m_apPicto[cnt] != this)
-			{//リストにある
-				float fLength = D3DXVec3Length(&(m_apPicto[cnt]->GetPos() - posAfter));
-				if (pPictoNear == nullptr || fLengthNear > fLength)
-				{//なんも見てない
-					pPictoNear = m_apPicto[cnt];
-					fLengthNear = fLength;
+			//ソーシャルディスタンス処理
+			float fLengthNear = CManager::FLOAT_ZERO;
+			D3DXVECTOR3 posAfter = pos;
+			CPicto* pPictoNear = nullptr;
+
+			//近いの調べる
+			for (int cnt = 0; cnt < MAX_OBJ; cnt++)
+			{
+				if (m_apPicto[cnt] != nullptr && m_apPicto[cnt] != this)
+				{//リストにある
+					float fLength = D3DXVec3Length(&(m_apPicto[cnt]->GetPos() - posAfter));
+					if (pPictoNear == nullptr || fLengthNear > fLength)
+					{//なんも見てない
+						pPictoNear = m_apPicto[cnt];
+						fLengthNear = fLength;
+					}
 				}
 			}
-		}
 
-		//近すぎない？
-		if (pPictoNear != nullptr && fLengthNear <= PICTO_SOCIAL_DISTANCE)
-		{//密です
-			float fTargetLenWidth, fTargetLenDepth;
-			float fTargetRot;
-			D3DXVECTOR3 posNearPicto = pPictoNear->GetPos();
+			//近すぎない？
+			if (pPictoNear != nullptr && fLengthNear <= PICTO_SOCIAL_DISTANCE)
+			{//密です
+				float fTargetLenWidth, fTargetLenDepth;
+				float fTargetRot;
+				D3DXVECTOR3 posNearPicto = pPictoNear->GetPos();
 
-			//距離測って離れる
-			fTargetLenWidth = posNearPicto.x - posAfter.x;
-			fTargetLenDepth = posNearPicto.z - posAfter.z;
+				//距離測って離れる
+				fTargetLenWidth = posNearPicto.x - posAfter.x;
+				fTargetLenDepth = posNearPicto.z - posAfter.z;
 
-			fTargetRot = atan2f(fTargetLenWidth, fTargetLenDepth);
-			fTargetRot = FIX_ROT(fTargetRot + (1.1f * D3DX_PI));
+				fTargetRot = atan2f(fTargetLenWidth, fTargetLenDepth);
+				fTargetRot = FIX_ROT(fTargetRot + (1.1f * D3DX_PI));
 
-			posAfter.x = posNearPicto.x + (sinf(fTargetRot) * PICTO_SOCIAL_DISTANCE * 2.0f);
-			posAfter.z = posNearPicto.z + (cosf(fTargetRot) * PICTO_SOCIAL_DISTANCE * 2.0f);
+				posAfter.x = posNearPicto.x + (sinf(fTargetRot) * PICTO_SOCIAL_DISTANCE * 2.0f);
+				posAfter.z = posNearPicto.z + (cosf(fTargetRot) * PICTO_SOCIAL_DISTANCE * 2.0f);
 
-			//差分を移動量にする
-			m_move = posAfter - m_pos;
+				//差分を移動量にする
+				m_move = posAfter - m_pos;
+			}
 		}
 	}
 
@@ -459,8 +485,8 @@ void CPicto::Draw(void)
 //=================================
 void CPicto::SetTargetObj(CObject * pObj)
 {
-	m_targetObj = pObj;		//目的地設定
-	Search(m_targetObj);	//経路探索
+	m_pTargetObj = pObj;		//目的地設定
+	Search(m_pTargetObj);	//経路探索
 }
 
 //=================================
@@ -468,9 +494,9 @@ void CPicto::SetTargetObj(CObject * pObj)
 //=================================
 void CPicto::UnsetTargetObj(void)
 {
-	m_targetObj = GetAgit();	//目的地をアジトにする
+	m_pTargetObj = GetAgit();	//目的地をアジトにする
 	m_state = STATE_LEAVE;		//帰る状態
-	Search(m_targetObj);		//経路探索
+	Search(m_pTargetObj);		//経路探索
 }
 
 //=================================
@@ -487,7 +513,7 @@ void CPicto::SetModel(const char * pPath)
 
 	if (m_ppModel != nullptr)
 	{
-		for (int cnt = 0; cnt < m_nNumModel - 2; cnt++)
+		for (int cnt = 0; cnt < BASE_MODEL_NUM; cnt++)
 		{//体の部分のみ行う
 			m_ppModel[cnt]->SetChangeColor(true);
 		}
@@ -567,23 +593,26 @@ void CPicto::Search(CObject* pTarget)
 		}
 	}
 
-	//終点のノードを建物から探す（プレイヤーの最寄りかつ建物の最寄り）
+	//終点のノードを建物から探す（建物の最寄り）
 	Node* nodeGoal = nullptr;
 	float fLengthNearTarget = FLT_MAX;
 	float fLengthNearThis = FLT_MAX;
 	std::vector<Node*> vecNearNode;
 	for (int cnt = 0; cnt < nPointNum; cnt++)
 	{//全ノードを見て近いノードを候補にする
-		float fLength = D3DXVec3Length(&(pNode[cnt].pPoint->GetPos() - pTarget->GetPos()));
-		if (fLength < fLengthNearTarget)
-		{//近いの見つけた
-			vecNearNode.clear();					//候補全部消す
-			fLengthNearTarget = fLength;			//距離入れる
-			vecNearNode.emplace_back(&pNode[cnt]);	//リストに加える
-		}
-		else if (fLength == fLengthNearTarget)
-		{//同じの見つけた
-			vecNearNode.emplace_back(&pNode[cnt]);	//リストに加える
+		if (pNode[cnt].pPoint != m_pPoint)
+		{
+			float fLength = D3DXVec3Length(&(pNode[cnt].pPoint->GetPos() - pTarget->GetPos()));
+			if (fLength < fLengthNearTarget)
+			{//近いの見つけた
+				vecNearNode.clear();					//候補全部消す
+				fLengthNearTarget = fLength;			//距離入れる
+				vecNearNode.emplace_back(&pNode[cnt]);	//リストに加える
+			}
+			else if (fLength == fLengthNearTarget)
+			{//同じの見つけた
+				vecNearNode.emplace_back(&pNode[cnt]);	//リストに加える
+			}
 		}
 	}
 	//候補から一番近いのを終点にする
@@ -599,11 +628,11 @@ void CPicto::Search(CObject* pTarget)
 	
 	//そのノードの距離を0にする
 	pNode[nNodeStart].fLengthMin = 0.0f;
-	//確定とルート記録（メモ：ヨビノリ2）
+	//確定とルート記録
 	pNode[nNodeStart].bDesition = true;
 	pNode[nNodeStart].nFromNum = -1;
 
-	//つながっているノードとの距離を計算し、小さければ更新（メモ：ヨビノリ3）
+	//つながっているノードとの距離を計算し、小さければ更新
 	std::vector<CPoint*> vec = pNode[nNodeStart].pPoint->GetConnect();
 	pPoint = pNode[nNodeStart].pPoint;
 	for (int cntA = 0; cntA < vec.size(); cntA++)
@@ -629,7 +658,7 @@ void CPicto::Search(CObject* pTarget)
 	//探索
 	while (1)	//条件式仮
 	{
-		//距離が最も小さいノードを確定（メモ：ヨビノリ2）
+		//距離が最も小さいノードを確定
 		int nNodeNear = -1;
 		float fLengthNear = FLT_MAX;
 		for (int cnt = 0; cnt < nPointNum; cnt++)
@@ -641,17 +670,17 @@ void CPicto::Search(CObject* pTarget)
 			}
 		}
 		
-		//すべて確定済み（メモ：ヨビノリ4）
+		//すべて確定済み
 		if (nNodeNear == -1)
 		{//nNodeNearが変化なし
 			break;
 		}
 
-		//確定とルート記録（メモ：ヨビノリ2）
+		//確定とルート記録
 		pNode[nNodeNear].bDesition = true;
 		vec = pNode[nNodeNear].pPoint->GetConnect();
 
-		//つながっているノードとの距離を計算し、小さければ更新（メモ：ヨビノリ3）
+		//つながっているノードとの距離を計算し、小さければ更新
 		vec = pNode[nNodeNear].pPoint->GetConnect();
 		CPoint* pPoint = pNode[nNodeNear].pPoint;
 		for (int cntA = 0; cntA < vec.size(); cntA++)
@@ -691,6 +720,7 @@ void CPicto::Search(CObject* pTarget)
 	//早速最初のポイントを取り出す
 	m_pPoint = m_stack.top();
 	m_stack.pop();
+	m_bNear = false;
 	
 	delete[] pNode;		//ノード消す
 }
@@ -793,6 +823,19 @@ HRESULT CPictoDestroyer::Init(void)
 //========================
 void CPictoDestroyer::Uninit(void)
 {
+	for (int cnt = 0; cnt < MAX_OBJ; cnt++)
+	{//全オブジェクト見る
+		CPicto* pPicto = CPicto::GetPicto(cnt);	//オブジェクト取得
+
+		if (pPicto != nullptr)	//ヌルチェ
+		{//なんかある
+			if (pPicto->GetTargetObj() == this)
+			{//自分がターゲット
+				pPicto->UnsetTargetObj();	//ターゲット外す
+			}
+		}
+	}
+
 	m_apPicto[m_nID] = nullptr;
 
 	//親処理
@@ -899,22 +942,9 @@ void CPictoDestroyer::AddDamage(int nDamage)
 {
 	m_nLife -= nDamage;	//付与
 
-						//0になったら消す
+	//0になったら消す
 	if (m_nLife <= CManager::INT_ZERO)
 	{
-		for (int cnt = 0; cnt < MAX_OBJ; cnt++)
-		{//全オブジェクト見る
-			CPictoBlocker* pPicto = CPictoBlocker::GetPicto(cnt);	//オブジェクト取得
-
-			if (pPicto != nullptr)	//ヌルチェ
-			{//なんかある
-				if (pPicto->GetTargetObj() == this)
-				{//自分がターゲット
-					pPicto->UnsetTargetObj();	//ターゲット外す
-				}
-			}
-		}
-
 		//爆散
 		Uninit();
 	}
@@ -1064,6 +1094,19 @@ HRESULT CPictoBlocker::Init(void)
 //========================
 void CPictoBlocker::Uninit(void)
 {
+	for (int cnt = 0; cnt < MAX_OBJ; cnt++)
+	{//全オブジェクト見る
+		CPicto* pPicto = CPicto::GetPicto(cnt);	//オブジェクト取得
+
+		if (pPicto != nullptr)	//ヌルチェ
+		{//なんかある
+			if (pPicto->GetTargetObj() == this)
+			{//自分がターゲット
+				pPicto->UnsetTargetObj();	//ターゲット外す
+			}
+		}
+	}
+
 	m_apPicto[m_nID] = nullptr;
 
 	//親処理
@@ -1176,22 +1219,9 @@ void CPictoBlocker::AddDamage(int nDamage)
 {
 	m_nLife -= nDamage;	//付与
 
-						//0になったら消す
+	//0になったら消す
 	if (m_nLife <= CManager::INT_ZERO)
 	{
-		for (int cnt = 0; cnt < MAX_OBJ; cnt++)
-		{//全オブジェクト見る
-			CPictoBlocker* pPicto = CPictoBlocker::GetPicto(cnt);	//オブジェクト取得
-
-			if (pPicto != nullptr)	//ヌルチェ
-			{//なんかある
-				if (pPicto->GetTargetObj() == this)
-				{//自分がターゲット
-					pPicto->UnsetTargetObj();	//ターゲット外す
-				}
-			}
-		}
-
 		//爆散
 		Uninit();
 	}
@@ -1327,6 +1357,19 @@ HRESULT CPictoTaxi::Init(void)
 //========================
 void CPictoTaxi::Uninit(void)
 {
+	for (int cnt = 0; cnt < MAX_OBJ; cnt++)
+	{//全オブジェクト見る
+		CPictoPolice* pPicto = CPictoPolice::GetPicto(cnt);	//オブジェクト取得
+
+		if (pPicto != nullptr)	//ヌルチェ
+		{//なんかある
+			if (pPicto->GetTargetObj() == this)
+			{//自分がターゲット
+				pPicto->UnsetTargetObj();	//ターゲット外す
+			}
+		}
+	}
+
 	m_apPicto[m_nID] = nullptr;
 
 	//親処理
@@ -1589,19 +1632,6 @@ void CPictoTaxi::AddDamage(int nDamage)
 	//0になったら消す
 	if (m_nLife <= CManager::INT_ZERO)
 	{
-		for (int cnt = 0; cnt < MAX_OBJ; cnt++)
-		{//全オブジェクト見る
-			CPictoBlocker* pPicto = CPictoBlocker::GetPicto(cnt);	//オブジェクト取得
-
-			if (pPicto != nullptr)	//ヌルチェ
-			{//なんかある
-				if (pPicto->GetTargetObj() == this)
-				{//自分がターゲット
-					pPicto->UnsetTargetObj();	//ターゲット外す
-				}
-			}
-		}
-
 		//爆散
 		Uninit();
 	}
@@ -1845,6 +1875,19 @@ HRESULT CPictoPolice::Init(void)
 //========================
 void CPictoPolice::Uninit(void)
 {
+	for (int cnt = 0; cnt < MAX_OBJ; cnt++)
+	{//全オブジェクト見る
+		CPictoBlocker* pPicto = CPictoBlocker::GetPicto(cnt);	//オブジェクト取得
+
+		if (pPicto != nullptr)	//ヌルチェ
+		{//なんかある
+			if (pPicto->GetTargetObj() == this)
+			{//自分がターゲット
+				pPicto->UnsetTargetObj();	//ターゲット外す
+			}
+		}
+	}
+
 	m_apPicto[m_nID] = nullptr;
 	m_nNumAll--;
 
@@ -1868,40 +1911,46 @@ void CPictoPolice::Update(void)
 	move.x = CManager::FLOAT_ZERO;
 	move.z = CManager::FLOAT_ZERO;
 
-	if (m_pTargetPicto != nullptr)
-	{//狙いを定めている
-		SetState(STATE_ATTACK);	//攻撃する気マンマン
-
-		targetPos = m_pTargetPicto->GetPos();
-		targetWidthHalf = m_pTargetPicto->GetWidth() * 0.5f;
-		targetDepthHalf = m_pTargetPicto->GetDepth() * 0.5f;
-
-		if (targetPos.x - targetWidthHalf - PICTO_POLICE_STOP_LENGTH > pos.x || targetPos.x + targetWidthHalf + PICTO_POLICE_STOP_LENGTH < pos.x ||
-			targetPos.z - targetDepthHalf - PICTO_POLICE_STOP_LENGTH > pos.z || targetPos.z + targetDepthHalf + PICTO_POLICE_STOP_LENGTH < pos.z)
-		{//到着してない
-			float fTargetLenWidth, fTargetLenDepth;
-			float fTargetRot;
-
-			fTargetLenWidth = targetPos.x - pos.x;
-			fTargetLenDepth = targetPos.z - pos.z;
-
-			fTargetRot = atan2f(fTargetLenWidth, fTargetLenDepth);
-
-			move.x = sinf(fTargetRot) * PICTO_WALK_SPEED;
-			move.z = cosf(fTargetRot) * PICTO_WALK_SPEED;
-
-			rot.y = FIX_ROT(fTargetRot + D3DX_PI);
-
-			if (pMotion->GetType() != MOTIONTYPE_MOVE)
+	if (GetState() == STATE_ATTACK)
+	{//どっかに到着
+		if (GetTargetObj()->GetType() == TYPE_BUILDING)
+		{
+			if (m_pTargetPicto != nullptr)
 			{
-				pMotion->Set(MOTIONTYPE_MOVE);
+				SetTargetObj(m_pTargetPicto);
+				SetState(STATE_FACE);
 			}
+			else
+			{
+				move.x = CManager::FLOAT_ZERO;
+				move.z = CManager::FLOAT_ZERO;
+				for (int cnt = 0; cnt < MAX_OBJ; cnt++)
+				{//全オブジェクト見る
+					CPicto* pPicto = CPicto::GetPicto(cnt);	//オブジェクト取得
 
-			//攻撃カウンターリセット
-			m_nCounterAttack = CManager::INT_ZERO;
+					if (pPicto != nullptr)
+					{
+						CPicto::TYPE type = pPicto->GetType();
+						if (pPicto != this && type != TYPE_NORMAL && type != TYPE_POLICE)
+						{
+							if (D3DXVec3Length(&(pPicto->GetPos() - this->GetPos())) <= PICTO_POLICE_SEARCH_LENGTH)
+							{
+								m_pTargetPicto = pPicto;
+							}
+						}
+					}
+				}
+				if (GetState() == STATE_ATTACK && pMotion->GetType() != MOTIONTYPE_NEUTRAL)
+				{
+					pMotion->Set(MOTIONTYPE_NEUTRAL);
+				}
+				//位置移動量設定
+				SetRot(rot);
+				SetMove(move);
+			}
 		}
-		else
-		{//ついた
+		else if (GetTargetObj()->GetType() == TYPE_PICTO)
+		{
 			//向かせる
 			float fTargetLenWidth, fTargetLenDepth;
 			fTargetLenWidth = targetPos.x - pos.x;
@@ -1925,39 +1974,98 @@ void CPictoPolice::Update(void)
 				pMotion->Set(MOTIONTYPE_ATTACK);
 			}
 		}
-
-		//位置移動量設定
-		SetRot(rot);
-		SetMove(move);
 	}
-	else
-	{//見張りなう
-		move.x = CManager::FLOAT_ZERO;
-		move.z = CManager::FLOAT_ZERO;
-		for (int cnt = 0; cnt < MAX_OBJ; cnt++)
-		{//全オブジェクト見る
-			CPicto* pPicto = CPicto::GetPicto(cnt);	//オブジェクト取得
 
-			if (pPicto != nullptr)
-			{
-				CPicto::TYPE type = pPicto->GetType();
-				if (pPicto != this && type != TYPE_NORMAL && type != TYPE_POLICE)
-				{
-					if (D3DXVec3Length(&(pPicto->GetPos() - this->GetPos())) <= PICTO_POLICE_SEARCH_LENGTH)
-					{
-						m_pTargetPicto = pPicto;
-					}
-				}
-			}
-		}
-		if (GetState() == STATE_ATTACK && pMotion->GetType() != MOTIONTYPE_NEUTRAL)
-		{
-			pMotion->Set(MOTIONTYPE_NEUTRAL);
-		}
-		//位置移動量設定
-		SetRot(rot);
-		SetMove(move);
-	}
+	//if (m_pTargetPicto != nullptr)
+	//{//狙いを定めている
+	//	SetState(STATE_ATTACK);	//攻撃する気マンマン
+
+	//	targetPos = m_pTargetPicto->GetPos();
+	//	targetWidthHalf = m_pTargetPicto->GetWidth() * 0.5f;
+	//	targetDepthHalf = m_pTargetPicto->GetDepth() * 0.5f;
+
+	//	if (targetPos.x - targetWidthHalf - PICTO_POLICE_STOP_LENGTH > pos.x || targetPos.x + targetWidthHalf + PICTO_POLICE_STOP_LENGTH < pos.x ||
+	//		targetPos.z - targetDepthHalf - PICTO_POLICE_STOP_LENGTH > pos.z || targetPos.z + targetDepthHalf + PICTO_POLICE_STOP_LENGTH < pos.z)
+	//	{//到着してない
+	//		float fTargetLenWidth, fTargetLenDepth;
+	//		float fTargetRot;
+
+	//		fTargetLenWidth = targetPos.x - pos.x;
+	//		fTargetLenDepth = targetPos.z - pos.z;
+
+	//		fTargetRot = atan2f(fTargetLenWidth, fTargetLenDepth);
+
+	//		move.x = sinf(fTargetRot) * PICTO_WALK_SPEED;
+	//		move.z = cosf(fTargetRot) * PICTO_WALK_SPEED;
+
+	//		rot.y = FIX_ROT(fTargetRot + D3DX_PI);
+
+	//		if (pMotion->GetType() != MOTIONTYPE_MOVE)
+	//		{
+	//			pMotion->Set(MOTIONTYPE_MOVE);
+	//		}
+
+	//		//攻撃カウンターリセット
+	//		m_nCounterAttack = CManager::INT_ZERO;
+	//	}
+	//	else
+	//	{//ついた
+	//		//向かせる
+	//		float fTargetLenWidth, fTargetLenDepth;
+	//		fTargetLenWidth = targetPos.x - pos.x;
+	//		fTargetLenDepth = targetPos.z - pos.z;
+
+	//		float fTargetRot = atan2f(fTargetLenWidth, fTargetLenDepth);
+	//		rot.y = FIX_ROT(fTargetRot + D3DX_PI);
+
+	//		m_nCounterAttack++;
+	//		if (m_nCounterAttack > PICTO_ATTACK_TIME)
+	//		{
+	//			//弾発射
+	//			CBulletBillboard::Create(GetPos() + D3DXVECTOR3(0.0f, 30.0f, 0.0f), GetRot(), 10.0f, 10.0f, 10.0f, PICTO_POWER(m_nLv, m_nHaveNormalPicto), TYPE_POLICE, this);
+
+	//			//攻撃カウンターリセット
+	//			m_nCounterAttack = CManager::INT_ZERO;
+	//		}
+
+	//		if (pMotion->GetType() != MOTIONTYPE_ATTACK)
+	//		{
+	//			pMotion->Set(MOTIONTYPE_ATTACK);
+	//		}
+	//	}
+
+	//	//位置移動量設定
+	//	SetRot(rot);
+	//	SetMove(move);
+	//}
+	//else
+	//{//見張りなう
+	//	move.x = CManager::FLOAT_ZERO;
+	//	move.z = CManager::FLOAT_ZERO;
+	//	for (int cnt = 0; cnt < MAX_OBJ; cnt++)
+	//	{//全オブジェクト見る
+	//		CPicto* pPicto = CPicto::GetPicto(cnt);	//オブジェクト取得
+
+	//		if (pPicto != nullptr)
+	//		{
+	//			CPicto::TYPE type = pPicto->GetType();
+	//			if (pPicto != this && type != TYPE_NORMAL && type != TYPE_POLICE)
+	//			{
+	//				if (D3DXVec3Length(&(pPicto->GetPos() - this->GetPos())) <= PICTO_POLICE_SEARCH_LENGTH)
+	//				{
+	//					m_pTargetPicto = pPicto;
+	//				}
+	//			}
+	//		}
+	//	}
+	//	if (GetState() == STATE_ATTACK && pMotion->GetType() != MOTIONTYPE_NEUTRAL)
+	//	{
+	//		pMotion->Set(MOTIONTYPE_NEUTRAL);
+	//	}
+	//	//位置移動量設定
+	//	SetRot(rot);
+	//	SetMove(move);
+	//}
 
 	//親処理
 	CPicto::Update();
@@ -2005,19 +2113,6 @@ void CPictoPolice::AddDamage(int nDamage)
 	//0になったら消す
 	if (m_nLife <= CManager::INT_ZERO)
 	{
-		for (int cnt = 0; cnt < MAX_OBJ; cnt++)
-		{//全オブジェクト見る
-			CPictoBlocker* pPicto = CPictoBlocker::GetPicto(cnt);	//オブジェクト取得
-
-			if (pPicto != nullptr)	//ヌルチェ
-			{//なんかある
-				if (pPicto->GetTargetObj() == this)
-				{//自分がターゲット
-					pPicto->UnsetTargetObj();	//ターゲット外す
-				}
-			}
-		}
-
 		//経験値付与
 		CPictoBlocker::AddExp(DROP_EXP(9));	//いったんレベル9として扱う
 

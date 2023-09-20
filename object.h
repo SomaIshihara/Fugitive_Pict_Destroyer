@@ -36,6 +36,7 @@ public:
 		TYPE_FIELD,
 		TYPE_BUILDING,
 		TYPE_PICTO,
+		TYPE_OBJECT,
 		TYPE_MAX
 	} TYPE;
 

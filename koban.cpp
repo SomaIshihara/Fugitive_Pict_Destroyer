@@ -84,6 +84,7 @@ void CKoban::Uninit(void)
 	//‚È‚­‚È‚Á‚½‚çÃ“Iƒƒ“ƒo•Ï”‰Šú‰»
 	if (m_nNumAll <= 0)
 	{
+		m_waitingPolice = CManager::INT_ZERO;
 		m_nCounterSpawn = CManager::INT_ZERO;
 		m_nSpawnSpan = CManager::INT_ZERO;
 		m_nPoliceMax = CManager::INT_ZERO;

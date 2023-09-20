@@ -18,6 +18,7 @@ class CPoint
 public:
 	//静的const
 	static const float MERGE_LENGTH;	//ポイントをマージする範囲
+	static const float POINT_INTERVAL;	//ポイントの配置間隔
 
 	//コンストラクタ・デストラクタ
 	CPoint();

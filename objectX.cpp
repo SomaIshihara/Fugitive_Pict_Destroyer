@@ -99,6 +99,7 @@ CObjectX::~CObjectX()
 //========================
 HRESULT CObjectX::Init(void)
 {
+	SetType(TYPE_OBJECT);
 	return S_OK;
 }
 

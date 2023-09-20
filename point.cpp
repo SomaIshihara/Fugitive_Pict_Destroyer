@@ -17,8 +17,7 @@ CPoint* CPoint::m_pTop = nullptr;
 CPoint* CPoint::m_pCur = nullptr;
 int CPoint::m_nNumAll = 0;
 const float CPoint::MERGE_LENGTH = 40.0f;
-
-#define POINT_INTERVAL	(20.0f)	//間隔
+const float CPoint::POINT_INTERVAL = 20.0f;
 
 //=================================
 //コンストラクタ
