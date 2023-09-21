@@ -116,7 +116,7 @@ public:
 	void SetState(STATE state) { m_state = state; }
 	static void SetAgit(CObjectX* pAgit) { m_pAgitObj = pAgit; }
 	void SetTargetObj(CObject* pObj);
-	void UnsetTargetObj(void);
+	virtual void UnsetTarget(void);
 	void SetRedAlpha(void) { m_fRedAlpha = PICTO_DAMAGE_ALPHA; }
 	void SetModel(const char* pPath);
 
@@ -326,7 +326,7 @@ public:
 
 	//設定
 	void SetMode(const MODE mode) { m_mode = mode; }
-	void UnsetTargetPicto(void) { m_pTargetPicto = nullptr; }
+	void UnsetTarget(void) { m_pTargetPicto = nullptr; }
 
 	//乗車
 	void TakeTaxi(CPictoTaxi* taxi) {};
@@ -351,7 +351,7 @@ private:
 	MODE m_mode;			//タクシーモード
 
 	//ターゲット
-	CPicto* m_pTargetPicto;		//ピクト（詳細不明）
+	CPicto* m_pTargetPicto;	//ピクト（詳細不明）
 
 	int m_nLife;			//体力
 
@@ -433,15 +433,14 @@ public:
 	static CPictoPolice* Create(const D3DXVECTOR3 pos);
 
 	//取得
-	CPicto* GetTargetPicto(void) { return m_pTargetPicto; }
 	static CPictoPolice* GetPicto(int nID) { return m_apPicto[nID]; }
 	static int GetNumAll(void) { return m_nNumAll; }
 	int GetLife(void) { return m_nLife; }
 	int GetLv(void) { return m_nLv; }
 
 	//設定
-	void SetTargetPicto(CPicto* target) { m_pTargetPicto = target; }
-	void UnsetTarget(void) { m_pTargetPicto = nullptr; }
+	void SetBuilding(CObject* pBui) { m_pTargetBui = pBui; }
+	void UnsetTarget(void);
 
 	//建物設定
 	void SetBuilding(CBuilding* pBuilding) { SetTargetObj((CObject*)pBuilding); }
@@ -460,9 +459,9 @@ private:
 	static int m_nNumAll;				//ピクトさん総数
 	int m_nID;							//ピクトさんID
 	int m_nCounterAttack;				//攻撃カウンター
-	CPicto* m_pTargetPicto;				//ターゲットピクト（味方）
+	CObject* m_pTargetBui;				//ターゲット（パトロール中建物の記憶）
 
-	int m_nLv;					//レベル
+	int m_nLv;							//レベル
 	int m_nLife;						//体力
 	int m_nHaveNormalPicto;				//一般人ピクト所持数
 };

@@ -191,8 +191,7 @@ void CKoban::CommonUpdate(void)
 				}
 				
 				CPictoPolice* pPolice = CPictoPolice::Create(m_apKoban[nNearKoban]->GetPos());	//近い交番から沸かす
-				pPolice->SetTargetObj(pBuilding);												//攻撃を受けている建物に出動
-				pPolice->SetTargetPicto(CPictoDestroyer::GetPicto(nNearPicto));					//建物の近くで攻撃しているピクトをターゲットにする
+				pPolice->SetTargetObj(CPictoDestroyer::GetPicto(nNearPicto));					//建物の近くで攻撃しているピクトをターゲットにする
 				m_waitingPolice--;																//待機中警察を減らす
 				m_disPatchCT[m_AttackList[cnt]] = m_nSpawnSpan;									//雇う間隔と同じ間隔でCTを設定
 			}

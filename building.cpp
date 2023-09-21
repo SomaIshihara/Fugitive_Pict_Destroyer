@@ -280,7 +280,7 @@ void CBuilding::AddDamage(int nDamage)
 			{//なんかある
 				if (pPicto->GetTargetObj() == this)
 				{//自分がターゲット
-					pPicto->UnsetTargetObj();
+					pPicto->UnsetTarget();
 				}
 			}
 		}

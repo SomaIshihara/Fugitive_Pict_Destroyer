@@ -116,7 +116,7 @@ HRESULT CTutorial::Init(void)
 	CPoint::Update();
 
 	//Œğ”Ôƒpƒ‰ƒ[ƒ^İ’è
-	CKoban::SetKobanParam(300, 1, 1);	//İ’è
+	CKoban::SetKobanParam(300, 2, 1);	//İ’è
 
 	return S_OK;
 }

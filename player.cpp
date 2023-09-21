@@ -154,11 +154,11 @@ void CPlayer::Attack(void)
 						break;
 
 					case CPicto::TYPE_DESTROYER:	//デストロイヤー
-						pPicto->UnsetTargetObj();
+						pPicto->UnsetTarget();
 						break;
 
 					case CPicto::TYPE_BLOCKER:	//ブロッカー
-						pPicto->UnsetTargetObj();
+						pPicto->UnsetTarget();
 						break;
 					}
 				}
