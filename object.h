@@ -16,7 +16,8 @@ typedef enum
 {
 	PRIORITY_BG = 0,		//BG
 	PRIORITY_DEFAULT = 3,	//デフォルト
-	PRIORITY_UI = 5,		//UI
+	PRIORITY_DEFMM,			//デフォルト--（デフォルトよりも遅くしたい）
+	PRIORITY_UI,			//UI
 	PRIORITY_PAUSE,			//ポーズ
 	PRIORITY_FADE,			//フェード
 	PRIORITY_MAX			//最大優先順位（これで足りるらしい）

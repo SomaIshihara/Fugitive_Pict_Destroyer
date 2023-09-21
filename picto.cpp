@@ -181,16 +181,6 @@ HRESULT CPicto::Init(void)
 //========================
 void CPicto::Uninit(void)
 {
-	for (int cnt = 0; cnt < MAX_OBJ; cnt++)
-	{//全オブジェクト見る
-		CPicto* pPicto = CPicto::GetPicto(cnt);	//オブジェクト取得
-
-		if (pPicto != nullptr && pPicto->GetTargetObj() == this)
-		{//自分がターゲット
-			pPicto->UnsetTarget();	//ターゲット外す
-		}
-	}
-
 	//モーション破棄
 	if (m_pMotion != nullptr)
 	{
@@ -921,6 +911,16 @@ void CPictoDestroyer::AddDamage(int nDamage)
 	//0になったら消す
 	if (m_nLife <= CManager::INT_ZERO)
 	{
+		for (int cnt = 0; cnt < MAX_OBJ; cnt++)
+		{//全オブジェクト見る
+			CPicto* pPicto = CPicto::GetPicto(cnt);	//オブジェクト取得
+
+			if (pPicto != nullptr && pPicto->GetTargetObj() == this)
+			{//自分がターゲット
+				pPicto->UnsetTarget();	//ターゲット外す
+			}
+		}
+
 		//爆散
 		Uninit();
 	}
@@ -1185,6 +1185,16 @@ void CPictoBlocker::AddDamage(int nDamage)
 	//0になったら消す
 	if (m_nLife <= CManager::INT_ZERO)
 	{
+		for (int cnt = 0; cnt < MAX_OBJ; cnt++)
+		{//全オブジェクト見る
+			CPicto* pPicto = CPicto::GetPicto(cnt);	//オブジェクト取得
+
+			if (pPicto != nullptr && pPicto->GetTargetObj() == this)
+			{//自分がターゲット
+				pPicto->UnsetTarget();	//ターゲット外す
+			}
+		}
+
 		//爆散
 		Uninit();
 	}
@@ -1256,7 +1266,6 @@ CPictoTaxi::CPictoTaxi()
 	m_nTakeDestroyer = CManager::INT_ZERO;
 	m_nTakeBlocker = CManager::INT_ZERO;
 	m_nTakeNormal = CManager::INT_ZERO;
-	m_nHaveBullet = CManager::INT_ZERO;
 }
 
 //=================================
@@ -1277,7 +1286,6 @@ CPictoTaxi::CPictoTaxi(const D3DXVECTOR3 pos, const TYPE type) : CPicto(pos,type
 	m_nTakeDestroyer = CManager::INT_ZERO;
 	m_nTakeBlocker = CManager::INT_ZERO;
 	m_nTakeNormal = CManager::INT_ZERO;
-	m_nHaveBullet = CManager::INT_ZERO;
 }
 
 //=================================
@@ -1454,10 +1462,6 @@ bool CPictoTaxi::SearchPick(void)
 	{
 		//取得
 		m_pTargetPicto = SearchNormal();
-
-		//ここに弾とピクトの距離測って比較する処理
-		float fLengthPicto = -1.0f;
-		float fLengthItem = -1.0f;
 		
 		if(m_pTargetPicto != nullptr)
 		{//ピクト取得した
@@ -1582,6 +1586,16 @@ void CPictoTaxi::AddDamage(int nDamage)
 	//0になったら消す
 	if (m_nLife <= CManager::INT_ZERO)
 	{
+		for (int cnt = 0; cnt < MAX_OBJ; cnt++)
+		{//全オブジェクト見る
+			CPicto* pPicto = CPicto::GetPicto(cnt);	//オブジェクト取得
+
+			if (pPicto != nullptr && pPicto->GetTargetObj() == this)
+			{//自分がターゲット
+				pPicto->UnsetTarget();	//ターゲット外す
+			}
+		}
+
 		//爆散
 		Uninit();
 	}
@@ -2000,6 +2014,16 @@ void CPictoPolice::AddDamage(int nDamage)
 	{
 		//経験値付与
 		CPictoBlocker::AddExp(DROP_EXP(9));	//いったんレベル9として扱う
+
+		for (int cnt = 0; cnt < MAX_OBJ; cnt++)
+		{//全オブジェクト見る
+			CPicto* pPicto = CPicto::GetPicto(cnt);	//オブジェクト取得
+
+			if (pPicto != nullptr && pPicto->GetTargetObj() == this)
+			{//自分がターゲット
+				pPicto->UnsetTarget();	//ターゲット外す
+			}
+		}
 
 		//爆散
 		Uninit();

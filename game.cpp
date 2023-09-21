@@ -28,6 +28,7 @@
 #include "bg.h"
 #include "countdown.h"
 #include "normanager.h"
+#include "policemanager.h"
 
 //静的メンバ変数
 CPlayer* CGame::m_pPlayer = nullptr;
@@ -111,9 +112,10 @@ HRESULT CGame::Init(void)
 	//ポイント生成
 	CPoint::Update();
 
-	//交番パラメータ設定
-	//CKoban::SetKobanParam(300, 1, 1);	//仮設定
-	CKoban::SetKobanParam(300, 15, 7);	//仮設定
+	//警察マネージャ生成・パラメータ設定
+	CPoliceManager::Create();
+	//CPoliceManager::SetKobanParam(300, 1, 1);	//仮設定
+	CPoliceManager::SetKobanParam(300, 15, 7);	//仮設定
 
 	//一般人マネージャ
 	CNorManager* pNorManager = CNorManager::Create();
@@ -264,7 +266,6 @@ void CGame::Update(void)
 				m_pWarning->SetEnable(bWarning);
 
 				//普段の処理
-				CKoban::CommonUpdate();	//交番共通更新処理
 				m_pPlayer->Update();
 
 				//スコア算出

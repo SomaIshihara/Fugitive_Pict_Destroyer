@@ -360,7 +360,7 @@ bool CBulletBillboard::CollisionBuilding(void)
 	{//全オブジェクト見る
 		CBuilding* pBuilding = CBuilding::GetBuilding(cnt);
 
-		if (pBuilding != nullptr)	//ヌルチェ
+		if (pBuilding != nullptr && pBuilding->GetEndurance() > 0)	//ヌルチェ
 		{//なんかある
 			D3DXVECTOR3 buildPos = pBuilding->GetPos();
 			float buildWidth = pBuilding->GetWidth();

@@ -321,8 +321,8 @@ public:
 	//乗車
 	void SetTakeTaxi(const CPicto::TYPE type, const int nTakeNum);
 
-	//拾得
-	void SetBullet(const int nBullet) { m_nHaveBullet += nBullet; }
+	//探索
+	bool SearchPick(void);	//一般人探索
 
 	//設定
 	void SetMode(const MODE mode) { m_mode = mode; }
@@ -339,7 +339,6 @@ public:
 
 private:
 	//関数
-	bool SearchPick(void);				//アイテム類探す
 	CPictoNormal* SearchNormal(void);	//一般人ピクト探索
 	CPicto* SearchBattler(void);		//戦闘要員探索
 
@@ -358,7 +357,6 @@ private:
 	int m_nTakeDestroyer;	//デストロイヤーが乗っている人数
 	int m_nTakeBlocker;		//ブロッカーが乗っている人数
 	int m_nTakeNormal;		//一般人が乗っている人数
-	int m_nHaveBullet;		//弾の所持数
 };
 
 //一般人ピクトクラス

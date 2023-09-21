@@ -12,6 +12,7 @@
 #include "score.h"
 #include "xmodel.h"
 #include "koban.h"
+#include "policemanager.h"
 #include <stdio.h>
 #include <assert.h>
 
@@ -58,7 +59,7 @@ CBuilding::CBuilding()
 //=================================
 //コンストラクタ（オーバーロード）
 //=================================
-CBuilding::CBuilding(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, CXModel* pModel)
+CBuilding::CBuilding(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, CXModel* pModel) : CObject(PRIORITY_DEFMM)
 {
 	for (int cnt = 0; cnt < MAX_OBJ; cnt++)
 	{//すべて確認
@@ -286,12 +287,12 @@ void CBuilding::AddDamage(int nDamage)
 		}
 
 		//経験値付与
-		CPictoDestroyer::AddExp(DROP_EXP(9));	//いったんレベル9として扱う
+		CPictoDestroyer::AddExp(DROP_EXP(m_nLv));	//いったんレベル9として扱う
 	}
 	else
 	{
 		//ダメージ報告
-		CKoban::ReportDamage(m_nID);
+		CPoliceManager::ReportDamage(m_nID);
 
 		//赤くする
 		m_fRedAlpha = BUILDING_DAMAGE_ALPHA;

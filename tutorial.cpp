@@ -27,6 +27,7 @@
 #include "bg.h"
 #include "fade.h"
 #include "button.h"
+#include "policemanager.h"
 
 //静的メンバ変数
 CPlayer* CTutorial::m_pPlayer = nullptr;
@@ -115,8 +116,9 @@ HRESULT CTutorial::Init(void)
 	//ポイント生成
 	CPoint::Update();
 
-	//交番パラメータ設定
-	CKoban::SetKobanParam(300, 2, 1);	//設定
+	//警察マネージャ生成・パラメータ設定
+	CPoliceManager::Create();
+	CPoliceManager::SetKobanParam(300, 2, 1);	//設定
 
 	return S_OK;
 }
@@ -211,7 +213,6 @@ void CTutorial::Update(void)
 	}
 
 	//普段の処理
-	CKoban::CommonUpdate();	//交番共通更新処理
 	m_pPlayer->Update();
 
 	//スコア算出
