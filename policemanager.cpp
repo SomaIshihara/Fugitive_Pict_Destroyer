@@ -10,6 +10,8 @@
 #include "building.h"
 #include "koban.h"
 #include "score.h"
+#include "game.h"
+#include "picto.h"
 
 //マクロ
 #define KOBAN_BUILDING_SEARCH_NUM	(5)		//建物探索回数（これを過ぎると沸かない）
@@ -48,6 +50,7 @@ HRESULT CPoliceManager::Init(void)
 	m_nCounterSpawn = CManager::INT_ZERO;
 	m_nSpawnSpan = CManager::INT_ZERO;
 	m_nPoliceMax = CManager::INT_ZERO;
+	m_nLv = CManager::INT_ZERO;
 
 	//できた
 	return S_OK;
@@ -71,10 +74,20 @@ void CPoliceManager::Update(void)
 	CKoban** ppKoban = CKoban::GetKoban();
 
 	//強化
+	CScene::MODE mode = CManager::GetMode();
 
+	if (mode == CScene::MODE_GAME)
+	{//ゲームはスコアにより変動
+		long long nScore = CGame::GetScoreObj()->GetScore();
+		while (HAVE_VALUE(m_nLv) <= nScore) m_nLv++;	//上げられるだけ上げる
+	}
+	else if (mode == CScene::MODE_TUTORIAL)
+	{//チュートリアルは固定1レベ
+		m_nLv = 1;
+	}
 
 	//出動
-	if (CPictoPolice::GetNumAll() + m_waitingPolice < m_nPoliceMax)
+	if (CPictoPolice::GetNumAll() + m_waitingPolice < m_nPoliceMax + m_nLv)
 	{//人手不足
 		m_nCounterSpawn++;	//沸きカウンタ増やす
 		if (m_nCounterSpawn >= m_nSpawnSpan)
@@ -101,7 +114,7 @@ void CPoliceManager::Update(void)
 				nAssignBuilding = rand() % CBuilding::GetNumAll();
 				if (CBuilding::GetBuilding(nAssignBuilding)->GetEndurance() > 0)
 				{//耐久値が残っている
-					CPictoPolice* pPolice = CPictoPolice::Create(ppKoban[nSpawnKoban]->GetPos());	//適当に決めた交番から沸かす
+					CPictoPolice* pPolice = CPictoPolice::Create(ppKoban[nSpawnKoban]->GetPos(), m_nLv);	//適当に決めた交番から沸かす
 					pPolice->SetTargetObj(CBuilding::GetBuilding(nAssignBuilding));					//適当に決めた建物に配属
 					m_nCounterSpawn = 0;	//カウンタリセット
 					m_waitingPolice--;		//待機中警察を減らす
@@ -150,7 +163,7 @@ void CPoliceManager::Update(void)
 					}
 				}
 
-				CPictoPolice* pPolice = CPictoPolice::Create(ppKoban[nNearKoban]->GetPos());	//近い交番から沸かす
+				CPictoPolice* pPolice = CPictoPolice::Create(ppKoban[nNearKoban]->GetPos(), m_nLv);	//近い交番から沸かす
 				pPolice->SetTargetObj(CPictoDestroyer::GetPicto(nNearPicto));					//建物の近くで攻撃しているピクトをターゲットにする
 				m_waitingPolice--;																//待機中警察を減らす
 				m_disPatchCT[m_AttackList[cntList]] = m_nSpawnSpan;								//雇う間隔と同じ間隔でCTを設定

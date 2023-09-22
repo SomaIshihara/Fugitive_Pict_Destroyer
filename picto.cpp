@@ -479,6 +479,22 @@ void CPicto::UnsetTarget(void)
 }
 
 //=================================
+//ターゲット解除（すべて）
+//=================================
+void CPicto::UnsetTargetAll(void)
+{
+	for (int cnt = 0; cnt < MAX_OBJ; cnt++)
+	{//全オブジェクト見る
+		CPicto* pPicto = CPicto::GetPicto(cnt);	//オブジェクト取得
+
+		if (pPicto != nullptr && pPicto->GetTargetObj() == this)
+		{//自分がターゲット
+			pPicto->UnsetTarget();	//ターゲット外す
+		}
+	}
+}
+
+//=================================
 //モデル設定
 //=================================
 void CPicto::SetModel(const char * pPath)
@@ -537,6 +553,16 @@ bool CPicto::CollisionField(D3DXVECTOR3* pPosNew)
 //=================================
 void CPicto::Return(void)
 {
+	for (int cnt = 0; cnt < MAX_OBJ; cnt++)
+	{//全オブジェクト見る
+		CPicto* pPicto = CPicto::GetPicto(cnt);	//オブジェクト取得
+
+		if (pPicto != nullptr && pPicto->GetTargetObj() == this)
+		{//自分がターゲット
+			pPicto->UnsetTarget();	//ターゲット外す
+		}
+	}
+
 	Uninit();
 }
 
@@ -803,6 +829,7 @@ HRESULT CPictoDestroyer::Init(void)
 void CPictoDestroyer::Uninit(void)
 {
 	m_apPicto[m_nID] = nullptr;
+	m_nNumAll--;
 
 	//親処理
 	CPicto::Uninit();
@@ -898,7 +925,8 @@ CPictoDestroyer* CPictoDestroyer::Create(const D3DXVECTOR3 pos)
 void CPictoDestroyer::TakeTaxi(CPictoTaxi * taxi)
 {
 	taxi->SetTakeTaxi(CPicto::TYPE_DESTROYER, 1);
-	//ここに連れている一般人も乗せる処理
+	taxi->SetTakeTaxi(CPicto::TYPE_NORMAL, m_nHaveNormalPicto);
+	UnsetTargetAll();
 }
 
 //========================
@@ -911,15 +939,7 @@ void CPictoDestroyer::AddDamage(int nDamage)
 	//0になったら消す
 	if (m_nLife <= CManager::INT_ZERO)
 	{
-		for (int cnt = 0; cnt < MAX_OBJ; cnt++)
-		{//全オブジェクト見る
-			CPicto* pPicto = CPicto::GetPicto(cnt);	//オブジェクト取得
-
-			if (pPicto != nullptr && pPicto->GetTargetObj() == this)
-			{//自分がターゲット
-				pPicto->UnsetTarget();	//ターゲット外す
-			}
-		}
+		UnsetTargetAll();
 
 		//爆散
 		Uninit();
@@ -1071,6 +1091,7 @@ HRESULT CPictoBlocker::Init(void)
 void CPictoBlocker::Uninit(void)
 {
 	m_apPicto[m_nID] = nullptr;
+	m_nNumAll--;
 
 	//親処理
 	CPicto::Uninit();
@@ -1172,7 +1193,8 @@ CPictoBlocker* CPictoBlocker::Create(const D3DXVECTOR3 pos)
 void CPictoBlocker::TakeTaxi(CPictoTaxi * taxi)
 {
 	taxi->SetTakeTaxi(CPicto::TYPE_BLOCKER, 1);
-	//ここに連れている一般人も乗せる処理
+	taxi->SetTakeTaxi(CPicto::TYPE_NORMAL, m_nHaveNormalPicto);
+	UnsetTargetAll();
 }
 
 //========================
@@ -1185,15 +1207,7 @@ void CPictoBlocker::AddDamage(int nDamage)
 	//0になったら消す
 	if (m_nLife <= CManager::INT_ZERO)
 	{
-		for (int cnt = 0; cnt < MAX_OBJ; cnt++)
-		{//全オブジェクト見る
-			CPicto* pPicto = CPicto::GetPicto(cnt);	//オブジェクト取得
-
-			if (pPicto != nullptr && pPicto->GetTargetObj() == this)
-			{//自分がターゲット
-				pPicto->UnsetTarget();	//ターゲット外す
-			}
-		}
+		UnsetTargetAll();
 
 		//爆散
 		Uninit();
@@ -1249,27 +1263,7 @@ void CPictoBlocker::Return(void)
 //ピクタクシークラス
 //******************************************************
 //=================================
-//コンストラクタ（デフォルト）
-//=================================
-CPictoTaxi::CPictoTaxi()
-{
-	for (int cnt = 0; cnt < MAX_OBJ; cnt++)
-	{//すべて確認
-		if (m_apPicto[cnt] == nullptr)
-		{//空っぽ
-			m_apPicto[cnt] = this;	//自分自身のポインタを登録
-			m_nID = cnt;	//ID覚える
-			m_nNumAll++;	//総数増やす
-			break;
-		}
-	}
-	m_nTakeDestroyer = CManager::INT_ZERO;
-	m_nTakeBlocker = CManager::INT_ZERO;
-	m_nTakeNormal = CManager::INT_ZERO;
-}
-
-//=================================
-//コンストラクタ（オーバーロード）
+//コンストラクタ
 //=================================
 CPictoTaxi::CPictoTaxi(const D3DXVECTOR3 pos, const TYPE type) : CPicto(pos,type)
 {
@@ -1300,6 +1294,12 @@ CPictoTaxi::~CPictoTaxi()
 //========================
 HRESULT CPictoTaxi::Init(void)
 {
+	//親処理
+	CPicto::Init();
+
+	//モデル設定
+	CPicto::SetModel("data\\motion_exithuman_taxi.txt");
+
 	//設定されていたモードを取得
 	m_mode = (MODE)CManager::GetScene()->GetSlider()->GetSelectIdx();
 
@@ -1308,17 +1308,25 @@ HRESULT CPictoTaxi::Init(void)
 	{
 	case MODE_PICK:
 		//アイテム類探す
-		SearchPick();
+		m_pTargetPicto = SearchNormal();
 		break;
 	case MODE_RESCUE:
+		m_pTargetPicto = SearchBattler();
 		break;
 	}
-	
-	//親処理
-	CPicto::Init();
 
-	//モデル設定
-	CPicto::SetModel("data\\motion_exithuman_taxi.txt");
+	if (m_pTargetPicto == nullptr)
+	{//なんもない
+		if (GetMotion()->GetType() != MOTIONTYPE_NEUTRAL)
+		{
+			GetMotion()->Set(MOTIONTYPE_NEUTRAL);
+		}
+	}
+	else
+	{//見つけた
+		SetState(STATE_FACE);
+		SetTargetObj(m_pTargetPicto);
+	}
 
 	return S_OK;
 }
@@ -1329,6 +1337,7 @@ HRESULT CPictoTaxi::Init(void)
 void CPictoTaxi::Uninit(void)
 {
 	m_apPicto[m_nID] = nullptr;
+	m_nNumAll--;
 
 	//親処理
 	CPicto::Uninit();
@@ -1339,56 +1348,50 @@ void CPictoTaxi::Uninit(void)
 //========================
 void CPictoTaxi::Update(void)
 {
-	if (m_mode == MODE_SABO)
+	if (m_mode == MODE_SABO && GetState() != STATE_LEAVE)
 	{//サボり
 		SetState(STATE_LEAVE);
 		UnsetTarget();
 	}
+	
+	//目的地到着時の処理
+	if (GetState() == STATE_ATTACK && m_pTargetPicto != nullptr)
+	{
+		//タクシーに乗せる
+		m_pTargetPicto->TakeTaxi(this);
+		m_pTargetPicto->Uninit();
+		m_pTargetPicto = nullptr;
 
-	if (GetState() == STATE_ATTACK)
-	{//目的地到着
+		//ターゲット解除
+		UnsetTarget();
+	}
+
+	//探索処理
+	if (m_pTargetPicto == nullptr)
+	{
 		switch (m_mode)
 		{
 		case MODE_PICK:
-			if (m_pTargetPicto != nullptr)
-			{
-				//タクシーに乗せる
-				m_pTargetPicto->TakeTaxi(this);
-				m_pTargetPicto->Uninit();
-				m_pTargetPicto = nullptr;
-
-				//ターゲット解除
-				UnsetTarget();
-			}
-
-			//次のアイテム類探す
-			if (SearchPick() == false)
-			{//なんもない
-				if (GetMotion()->GetType() != MOTIONTYPE_NEUTRAL)
-				{
-					GetMotion()->Set(MOTIONTYPE_NEUTRAL);
-				}
-			}
-			SetState(STATE_FACE);
+			//探索
+			m_pTargetPicto = SearchNormal();
 			break;
 		case MODE_RESCUE:
-			//ターゲット外れていたら探索
-			if (m_pTargetPicto == nullptr)
-			{
-				m_pTargetPicto = SearchBattler();
-			}
-
-			if (m_pTargetPicto != nullptr)
-			{
-				//タクシーに乗せる
-				m_pTargetPicto->TakeTaxi(this);
-				m_pTargetPicto->Uninit();
-				m_pTargetPicto = nullptr;
-
-				//ターゲット解除
-				UnsetTarget();
-			}
+			//探索
+			m_pTargetPicto = SearchBattler();
 			break;
+		}
+
+		if (m_pTargetPicto == nullptr)
+		{//なんもない
+			if (GetMotion()->GetType() != MOTIONTYPE_NEUTRAL)
+			{
+				GetMotion()->Set(MOTIONTYPE_NEUTRAL);
+			}
+		}
+		else
+		{//見つけた
+			SetState(STATE_FACE);
+			SetTargetObj(m_pTargetPicto);
 		}
 	}
 
@@ -1453,32 +1456,6 @@ void CPictoTaxi::SetTakeTaxi(const CPicto::TYPE type, const int nTakeNum)
 }
 
 //========================
-//アイテム類探索
-//========================
-bool CPictoTaxi::SearchPick(void)
-{
-	//ターゲット外れていたら探索
-	if (m_pTargetPicto == nullptr)
-	{
-		//取得
-		m_pTargetPicto = SearchNormal();
-		
-		if(m_pTargetPicto != nullptr)
-		{//ピクト取得した
-			SetTargetObj(m_pTargetPicto);
-		}
-		else
-		{//無
-			return false;
-		}
-
-		return true;
-	}
-
-	return false;
-}
-
-//========================
 //一般人ピクト探索
 //========================
 CPictoNormal* CPictoTaxi::SearchNormal(void)
@@ -1511,69 +1488,42 @@ CPictoNormal* CPictoTaxi::SearchNormal(void)
 //========================
 CPicto* CPictoTaxi::SearchBattler(void)
 {
-	CPictoDestroyer* pPictoD = nullptr;
-	CPictoBlocker* pPictoB = nullptr;
-	int nLifeD,nLifeB;
+	CPicto* pPictoDamaged = nullptr;
+	int nLifeDamaged = INT_MAX;
 
-	//デストロイヤー探索
+	//デストロイヤー・ブロッカー探索
 	for (int cnt = 0; cnt < MAX_OBJ; cnt++)
 	{//全オブジェクト見る
-		CPictoDestroyer* pPicto = CPictoDestroyer::GetPicto(cnt);	//オブジェクト取得
+		CPicto* pPicto = CPicto::GetPicto(cnt);	//オブジェクト取得
 
 		if (pPicto != nullptr)	//ヌルチェ
 		{//なんかある
-			int nLife = pPicto->GetLife();
+			TYPE type = pPicto->GetType();
+			if (type == TYPE_DESTROYER || type == TYPE_BLOCKER)
+			{
+				//レベル取得
+				int nLv;
+				if (type == TYPE_DESTROYER)
+				{//デストロイヤー
+					nLv = CPictoDestroyer::GetLv();
+				}
+				else
+				{//ブロッカー
+					nLv = CPictoBlocker::GetLv();
+				}
+				int nLife = pPicto->GetLife();
 
-			if ((((float)nLife / PICTO_LIFE) <= RESCUE_LIFE) && (pPictoD == nullptr || nLifeD > nLife))
-			{//救助対象でありなおかつ体力が一番少ない
-				pPictoD = pPicto;
-				nLifeD = nLife;
+				if ((((float)nLife / HAVE_LIFE(nLv)) <= RESCUE_LIFE) && nLifeDamaged > nLife)
+				{//救助対象でありなおかつ体力が一番少ない
+					pPictoDamaged = pPicto;
+					nLifeDamaged = nLife;
+				}
 			}
 		}
 	}
 
-	//ブロッカー探索
-	for (int cnt = 0; cnt < MAX_OBJ; cnt++)
-	{//全オブジェクト見る
-		CPictoBlocker* pPicto = CPictoBlocker::GetPicto(cnt);	//オブジェクト取得
-
-		if (pPicto != nullptr)	//ヌルチェ
-		{//なんかある
-			int nLife = pPicto->GetLife();
-
-			if ((((float)nLife / PICTO_LIFE) <= RESCUE_LIFE) && (pPictoB == nullptr || nLifeB > nLife))
-			{//救助対象でありなおかつ体力が一番少ない
-				pPictoB = pPicto;
-				nLifeB = nLife;
-			}
-		}
-	}
-
-	//そもそもいるかどうか
-	if (pPictoD != nullptr && pPictoB != nullptr)
-	{//両方いる
-		//体力少ないほうを返す
-		if (nLifeD <= nLifeB)
-		{//どっちも体力同じならデストロイヤー優先
-			return pPictoD;
-		}
-		else
-		{//ブロッカー
-			return pPictoB;
-		}
-	}
-	else if(pPictoD == nullptr && pPictoB != nullptr)
-	{//ブロッカーしかいない
-		return pPictoB;
-	}
-	else if (pPictoD != nullptr && pPictoB == nullptr)
-	{//デストロイヤーしかいない
-		return pPictoD;
-	}
-	else
-	{//いない
-		return nullptr;
-	}
+	//居るかいないかわからんけどあっちで何とかしてくれるから返す
+	return pPictoDamaged;
 }
 
 //========================
@@ -1586,15 +1536,7 @@ void CPictoTaxi::AddDamage(int nDamage)
 	//0になったら消す
 	if (m_nLife <= CManager::INT_ZERO)
 	{
-		for (int cnt = 0; cnt < MAX_OBJ; cnt++)
-		{//全オブジェクト見る
-			CPicto* pPicto = CPicto::GetPicto(cnt);	//オブジェクト取得
-
-			if (pPicto != nullptr && pPicto->GetTargetObj() == this)
-			{//自分がターゲット
-				pPicto->UnsetTarget();	//ターゲット外す
-			}
-		}
+		UnsetTargetAll();
 
 		//爆散
 		Uninit();
@@ -1690,6 +1632,7 @@ HRESULT CPictoNormal::Init(void)
 void CPictoNormal::Uninit(void)
 {
 	m_apPicto[m_nID] = nullptr;
+	m_nNumAll--;
 
 	//親処理
 	CPicto::Uninit();
@@ -1949,7 +1892,7 @@ void CPictoPolice::Draw(void)
 //========================
 //生成処理
 //========================
-CPictoPolice* CPictoPolice::Create(const D3DXVECTOR3 pos)
+CPictoPolice* CPictoPolice::Create(const D3DXVECTOR3 pos, const int nLv)
 {
 	CPictoPolice* pPicto = nullptr;
 
@@ -1960,6 +1903,7 @@ CPictoPolice* CPictoPolice::Create(const D3DXVECTOR3 pos)
 
 		//初期化
 		pPicto->Init();
+		pPicto->m_nLv = nLv;
 
 		return pPicto;
 	}
@@ -2013,17 +1957,9 @@ void CPictoPolice::AddDamage(int nDamage)
 	if (m_nLife <= CManager::INT_ZERO)
 	{
 		//経験値付与
-		CPictoBlocker::AddExp(DROP_EXP(9));	//いったんレベル9として扱う
+		CPictoBlocker::AddExp(DROP_EXP(m_nLv));	//いったんレベル9として扱う
 
-		for (int cnt = 0; cnt < MAX_OBJ; cnt++)
-		{//全オブジェクト見る
-			CPicto* pPicto = CPicto::GetPicto(cnt);	//オブジェクト取得
-
-			if (pPicto != nullptr && pPicto->GetTargetObj() == this)
-			{//自分がターゲット
-				pPicto->UnsetTarget();	//ターゲット外す
-			}
-		}
+		UnsetTargetAll();
 
 		//爆散
 		Uninit();

@@ -108,6 +108,7 @@ public:
 	static D3DXVECTOR3 GetAgitPos(void) { return m_pAgitObj->GetPos(); }
 	CObject* GetTargetObj(void) { return m_pTargetObj; }
 	static int GetNumAll(void) { return m_nNumAll; }
+	virtual int GetLife(void) = 0;
 	
 	//設定
 	void SetPos(D3DXVECTOR3 pos) { m_pos = pos; }
@@ -117,6 +118,7 @@ public:
 	static void SetAgit(CObjectX* pAgit) { m_pAgitObj = pAgit; }
 	void SetTargetObj(CObject* pObj);
 	virtual void UnsetTarget(void);
+	void UnsetTargetAll(void);
 	void SetRedAlpha(void) { m_fRedAlpha = PICTO_DAMAGE_ALPHA; }
 	void SetModel(const char* pPath);
 
@@ -300,7 +302,6 @@ public:
 	} MODE;
 
 	//コンストラクタ・デストラクタ
-	CPictoTaxi();
 	CPictoTaxi(const D3DXVECTOR3 pos, const TYPE type = TYPE_TAXI);
 	~CPictoTaxi();
 
@@ -321,12 +322,8 @@ public:
 	//乗車
 	void SetTakeTaxi(const CPicto::TYPE type, const int nTakeNum);
 
-	//探索
-	bool SearchPick(void);	//一般人探索
-
 	//設定
 	void SetMode(const MODE mode) { m_mode = mode; }
-	void UnsetTarget(void) { m_pTargetPicto = nullptr; }
 
 	//乗車
 	void TakeTaxi(CPictoTaxi* taxi) {};
@@ -393,6 +390,7 @@ public:
 	//取得
 	static CPictoNormal* GetPicto(int nID) { return m_apPicto[nID]; }
 	static int GetNumAll(void) { return m_nNumAll; }
+	int GetLife(void) { return -1; }
 
 	//乗車
 	void TakeTaxi(CPictoTaxi* taxi);
@@ -428,7 +426,7 @@ public:
 	void Draw(void);
 
 	//生成
-	static CPictoPolice* Create(const D3DXVECTOR3 pos);
+	static CPictoPolice* Create(const D3DXVECTOR3 pos, const int nLv);
 
 	//取得
 	static CPictoPolice* GetPicto(int nID) { return m_apPicto[nID]; }

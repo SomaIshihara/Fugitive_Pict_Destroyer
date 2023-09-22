@@ -52,6 +52,7 @@ private:
 
 	static int m_nPatrollNum;	//パトロールに行かせる人数
 	static int m_nPoliceMax;	//警察の最大人数
+	int m_nLv;					//今後出動する警察のレベル
 };
 
 #endif // !_MULTIPLE_BG_H_
