@@ -9,6 +9,7 @@
 #include "renderer.h"
 #include "texture.h"
 #include "object2D.h"
+#include "sound.h"
 
 //=================================
 //コンストラクタ
@@ -160,4 +161,13 @@ CCountDown* CCountDown::Create(const D3DXVECTOR3 pos, const float fOneWidth, con
 	{
 		return nullptr;
 	}
+}
+
+//=================================
+//カウントダウン開始
+//=================================
+void CCountDown::Start(void)
+{
+	m_shouldCount = true;
+	m_count--;
 }

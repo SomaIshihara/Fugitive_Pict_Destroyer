@@ -18,6 +18,7 @@
 #include "particle.h"
 #include "effect.h"
 #include "Culc.h"
+#include "sound.h"
 
 //****************************************
 //2D’e
@@ -373,7 +374,7 @@ bool CBulletBillboard::CollisionBuilding(void)
 			{
 				//”š”­¶¬
 				CParticleBillboard::Create(GetPos(), 30, 32, 0.2f, 3, D3DXCOLOR(1.0f, 0.5f, 0.14f, 1.0f), 20.0f, 20.0f);
-				//CParticleBillboard::Create(GetPos(), 120, 16, 0.2f, 3, D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f), 20.0f, 20.0f);
+				CManager::GetSound()->Play(CSound::SOUND_LABEL_SE_EXPLOSION);
 
 				//UŒ‚
 				pBuilding->AddDamage(m_nPower);
@@ -414,6 +415,7 @@ bool CBulletBillboard::CollisionPicto(void)
 				{
 					//”š”­¶¬
 					CParticleBillboard::Create(GetPos(), 10, 4, 1, 2, D3DXCOLOR(1.0f, 0.0f, 0.0f, 1.0f), 20.0f, 20.0f);
+					CManager::GetSound()->Play(CSound::SOUND_LABEL_SE_DAMAGE);
 
 					//ƒ_ƒ[ƒW
 					pPicto->AddDamage(m_nPower);

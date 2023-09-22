@@ -11,6 +11,7 @@
 #include "object2D.h"
 #include "button.h"
 #include "fade.h"
+#include "sound.h"
 
 //=================================
 //コンストラクタ
@@ -101,6 +102,8 @@ void CPause::Uninit(void)
 //=================================
 void CPause::Update(void)
 {
+	CSound* pSound = CManager::GetSound();
+
 	//ボタン類はレンダラーの更新停止により手動で更新する
 	m_pContinue->Update();
 	m_pRestart->Update();
@@ -115,16 +118,19 @@ void CPause::Update(void)
 		{//ゲームに戻る
 			ReleaseSome();
 			CManager::SetPause(false);
+			pSound->Play(CSound::SOUND_LABEL_SE_BUTTON);
 		}
 		else if (m_pRestart->IsClickTrigger() == true)
 		{//リスタート
 			CFade::Create(CScene::MODE_GAME);
 			CManager::SetPause(false);
+			pSound->Play(CSound::SOUND_LABEL_SE_BUTTON);
 		}
 		else if (m_pExit->IsClickTrigger() == true)
 		{//終了
 			CFade::Create(CScene::MODE_TITLE);
 			CManager::SetPause(false);
+			pSound->Play(CSound::SOUND_LABEL_SE_BUTTON);
 		}
 		else if (m_pScreenShot->IsClickTrigger() == true)
 		{//スクショモード
@@ -137,6 +143,8 @@ void CPause::Update(void)
 			m_pRestart->SetEnable(false);
 			m_pExit->SetEnable(false);
 			m_pScreenShot->SetEnable(false);
+
+			pSound->Play(CSound::SOUND_LABEL_SE_BUTTON);
 		}
 	}
 	else
@@ -154,6 +162,8 @@ void CPause::Update(void)
 			m_pRestart->SetEnable(true);
 			m_pExit->SetEnable(true);
 			m_pScreenShot->SetEnable(true);
+
+			pSound->Play(CSound::SOUND_LABEL_SE_BUTTON);
 		}
 	}
 }

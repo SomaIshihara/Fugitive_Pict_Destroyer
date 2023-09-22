@@ -29,6 +29,7 @@
 #include "countdown.h"
 #include "normanager.h"
 #include "policemanager.h"
+#include "sound.h"
 
 //静的メンバ変数
 CPlayer* CGame::m_pPlayer = nullptr;
@@ -122,6 +123,9 @@ HRESULT CGame::Init(void)
 	pNorManager->SetNum(15);
 	pNorManager->SetTime(180);
 
+	//BGM流す
+	CManager::GetSound()->Play(CSound::SOUND_LABEL_BGM);
+
 	return S_OK;
 }
 
@@ -131,6 +135,7 @@ HRESULT CGame::Init(void)
 void CGame::Uninit(void)
 {
 	CObject::ReleaseAll();
+	CManager::GetSound()->Stop();
 
 	//プレイヤー破棄
 	if (m_pPlayer != nullptr)
@@ -186,6 +191,8 @@ void CGame::Update(void)
 		if (m_counterCDStart == CDSTART_TIME)
 		{
 			m_pCountDown->Start();	//カウントダウン開始
+			m_counterCDStart++;
+			CManager::GetSound()->Play(CSound::SOUND_LABEL_SE_COUNTDOWN);
 		}
 		else if (m_counterCDStart < CDSTART_TIME)
 		{
@@ -206,6 +213,7 @@ void CGame::Update(void)
 		if (pKeyboard->GetTrigger(DIK_P) == true)
 		{//ポーズ切り替え
 			CManager::SetPause((CManager::GetPause() == true ? false : true));
+			CManager::GetSound()->Play(CSound::SOUND_LABEL_SE_BUTTON);
 		}
 
 		if (m_pResult != nullptr)

@@ -24,6 +24,7 @@
 #include "havenum.h"
 #include "level.h"
 #include "koban.h"
+#include "sound.h"
 #include <vector>
 
 //マクロ
@@ -840,6 +841,7 @@ void CPictoDestroyer::Uninit(void)
 //========================
 void CPictoDestroyer::Update(void)
 {
+	CSound* pSound = CManager::GetSound();
 	D3DXVECTOR3 pos = GetPos();
 	D3DXVECTOR3 rot = GetRot();
 	CMotion* pMotion = GetMotion();
@@ -865,6 +867,7 @@ void CPictoDestroyer::Update(void)
 
 			//弾発射
 			CBulletBillboard::Create(GetPos() + D3DXVECTOR3(0.0f,30.0f,0.0f), rot + D3DXVECTOR3(-fBuildingAngle, 0.0f, 0.0f), 10.0f, 10.0f, 3.0f, PICTO_POWER(m_nLv,m_nHaveNormalPicto), TYPE_DESTROYER, this);
+			pSound->Play(CSound::SOUND_LABEL_SE_ROCKET);
 
 			//破壊カウンターリセット
 			m_nCounterDestruction = CManager::INT_ZERO;
@@ -948,7 +951,6 @@ void CPictoDestroyer::AddDamage(int nDamage)
 	//赤くする
 	SetRedAlpha();
 }
-
 
 //=================================
 //経験値取得（レベルアップ処理含む）
@@ -1102,6 +1104,7 @@ void CPictoBlocker::Uninit(void)
 //========================
 void CPictoBlocker::Update(void)
 {
+	CSound* pSound = CManager::GetSound();
 	D3DXVECTOR3 pos = GetPos();
 	D3DXVECTOR3 rot = GetRot();
 	CMotion* pMotion = GetMotion();
@@ -1133,6 +1136,7 @@ void CPictoBlocker::Update(void)
 		{
 			//弾発射
 			CBulletBillboard::Create(GetPos() + D3DXVECTOR3(0.0f, 30.0f, 0.0f), GetRot(), 10.0f, 10.0f, 10.0f, PICTO_POWER(m_nLv, m_nHaveNormalPicto), TYPE_BLOCKER, this);
+			pSound->Play(CSound::SOUND_LABEL_SE_GUN);
 
 			//攻撃カウンターリセット
 			m_nCounterAttack = CManager::INT_ZERO;

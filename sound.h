@@ -18,8 +18,16 @@ public:
 	//*****************************************************************************
 	typedef enum
 	{
-		SOUND_LABEL_BGM_TITLE = 0,	// タイトルBGM
-		SOUND_LABEL_SE_SHOT,		// 弾発射
+		SOUND_LABEL_BGM = 0,		//BGM
+		SOUND_LABEL_SE_BUTTON,		//ボタンクリック
+		SOUND_LABEL_SE_DISPATCH,	//出動
+		SOUND_LABEL_SE_SELECT,		//建物・ピクト選択
+		SOUND_LABEL_SE_COUNTDOWN,	//カウントダウン
+		SOUND_LABEL_SE_ROCKET,		//ロケラン発射
+		SOUND_LABEL_SE_GUN,			//銃発射
+		SOUND_LABEL_SE_EXPLOSION,	//建物爆発
+		SOUND_LABEL_SE_DAMAGE,		//ピクトダメージ
+		SOUND_LABEL_SE_POPRESULT,	//リザルト出現
 		SOUND_LABEL_MAX,
 	} SOUND_LABEL;
 	//*****************************************************************************
@@ -35,7 +43,7 @@ public:
 	//流す処理
 	HRESULT Play(SOUND_LABEL label);	//流す
 	void Stop(SOUND_LABEL label);		//1つ止める
-	void Stop(void);				//全部止める
+	void Stop(void);					//全部止める
 	void Pause(SOUND_LABEL label);		//ポーズ
 	void Restart(SOUND_LABEL label);	//再開
 private:

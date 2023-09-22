@@ -14,6 +14,7 @@
 #include "number.h"
 #include "symbol.h"
 #include "score.h"
+#include "sound.h"
 
 //静的メンバ変数
 const int CRanking::MAX_RANK = 10;
@@ -110,11 +111,13 @@ void CRanking::Uninit(void)
 //=================================
 void CRanking::Update(void)
 {
+	CSound* pSound = CManager::GetSound();
 	CInputMouse* pMouse = CManager::GetInputMouse();
 
 	if (m_pFade == nullptr && pMouse->GetTrigger(MOUSE_CLICK_LEFT) == true)
 	{//タイトルに遷移
 		m_pFade = CFade::Create(CScene::MODE_TITLE);
+		pSound->Play(CSound::SOUND_LABEL_SE_BUTTON);
 	}
 }
 

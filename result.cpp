@@ -14,6 +14,7 @@
 #include "number.h"
 #include "score.h"
 #include "button.h"
+#include "sound.h"
 
 //静的メンバ変数
 const int CResult::HEADLINE_TIME = 60;
@@ -70,6 +71,7 @@ void CResult::Uninit(void)
 //=================================
 void CResult::Update(void)
 {
+	CSound* pSound = CManager::GetSound();
 	m_fAlpha += FADE_SPEED;
 
 	if (m_fAlpha >= FADE_ALPHA)
@@ -82,6 +84,7 @@ void CResult::Update(void)
 			CObject2D* pObject = nullptr;
 			pObject = CObject2D::Create(D3DXVECTOR3(300.0f, 122.0f, 0.0f), CManager::VEC3_ZERO, 500.0f, 144.0f, PRIORITY_PAUSE);
 			pObject->BindTexture(CTexture::PRELOAD_RESULT_HEADLINE);
+			pSound->Play(CSound::SOUND_LABEL_SE_POPRESULT);
 		}
 		else if (m_nCounter == ATK_TIME)
 		{//攻撃数表示
@@ -102,6 +105,8 @@ void CResult::Update(void)
 			pNumber = CNumber::Create(D3DXVECTOR3(505.0f, 272.0f, 0.0f), CManager::VEC3_ZERO, 40.0f, 72.0f);
 			pNumber->BindTexture(CTexture::PRELOAD_NUMBER);
 			pNumber->SetNumber(nNum, 0);
+
+			pSound->Play(CSound::SOUND_LABEL_SE_POPRESULT);
 		}
 		else if (m_nCounter == DEST_TIME)
 		{//全壊数表示
@@ -122,6 +127,8 @@ void CResult::Update(void)
 			pNumber = CNumber::Create(D3DXVECTOR3(1005.0f, 272.0f, 0.0f), CManager::VEC3_ZERO, 40.0f, 72.0f);
 			pNumber->BindTexture(CTexture::PRELOAD_NUMBER);
 			pNumber->SetNumber(nNum, 0);
+
+			pSound->Play(CSound::SOUND_LABEL_SE_POPRESULT);
 		}
 		else if (m_nCounter == VALUE_TIME)
 		{//被害総額表示
@@ -135,6 +142,8 @@ void CResult::Update(void)
 			CScore* pScore = nullptr;
 			pScore = CScore::Create(D3DXVECTOR3(1097.5f, 462.0f, 0.0f), CManager::VEC3_ZERO, 60.0f, 108.0f);
 			pScore->Set(nScore);
+
+			pSound->Play(CSound::SOUND_LABEL_SE_POPRESULT);
 		}
 		else if (m_nCounter == RANK_TIME)
 		{//ランキング遷移ボタン表示
@@ -145,6 +154,7 @@ void CResult::Update(void)
 		if (m_pButton != nullptr && m_pFade == nullptr && m_pButton->IsClickTrigger() == true)
 		{//ランキング遷移
 			m_pFade = CFade::Create(CScene::MODE_RANKING);
+			pSound->Play(CSound::SOUND_LABEL_SE_BUTTON);
 			return;
 		}
 	}

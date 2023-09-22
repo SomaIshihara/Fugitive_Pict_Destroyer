@@ -28,6 +28,7 @@
 #include "fade.h"
 #include "button.h"
 #include "policemanager.h"
+#include "sound.h"
 
 //Ã“Iƒƒ“ƒo•Ï”
 CPlayer* CTutorial::m_pPlayer = nullptr;
@@ -222,6 +223,7 @@ void CTutorial::Update(void)
 	if (m_pFade == nullptr && pKeyboard->GetTrigger(DIK_P) == true)
 	{
 		m_pFade = CFade::Create(CScene::MODE_GAME);
+		CManager::GetSound()->Play(CSound::SOUND_LABEL_SE_BUTTON);
 	}
 }
 

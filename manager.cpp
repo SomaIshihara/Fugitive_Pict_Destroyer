@@ -142,9 +142,6 @@ HRESULT CManager::Init(HINSTANCE hInstance, HWND hWnd, BOOL bWindow)
 	m_nFPS = 0;
 	m_dwFrameCount = 0;
 
-	//サウンド流す
-	m_pSound->Play(CSound::SOUND_LABEL_BGM_TITLE);
-
 	//モード設定
 	SetMode(CScene::MODE_TITLE);
 

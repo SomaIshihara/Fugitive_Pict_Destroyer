@@ -43,7 +43,8 @@ HRESULT CNorManager::Init(void)
 //=================================
 void CNorManager::Uninit(void)
 {
-
+	//管理オブジェクト破棄
+	Release();
 }
 
 //=================================

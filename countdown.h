@@ -36,7 +36,7 @@ public:
 	void SetPos(const D3DXVECTOR3 pos) { m_pos = pos; }
 	
 	//スタート
-	void Start(void) { m_shouldCount = true; }
+	void Start(void);
 
 private:
 	D3DXVECTOR3 m_pos;		//位置

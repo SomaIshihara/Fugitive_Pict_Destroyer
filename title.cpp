@@ -11,6 +11,7 @@
 #include "input.h"
 #include "camera.h"
 #include "button.h"
+#include "sound.h"
 
 //マクロ
 #define TITLE_CAMERA_ROT	(CAMERA_MOU_ROT_SPEED * 0.15f)
@@ -68,6 +69,7 @@ void CTitle::Uninit(void)
 //=================================
 void CTitle::Update(void)
 {
+	CSound* pSound = CManager::GetSound();
 	CCamera* pCamera = CManager::GetCamera();
 	CInputMouse* pMouse = CManager::GetInputMouse();
 	D3DXVECTOR3 rot = CManager::VEC3_ZERO;
@@ -85,10 +87,12 @@ void CTitle::Update(void)
 		if (m_pButtonStart->IsClickTrigger() == true)
 		{//スタートボタンが押された
 			m_pFade = CFade::Create(CScene::MODE_TUTORIAL);
+			pSound->Play(CSound::SOUND_LABEL_SE_BUTTON);
 		}
 		else if (m_pButtonRank->IsClickTrigger() == true)
 		{//ランキングボタンが押された
 			m_pFade = CFade::Create(CScene::MODE_RANKING);
+			pSound->Play(CSound::SOUND_LABEL_SE_BUTTON);
 		}
 	}
 }

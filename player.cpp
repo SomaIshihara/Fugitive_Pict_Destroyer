@@ -20,6 +20,7 @@
 #include "building.h"
 #include "xmodel.h"
 #include "havenum.h"
+#include "sound.h"
 
 //=================================
 //コンストラクタ
@@ -62,6 +63,7 @@ void CPlayer::Uninit(void)
 void CPlayer::Update(void)
 {
 	CInputMouse* pMouse = CManager::GetInputMouse();	//マウス取得
+	CSound* pSound = CManager::GetSound();
 	Move();
 
 	if (pMouse->GetPress(MOUSE_CLICK_RIGHT) == true)
@@ -76,12 +78,17 @@ void CPlayer::Update(void)
 	if (m_pButtonATK != nullptr && m_pButtonATK->IsClickTrigger() == true)
 	{
 		Attack();
+		pSound->Play(CSound::SOUND_LABEL_SE_DISPATCH);
 		m_pButtonATK->Uninit();
 		m_pButtonATK = nullptr;
 	}
 	else if (pMouse->GetTrigger(MOUSE_CLICK_LEFT) == true)
 	{//位置特定
 		Select();
+		if (m_pObject != nullptr)
+		{//なんか選択した
+			pSound->Play(CSound::SOUND_LABEL_SE_SELECT);
+		}
 	}
 
 	//スライダーとタクシー挙動
