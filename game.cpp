@@ -123,6 +123,10 @@ HRESULT CGame::Init(void)
 	pNorManager->SetNum(15);
 	pNorManager->SetTime(180);
 
+	//ƒŒƒxƒ‹‰Šú‰»
+	CPictoDestroyer::ResetLevelExp();
+	CPictoBlocker::ResetLevelExp();
+
 	//BGM—¬‚·
 	CManager::GetSound()->Play(CSound::SOUND_LABEL_BGM);
 

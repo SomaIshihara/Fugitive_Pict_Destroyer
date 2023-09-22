@@ -21,9 +21,9 @@
 #define REQUIRE_EXP(lv)		((int)ceil(pow(1.34f,(lv - 2)) * 20))
 #define PICTO_ATK(lv)		((float)ceil(pow(1.125f,(lv - 1)) * 100) * 0.01f)
 #define PICTO_HAVENPICTO(lv)	((int)ceil(pow(1.1f,(lv - 1)) * 500))
-#define DROP_EXP(lv)		((int)ceil(REQUIRE_EXP(lv + 1) / 3))
+#define DROP_EXP(lv)		((int)ceil(REQUIRE_EXP(lv + 1) / 1))
 #define HAVE_LIFE(lv)		((int)ceil(98 + PICTO_HAVENPICTO(lv) * PICTO_ATK(lv) * 12))
-#define HAVE_VALUE(lv)		((long long)ceil(pow(1.2f,(lv - 1)) * lv) * 1000000)
+#define HAVE_VALUE(lv)		((long long)ceil(pow(1.5f,(lv - 1)) * lv) * 1000000)
 
 //ëOï˚êÈåæ
 class CModel;

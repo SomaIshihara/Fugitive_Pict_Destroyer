@@ -25,16 +25,16 @@ HRESULT ReadChunkData(HANDLE hFile, void *pBuffer, DWORD dwBuffersize, DWORD dwB
 // サウンドの情報
 SOUNDINFO g_aSoundInfo[CSound::SOUND_LABEL_MAX] =
 {
-	{ "data/BGM/Trick_style.wav",	0.7f, -1},	// BGM
+	{ "data/BGM/Trick_style.wav",	0.5f, -1},	// BGM
 	{ "data/SE/buttonclick.wav",	1.0f, 0},	// ボタンクリック
-	{ "data/SE/dispatch.wav",		1.0f, 0 },	// 出動
+	{ "data/SE/dispatch.wav",		0.7f, 0 },	// 出動
 	{ "data/SE/select.wav",			1.0f, 0 },	// 建物・ピクト選択
-	{ "data/SE/countdown.wav",		1.0f, 0 },	// カウントダウン
-	{ "data/SE/rocketlauncher.wav",	1.0f, 0 },	// ロケラン発射
-	{ "data/SE/gun.wav",			1.0f, 0 },	// 銃発射
-	{ "data/SE/explosion002.wav",	1.0f, 0 },	// 建物爆発
-	{ "data/SE/damage.wav",			1.0f, 0 },	// ピクトダメージ
-	{ "data/SE/popresult.wav",		1.0f, 0 },	// リザルト出現
+	{ "data/SE/countdown.wav",		0.7f, 0 },	// カウントダウン
+	{ "data/SE/rocketlauncher.wav",	0.2f, 0 },	// ロケラン発射
+	{ "data/SE/gun.wav",			0.2f, 0 },	// 銃発射
+	{ "data/SE/explosion002.wav",	0.2f, 0 },	// 建物爆発
+	{ "data/SE/damage.wav",			0.2f, 0 },	// ピクトダメージ
+	{ "data/SE/popresult.wav",		0.8f, 0 },	// リザルト出現
 };
 
 //=============================================================================

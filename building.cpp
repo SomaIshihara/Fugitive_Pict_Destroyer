@@ -287,7 +287,7 @@ void CBuilding::AddDamage(int nDamage)
 		}
 
 		//経験値付与
-		CPictoDestroyer::AddExp(DROP_EXP(m_nLv));	//いったんレベル9として扱う
+		CPictoDestroyer::AddExp(DROP_EXP(m_nLv));
 	}
 	else
 	{

@@ -554,15 +554,7 @@ bool CPicto::CollisionField(D3DXVECTOR3* pPosNew)
 //=================================
 void CPicto::Return(void)
 {
-	for (int cnt = 0; cnt < MAX_OBJ; cnt++)
-	{//全オブジェクト見る
-		CPicto* pPicto = CPicto::GetPicto(cnt);	//オブジェクト取得
-
-		if (pPicto != nullptr && pPicto->GetTargetObj() == this)
-		{//自分がターゲット
-			pPicto->UnsetTarget();	//ターゲット外す
-		}
-	}
+	UnsetTargetAll();
 
 	Uninit();
 }
@@ -1456,6 +1448,7 @@ void CPictoTaxi::SetTakeTaxi(const CPicto::TYPE type, const int nTakeNum)
 	if (m_nTakeDestroyer + m_nTakeBlocker >= PICTO_FORCEDRETURN_NUM)
 	{//強制帰宅する
 		SetState(STATE_LEAVE);
+		UnsetTarget();
 	}
 }
 
@@ -1796,6 +1789,7 @@ void CPictoPolice::Uninit(void)
 //========================
 void CPictoPolice::Update(void)
 {
+	CSound* pSound = CManager::GetSound();
 	D3DXVECTOR3 targetPos = CManager::VEC3_ZERO;
 	float targetWidthHalf = CManager::FLOAT_ZERO;
 	float targetDepthHalf = CManager::FLOAT_ZERO;
@@ -1837,6 +1831,7 @@ void CPictoPolice::Update(void)
 				{
 					//弾発射
 					CBulletBillboard::Create(GetPos() + D3DXVECTOR3(0.0f, 30.0f, 0.0f), GetRot(), 10.0f, 10.0f, 10.0f, PICTO_POWER(m_nLv, m_nHaveNormalPicto), TYPE_POLICE, this);
+					pSound->Play(CSound::SOUND_LABEL_SE_GUN);
 
 					//攻撃カウンターリセット
 					m_nCounterAttack = CManager::INT_ZERO;
@@ -1847,6 +1842,11 @@ void CPictoPolice::Update(void)
 					pMotion->Set(MOTIONTYPE_ATTACK);
 				}
 			}
+		}
+		else if (pObject->GetType() == TYPE_OBJECT)
+		{//ちょっと交番の前で突っ立っているので帰ってもらいます
+			Return();
+			return;
 		}
 		else
 		{
