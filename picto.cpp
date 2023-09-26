@@ -578,7 +578,7 @@ void CPicto::Search(CObject* pTarget)
 		pPoint = pPoint->GetNext();			//次入れる
 	}
 
-	//始点のノードを建物から探す（プレイヤーの最寄り）
+	//始点のノードを探す（プレイヤーの最寄り）
 	int nNodeStart = -1;
 	float fLengthNear = FLT_MAX;
 	for (int cnt = 0; cnt < nPointNum; cnt++)
@@ -591,7 +591,7 @@ void CPicto::Search(CObject* pTarget)
 		}
 	}
 
-	//終点のノードを建物から探す（建物の最寄り）
+	//終点のノードを探す（建物の最寄り）
 	Node* nodeGoal = nullptr;
 	float fLengthNearTarget = FLT_MAX;
 	float fLengthNearThis = FLT_MAX;
@@ -641,11 +641,11 @@ void CPicto::Search(CObject* pTarget)
 		//探す
 		for (int cntB = 0; cntB < nPointNum; cntB++)
 		{
-			if (pNode[cntB].pPoint == vec[cntA] && pNode[cntB].fLengthMin > fLength)
+			if (pNode[cntB].pPoint == vec[cntA] && pNode[cntB].fLengthMin > fLength + pNode[nNodeStart].fLengthMin)
 			{//探しているポイントが入っているノードを見つけた。あと距離も近い
 				if (pNode[cntB].bDesition == false)
 				{//そいつ確定済みじゃない
-					pNode[cntB].fLengthMin = fLength;
+					pNode[cntB].fLengthMin = fLength + pNode[nNodeStart].fLengthMin;
 					pNode[cntB].nFromNum = nNodeStart;
 				}
 				break;
@@ -654,7 +654,7 @@ void CPicto::Search(CObject* pTarget)
 	}
 
 	//探索
-	while (1)	//条件式仮
+	while (1)
 	{
 		//距離が最も小さいノードを確定
 		int nNodeNear = -1;
@@ -689,7 +689,7 @@ void CPicto::Search(CObject* pTarget)
 			//探す
 			for (int cntB = 0; cntB < nPointNum; cntB++)
 			{
-				if (pNode[cntB].pPoint == vec[cntA] && pNode[cntB].fLengthMin > fLength)
+				if (pNode[cntB].pPoint == vec[cntA] && pNode[cntB].fLengthMin > fLength + pNode[nNodeNear].fLengthMin)
 				{//探しているポイントが入っているノードを見つけた。あと距離も近い
 					if (pNode[cntB].bDesition == false)
 					{//そいつ確定済みじゃない
