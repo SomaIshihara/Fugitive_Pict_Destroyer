@@ -1324,6 +1324,8 @@ HRESULT CPictoTaxi::Init(void)
 		SetTargetObj(m_pTargetPicto);
 	}
 
+	m_nLife = PICTO_TAXI_MAXLIFE;
+
 	return S_OK;
 }
 

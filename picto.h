@@ -16,6 +16,7 @@
 
 #define PICTO_MAX_LEVEL		(30)	//ピクトの最大レベル
 #define PICTO_DAMAGE_ALPHA	(0.9f)	//赤くする割合
+#define PICTO_TAXI_MAXLIFE	(10000)
 
 //計算（建物も使用）
 #define REQUIRE_EXP(lv)		((int)ceil(pow(1.34f,(lv - 2)) * 20))

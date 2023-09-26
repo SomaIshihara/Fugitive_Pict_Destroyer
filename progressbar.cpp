@@ -37,6 +37,9 @@ HRESULT CProgressBar::Init(void)
 //=================================
 void CProgressBar::Uninit(void)
 {
+	m_pFrame->Uninit();
+	m_pBar->Uninit();
+
 	//管理オブジェクト破棄
 	Release();
 }

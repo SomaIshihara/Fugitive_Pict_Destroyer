@@ -68,6 +68,76 @@ void CPlayer::Update(void)
 	CSound* pSound = CManager::GetSound();
 	Move();
 
+	//体力バー設定
+	if (m_pObject != nullptr)
+	{
+
+		//建物かピクトか知る
+		if (m_pObject->GetType() == CObject::TYPE_BUILDING)
+		{//建物
+			for (int cnt = 0; cnt < MAX_OBJ; cnt++)
+			{
+				CBuilding* pBuilding = CBuilding::GetBuilding(cnt);
+
+				if (m_pObject == pBuilding)
+				{
+					int nEndurance;
+					int nMaxEndurance;
+					if (pBuilding->GetUnique() == false)
+					{//計算算出
+						nEndurance = pBuilding->GetEndurance();
+						nMaxEndurance = HAVE_LIFE(pBuilding->GetLv());
+					}
+					else
+					{//個別
+						nMaxEndurance = pBuilding->GetSigEndurance() * pow(10, pBuilding->GetPowEndurance());
+						nEndurance = pBuilding->GetEndurance();
+					}
+					m_pProgBar->SetPercent((float)nEndurance / nMaxEndurance);
+				}
+			}
+		}
+		else
+		{//自動的にピクトとわかる
+			for (int cnt = 0; cnt < MAX_OBJ; cnt++)
+			{
+				CPicto* pPicto = CPicto::GetPicto(cnt);
+
+				if (m_pObject == pPicto)
+				{
+					int nMaxLife;
+
+					//ピクト種類確認
+					switch (pPicto->GetType())
+					{
+					case CPicto::TYPE_DESTROYER:
+						nMaxLife = HAVE_LIFE(CPictoDestroyer::GetLv());
+						break;
+					case CPicto::TYPE_BLOCKER:
+						nMaxLife = HAVE_LIFE(CPictoBlocker::GetLv());
+						break;
+					case CPicto::TYPE_POLICE:
+						//どの警察か調べる
+						for (int cnt = 0; cnt < MAX_OBJ; cnt++)
+						{
+							CPictoPolice* pPolice = CPictoPolice::GetPicto(cnt);
+
+							if (pPicto == pPolice)
+							{
+								nMaxLife = HAVE_LIFE(pPolice->GetLv());
+							}
+						}
+						break;
+					case CPicto::TYPE_TAXI:
+						nMaxLife = PICTO_TAXI_MAXLIFE;
+					}
+
+					m_pProgBar->SetPercent(((float)pPicto->GetLife() / nMaxLife));
+				}
+			}
+		}
+	}
+
 	if (pMouse->GetPress(MOUSE_CLICK_RIGHT) == true)
 	{//回転
 		Rotate();
@@ -281,6 +351,10 @@ void CPlayer::Select(void)
 	{
 		m_pButtonATK->Uninit();
 		m_pButtonATK = nullptr;
+
+		//ゲージも一緒に消す
+		m_pProgBar->Uninit();
+		m_pProgBar = nullptr;
 	}
 
 	//建物
@@ -328,11 +402,12 @@ void CPlayer::Select(void)
 	if (pObject != nullptr)
 	{//何かしら選択できた
 		m_pObject = pObject;	//覚える
-		 //ボタン生成
+
+		//ボタン生成
 		m_pButtonATK = CButton2D::Create(mouse->GetPos(), CManager::VEC3_ZERO, 40.0f, 40.0f);
 		m_pButtonATK->BindTexture(CTexture::PRELOAD_HIRE);
-		m_pProgBar = CProgressBar::Create(D3DXVECTOR3(500.0f, 300.0f, 0.0f), 300.0f, 20.0f);
-		//m_pProgBar->SetPercent(m_pObject->get)
+		m_pProgBar = CProgressBar::Create(D3DXVECTOR3(1100.0f, 700.0f, 0.0f), 200.0f, 30.0f);
+		m_pProgBar->SetPercent(1.0f);	//仮設定
 	}
 	else
 	{//何も選択してない
