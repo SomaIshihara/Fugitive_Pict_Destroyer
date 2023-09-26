@@ -12,6 +12,7 @@
 //前方宣言
 class CObject;
 class CButton2D;
+class CProgressBar;
 
 //プレイヤークラス
 class CPlayer
@@ -40,6 +41,7 @@ private:
 
 	//変数
 	CButton2D* m_pButtonATK;		//攻撃ボタン
+	CProgressBar* m_pProgBar;		//進捗バー
 
 	bool m_bControllPicto;			//ピクトさんを操縦するかどうか
 	CObject* m_pObject;				//選択中の建物・ピクト

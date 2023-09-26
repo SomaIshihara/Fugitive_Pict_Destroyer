@@ -249,6 +249,26 @@ HRESULT CObject2D::SetTex(const D3DXVECTOR2 tex0, const D3DXVECTOR2 tex3)
 }
 
 //========================
+//サイズ変更
+//========================
+HRESULT CObject2D::SetSize(const float fWidth, const float fHeight)
+{
+	//値変更
+	m_fWidth = fWidth;
+	m_fHeight = fHeight;
+
+	//再計算
+	//長さ計算
+	m_fLength = sqrtf(m_fWidth * m_fWidth + m_fHeight * m_fHeight) * 0.5f;
+
+	//角度計算
+	m_fAngle = atan2f(m_fWidth, m_fHeight);
+
+	//頂点配置
+	return SetVtxPos();
+}
+
+//========================
 //頂点座標設定
 //========================
 HRESULT CObject2D::SetVtxPos(void)

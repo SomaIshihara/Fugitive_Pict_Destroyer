@@ -21,6 +21,7 @@
 #include "xmodel.h"
 #include "havenum.h"
 #include "sound.h"
+#include "progressbar.h"
 
 //=================================
 //コンストラクタ
@@ -31,6 +32,7 @@ CPlayer::CPlayer()
 
 	m_cursorPos = CManager::VEC3_ZERO;
 	m_pButtonATK = nullptr;
+	m_pProgBar = nullptr;
 }
 
 //=================================
@@ -329,6 +331,8 @@ void CPlayer::Select(void)
 		 //ボタン生成
 		m_pButtonATK = CButton2D::Create(mouse->GetPos(), CManager::VEC3_ZERO, 40.0f, 40.0f);
 		m_pButtonATK->BindTexture(CTexture::PRELOAD_HIRE);
+		m_pProgBar = CProgressBar::Create(D3DXVECTOR3(500.0f, 300.0f, 0.0f), 300.0f, 20.0f);
+		//m_pProgBar->SetPercent(m_pObject->get)
 	}
 	else
 	{//何も選択してない

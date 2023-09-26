@@ -53,6 +53,7 @@ public:
 	HRESULT SetRot(const D3DXVECTOR3 rot);	//向き
 	HRESULT SetCol(const D3DXCOLOR col);	//色
 	HRESULT SetTex(const D3DXVECTOR2 tex0, const D3DXVECTOR2 tex3);	//テクスチャ座標
+	HRESULT SetSize(const float fWidth, const float fHeight);		//サイズ
 	void SetEnable(const bool bFrag) { m_bEnable = bFrag; }
 
 private:
