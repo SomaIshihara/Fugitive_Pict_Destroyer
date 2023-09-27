@@ -8,6 +8,7 @@
 #include "input.h"
 #include "Culc.h"
 #include "manager.h"
+#include "renderer.h"
 
 //**************************************************
 //2Dƒ{ƒ^ƒ“

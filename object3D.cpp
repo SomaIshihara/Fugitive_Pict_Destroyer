@@ -166,6 +166,9 @@ void CObject3D::Draw(void)
 	CTexture* pTexture = CManager::GetTexture();						//テクスチャオブジェクト取得
 	D3DXMATRIX mtxRot, mtxTrans;	//計算用
 
+	CManager::GetRenderer()->SetEnableAlplaTest(true);
+	CManager::GetRenderer()->SetEnableZTest(false);
+
 	//ワールドマトリックス初期化
 	D3DXMatrixIdentity(&m_mtxWorld);
 
@@ -191,19 +194,22 @@ void CObject3D::Draw(void)
 
 	//描画
 	pDevice->DrawPrimitive(D3DPT_TRIANGLESTRIP, 0, 2);
+
+	CManager::GetRenderer()->SetEnableAlplaTest(false);
+	CManager::GetRenderer()->SetEnableZTest(true);
 }
 
 //========================
 //生成処理
 //========================
-CObject3D* CObject3D::Create(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, const float fWidth, const float fDepth)
+CObject3D* CObject3D::Create(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, const float fWidth, const float fDepth, int nPriority)
 {
 	CObject3D* pObj3D = nullptr;
 
 	if (pObj3D == nullptr)
 	{
 		//オブジェクト2Dの生成
-		pObj3D = new CObject3D(pos, rot, fWidth, fDepth);
+		pObj3D = new CObject3D(pos, rot, fWidth, fDepth, nPriority);
 
 		//初期化
 		pObj3D->Init();

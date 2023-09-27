@@ -48,7 +48,7 @@ class CButton3D : public CObject3D
 public:
 	//コンストラクタ・デストラクタ
 	CButton3D();
-	CButton3D(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, const float fWidth, const float fHeight, int nPriority = PRIORITY_DEFAULT);
+	CButton3D(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, const float fWidth, const float fHeight, int nPriority = PRIORITY_UI);
 	~CButton3D();
 
 	//基本処理

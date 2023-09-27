@@ -12,6 +12,9 @@
 #include "camera.h"
 #include "button.h"
 #include "sound.h"
+#include "objectX.h"
+#include "meshsky.h"
+#include "meshField.h"
 
 //マクロ
 #define TITLE_CAMERA_ROT	(CAMERA_MOU_ROT_SPEED * 0.15f)
@@ -44,13 +47,18 @@ HRESULT CTitle::Init(void)
 	CManager::GetCamera()->ResetPos();
 	CManager::GetCamera()->SetLength(700.0f);
 
-	CObject3D::Create(D3DXVECTOR3(-300.0f, 80.0f, 0.0f), D3DXVECTOR3(-0.5f * D3DX_PI, 0.0f, 0.0f), 365.0f, 171.0f)->BindTexture(CTexture::PRELOAD_TITLELOGO);
+	CObject3D::Create(D3DXVECTOR3(-300.0f, 180.0f, 0.0f), D3DXVECTOR3(-0.5f * D3DX_PI, 0.0f, 0.0f), 365.0f, 171.0f, PRIORITY_UI)->BindTexture(CTexture::PRELOAD_TITLELOGO);
 
-	m_pButtonStart = CButton3D::Create(D3DXVECTOR3(300.0f, 80.0f,0.0f), D3DXVECTOR3(-0.5f * D3DX_PI,0.0f,0.0f), 311.0f, 111.0f);
+	m_pButtonStart = CButton3D::Create(D3DXVECTOR3(300.0f, 180.0f, -50.0f), D3DXVECTOR3(-0.5f * D3DX_PI,0.0f,0.0f), 311.0f, 111.0f);
 	m_pButtonStart->BindTexture(CTexture::PRELOAD_TITLE_START);
 
-	m_pButtonRank = CButton3D::Create(D3DXVECTOR3(300.0f, -31.0f, 0.0f), D3DXVECTOR3(-0.5f * D3DX_PI, 0.0f, 0.0f), 311.0f, 111.0f);
+	m_pButtonRank = CButton3D::Create(D3DXVECTOR3(300.0f, 69.0f, -50.0f), D3DXVECTOR3(-0.5f * D3DX_PI, 0.0f, 0.0f), 311.0f, 111.0f);
 	m_pButtonRank->BindTexture(CTexture::PRELOAD_TITLE_RANK);
+
+	//マップデータ読み込みと配置
+	CObjectX::LoadData("data\\Fugitive_Picto_MapData_v120.ismd");
+	CMeshField::Create(D3DXVECTOR3(-1280.0f, 0.0f, 1280.0f), CManager::VEC3_ZERO, 64.0f, 64.0f, 40, 40);
+	CMeshSky::Create(CManager::VEC3_ZERO, CManager::VEC3_ZERO, 10000.0f, 8, 8);
 
 	return S_OK;
 }
