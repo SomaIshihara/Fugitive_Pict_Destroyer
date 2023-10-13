@@ -116,7 +116,7 @@ CNumber* CNumber::Create(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, const flo
 //=================================
 //数字分割処理（nDigitは0以上で入力すること）
 //=================================
-void CNumber::SetNumber(const int nSource, const int nDigit)
+void CNumber::SetNumber(const long long nSource, const int nDigit)
 {
 	int nNumber = 0;	//1桁分の数字
 
@@ -126,7 +126,7 @@ void CNumber::SetNumber(const int nSource, const int nDigit)
 	}
 
 	//桁ごとの数字を入れる
-	nNumber = nSource % (int)pow(10, nDigit + 1) / (int)pow(10, nDigit);
+	nNumber = nSource % (long long)pow(10, nDigit + 1) / (long long)pow(10, nDigit);
 
 	//パターン幅高さ取得
 	CTexture* pTexture = CManager::GetTexture();

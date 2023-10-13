@@ -29,7 +29,7 @@ public:
 	void BindTexture(int nIdx);
 
 	//İ’è
-	void SetNumber(const int nSource, const int nDigit);	//‚à‚Æ‚Æ‚È‚é”š‚ÆŒ…”‚ğ“ü‚ê‚é‚Æ•ªŠ„‚µ‚Ä‚­‚ê‚é
+	void SetNumber(const long long nSource, const int nDigit);	//‚à‚Æ‚Æ‚È‚é”š‚ÆŒ…”‚ğ“ü‚ê‚é‚Æ•ªŠ„‚µ‚Ä‚­‚ê‚é
 
 	//¶¬
 	static CNumber* Create(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, const float fWidth, const float fHeight);

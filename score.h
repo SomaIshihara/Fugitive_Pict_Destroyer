@@ -51,7 +51,7 @@ public:
 
 	//設定
 	void Set(const long long nScore);	//スコア設定
-	void Add(const int nAdd);	//スコア加算
+	void Add(const long long nAdd);	//スコア加算
 
 private:
 	//関数

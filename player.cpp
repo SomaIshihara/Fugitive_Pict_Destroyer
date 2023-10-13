@@ -21,7 +21,7 @@
 #include "xmodel.h"
 #include "havenum.h"
 #include "sound.h"
-#include "progressbar.h"
+//#include "progressbar.h"
 
 //=================================
 //コンストラクタ
@@ -93,7 +93,7 @@ void CPlayer::Update(void)
 						nMaxEndurance = pBuilding->GetSigEndurance() * pow(10, pBuilding->GetPowEndurance());
 						nEndurance = pBuilding->GetEndurance();
 					}
-					m_pProgBar->SetPercent((float)nEndurance / nMaxEndurance);
+					//m_pProgBar->SetPercent((float)nEndurance / nMaxEndurance);
 				}
 			}
 		}
@@ -132,7 +132,7 @@ void CPlayer::Update(void)
 						nMaxLife = PICTO_TAXI_MAXLIFE;
 					}
 
-					m_pProgBar->SetPercent(((float)pPicto->GetLife() / nMaxLife));
+					//m_pProgBar->SetPercent(((float)pPicto->GetLife() / nMaxLife));
 				}
 			}
 		}
@@ -353,8 +353,8 @@ void CPlayer::Select(void)
 		m_pButtonATK = nullptr;
 
 		//ゲージも一緒に消す
-		m_pProgBar->Uninit();
-		m_pProgBar = nullptr;
+		//m_pProgBar->Uninit();
+		//m_pProgBar = nullptr;
 	}
 
 	//建物
@@ -406,8 +406,8 @@ void CPlayer::Select(void)
 		//ボタン生成
 		m_pButtonATK = CButton2D::Create(mouse->GetPos(), CManager::VEC3_ZERO, 40.0f, 40.0f);
 		m_pButtonATK->BindTexture(CTexture::PRELOAD_HIRE);
-		m_pProgBar = CProgressBar::Create(D3DXVECTOR3(1100.0f, 700.0f, 0.0f), 200.0f, 30.0f);
-		m_pProgBar->SetPercent(1.0f);	//仮設定
+		//m_pProgBar = CProgressBar::Create(D3DXVECTOR3(1100.0f, 700.0f, 0.0f), 200.0f, 30.0f);
+		//m_pProgBar->SetPercent(1.0f);	//仮設定
 	}
 	else
 	{//何も選択してない

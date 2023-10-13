@@ -205,7 +205,7 @@ void CScore::Set(const long long nScore)
 //=================================
 //ƒXƒRƒA‰ÁZˆ—
 //=================================
-void CScore::Add(const int nAdd)
+void CScore::Add(const long long nAdd)
 {
 	//”š‰ÁZ
 	m_nScore += nAdd;
